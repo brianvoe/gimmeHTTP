@@ -1,0 +1,75 @@
+import { Builder } from '../utils/builder'
+import { Config, Http, Generator } from '../types'
+
+export default {
+  language: 'node',
+  target: 'http',
+  generate(config: Config, http: Http): string {
+    const builder = new Builder({
+      indent: config.indent || '  ',
+      join: config.join || '\n'
+    })
+
+    builder.line('const http = require("http");')
+    builder.line()
+
+    builder.line('const options = {')
+    builder.indent()
+    builder.line(`method: "${http.method.toUpperCase()}",`)
+    builder.line(`hostname: "${new URL(http.url).hostname}",`)
+    builder.line(`path: "${new URL(http.url).pathname}${new URL(http.url).search}",`)
+
+    if (http.headers) {
+      builder.line('headers: {')
+      builder.indent()
+      for (const [key, value] of Object.entries(http.headers)) {
+        if (Array.isArray(value)) {
+          builder.line(`"${key}": "${value.join(', ')}",`)
+        } else {
+          builder.line(`"${key}": "${value}",`)
+        }
+      }
+      builder.outdent()
+      builder.line('},')
+    }
+    builder.outdent()
+    builder.line('};')
+    builder.line()
+
+    builder.line('const req = http.request(options, (res) => {')
+    builder.indent()
+    builder.line('let data = "";')
+    builder.line()
+    builder.line('res.on("data", (chunk) => {')
+    builder.indent()
+    builder.line('data += chunk;')
+    builder.outdent()
+    builder.line('});')
+    builder.line()
+    builder.line('res.on("end", () => {')
+    builder.indent()
+    builder.line('console.log(data);')
+    builder.outdent()
+    builder.line('});')
+    builder.outdent()
+    builder.line('});')
+
+    if (config.handleErrors) {
+      builder.line()
+      builder.line('req.on("error", (error) => {')
+      builder.indent()
+      builder.line('console.error(error);')
+      builder.outdent()
+      builder.line('});')
+    }
+
+    builder.line()
+
+    if (http.body) {
+      builder.line(`req.write(JSON.stringify(${JSON.stringify(http.body)}));`)
+    }
+    builder.line('req.end();')
+
+    return builder.output()
+  }
+} as Generator

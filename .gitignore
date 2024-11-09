@@ -1,0 +1,13 @@
+.DS_Store
+.idea
+node_modules
+coverage
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+
+*.tgz
