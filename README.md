@@ -2,12 +2,36 @@
 
 GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration. Whether you need to quickly prototype an API request or generate example code for documentation, GimmeHttp has you covered. Just provide the request details, and let GimmeHttp generate code in your desired language.
 
-## Quick Example
+## Supported Languages and Targets
+
+| Language   | Targets              |
+| ---------- | -------------------- |
+| c          | libcurl              |
+| csharp     | http, restsharp      |
+| curl       | native               |
+| go         | http                 |
+| javascript | fetch, axios, jQuery |
+| node       | http, nod-fetch      |
+| php        | curl, guzzle         |
+| python     | requests, http       |
+| ruby       | nethttp, faraday     |
+| rust       | reqwest              |
+| swift      | nsurlsession         |
+
+## Installation
+
+To install GimmeHttp, simply use npm:
+
+```sh
+npm install gimmehttp
+```
+
+## Simple Example
 
 Here is a quick example of generating a simple GET request in Go:
 
 ```javascript
-import { Generate, AllCodes } from 'gimmehttp';
+import { Generate, Register, AllCodes } from 'gimmehttp';
 
 // Register all codes
 Register(AllCodes);
@@ -52,63 +76,12 @@ func main() {
 }
 ```
 
-## Installation
-
-To install GimmeHttp, simply use npm:
-
-```sh
-npm install gimmehttp
-```
-
-## Supported Languages and Targets
-
-| Language   | Targets              |
-| ---------- | -------------------- |
-| c          | libcurl              |
-| csharp     | http, restsharp      |
-| curl       | native               |
-| go         | http                 |
-| javascript | fetch, axios, jQuery |
-| node       | http, nod-fetch      |
-| php        | curl, guzzle         |
-| python     | requests, http       |
-| ruby       | nethttp, faraday     |
-| rust       | reqwest              |
-| swift      | nsurlsession         |
-
 ## Generate Function
 
 The core functionality of GimmeHttp is its `Generate` function. This function takes in a request object and returns the generated code snippet as a string. The request object should have the following structure:
 
-### Registry Custom Example
-
-If you want to register a custom language or target, you can do so using the `Register` function:
-
-```javascript
-import { Generate, Register, Config, Http } from 'gimmehttp';
-
-const myCustomTarget = {
-  language: 'ruby',
-  target: 'myCustomLibrary',
-  generate(config: Config, http: Http): string {
-    // Custom code generation logic
-    return `puts "Custom HTTP request for ${http.url}"`;
-  }
-};
-
-Register(myCustomTarget);
-
-const request = {
-  language: 'ruby',
-  target: 'myCustomLibrary',
-  http: {
-    method: 'GET',
-    url: 'https://gofakeit.com'
-  }
-};
-
-const output = Generate(request);
-console.log(output);
+```typescript
+Generate(request: Request): string
 ```
 
 ### Request Object
@@ -144,9 +117,57 @@ interface Request {
 }
 ```
 
+### Registry Custom Example
+
+If you want to register a custom language and/or target, you can do so using the `Register` function:
+
+```typescript
+interface Generator {
+  default?: boolean
+  language: string
+  target: string
+  generate: (config: any, http: any) => string
+}
+```
+
+```typescript
+import { Generate, Register, Config, Http } from 'gimmehttp';
+
+const myCustomTarget = {
+  language: 'html',
+  target: 'href',
+  generate(config: Config, http: Http): string {
+    // Custom code generation logic
+    return `<a href="${http.url}">${http.method}</a>`;
+  }
+};
+
+Register(myCustomTarget);
+
+const request = {
+  language: 'html',
+  target: 'href',
+  http: {
+    method: 'GET',
+    url: 'https://gofakeit.com'
+  }
+};
+
+const output = Generate(request);
+console.log(output);
+```
+
+Output:
+
+```html
+<a href="https://gofakeit.com">GET</a>
+```
+
+## Examples
+
 ### POST Request Example
 
-```javascript
+```typescript
 const request = {
   language: 'javascript',
   target: 'fetch',
