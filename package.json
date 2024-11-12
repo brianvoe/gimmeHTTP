@@ -19,16 +19,15 @@
   },
   "main": "./src/gimmeHTTP/index.ts",
   "scripts": {
-    "dev": "vite --port=1111",
+    "dev": "vite --port=1111 --config vite.config.docs.mts",
     "format": "prettier --write --cache --parser typescript \"src/**/*.ts\"",
     "lint": "prettier --write ./src/**/*",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "build": "npm run build:clean && npm run build:docs",
-    "build:clean": "rimraf ./dist/*",
-    "build:docs": "vite build",
-    "build:library": "npm run build:library:js",
-    "build:library:js": "cd src/gimmeHTTP && rollup --config ./rollup.config.mjs && cd ../../"
+    "build": "npm run build:clean && npm run build:docs && npm run build:lib",
+    "build:clean": "rimraf ./dist/* && rimraf ./docs/*",
+    "build:docs": "vite build --config vite.config.docs.mts",
+    "build:lib": "vite build --config vite.config.lib.mts"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
