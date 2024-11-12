@@ -1,5 +1,4 @@
-import { Builder } from '../utils/builder'
-import { Config, Http, Generator } from '../types'
+import { Target, Config, Http, Builder } from '../index'
 
 export default {
   default: true,
@@ -73,4 +72,4 @@ export default {
 
     return builder.output()
   }
-} as Generator
+} as Target

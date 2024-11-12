@@ -1,5 +1,5 @@
-import { describe, expect, test, beforeEach } from '@jest/globals'
 import { ClearRegistry, Register, CodesByLanguage, SetDefault } from './registry'
+import { describe, expect, test, beforeEach } from '@jest/globals'
 
 describe('Register', () => {
   // clear registry before each test
@@ -26,12 +26,12 @@ describe('Register', () => {
   test('should properly set default for multiple languages independently', () => {
     Register({ language: 'javascript', target: 'node', generate: () => 'console.log("Hello World");' })
     Register({ language: 'python', target: 'script', generate: () => 'print("Hello World")' })
-    const jsGenerators = CodesByLanguage('javascript')
-    const pyGenerators = CodesByLanguage('python')
-    expect(jsGenerators.length).toBe(1)
-    expect(jsGenerators[0].default).toBe(true)
-    expect(pyGenerators.length).toBe(1)
-    expect(pyGenerators[0].default).toBe(true)
+    const jsTargets = CodesByLanguage('javascript')
+    const pyTargets = CodesByLanguage('python')
+    expect(jsTargets.length).toBe(1)
+    expect(jsTargets[0].default).toBe(true)
+    expect(pyTargets.length).toBe(1)
+    expect(pyTargets[0].default).toBe(true)
   })
 
   test('should unset default from previous generators when a new default is registered for the same language', () => {

@@ -1,8 +1,6 @@
 import AllCodes from '../allcodes'
 import Curl from '../languages/curl'
-import { Generate } from './generate'
-import { ClearRegistry, Register } from './registry'
-import { Request } from '../types'
+import { Register, ClearRegistry, Generate, Request } from '../index'
 import { beforeEach, describe, expect, test } from '@jest/globals'
 
 describe('Generate', () => {

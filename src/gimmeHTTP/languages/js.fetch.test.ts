@@ -1,5 +1,5 @@
 import JSFetch from './js.fetch'
-import { Config, Http } from '../types'
+import { Config, Http } from '../index'
 import { describe, test, expect } from '@jest/globals'
 
 describe('JSFetch.generate', () => {

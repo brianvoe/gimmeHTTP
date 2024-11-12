@@ -1,5 +1,5 @@
 import AllCodes from './allcodes'
-import { ClearRegistry, Codes, Register } from './utils/registry'
+import { ClearRegistry, Codes, Register } from './index'
 import { describe, expect, test } from '@jest/globals'
 
 describe('All', () => {

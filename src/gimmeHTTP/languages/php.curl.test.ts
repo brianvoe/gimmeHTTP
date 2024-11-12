@@ -1,5 +1,5 @@
 import PhpCurl from './php.curl'
-import { Config, Http } from '../types'
+import { Config, Http } from '../index'
 import { describe, test, expect } from '@jest/globals'
 
 describe('PhpCurl.generate', () => {

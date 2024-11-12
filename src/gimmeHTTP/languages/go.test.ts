@@ -1,5 +1,5 @@
 import Go from './go'
-import { Http } from '../types'
+import { Http } from '../index'
 import { describe, expect, test } from '@jest/globals'
 
 describe('Go.generate', () => {
@@ -35,6 +35,59 @@ func main() {
   fmt.Println(string(body))
 }
     `.trim()
+    )
+  })
+
+  test('should build a basic json POST request', () => {
+    const config = {
+      handleErrors: false
+    }
+    const http: Http = {
+      method: 'POST',
+      url: 'https://gofakeit.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        foo: 'bar',
+        bar: 'baz'
+      }
+    }
+
+    const result = Go.generate(config, http)
+    expect(result).toBe(
+      `
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io"
+  "bytes"
+  "encoding/json"
+)
+
+func main() {
+  url := "https://gofakeit.com"
+
+  jsonBodyMap := map[string]any{
+    "foo": "bar",
+    "bar": "baz",
+  }
+  jsonBodyBytes, _ := json.Marshal(jsonBodyMap)
+
+  req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBodyBytes))
+
+  req.Header.Set("Content-Type", "application/json")
+
+  resp, _ := http.DefaultClient.Do(req)
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+
+  fmt.Println(string(body))
+}
+      `.trim()
     )
   })
 

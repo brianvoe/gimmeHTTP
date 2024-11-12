@@ -1,5 +1,5 @@
 import PhpGuzzle from './php.guzzle'
-import { Config, Http } from '../types'
+import { Config, Http } from '../index'
 import { describe, test, expect } from '@jest/globals'
 
 describe('PhpGuzzle.generate', () => {

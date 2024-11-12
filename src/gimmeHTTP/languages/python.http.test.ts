@@ -1,5 +1,5 @@
 import PythonHttpClient from './python.http'
-import { Config, Http } from '../types'
+import { Config, Http } from '../index'
 import { describe, expect, test } from '@jest/globals'
 
 describe('PythonHttpClient.generate', () => {

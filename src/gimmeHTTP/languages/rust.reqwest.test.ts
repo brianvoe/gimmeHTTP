@@ -1,5 +1,5 @@
 import RustReqwest from './rust.reqwest'
-import { Config, Http } from '../types'
+import { Config, Http } from '../index'
 import { describe, expect, test } from '@jest/globals'
 
 describe('RustReqwest.generate', () => {

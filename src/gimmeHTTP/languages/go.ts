@@ -1,5 +1,4 @@
-import { Builder } from '../utils/builder' // Adjust the import path as necessary
-import { Config, Http, Generator } from '../types'
+import { Target, Config, Http, Builder, IsJsonRequest } from '../index'
 
 export default {
   default: true,
@@ -11,6 +10,8 @@ export default {
       join: config.join || '\n'
     })
 
+    const isJsonBody = IsJsonRequest(http.method, http.headers) && http.body
+
     builder.line('package main')
     builder.line()
     builder.line('import (')
@@ -18,6 +19,10 @@ export default {
     builder.line('"fmt"')
     builder.line('"net/http"')
     builder.line('"io"')
+    if (isJsonBody) {
+      builder.line('"bytes"')
+      builder.line('"encoding/json"')
+    }
     if (config.handleErrors) {
       builder.line('"log"')
     }
@@ -29,8 +34,31 @@ export default {
     builder.line(`url := "${http.url}"`)
     builder.line()
 
+    let bodyVar = 'nil'
+    if (isJsonBody) {
+      builder.line('jsonBodyMap := map[string]any{')
+      builder.indent()
+      for (const [key, value] of Object.entries(http.body)) {
+        builder.line(`"${key}": ${JSON.stringify(value)},`)
+      }
+      builder.outdent()
+      builder.line('}')
+      if (config.handleErrors) {
+        builder.line('jsonBodyBytes, err := json.Marshal(jsonBodyMap)')
+        builder.line('if err != nil {')
+        builder.indent()
+        builder.line('log.Fatal(err)')
+        builder.outdent()
+        builder.line('}')
+      } else {
+        builder.line('jsonBodyBytes, _ := json.Marshal(jsonBodyMap)')
+      }
+      bodyVar = 'bytes.NewBuffer(jsonBodyBytes)'
+      builder.line()
+    }
+
     if (config.handleErrors) {
-      builder.line(`req, err := http.NewRequest("${http.method.toUpperCase()}", url, nil)`)
+      builder.line(`req, err := http.NewRequest("${http.method.toUpperCase()}", url, ${bodyVar})`)
       builder.line(`if err != nil {`)
       builder.indent()
       builder.line('log.Fatal(err)')
@@ -38,7 +66,7 @@ export default {
       builder.line('}')
       builder.line()
     } else {
-      builder.line(`req, _ := http.NewRequest("${http.method.toUpperCase()}", url, nil)`)
+      builder.line(`req, _ := http.NewRequest("${http.method.toUpperCase()}", url, ${bodyVar})`)
       builder.line()
     }
 
@@ -67,11 +95,6 @@ export default {
         }
       }
 
-      builder.line()
-    }
-
-    if (http.body) {
-      builder.line(`// TODO: Add body handling logic for body type: ${typeof http.body}`)
       builder.line()
     }
 
@@ -107,4 +130,4 @@ export default {
 
     return builder.output()
   }
-} as Generator
+} as Target

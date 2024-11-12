@@ -1,5 +1,5 @@
 import JSAxios from './js.axios'
-import { Config, Http } from '../types'
+import { Config, Http } from '../index'
 import { describe, test, expect } from '@jest/globals'
 
 describe('JSAxios.generate', () => {

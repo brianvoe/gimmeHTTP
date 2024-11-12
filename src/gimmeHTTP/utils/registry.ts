@@ -1,12 +1,17 @@
-import { Generator } from '../types'
+export interface Target {
+  default?: boolean
+  language: string
+  target: string
+  generate: (config: any, http: any) => string
+}
 
-const codes: Generator[] = []
+const codes: Target[] = []
 
-export function Codes(): Generator[] {
+export function Codes(): Target[] {
   return codes
 }
 
-export function CodesByLanguage(language: string): Generator[] {
+export function CodesByLanguage(language: string): Target[] {
   return codes.filter((c) => c.language === language)
 }
 
@@ -23,12 +28,12 @@ export function SetDefault(language: string, target: string): void | Error {
   })
 }
 
-export function Register(gen: Generator | Generator[]): void {
+export function Register(gen: Target | Target[]): void {
   if (!gen) {
-    throw new Error('Generator is required')
+    throw new Error('Target is required')
   }
 
-  // Register multiple generators
+  // Register multiple targets
   if (Array.isArray(gen)) {
     gen.forEach((g) => Register(g))
     return
@@ -39,20 +44,20 @@ export function Register(gen: Generator | Generator[]): void {
     gen.default = false
   }
 
-  // Check if the generator already exists
+  // Check if the target already exists
   const existing = codes.find((c) => c.language === gen.language && c.target === gen.target)
   if (existing) {
     // Replace
     codes.splice(codes.indexOf(existing), 1)
   }
 
-  // If the generator is the only one for this language, set it as default
+  // If the target is the only one for this language, set it as default
   const langGens = codes.filter((c) => c.language === gen.language)
   if (langGens.length === 0) {
     gen.default = true
   }
 
-  // If the generator is marked as default, remove default from other generators of the same language
+  // If the target is marked as default, remove default from other targets of the same language
   if (gen.default) {
     codes.forEach((c) => {
       if (c.language === gen.language) {
@@ -61,7 +66,7 @@ export function Register(gen: Generator | Generator[]): void {
     })
   }
 
-  // Add the new generator
+  // Add the new target
   codes.push(gen)
 }
 

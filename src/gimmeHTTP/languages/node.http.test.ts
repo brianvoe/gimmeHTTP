@@ -1,5 +1,5 @@
 import Node from './node.http'
-import { Config, Http } from '../types'
+import { Config, Http } from '../index'
 import { test, describe, expect } from '@jest/globals'
 
 describe('Node.generate', () => {
