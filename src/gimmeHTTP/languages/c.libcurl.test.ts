@@ -1,5 +1,5 @@
 import CLibCurl from './c.libcurl'
-import { Config, Http } from '../index'
+import { Config, Http } from '../utils/generate'
 import { describe, expect, test } from '@jest/globals'
 
 describe('CLibCurl.generate', () => {

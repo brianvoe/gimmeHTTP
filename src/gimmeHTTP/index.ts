@@ -1,7 +1,11 @@
-import { Target, Codes, CodesByLanguage, SetDefault, Register, ClearRegistry } from './utils/registry'
-import { Method, Request, Config, Http, Generate } from './utils/generate'
+import { Codes, CodesByLanguage, SetDefault, Register, ClearRegistry } from './utils/registry'
+import { Generate } from './utils/generate'
 import { Builder } from './utils/builder'
 import { IsJsonRequest } from './utils/utils'
+
+// Types
+import type { Target } from './utils/registry'
+import type { Method, Request, Config, Http } from './utils/generate'
 
 export {
   // Registry

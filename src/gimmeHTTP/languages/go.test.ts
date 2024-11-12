@@ -1,5 +1,5 @@
 import Go from './go'
-import { Http } from '../index'
+import { Http } from '../utils/generate'
 import { describe, expect, test } from '@jest/globals'
 
 describe('Go.generate', () => {

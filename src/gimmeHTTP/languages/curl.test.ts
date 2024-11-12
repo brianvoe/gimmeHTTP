@@ -1,5 +1,5 @@
 import Curl from './curl'
-import { Http } from '../index'
+import { Http } from '../utils/generate'
 import { describe, expect, test } from '@jest/globals'
 
 describe('Curl.generate', () => {

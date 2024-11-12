@@ -1,5 +1,5 @@
 import PythonRequests from './python.requests'
-import { Config, Http } from '../index'
+import { Config, Http } from '../utils/generate'
 import { describe, test, expect } from '@jest/globals'
 
 describe('PythonRequests.generate', () => {

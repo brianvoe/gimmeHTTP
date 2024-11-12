@@ -1,5 +1,5 @@
 import RubyFaraday from './ruby.faraday'
-import { Config, Http } from '../index'
+import { Config, Http } from '../utils/generate'
 import { describe, expect, test } from '@jest/globals'
 
 describe('RubyFaraday.generate', () => {

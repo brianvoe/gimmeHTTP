@@ -1,4 +1,7 @@
-import { Target, Config, Http, Builder, IsJsonRequest } from '../index'
+import { Builder } from '../utils/builder'
+import { Config, Http } from '../utils/generate'
+import { Target } from '../utils/registry'
+import { IsJsonRequest } from '../utils/utils'
 
 export default {
   default: true,

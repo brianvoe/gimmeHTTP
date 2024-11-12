@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, test } from '@jest/globals'
 import { Builder } from './builder'
+import { beforeEach, describe, expect, test } from '@jest/globals'
 
 describe('Builder', () => {
   let builder: Builder

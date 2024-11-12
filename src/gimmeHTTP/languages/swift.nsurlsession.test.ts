@@ -1,5 +1,5 @@
 import SwiftNSURLSession from './swift.nsurlsession'
-import { Config, Http } from '../index'
+import { Config, Http } from '../utils/generate'
 import { describe, test, expect } from '@jest/globals'
 
 describe('SwiftNSURLSession.generate', () => {

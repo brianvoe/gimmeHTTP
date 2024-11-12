@@ -1,4 +1,6 @@
-import { Target, Config, Http, Builder } from '../index'
+import { Builder } from '../utils/builder'
+import { Config, Http } from '../utils/generate'
+import { Target } from '../utils/registry'
 
 export default {
   default: true,

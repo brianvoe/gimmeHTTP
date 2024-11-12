@@ -1,5 +1,6 @@
 import { Builder } from '../utils/builder'
-import { Config, Http, Target } from '../index'
+import { Config, Http } from '../utils/generate'
+import { Target } from '../utils/registry'
 
 export default {
   language: 'javascript',
