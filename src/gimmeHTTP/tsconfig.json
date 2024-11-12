@@ -1,13 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "strict": true /* Enable all strict type-checking options. */,
-    "declaration": true /* Generates corresponding '.d.ts' file. */,
-    "outDir": "../../dist", // Output to dist folder
-    "removeComments": true /* Do not emit comments to output. */,
-    "importHelpers": true /* Import emit helpers from 'tslib'. */
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "../../dist" // Output to dist folder
   },
   "include": ["**/*.ts"],
   "exclude": ["**/*.test.ts"]

@@ -1,4 +1,4 @@
-import AllCodes from '../allcodes'
+import AllCodes from '../all'
 import Curl from '../languages/curl'
 import { ClearRegistry, Register } from './registry'
 import { Generate, Request } from './generate'

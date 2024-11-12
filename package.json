@@ -17,7 +17,24 @@
     "type": "git",
     "url": "github.com/brianvoe/gimmehttp"
   },
-  "main": "./src/gimmeHTTP/index.ts",
+  "main": "dist/gimmehttp.umd.js",
+  "browser": "dist/gimmehttp.umd.js",
+  "module": "dist/gimmehttp.es.js",
+  "unpkg": "dist/gimmehttp.umd.min.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "./gimmehttp": {
+      "import": "./dist/gimmehttp.es.js",
+      "require": "./dist/gimmehttp.cjs.js"
+    },
+    "./anotherlib": {
+      "import": "./dist/anotherlib.es.js",
+      "require": "./dist/anotherlib.cjs.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite --port=1111 --config vite.config.docs.mts",
     "format": "prettier --write --cache --parser typescript \"src/**/*.ts\"",

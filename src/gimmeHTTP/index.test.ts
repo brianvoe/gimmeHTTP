@@ -1,4 +1,4 @@
-import AllCodes from './allcodes'
+import AllCodes from './all'
 import { Register, Generate, ClearRegistry, Request, Config, Http, Builder } from './index'
 import { beforeEach, describe, expect, test } from '@jest/globals'
 
