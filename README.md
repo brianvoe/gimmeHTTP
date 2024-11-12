@@ -122,7 +122,7 @@ interface Request {
 If you want to register a custom language and/or target, you can do so using the `Register` function:
 
 ```typescript
-interface Generator {
+interface Target {
   default?: boolean
   language: string
   target: string
