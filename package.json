@@ -1,6 +1,6 @@
 {
   "name": "gimmehttp",
-  "author": "Brian Voelker <brian@webiswhatido.com> (http://webiswhatido.com)",
+  "author": "Brian Voelker <brian@webiswhatido.com> (https://webiswhatido.com)",
   "version": "0.0.1",
   "description": "HTTP request code generator",
   "license": "MIT",
@@ -20,16 +20,12 @@
   "main": "dist/gimmehttp.umd.js",
   "browser": "dist/gimmehttp.umd.js",
   "module": "dist/gimmehttp.es.js",
-  "unpkg": "dist/gimmehttp.umd.min.js",
-  "types": "dist/index.d.ts",
+  "unpkg": "dist/gimmehttp.umd.js",
+  "types": "dist/gimmehttp.d.ts",
   "exports": {
-    "./gimmehttp": {
+    ".": {
       "import": "./dist/gimmehttp.es.js",
       "require": "./dist/gimmehttp.cjs.js"
-    },
-    "./anotherlib": {
-      "import": "./dist/anotherlib.es.js",
-      "require": "./dist/anotherlib.cjs.js"
     }
   },
   "files": [
@@ -49,15 +45,15 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/prismjs": "^1.26.5",
-    "@vitejs/plugin-vue": "^5.1.4",
+    "@vitejs/plugin-vue": "^5.1.5",
     "jest": "^29.7.0",
     "prismjs": "^1.29.0",
     "rimraf": "^6.0.1",
-    "sass": "^1.80.6",
+    "sass": "^1.80.7",
     "ts-jest": "^29.2.5",
     "tslib": "^2.8.1",
     "typescript": "^5.6.3",
-    "vite": "^5.4.9",
+    "vite": "^5.4.11",
     "vite-plugin-dts": "^4.3.0",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
