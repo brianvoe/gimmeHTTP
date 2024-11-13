@@ -5,7 +5,7 @@
   "description": "HTTP request code generator",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/brianvoe/slim-select/issues"
+    "url": "https://github.com/brianvoe/gimmehttp/issues"
   },
   "keywords": [
     "http",

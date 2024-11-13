@@ -15,10 +15,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "importHelpers": true,
-    "lib": ["esnext", "dom"],
-    "paths": {
-      "slim-select": ["src/slim-select"]
-    }
+    "lib": ["esnext", "dom"]
   },
-  "include": ["dist/", "src/**/*.ts", "src/**/*.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }
