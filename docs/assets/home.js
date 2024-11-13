@@ -1,0 +1,1 @@
+import{d as o,_ as s,c as t,a,t as n,o as r}from"./index.js";const c=o({name:"Home",data(){return{msg:"Welcome to Your Vue.js App"}}}),m={class:"home"};function p(e,d,_,i,l,u){return r(),t("div",m,[a("h1",null,n(e.msg),1)])}const h=s(c,[["render",p]]);export{h as default};
