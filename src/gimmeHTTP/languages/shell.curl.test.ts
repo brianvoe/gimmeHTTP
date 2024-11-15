@@ -1,4 +1,4 @@
-import Curl from './curl'
+import ShellCurl from './shell.curl'
 import { Http } from '../utils/generate'
 import { describe, expect, test } from '@jest/globals'
 
@@ -9,7 +9,7 @@ describe('Curl.generate', () => {
       method: 'GET',
       url: 'https://gofakeit.com'
     }
-    const result = Curl.generate(config, http)
+    const result = ShellCurl.generate(config, http)
     expect(result).toBe(`curl -X GET "https://gofakeit.com"`)
   })
 
@@ -23,7 +23,7 @@ describe('Curl.generate', () => {
         Authorization: 'Bearer token'
       }
     }
-    const result = Curl.generate(config, http)
+    const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
 curl -X POST "https://gofakeit.com"
@@ -46,7 +46,7 @@ curl -X POST "https://gofakeit.com"
         key2: 'value2'
       }
     }
-    const result = Curl.generate(config, http)
+    const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
 curl -X POST "https://gofakeit.com"
@@ -67,7 +67,7 @@ curl -X POST "https://gofakeit.com"
         bar: 'baz'
       }
     }
-    const result = Curl.generate(config, http)
+    const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
 curl -X POST "http://gofakeit.com"
@@ -93,7 +93,7 @@ curl -X POST "http://gofakeit.com"
         foo: 'bar'
       }
     }
-    const result = Curl.generate(config, http)
+    const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
 curl -X POST "http://gofakeit.com?foo=bar&foo=baz&baz=abc&key=value"
@@ -116,7 +116,7 @@ curl -X POST "http://gofakeit.com?foo=bar&foo=baz&baz=abc&key=value"
         'x-foo': 'Bar'
       }
     }
-    const result = Curl.generate(config, http)
+    const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
 curl -X GET "http://gofakeit.com"

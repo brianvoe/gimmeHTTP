@@ -1,27 +1,25 @@
-import AllCodes from '../all'
-import Curl from '../languages/curl'
-import { ClearRegistry, Register } from './registry'
-import { Generate, Request } from './generate'
-import { beforeEach, describe, expect, test } from '@jest/globals'
+import { Register } from './registry'
+import { Generate, Settings } from './generate'
+import { beforeAll, describe, expect, test } from '@jest/globals'
+
+// Target
+import ShellCurl from '../languages/shell.curl'
 
 describe('Generate', () => {
-  beforeEach(() => {
-    ClearRegistry()
+  beforeAll(() => {
+    Register(ShellCurl)
   })
 
   test('should run simple example', () => {
-    // Add all the codes
-    Register(AllCodes)
-
     // Generate a request
     const req = {
-      language: 'curl',
-      target: 'native',
+      language: 'shell',
+      target: 'curl',
       http: {
         method: 'GET',
         url: 'https://gofakeit.com'
       }
-    } as Request
+    } as Settings
 
     // Generate the code
     const res = Generate(req)
@@ -30,13 +28,10 @@ describe('Generate', () => {
   })
 
   test('should run simple post example', () => {
-    // Add all the codes
-    Register(AllCodes)
-
     // Generate a request
     const req = {
-      language: 'curl',
-      target: 'native',
+      language: 'shell',
+      target: 'curl',
       http: {
         method: 'POST',
         url: 'https://gofakeit.com',
@@ -49,7 +44,7 @@ describe('Generate', () => {
           key2: 'value2'
         }
       }
-    } as Request
+    } as Settings
 
     // Generate the code
     const res = Generate(req)
@@ -62,26 +57,6 @@ curl -X POST "https://gofakeit.com"
   -d '{"key1":"value1","key2":"value2"}'
     `.trim()
     )
-  })
-
-  test('shold run a single code import', () => {
-    // Add a single code
-    Register(Curl)
-
-    // Generate a request
-    const req = {
-      language: 'curl',
-      target: 'native',
-      http: {
-        method: 'GET',
-        url: 'https://gofakeit.com'
-      }
-    } as Request
-
-    // Generate the code
-    const res = Generate(req)
-
-    expect(res).toEqual(`curl -X GET "https://gofakeit.com"`)
   })
 
   test('should run a simple custom registry and output', () => {
@@ -100,7 +75,7 @@ curl -X POST "https://gofakeit.com"
         method: 'GET',
         url: 'https://gofakeit.com'
       }
-    } as Request
+    } as Settings
 
     // Generate the code
     const res = Generate(req)

@@ -2,7 +2,7 @@ import { CodesByLanguage } from './registry'
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
-export interface Request {
+export interface Settings {
   language: string
   target: string
 
@@ -31,7 +31,7 @@ export interface Http {
   body?: any
 }
 
-export function Generate(req: Request): string {
+export function Generate(req: Settings): string {
   let err = validate(req)
   if (err) {
     return err.message
@@ -64,7 +64,7 @@ export function Generate(req: Request): string {
   return code.generate(req.config, req.http)
 }
 
-function validate(req: Request): Error | undefined {
+function validate(req: Settings): Error | undefined {
   if (!req) {
     return new Error('Request is required')
   }

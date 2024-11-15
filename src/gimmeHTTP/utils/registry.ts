@@ -28,9 +28,9 @@ export function SetDefault(language: string, target: string): void | Error {
   })
 }
 
-export function Register(gen: Target | Target[]): void {
+export function Register(gen: Target | Target[]): void | Error {
   if (!gen) {
-    throw new Error('Target is required')
+    return new Error('Target is required')
   }
 
   // Register multiple targets

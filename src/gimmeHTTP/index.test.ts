@@ -1,25 +1,22 @@
-import AllCodes from './all'
-import { Register, Generate, ClearRegistry, Request, Config, Http, Builder } from './index'
-import { beforeEach, describe, expect, test } from '@jest/globals'
+import { Register, Generate, Settings, Config, Http, Builder } from './index'
+import { beforeAll, describe, expect, test } from '@jest/globals'
+import ShellCurl from './languages/shell.curl'
 
 describe('Index', () => {
-  beforeEach(() => {
-    ClearRegistry()
+  beforeAll(() => {
+    Register(ShellCurl)
   })
 
   test('should run simple example', () => {
-    // Add all the codes
-    Register(AllCodes)
-
     // Generate a request
     const req = {
-      language: 'curl',
-      target: 'native',
+      language: 'shell',
+      target: 'curl',
       http: {
         method: 'GET',
         url: 'https://gofakeit.com'
       }
-    } as Request
+    } as Settings
 
     // Generate the code
     const res = Generate(req)
@@ -28,13 +25,10 @@ describe('Index', () => {
   })
 
   test('should run simple post example', () => {
-    // Add all the codes
-    Register(AllCodes)
-
     // Generate a request
     const req = {
-      language: 'curl',
-      target: 'native',
+      language: 'shell',
+      target: 'curl',
       http: {
         method: 'POST',
         url: 'https://gofakeit.com',
@@ -46,7 +40,7 @@ describe('Index', () => {
           key2: 'value2'
         }
       }
-    } as Request
+    } as Settings
 
     // Generate the code
     const res = Generate(req)
@@ -78,7 +72,7 @@ curl -X POST "https://gofakeit.com"
         method: 'GET',
         url: 'https://gofakeit.com'
       }
-    } as Request
+    } as Settings
 
     // Generate the code
     const res = Generate(req)
@@ -109,7 +103,7 @@ curl -X POST "https://gofakeit.com"
         method: 'GET',
         url: 'https://gofakeit.com'
       }
-    } as Request
+    } as Settings
 
     // Generate the code
     const res = Generate(req)

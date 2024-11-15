@@ -27,7 +27,7 @@ export declare interface Config {
     handleErrors?: boolean;
 }
 
-export declare function Generate(req: Request_2): string;
+export declare function Generate(req: Settings): string;
 
 export declare interface Http {
     method: Method;
@@ -49,15 +49,14 @@ export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export declare function Register(gen: Target | Target[]): void;
 
-declare interface Request_2 {
+export declare function SetDefault(language: string, target: string): void | Error;
+
+export declare interface Settings {
     language: string;
     target: string;
     config?: Config;
     http: Http;
 }
-export { Request_2 as Request }
-
-export declare function SetDefault(language: string, target: string): void | Error;
 
 export declare interface Target {
     default?: boolean;

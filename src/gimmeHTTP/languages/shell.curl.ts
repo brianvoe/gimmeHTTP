@@ -4,8 +4,8 @@ import { Target } from '../utils/registry'
 
 export default {
   default: true,
-  language: 'curl',
-  target: 'native',
+  language: 'shell',
+  target: 'curl',
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',
