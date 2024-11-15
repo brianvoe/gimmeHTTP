@@ -47,7 +47,7 @@ export declare function IsJsonRequest(method: string, headers?: {
 
 export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-export declare function Register(gen: Target | Target[]): void;
+export declare function Register(gen: Target | Target[]): void | Error;
 
 export declare function SetDefault(language: string, target: string): void | Error;
 
