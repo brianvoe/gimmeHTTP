@@ -8,7 +8,7 @@ export default defineConfig({
       entry: path.resolve(__dirname, 'src/gimmehttp/index.ts'),
       name: 'gimmeHTTP',
       formats: ['es', 'cjs', 'umd'], // Specify desired formats
-      fileName: (format, entryName) => `${entryName}.${format}.js`
+      fileName: (format, entryName) => `gimmehttp.${format}.js`
     },
     outDir: path.resolve(__dirname, 'dist')
   },
