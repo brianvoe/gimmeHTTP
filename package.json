@@ -1,7 +1,7 @@
 {
   "name": "gimmehttp",
   "author": "Brian Voelker <brian@webiswhatido.com> (https://webiswhatido.com)",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "HTTP request code generator",
   "license": "MIT",
   "bugs": {
