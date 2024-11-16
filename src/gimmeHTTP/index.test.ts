@@ -1,6 +1,6 @@
 import { Register, Generate, Settings, Config, Http, Builder } from './index'
 import { beforeAll, describe, expect, test } from '@jest/globals'
-import ShellCurl from './languages/shell.curl'
+import ShellCurl from './targets/shell.curl'
 
 describe('Index', () => {
   beforeAll(() => {
@@ -11,7 +11,7 @@ describe('Index', () => {
     // Generate a request
     const req = {
       language: 'shell',
-      target: 'curl',
+      client: 'curl',
       http: {
         method: 'GET',
         url: 'https://gofakeit.com'
@@ -28,7 +28,7 @@ describe('Index', () => {
     // Generate a request
     const req = {
       language: 'shell',
-      target: 'curl',
+      client: 'curl',
       http: {
         method: 'POST',
         url: 'https://gofakeit.com',
@@ -58,7 +58,7 @@ curl -X POST "https://gofakeit.com"
     // Add all the codes
     Register({
       language: 'custom',
-      target: 'native',
+      client: 'native',
       generate(config: Config, http: Http): string {
         return 'url: ' + http.url + ' method: ' + http.method
       }
@@ -67,7 +67,7 @@ curl -X POST "https://gofakeit.com"
     // Generate a request
     const req = {
       language: 'custom',
-      target: 'native',
+      client: 'native',
       http: {
         method: 'GET',
         url: 'https://gofakeit.com'
@@ -80,11 +80,11 @@ curl -X POST "https://gofakeit.com"
     expect(res).toEqual('url: https://gofakeit.com method: GET')
   })
 
-  test('should run custom language target with advanced builder usage', () => {
+  test('should run custom language client with advanced builder usage', () => {
     // Add all the codes
     Register({
       language: 'custom',
-      target: 'native',
+      client: 'native',
       generate(config: Config, http: Http): string {
         const builder = new Builder(config)
 
@@ -98,7 +98,7 @@ curl -X POST "https://gofakeit.com"
     // Generate a request
     const req = {
       language: 'custom',
-      target: 'native',
+      client: 'native',
       http: {
         method: 'GET',
         url: 'https://gofakeit.com'
