@@ -6,7 +6,7 @@ import { IsJsonRequest } from '../utils/utils'
 export default {
   default: true,
   language: 'go',
-  target: 'http',
+  client: 'http',
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',

@@ -4,7 +4,7 @@ import { Target } from '../utils/registry'
 
 export default {
   language: 'javascript',
-  target: 'jquery',
+  client: 'jquery',
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',

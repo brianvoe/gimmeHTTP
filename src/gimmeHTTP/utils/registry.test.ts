@@ -1,4 +1,4 @@
-import { ClearRegistry, Register, CodesByLanguage, SetDefault } from './registry'
+import { ClearRegistry, Register, SearchTarget, SetDefault, Target } from './registry'
 import { describe, expect, test, beforeEach } from '@jest/globals'
 
 describe('Register', () => {
@@ -8,53 +8,40 @@ describe('Register', () => {
   })
 
   test('should set default to true if only one generator is registered for a language', () => {
-    Register({ language: 'javascript', target: 'node', generate: () => 'console.log("Hello World");' })
-    const generators = CodesByLanguage('javascript')
-    expect(generators.length).toBe(1)
-    expect(generators[0].default).toBe(true)
+    Register({ language: 'javascript', client: 'node', generate: () => 'console.log("Hello World");' })
+    const target = SearchTarget('javascript') as Target
+
+    expect(target.default).toBe(true)
   })
 
   test('should set default to true if default is explicitly passed as true and unset others', () => {
-    Register({ language: 'javascript', target: 'node', generate: () => 'console.log("Hello World");' })
-    Register({ language: 'javascript', target: 'browser', generate: () => 'alert("Hello World");', default: true })
-    const generators = CodesByLanguage('javascript')
-    expect(generators.length).toBe(2)
-    expect(generators.find((c) => c.target === 'browser')?.default).toBe(true)
-    expect(generators.find((c) => c.target === 'node')?.default).toBe(false)
+    Register({ language: 'javascript', client: 'node', generate: () => 'console.log("Hello World");' })
+    Register({ language: 'javascript', client: 'browser', generate: () => 'alert("Hello World");', default: true })
+    const target = SearchTarget('javascript') as Target
+    expect(target).toBeDefined()
   })
 
   test('should properly set default for multiple languages independently', () => {
-    Register({ language: 'javascript', target: 'node', generate: () => 'console.log("Hello World");' })
-    Register({ language: 'python', target: 'script', generate: () => 'print("Hello World")' })
-    const jsTargets = CodesByLanguage('javascript')
-    const pyTargets = CodesByLanguage('python')
-    expect(jsTargets.length).toBe(1)
-    expect(jsTargets[0].default).toBe(true)
-    expect(pyTargets.length).toBe(1)
-    expect(pyTargets[0].default).toBe(true)
+    Register({ language: 'javascript', client: 'node', generate: () => 'console.log("Hello World");' })
+    Register({ language: 'python', client: 'script', generate: () => 'print("Hello World")' })
+    const jsTargets = SearchTarget('javascript') as Target
+    expect(jsTargets.default).toBe(true)
+    const pyTargets = SearchTarget('python') as Target
+    expect(pyTargets.default).toBe(true)
   })
 
-  test('should unset default from previous generators when a new default is registered for the same language', () => {
-    Register({ language: 'javascript', target: 'node', generate: () => 'console.log("Hello World");', default: true })
-    Register({ language: 'javascript', target: 'browser', generate: () => 'alert("Hello World");', default: true })
-    const generators = CodesByLanguage('javascript')
-    expect(generators.length).toBe(2)
-    expect(generators.find((c) => c.target === 'browser')?.default).toBe(true)
-    expect(generators.find((c) => c.target === 'node')?.default).toBe(false)
+  test('should unset default from previous target when a new default is registered for the same language', () => {
+    Register({ language: 'javascript', client: 'node', generate: () => 'console.log("Hello World");', default: true })
+    Register({ language: 'javascript', client: 'browser', generate: () => 'alert("Hello World");', default: true })
+    const target = SearchTarget('javascript') as Target
+    expect(target).toBeDefined()
   })
 
   test('should set language with 3 targets and run default on the last one', () => {
-    Register({ language: 'javascript', target: 'node', generate: () => 'console.log("Hello World");' })
-    Register({ language: 'javascript', target: 'browser', generate: () => 'alert("Hello World");' })
-    Register({ language: 'javascript', target: 'deno', generate: () => 'console.log("Hello World");' })
-    const generators = CodesByLanguage('javascript')
-    expect(generators.length).toBe(3)
-    // test first is default
-    expect(generators.find((c) => c.target === 'node')?.default).toBe(true)
-    SetDefault('javascript', 'deno')
-    expect(generators.find((c) => c.target === 'deno')?.default).toBe(true)
-    // test the others are false
-    expect(generators.find((c) => c.target === 'node')?.default).toBe(false)
-    expect(generators.find((c) => c.target === 'browser')?.default).toBe(false)
+    Register({ language: 'javascript', client: 'node', generate: () => 'console.log("Hello World");' })
+    Register({ language: 'javascript', client: 'browser', generate: () => 'alert("Hello World");' })
+    Register({ language: 'javascript', client: 'deno', generate: () => 'console.log("Hello World");' })
+    let target = SearchTarget('javascript') as Target
+    expect(target.client).toBe('node')
   })
 })

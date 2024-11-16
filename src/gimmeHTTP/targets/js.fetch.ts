@@ -5,7 +5,7 @@ import { Target } from '../utils/registry'
 export default {
   default: true,
   language: 'javascript',
-  target: 'fetch',
+  client: 'fetch',
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',

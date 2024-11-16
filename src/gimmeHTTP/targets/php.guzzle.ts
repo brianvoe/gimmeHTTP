@@ -4,7 +4,7 @@ import { Target } from '../utils/registry'
 
 export default {
   language: 'php',
-  target: 'guzzle',
+  client: 'guzzle',
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',

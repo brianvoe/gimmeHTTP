@@ -4,7 +4,7 @@ import { Target } from '../utils/registry'
 
 export default {
   language: 'ruby',
-  target: 'faraday',
+  client: 'faraday',
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',

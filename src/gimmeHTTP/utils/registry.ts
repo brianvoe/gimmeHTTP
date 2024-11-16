@@ -1,7 +1,7 @@
 export interface Target {
   default?: boolean
   language: string
-  target: string
+  client: string
   generate: (config: any, http: any) => string
 }
 
@@ -11,63 +11,82 @@ export function Codes(): Target[] {
   return codes
 }
 
-export function CodesByLanguage(language: string): Target[] {
-  return codes.filter((c) => c.language === language)
-}
-
-export function SetDefault(language: string, target: string): void | Error {
-  const code = codes.find((c) => c.language === language && c.target === target)
-  if (!code) {
-    return new Error(`Target '${target}' not found`)
+export function SearchTarget(language: string, client?: string): Target | Error {
+  if (language === '' || language === undefined) {
+    return new Error('Language is required')
   }
 
-  codes.forEach((c) => {
-    if (c.language === language) {
-      c.default = c === code
+  // Loop through and get all targets for the language
+  const languages = codes.filter((c) => c.language.toLowerCase() === language.toLowerCase())
+
+  // If no client, loop through languages and return the default
+  if (!client) {
+    // Stop if you find one
+    const defaultLanguage = languages.find((c) => c.default)
+    if (defaultLanguage) {
+      return defaultLanguage
     }
-  })
+
+    // If no default, return the first one
+    return languages[0]
+  }
+
+  // If client, return the client
+  const target = languages.find((c) => c.client.toLowerCase() === client.toLowerCase())
+  if (!target) {
+    return new Error(`Client '${client}' not found for language '${language}'`)
+  }
+
+  return target
 }
 
-export function Register(gen: Target | Target[]): void | Error {
-  if (!gen) {
+export function SetDefault(language: string, client: string): void | Error {
+  const targetResult = SearchTarget(language, client)
+  if (targetResult instanceof Error) {
+    return targetResult
+  }
+
+  // Set the target as default
+  targetResult.default = true
+}
+
+export function Register(target: Target | Target[]): void | Error {
+  if (!target) {
     return new Error('Target is required')
   }
 
   // Register multiple targets
-  if (Array.isArray(gen)) {
-    gen.forEach((g) => Register(g))
+  if (Array.isArray(target)) {
+    target.forEach((g) => Register(g))
     return
   }
 
   // Set default to false if undefined
-  if (gen.default === undefined) {
-    gen.default = false
+  if (target.default === undefined) {
+    target.default = false
   }
 
   // Check if the target already exists
-  const existing = codes.find((c) => c.language === gen.language && c.target === gen.target)
-  if (existing) {
-    // Replace
-    codes.splice(codes.indexOf(existing), 1)
+  const targetResult = SearchTarget(target.language, target.client)
+  if (targetResult instanceof Error) {
+    codes.push(target)
+
+    // If its the only target, set it as default
+    if (codes.filter((c) => c.language === target.language).length === 1) {
+      target.default = true
+    }
+
+    return
   }
 
-  // If the target is the only one for this language, set it as default
-  const langGens = codes.filter((c) => c.language === gen.language)
-  if (langGens.length === 0) {
-    gen.default = true
-  }
+  // If it exists, replace the whole target
+  const index = codes.indexOf(targetResult)
+  codes[index] = target
 
-  // If the target is marked as default, remove default from other targets of the same language
-  if (gen.default) {
-    codes.forEach((c) => {
-      if (c.language === gen.language) {
-        c.default = false
-      }
-    })
+  // If its the only target, set it as default
+  if (codes.filter((c) => c.language === target.language).length === 1) {
+    target.default = true
   }
-
-  // Add the new target
-  codes.push(gen)
 }
 
 export function ClearRegistry(): void {

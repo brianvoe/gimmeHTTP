@@ -1,10 +1,10 @@
-import { CodesByLanguage } from './registry'
+import { SearchTarget } from './registry'
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export interface Settings {
   language: string
-  target: string
+  client: string
 
   config?: Config
 
@@ -39,29 +39,12 @@ export function Generate(req: Settings): string {
 
   req.config = setConfig(req.config)
 
-  const codes = CodesByLanguage(req.language.toLowerCase())
-  if (codes.length === 0) {
-    return `Language not found`
+  const target = SearchTarget(req.language, req.client)
+  if (target instanceof Error) {
+    return target.message
   }
 
-  // Find the target, if not provided use the default
-  const target = req.target
-    ? req.target.toLowerCase()
-    : codes.find((c) => c.language.toLowerCase() === req.language.toLowerCase() && c.default)?.target.toLowerCase() ||
-      ''
-  if (!target) {
-    return `Target not found`
-  }
-
-  // Find the code generator
-  const code = codes.find((c) => {
-    return c.language.toLowerCase() === req.language.toLowerCase() && c.target.toLowerCase() === target
-  })
-  if (!code) {
-    return `Code not found for language and target`
-  }
-
-  return code.generate(req.config, req.http)
+  return target.generate(req.config, req.http)
 }
 
 function validate(req: Settings): Error | undefined {
@@ -69,13 +52,9 @@ function validate(req: Settings): Error | undefined {
     return new Error('Request is required')
   }
 
+  // Language
   if (!req.language) {
     return new Error('language is required')
-  }
-
-  const codes = CodesByLanguage(req.language)
-  if (codes.length === 0) {
-    return new Error(`Language '${req.language}' not found`)
   }
 
   if (!req.http) {

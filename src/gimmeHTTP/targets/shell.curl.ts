@@ -5,7 +5,7 @@ import { Target } from '../utils/registry'
 export default {
   default: true,
   language: 'shell',
-  target: 'curl',
+  client: 'curl',
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',

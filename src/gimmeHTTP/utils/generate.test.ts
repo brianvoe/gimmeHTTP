@@ -3,7 +3,7 @@ import { Generate, Settings } from './generate'
 import { beforeAll, describe, expect, test } from '@jest/globals'
 
 // Target
-import ShellCurl from '../languages/shell.curl'
+import ShellCurl from '../targets/shell.curl'
 
 describe('Generate', () => {
   beforeAll(() => {
@@ -14,7 +14,7 @@ describe('Generate', () => {
     // Generate a request
     const req = {
       language: 'shell',
-      target: 'curl',
+      client: 'curl',
       http: {
         method: 'GET',
         url: 'https://gofakeit.com'
@@ -31,7 +31,7 @@ describe('Generate', () => {
     // Generate a request
     const req = {
       language: 'shell',
-      target: 'curl',
+      client: 'curl',
       http: {
         method: 'POST',
         url: 'https://gofakeit.com',
@@ -63,14 +63,14 @@ curl -X POST "https://gofakeit.com"
     // Add a custom code
     Register({
       language: 'custom',
-      target: 'native',
+      client: 'native',
       generate: () => 'custom code'
     })
 
     // Generate a request
     const req = {
       language: 'custom',
-      target: 'native',
+      client: 'native',
       http: {
         method: 'GET',
         url: 'https://gofakeit.com'
