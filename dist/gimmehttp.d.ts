@@ -19,8 +19,6 @@ export declare function ClearRegistry(): void;
 
 export declare function Codes(): Target[];
 
-export declare function CodesByLanguage(language: string): Target[];
-
 export declare interface Config {
     indent?: string;
     join?: string;
@@ -47,13 +45,15 @@ export declare function IsJsonRequest(method: string, headers?: {
 
 export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-export declare function Register(gen: Target | Target[]): void | Error;
+export declare function Register(target: Target | Target[]): void | Error;
 
-export declare function SetDefault(language: string, target: string): void | Error;
+export declare function SearchTarget(language: string, client?: string): Target | Error;
+
+export declare function SetDefault(language: string, client: string): void | Error;
 
 export declare interface Settings {
     language: string;
-    target: string;
+    client: string;
     config?: Config;
     http: Http;
 }
@@ -61,7 +61,7 @@ export declare interface Settings {
 export declare interface Target {
     default?: boolean;
     language: string;
-    target: string;
+    client: string;
     generate: (config: any, http: any) => string;
 }
 
