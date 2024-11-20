@@ -31,24 +31,26 @@ npm install gimmehttp
 Here is a quick example of generating a simple GET request in Go:
 
 ```javascript
-import { Generate, Register, AllCodes } from 'gimmehttp';
+import { Generate } from 'gimmehttp'
 
-// Register all codes
-Register(AllCodes);
-
-// Create request
-const request = {
+// Create settings
+const settings = {
   language: 'go',
   target: 'native',
   http: {
     method: 'GET',
     url: 'https://gofakeit.com'
   }
-};
+}
 
-// Generate output with request
-const output = Generate(request);
-console.log(output);
+// Generate code
+const { code, error } = Generate(settings)
+if (error) {
+  console.error(error)
+}
+
+// Output generated code
+console.log(code)
 ```
 
 Output:
@@ -81,13 +83,13 @@ func main() {
 The core functionality of GimmeHttp is its `Generate` function. This function takes in a request object and returns the generated code snippet as a string. The request object should have the following structure:
 
 ```typescript
-Generate(request: Request): string
+Generate(settings: Settings): Outcome
 ```
 
-### Request Object
+### Settings Object
 
 ```typescript
-interface Request {
+interface Settigns {
   language: string // go, javascript, python, etc.
   target: string // native, axios, requests, etc.
 
@@ -117,44 +119,79 @@ interface Request {
 }
 ```
 
+### Outcome Object
+
+The `Generate` function returns an `Outcome` object. If the object
+contains an `error` property, an error occurred during code generation.
+
+```typescript
+import { Generate } from 'gimmehttp'
+
+const { code, error, language, client } = Generate(request)
+if (error) {
+  console.error(error)
+}
+
+// Output generated code
+console.log(code)
+console.log(language)
+console.log(client)
+```
+
+```typescript
+interface Outcome {
+  error?: string // An error message if an error occurred
+  
+  // or //
+
+  language?: string // Language used
+  client?: string // Client used, set to default if not specified
+  code?: string // Generated code
+}
+```
+
 ### Registry Custom Example
 
-If you want to register a custom language and/or target, you can do so using the `Register` function:
+If you want to register a custom language/client, you can do so using the `Register` function:
 
 ```typescript
 interface Target {
   default?: boolean
   language: string
   target: string
-  generate: (config: any, http: any) => string
+  generate: (config: Config, http: Http) => string
 }
 ```
 
 ```typescript
-import { Generate, Register, Config, Http } from 'gimmehttp';
+import { Register, Generate } from 'gimmehttp'
+import type { Config, Http } from 'gimmehttp'
 
 const myCustomTarget = {
   language: 'html',
   target: 'href',
   generate(config: Config, http: Http): string {
     // Custom code generation logic
-    return `<a href="${http.url}">${http.method}</a>`;
+    return `<a href="${http.url}">${http.method}</a>`
   }
-};
+}
 
-Register(myCustomTarget);
+Register(myCustomTarget)
 
-const request = {
+const settings = {
   language: 'html',
   target: 'href',
   http: {
     method: 'GET',
     url: 'https://gofakeit.com'
   }
-};
+}
 
-const output = Generate(request);
-console.log(output);
+const { code, error } = Generate(settings)
+if (error) {
+  console.error(error)
+}
+console.log(code)
 ```
 
 Output:
@@ -168,7 +205,7 @@ Output:
 ### POST Request Example
 
 ```typescript
-const request = {
+const settings = {
   language: 'javascript',
   target: 'fetch',
   http: {
@@ -181,10 +218,13 @@ const request = {
       key1: 'value1'
     }
   }
-};
+}
 
-const output = Generate(request);
-console.log(output);
+const { code, error } = Generate(settings)
+if (error) {
+  console.error(error)
+}
+console.log(output)
 ```
 
 Output:
