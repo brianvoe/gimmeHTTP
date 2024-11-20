@@ -41,10 +41,17 @@ function J() {
 function x(i) {
   let n = h(i);
   if (n)
-    return n.message;
-  i.config = p(i.config);
+    return { error: n.message };
+  i.config = g(i.config);
   const e = $(i.language, i.client);
-  return e instanceof Error ? e.message : e.generate(i.config, i.http);
+  if (e instanceof Error)
+    return { error: e.message };
+  const o = e.generate(i.config, i.http);
+  return {
+    language: e.language,
+    client: e.client,
+    code: o
+  };
 }
 function h(i) {
   if (!i)
@@ -58,7 +65,7 @@ function h(i) {
   if (!i.http.url)
     return new Error("http.url is required");
 }
-function p(i) {
+function g(i) {
   return i = i || {}, i.indent || (i.indent = "  "), i.join || (i.join = `
 `), i.handleErrors === void 0 && (i.handleErrors = !1), i;
 }
@@ -80,12 +87,12 @@ class d {
     return this.code.map(({ depth: n, line: e }) => `${this.indentChar.repeat(n)}${e}`).join(this.lineJoin);
   }
 }
-function b(i, n) {
+function p(i, n) {
   return i.toUpperCase() === "POST" && n !== void 0 && Object.keys(n).some(
     (e) => e.toLowerCase() === "content-type" && n[e].toLowerCase() === "application/json"
   );
 }
-const g = {
+const b = {
   default: !0,
   language: "c",
   client: "libcurl",
@@ -161,7 +168,7 @@ const g = {
       indent: i.indent || "  ",
       join: i.join || `
 `
-    }), o = b(n.method, n.headers) && n.body;
+    }), o = p(n.method, n.headers) && n.body;
     e.line("package main"), e.line(), e.line("import ("), e.indent(), e.line('"fmt"'), e.line('"net/http"'), e.line('"io"'), o && (e.line('"bytes"'), e.line('"encoding/json"')), i.handleErrors && e.line('"log"'), e.outdent(), e.line(")"), e.line(), e.line("func main() {"), e.indent(), e.line(`url := "${n.url}"`), e.line();
     let r = "nil";
     if (o) {
@@ -502,7 +509,7 @@ const g = {
     ), e.line("request.httpBody = body"), e.line()), e.line("let task = URLSession.shared.dataTask(with: request) { data, response, error in"), e.indent(), e.line("if let error = error {"), e.indent(), e.line('print("Error: (error)")'), e.line("return"), e.outdent(), e.line("}"), e.line(), e.line("if let httpResponse = response as? HTTPURLResponse {"), e.indent(), e.line("if httpResponse.statusCode == 200, let data = data {"), e.indent(), e.line("let responseString = String(data: data, encoding: .utf8)"), e.line('print(responseString ?? "No response data")'), e.outdent(), e.line("} else {"), e.indent(), e.line('print("Request failed with status code: (httpResponse.statusCode)")'), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.line(), e.line("task.resume()"), e.output();
   }
 };
-a(g);
+a(b);
 a(j);
 a(k);
 a(O);
@@ -525,7 +532,7 @@ export {
   J as ClearRegistry,
   H as Codes,
   x as Generate,
-  b as IsJsonRequest,
+  p as IsJsonRequest,
   a as Register,
   $ as SearchTarget,
   N as SetDefault

@@ -25,7 +25,7 @@ export declare interface Config {
     handleErrors?: boolean;
 }
 
-export declare function Generate(req: Settings): string;
+export declare function Generate(req: Settings): Outcome;
 
 export declare interface Http {
     method: Method;
@@ -44,6 +44,13 @@ export declare function IsJsonRequest(method: string, headers?: {
 }): boolean;
 
 export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+declare interface Outcome {
+    error?: string;
+    language?: string;
+    client?: string;
+    code?: string;
+}
 
 export declare function Register(target: Target | Target[]): void | Error;
 
