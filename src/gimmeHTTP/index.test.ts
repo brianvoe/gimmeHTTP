@@ -8,8 +8,8 @@ describe('Index', () => {
   })
 
   test('should run simple example', () => {
-    // Generate a request
-    const req = {
+    // Generate settings
+    const settings = {
       language: 'shell',
       client: 'curl',
       http: {
@@ -18,15 +18,18 @@ describe('Index', () => {
       }
     } as Settings
 
-    // Generate the code
-    const res = Generate(req)
+    // Generate outcome
+    const { code, error } = Generate(settings)
+    if (error) {
+      expect(error).toBeUndefined()
+    }
 
-    expect(res).toEqual(`curl -X GET "https://gofakeit.com"`)
+    expect(code).toEqual(`curl -X GET "https://gofakeit.com"`)
   })
 
   test('should run simple post example', () => {
-    // Generate a request
-    const req = {
+    // Generate settings
+    const settings = {
       language: 'shell',
       client: 'curl',
       http: {
@@ -42,10 +45,13 @@ describe('Index', () => {
       }
     } as Settings
 
-    // Generate the code
-    const res = Generate(req)
+    // Generate outcome
+    const { code, error } = Generate(settings)
+    if (error) {
+      expect(error).toBeUndefined()
+    }
 
-    expect(res).toEqual(
+    expect(code).toEqual(
       `
 curl -X POST "https://gofakeit.com"
   -H "Content-Type: application/json"
@@ -55,7 +61,7 @@ curl -X POST "https://gofakeit.com"
   })
 
   test('should run custom registry example', () => {
-    // Add all the codes
+    // Add custom code
     Register({
       language: 'custom',
       client: 'native',
@@ -64,8 +70,8 @@ curl -X POST "https://gofakeit.com"
       }
     })
 
-    // Generate a request
-    const req = {
+    // Generate settings
+    const settings = {
       language: 'custom',
       client: 'native',
       http: {
@@ -74,14 +80,17 @@ curl -X POST "https://gofakeit.com"
       }
     } as Settings
 
-    // Generate the code
-    const res = Generate(req)
+    // Generate outcome
+    const { code, error } = Generate(settings)
+    if (error) {
+      expect(error).toBeUndefined()
+    }
 
-    expect(res).toEqual('url: https://gofakeit.com method: GET')
+    expect(code).toEqual('url: https://gofakeit.com method: GET')
   })
 
   test('should run custom language client with advanced builder usage', () => {
-    // Add all the codes
+    // Add custom code
     Register({
       language: 'custom',
       client: 'native',
@@ -95,7 +104,7 @@ curl -X POST "https://gofakeit.com"
       }
     })
 
-    // Generate a request
+    // Generate settings
     const req = {
       language: 'custom',
       client: 'native',
@@ -105,9 +114,12 @@ curl -X POST "https://gofakeit.com"
       }
     } as Settings
 
-    // Generate the code
-    const res = Generate(req)
+    // Generate outcome
+    const { code, error } = Generate(req)
+    if (error) {
+      expect(error).toBeUndefined()
+    }
 
-    expect(res).toEqual('url: https://gofakeit.com\nmethod: GET')
+    expect(code).toEqual('url: https://gofakeit.com\nmethod: GET')
   })
 })

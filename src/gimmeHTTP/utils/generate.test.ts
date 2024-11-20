@@ -12,7 +12,7 @@ describe('Generate', () => {
 
   test('should run simple example', () => {
     // Generate a request
-    const req = {
+    const settings = {
       language: 'shell',
       client: 'curl',
       http: {
@@ -21,15 +21,21 @@ describe('Generate', () => {
       }
     } as Settings
 
-    // Generate the code
-    const res = Generate(req)
+    // Generate outcome
+    const { error, language, client, code } = Generate(settings)
+    if (error) {
+      expect(error).toBeUndefined()
+    }
 
-    expect(res).toEqual(`curl -X GET "https://gofakeit.com"`)
+    expect(language).toEqual(settings.language)
+    expect(client).toEqual(settings.client)
+
+    expect(code).toEqual(`curl -X GET "https://gofakeit.com"`)
   })
 
   test('should run simple post example', () => {
     // Generate a request
-    const req = {
+    const settings = {
       language: 'shell',
       client: 'curl',
       http: {
@@ -46,10 +52,16 @@ describe('Generate', () => {
       }
     } as Settings
 
-    // Generate the code
-    const res = Generate(req)
+    // Generate outcome
+    const { error, language, client, code } = Generate(settings)
+    if (error) {
+      expect(error).toBeUndefined()
+    }
 
-    expect(res).toEqual(
+    expect(language).toEqual(settings.language)
+    expect(client).toEqual(settings.client)
+
+    expect(code).toEqual(
       `
 curl -X POST "https://gofakeit.com"
   -H "Content-Type: application/json"
@@ -67,8 +79,8 @@ curl -X POST "https://gofakeit.com"
       generate: () => 'custom code'
     })
 
-    // Generate a request
-    const req = {
+    // Generate settings
+    const settings = {
       language: 'custom',
       client: 'native',
       http: {
@@ -78,8 +90,14 @@ curl -X POST "https://gofakeit.com"
     } as Settings
 
     // Generate the code
-    const res = Generate(req)
+    const { error, language, client, code } = Generate(settings)
+    if (error) {
+      expect(error).toBeUndefined()
+    }
 
-    expect(res).toEqual('custom code')
+    expect(language).toEqual(settings.language)
+    expect(client).toEqual(settings.client)
+
+    expect(code).toEqual('custom code')
   })
 })

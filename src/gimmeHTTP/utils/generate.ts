@@ -11,6 +11,16 @@ export interface Settings {
   http: Http
 }
 
+// The outcome of the generated code
+// or an error message
+export interface Outcome {
+  error?: string
+
+  language?: string // if set by default
+  client?: string // if set by default
+  code?: string
+}
+
 export interface Config {
   // The character(s) to use for indentation
   indent?: string // default: '  '
@@ -31,20 +41,29 @@ export interface Http {
   body?: any
 }
 
-export function Generate(req: Settings): string {
+export function Generate(req: Settings): Outcome {
   let err = validate(req)
   if (err) {
-    return err.message
+    return { error: err.message }
   }
 
+  // Set default values for config
   req.config = setConfig(req.config)
 
+  // Search for target, return error if not found
   const target = SearchTarget(req.language, req.client)
   if (target instanceof Error) {
-    return target.message
+    return { error: target.message }
   }
 
-  return target.generate(req.config, req.http)
+  // Generate the code
+  const outcome = target.generate(req.config, req.http)
+
+  return {
+    language: target.language,
+    client: target.client,
+    code: outcome
+  } as Outcome
 }
 
 function validate(req: Settings): Error | undefined {
