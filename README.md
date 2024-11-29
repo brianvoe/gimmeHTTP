@@ -2,6 +2,13 @@
 
 GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration. Whether you need to quickly prototype an API request or generate example code for documentation, GimmeHttp has you covered. Just provide the request details, and let GimmeHttp generate code in your desired language.
 
+## Features
+
+- Generate HTTP request code snippets in various languages
+- Dead simple configuration(help me keep it that way)
+- Add Custom Languages and Clients
+- Zero dependencies
+
 ## Supported Languages and Targets
 
 | Language   | Targets              |
