@@ -13,13 +13,17 @@ body {
   #app {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     height: 100%;
     min-height: 100%;
     width: 100%;
     min-width: 100%;
+    margin: 0;
+    padding: calc(var(--header-height) + var(--spacing)) 0 0 0;
     /* center gradient between 2 colors */
     background: radial-gradient(circle, var(--color-secondary) 0%, var(--color-tertiary) 75%);
+    // overflow-x: hidden;
+    // overflow-y: auto;
   }
 }
