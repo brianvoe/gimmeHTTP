@@ -7,13 +7,6 @@ export default defineConfig({
   server: {
     port: 1111
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern-compiler' // or "modern"
-      }
-    }
-  },
   build: {
     outDir: 'docs',
     emptyOutDir: true,
