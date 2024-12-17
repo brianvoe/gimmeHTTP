@@ -17,21 +17,6 @@
     "type": "git",
     "url": "github.com/brianvoe/gimmehttp"
   },
-  "main": "dist/gimmehttp.umd.js",
-  "browser": "dist/gimmehttp.umd.js",
-  "module": "dist/gimmehttp.es.js",
-  "unpkg": "dist/gimmehttp.umd.js",
-  "types": "dist/gimmehttp.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/gimmehttp.es.js",
-      "require": "./dist/gimmehttp.cjs.js",
-      "types": "./dist/gimmehttp.d.ts"
-    }
-  },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "dev": "vite --port=1111 --config vite.config.docs.mts",
     "format": "prettier --write --cache --parser typescript \"src/**/*.ts\"",
@@ -43,22 +28,37 @@
     "build:docs": "vite build --config vite.config.docs.mts",
     "build:lib": "vite build --config vite.config.lib.mts"
   },
+  "main": "dist/gimmehttp.umd.js",
+  "browser": "dist/gimmehttp.umd.js",
+  "module": "dist/gimmehttp.es.js",
+  "unpkg": "dist/gimmehttp.umd.js",
+  "types": "dist/gimmehttp.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/gimmehttp.d.ts",
+      "require": "./dist/gimmehttp.cjs.js",
+      "import": "./dist/gimmehttp.es.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/prismjs": "^1.26.5",
-    "@vitejs/plugin-vue": "^5.2.0",
+    "@vitejs/plugin-vue": "^5.2.1",
     "jest": "^29.7.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.2",
     "rimraf": "^6.0.1",
-    "sass": "^1.81.0",
-    "shiki": "^1.23.1",
+    "sass": "^1.83.0",
+    "shiki": "^1.24.2",
     "ts-jest": "^29.2.5",
     "tslib": "^2.8.1",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.11",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
     "vite-plugin-dts": "^4.3.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.4.5",
+    "vue-router": "^4.5.0",
     "vue-tsc": "^2.1.10",
     "vuex": "^4.0.2"
   }
