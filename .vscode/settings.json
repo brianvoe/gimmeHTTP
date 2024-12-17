@@ -17,5 +17,9 @@
   "prettier.semi": false,
   "prettier.trailingComma": "none",
   "prettier.printWidth": 100,
-  "prettier.proseWrap": "always"
+  "prettier.proseWrap": "always",
+  "[svg]": {
+    "editor.defaultFormatter": "jock.svg"
+  },
+  "svg.preview.background": "dark-transparent"
 }
