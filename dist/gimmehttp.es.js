@@ -19,11 +19,11 @@ function N(i, n) {
     return e;
   e.default = !0;
 }
-function a(i) {
+function d(i) {
   if (!i)
     return new Error("Target is required");
   if (Array.isArray(i)) {
-    i.forEach((o) => a(o));
+    i.forEach((o) => d(o));
     return;
   }
   i.default === void 0 && (i.default = !1);
@@ -69,7 +69,7 @@ function g(i) {
   return i = i || {}, i.indent || (i.indent = "  "), i.join || (i.join = `
 `), i.handleErrors === void 0 && (i.handleErrors = !1), i;
 }
-class d {
+class u {
   constructor(n = {}) {
     this.code = [], this.currentDepth = 0, this.indentChar = n.indent || "  ", this.lineJoin = n.join || `
 `;
@@ -84,7 +84,7 @@ class d {
     this.currentDepth > 0 && (this.currentDepth -= 1);
   }
   output() {
-    return this.code.map(({ depth: n, line: e }) => `${this.indentChar.repeat(n)}${e}`).join(this.lineJoin);
+    return this.code.map(({ depth: n, line: e }) => `${this.indentChar.repeat(n)}${e}`).join(this.lineJoin).trimEnd();
   }
 }
 function p(i, n) {
@@ -97,7 +97,7 @@ const b = {
   language: "c",
   client: "libcurl",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -120,7 +120,7 @@ const b = {
   language: "csharp",
   client: "http",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -145,7 +145,7 @@ const b = {
   language: "csharp",
   client: "restsharp",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -164,7 +164,7 @@ const b = {
   language: "go",
   client: "http",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -173,26 +173,26 @@ const b = {
     let r = "nil";
     if (o) {
       e.line("jsonBodyMap := map[string]any{"), e.indent();
-      for (const [t, s] of Object.entries(n.body))
-        e.line(`"${t}": ${JSON.stringify(s)},`);
+      for (const [t, a] of Object.entries(n.body))
+        e.line(`"${t}": ${JSON.stringify(a)},`);
       e.outdent(), e.line("}"), i.handleErrors ? (e.line("jsonBodyBytes, err := json.Marshal(jsonBodyMap)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("jsonBodyBytes, _ := json.Marshal(jsonBodyMap)"), r = "bytes.NewBuffer(jsonBodyBytes)", e.line();
     }
     if (i.handleErrors ? (e.line(`req, err := http.NewRequest("${n.method.toUpperCase()}", url, ${r})`), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}"), e.line()) : (e.line(`req, _ := http.NewRequest("${n.method.toUpperCase()}", url, ${r})`), e.line()), n.headers) {
-      for (const [t, s] of Object.entries(n.headers))
-        if (Array.isArray(s))
-          for (const l of s)
+      for (const [t, a] of Object.entries(n.headers))
+        if (Array.isArray(a))
+          for (const l of a)
             e.line(`req.Header.Add("${t}", "${l}")`);
         else
-          e.line(`req.Header.Set("${t}", "${s}")`);
+          e.line(`req.Header.Set("${t}", "${a}")`);
       e.line();
     }
     if (n.cookies) {
-      for (const [t, s] of Object.entries(n.cookies))
-        if (Array.isArray(s))
-          for (const l of s)
+      for (const [t, a] of Object.entries(n.cookies))
+        if (Array.isArray(a))
+          for (const l of a)
             e.line(`req.AddCookie(&http.Cookie{Name: "${t}", Value: "${l}"})`);
         else
-          e.line(`req.AddCookie(&http.Cookie{Name: "${t}", Value: "${s}"})`);
+          e.line(`req.AddCookie(&http.Cookie{Name: "${t}", Value: "${a}"})`);
       e.line();
     }
     return i.handleErrors ? (e.line("resp, err := http.DefaultClient.Do(req)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("resp, _ := http.DefaultClient.Do(req)"), e.line("defer resp.Body.Close()"), e.line(), i.handleErrors ? (e.line("body, err := io.ReadAll(resp.Body)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("body, _ := io.ReadAll(resp.Body)"), e.line(), e.line("fmt.Println(string(body))"), e.outdent(), e.line("}"), e.output();
@@ -202,7 +202,7 @@ const b = {
   language: "javascript",
   client: "fetch",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -219,7 +219,7 @@ const b = {
   language: "javascript",
   client: "axios",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -242,7 +242,7 @@ const b = {
   language: "javascript",
   client: "jquery",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -259,7 +259,7 @@ const b = {
   language: "node",
   client: "http",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -276,7 +276,7 @@ const b = {
   language: "node",
   client: "node-fetch",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -294,7 +294,7 @@ const b = {
   language: "php",
   client: "curl",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -317,7 +317,7 @@ const b = {
   language: "php",
   client: "guzzle",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -344,52 +344,52 @@ const b = {
   language: "python",
   client: "http",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
-    }), o = n.method.toUpperCase(), r = o !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, s = n.cookies && Object.keys(n.cookies).length > 0;
+    }), o = n.method.toUpperCase(), r = o !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, a = n.cookies && Object.keys(n.cookies).length > 0;
     let l = [];
     e.line("import http.client"), e.line("import json"), e.line();
-    const u = new URL(n.url);
+    const s = new URL(n.url);
     if (e.line(
-      `conn = http.client.HTTPSConnection("${u.hostname}", ${u.port || (u.protocol === "https:" ? 443 : 80)})`
+      `conn = http.client.HTTPSConnection("${s.hostname}", ${s.port || (s.protocol === "https:" ? 443 : 80)})`
     ), e.line(), r && (l.push("payload"), e.line(`payload = json.dumps(${JSON.stringify(n.body)})`), e.line()), t) {
       l.push("headers"), e.line("headers = {"), e.indent();
       for (const [c, y] of Object.entries(n.headers))
         Array.isArray(y) ? e.line(`"${c}": "${y.join(", ")}",`) : e.line(`"${c}": "${y}",`);
       e.outdent(), e.line("}"), e.line();
     }
-    if (s) {
+    if (a) {
       l.push("cookies"), e.line("cookies = {"), e.indent();
       for (const [c, y] of Object.entries(n.cookies))
         e.line(`"${c}": "${y}",`);
       e.outdent(), e.line("}"), e.line();
     }
     return e.line(
-      `conn.request("${o}", "${u.pathname + u.search}"` + (l.length > 0 ? `, ${l.join(", ")}` : "") + ")"
+      `conn.request("${o}", "${s.pathname + s.search}"` + (l.length > 0 ? `, ${l.join(", ")}` : "") + ")"
     ), e.line("res = conn.getresponse()"), e.line("data = res.read()"), e.line(), e.line('print(data.decode("utf-8"))'), e.output();
   }
 }, _ = {
   language: "python",
   client: "requests",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
-    }), r = n.method.toUpperCase() !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, s = n.cookies && Object.keys(n.cookies).length > 0;
+    }), r = n.method.toUpperCase() !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, a = n.cookies && Object.keys(n.cookies).length > 0;
     let l = [];
     if (e.line("import requests"), e.line(), e.line('url = "' + n.url + '"'), t) {
       l.push("headers=headers"), e.line("headers = {"), e.indent();
-      for (const [u, c] of Object.entries(n.headers))
-        Array.isArray(c) ? e.line(`"${u}": "${c.join(", ")}",`) : e.line(`"${u}": "${c}",`);
+      for (const [s, c] of Object.entries(n.headers))
+        Array.isArray(c) ? e.line(`"${s}": "${c.join(", ")}",`) : e.line(`"${s}": "${c}",`);
       e.outdent(), e.line("}");
     }
-    if (s) {
+    if (a) {
       l.push("cookies=cookies"), e.line("cookies = {"), e.indent();
-      for (const [u, c] of Object.entries(n.cookies))
-        e.line(`"${u}": "${c}",`);
+      for (const [s, c] of Object.entries(n.cookies))
+        e.line(`"${s}": "${c}",`);
       e.outdent(), e.line("}");
     }
     return r && (l.push("data=data"), e.line("data = " + JSON.stringify(n.body))), e.line(), e.line(
@@ -401,7 +401,7 @@ const b = {
   language: "ruby",
   client: "nethttp",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -418,7 +418,7 @@ const b = {
   language: "ruby",
   client: "faraday",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -435,7 +435,7 @@ const b = {
   language: "rust",
   client: "reqwest",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -453,43 +453,54 @@ const b = {
   language: "shell",
   client: "curl",
   generate(i, n) {
-    var o, r;
-    const e = new d({
+    var r, t;
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
     });
-    if (e.line(`curl -X ${n.method} "${n.url}"`), e.indent(), n.headers)
-      for (const [t, s] of Object.entries(n.headers))
-        if (Array.isArray(s))
-          for (const l of s)
-            e.line(`-H "${t}: ${l}"`);
+    if (e.line(`curl -X ${n.method} "${n.url}" \\`), n.headers) {
+      e.indent();
+      for (const [a, l] of Object.entries(n.headers))
+        if (Array.isArray(l))
+          for (const s of l)
+            e.line(`-H "${a}: ${s.replace(/"/g, '\\"')}" \\`);
         else
-          e.line(`-H "${t}: ${s}"`);
+          e.line(`-H "${a}: ${l.replace(/"/g, '\\"')}" \\`);
+      e.outdent();
+    }
     if (n.cookies) {
-      const t = Object.entries(n.cookies).map(
-        ([s, l]) => Array.isArray(l) ? l.map((u) => `${s}=${u}`).join("; ") : `${s}=${l}`
-      ).join("; ");
-      e.line(`-b "${t}"`);
+      e.indent();
+      const a = Object.entries(n.cookies).flatMap(([l, s]) => Array.isArray(s) ? s.map((c) => `${l}=${c}`) : `${l}=${s}`).join("; ");
+      e.line(`-b "${a}" \\`), e.outdent();
     }
     if (n.body) {
-      const t = ((o = n.headers) == null ? void 0 : o["content-type"]) || ((r = n.headers) == null ? void 0 : r["Content-Type"]) || "application/json";
-      if (t === "application/json") {
-        const s = JSON.stringify(n.body);
-        e.line(`-d '${s}'`);
-      } else if (t === "application/x-www-form-urlencoded") {
-        const s = new URLSearchParams(n.body).toString();
-        e.line(`-d '${s}'`);
-      } else typeof n.body == "string" && e.line(`-d '${n.body}'`);
+      const a = ((r = n.headers) == null ? void 0 : r["content-type"]) || ((t = n.headers) == null ? void 0 : t["Content-Type"]) || "application/json";
+      if (e.indent(), a.includes("application/json")) {
+        const s = JSON.stringify(n.body, null, 2).replace(/'/g, "'\\''").split(`
+`);
+        e.line(`-d $'${s[0]} \\`);
+        for (let c = 1; c < s.length - 1; c++)
+          e.line(`${s[c]} \\`);
+        e.line(`${s[s.length - 1]}'`);
+      } else if (a === "application/x-www-form-urlencoded") {
+        const l = new URLSearchParams(n.body).toString().replace(/'/g, "'\\''");
+        e.line(`-d '${l}'`);
+      } else if (typeof n.body == "string") {
+        const l = n.body.replace(/'/g, "'\\''");
+        e.line(`-d '${l}'`);
+      }
+      e.outdent();
     }
-    return e.output();
+    let o = e.output();
+    return o = o.replace(/\\\s*$/, "").trim(), o;
   }
 }, v = {
   default: !0,
   language: "swift",
   client: "nsurlsession",
   generate(i, n) {
-    const e = new d({
+    const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
 `
@@ -509,31 +520,31 @@ const b = {
     ), e.line("request.httpBody = body"), e.line()), e.line("let task = URLSession.shared.dataTask(with: request) { data, response, error in"), e.indent(), e.line("if let error = error {"), e.indent(), e.line('print("Error: (error)")'), e.line("return"), e.outdent(), e.line("}"), e.line(), e.line("if let httpResponse = response as? HTTPURLResponse {"), e.indent(), e.line("if httpResponse.statusCode == 200, let data = data {"), e.indent(), e.line("let responseString = String(data: data, encoding: .utf8)"), e.line('print(responseString ?? "No response data")'), e.outdent(), e.line("} else {"), e.indent(), e.line('print("Request failed with status code: (httpResponse.statusCode)")'), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.line(), e.line("task.resume()"), e.output();
   }
 };
-a(b);
-a(j);
-a(k);
-a(O);
-a(C);
-a(m);
-a(w);
-a(q);
-a(R);
-a(T);
-a(E);
-a(S);
-a(_);
-a(A);
-a(U);
-a(L);
-a(P);
-a(v);
+d(b);
+d(j);
+d(k);
+d(O);
+d(C);
+d(m);
+d(w);
+d(q);
+d(R);
+d(T);
+d(E);
+d(S);
+d(_);
+d(A);
+d(U);
+d(L);
+d(P);
+d(v);
 export {
-  d as Builder,
+  u as Builder,
   J as ClearRegistry,
   H as Codes,
   x as Generate,
   p as IsJsonRequest,
-  a as Register,
+  d as Register,
   $ as SearchTarget,
   N as SetDefault
 };
