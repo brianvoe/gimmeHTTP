@@ -1,0 +1,25 @@
+html,
+body {
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  min-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'neon-monospace-semi-bold';
+  font-size: var(--font-size);
+
+  #app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+    /* center gradient between 2 colors */
+    background: radial-gradient(circle, var(--color-secondary) 0%, var(--color-tertiary) 75%);
+  }
+}

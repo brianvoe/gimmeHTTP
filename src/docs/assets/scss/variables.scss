@@ -1,0 +1,32 @@
+@font-face {
+  font-family: 'neon-monospace-semi-bold';
+  src:
+    url('../fonts/MonaspaceNeon-SemiBold.woff2') format('woff2'),
+    url('../fonts/MonaspaceNeon-SemiBold.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  // colors
+  --color-primary: #f1602c;
+  --color-secondary: #b2e4e1;
+  --color-tertiary: #58adaf;
+  --color-quaternary: #fbd0a6;
+  --color-quinary: #947661;
+
+  --color-section-bg: #d4d4d4;
+  --color-text: #3d2c2c;
+
+  // fonts
+  --font-primary: 'Roboto', sans-serif;
+  --font-size: 16px;
+
+  // spacings
+  --spacing: 16px;
+  --spacing-half: 8px;
+  --spacing-quarter: 4px;
+
+  // Misc
+  --border-radius: 8px;
+}
