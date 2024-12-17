@@ -35,6 +35,9 @@ export class Builder {
   }
 
   public output(): string {
-    return this.code.map(({ depth, line }) => `${this.indentChar.repeat(depth)}${line}`).join(this.lineJoin)
+    return this.code
+      .map(({ depth, line }) => `${this.indentChar.repeat(depth)}${line}`)
+      .join(this.lineJoin)
+      .trimEnd()
   }
 }
