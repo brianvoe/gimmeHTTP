@@ -11,30 +11,31 @@ export function Codes(): Target[] {
   return codes
 }
 
+// Search for target, whether or not they pass in a client
+// If no client, return the default target of that language
 export function SearchTarget(language: string, client?: string): Target | Error {
   if (language === '' || language === undefined) {
     return new Error('Language is required')
   }
 
   // Loop through and get all targets for the language
-  const languages = codes.filter((c) => c.language.toLowerCase() === language.toLowerCase())
+  const targets = codes.filter((c) => c.language.toLowerCase() === language.toLowerCase())
+  if (targets.length === 0) {
+    return new Error('No targets found of language: ' + language)
+  }
 
-  // If no client, loop through languages and return the default
+  // Get default client
+  const defaultTarget: Target = targets.find((c) => c.default) || targets[0]
+
+  // If no client, return default
   if (!client) {
-    // Stop if you find one
-    const defaultLanguage = languages.find((c) => c.default)
-    if (defaultLanguage) {
-      return defaultLanguage
-    }
-
-    // If no default, return the first one
-    return languages[0]
+    return defaultTarget
   }
 
   // If client, return the client
-  const target = languages.find((c) => c.client.toLowerCase() === client.toLowerCase())
+  const target = targets.find((c) => c.client.toLowerCase() === client.toLowerCase())
   if (!target) {
-    return new Error(`Client '${client}' not found for language '${language}'`)
+    return defaultTarget
   }
 
   return target
@@ -61,32 +62,24 @@ export function Register(target: Target | Target[]): void | Error {
     return
   }
 
+  // Get current list of targets from target.language
+  const curTargets = codes.filter((c) => c.language.toLowerCase() === target.language.toLowerCase())
+  const exists = curTargets.find((c) => c.client.toLowerCase() === target.client.toLowerCase())
+
   // Set default to false if undefined
   if (target.default === undefined) {
-    target.default = false
+    target.default = curTargets.length === 0 ? true : false
   }
 
-  // Check if the target already exists
-  const targetResult = SearchTarget(target.language, target.client)
-  if (targetResult instanceof Error) {
-    codes.push(target)
-
-    // If its the only target, set it as default
-    if (codes.filter((c) => c.language === target.language).length === 1) {
-      target.default = true
-    }
-
+  // If it exist, overwrite the target
+  if (exists) {
+    const index = codes.indexOf(target)
+    codes[index] = target
     return
   }
 
-  // If it exists, replace the whole target
-  const index = codes.indexOf(targetResult)
-  codes[index] = target
-
-  // If its the only target, set it as default
-  if (codes.filter((c) => c.language === target.language).length === 1) {
-    target.default = true
-  }
+  // otherwise, add the target
+  codes.push(target)
 }
 
 export function ClearRegistry(): void {

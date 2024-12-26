@@ -37,7 +37,7 @@ describe('Register', () => {
     expect(target).toBeDefined()
   })
 
-  test('should set language with 3 targets and run default on the last one', () => {
+  test('should set language with 3 targets and default should be the first added', () => {
     Register({ language: 'javascript', client: 'node', generate: () => 'console.log("Hello World");' })
     Register({ language: 'javascript', client: 'browser', generate: () => 'alert("Hello World");' })
     Register({ language: 'javascript', client: 'deno', generate: () => 'console.log("Hello World");' })
