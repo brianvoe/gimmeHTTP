@@ -3,7 +3,9 @@
 
   export default defineComponent({
     name: 'App',
-    data() {}
+    data() {
+      return {}
+    }
   })
 </script>
 
@@ -96,5 +98,7 @@
     </div>
   </div>
 
-  <router-view />
+  <div class="content">
+    <router-view />
+  </div>
 </template>
