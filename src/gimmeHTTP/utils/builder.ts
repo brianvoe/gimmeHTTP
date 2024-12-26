@@ -24,6 +24,12 @@ export class Builder {
     this.code.push({ depth: line === '' ? 0 : this.currentDepth, line })
   }
 
+  public append(line: string): void {
+    if (this.code.length > 0) {
+      this.code[this.code.length - 1].line += line
+    }
+  }
+
   public indent(): void {
     this.currentDepth += 1
   }

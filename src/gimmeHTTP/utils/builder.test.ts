@@ -46,4 +46,22 @@ describe('Builder', () => {
     builder.line('Second line')
     expect(builder.output()).toBe('First line\n\nSecond line')
   })
+
+  test('should append to the last line', () => {
+    builder.line('Hello')
+    builder.append(', World!')
+    expect(builder.output()).toBe('Hello, World!')
+  })
+
+  test('should append to the last line with multiple indentations', () => {
+    builder.line('First line')
+    builder.indent()
+    builder.line('Second line')
+    builder.append(' appended')
+    builder.indent()
+    builder.line('Third line')
+    builder.append(' appended again')
+    builder.append(' and more')
+    expect(builder.output()).toBe('First line\n  Second line appended\n    Third line appended again and more')
+  })
 })
