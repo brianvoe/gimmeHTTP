@@ -62,7 +62,11 @@ export default {
 
       if (http.body) {
         builder.indent()
-        builder.line('"json" => ' + JSON.stringify(http.body) + ',')
+        builder.line('"json" => {')
+        builder.indent()
+        formatJsonRecursive(http.body, builder, true)
+        builder.outdent()
+        builder.line('}')
         builder.outdent()
       }
 
@@ -80,3 +84,39 @@ export default {
     return builder.output()
   }
 } as Target
+
+function formatJsonRecursive(json: any, builder: Builder, isRoot: boolean = false): void {
+  if (typeof json === 'object' && json !== null) {
+    if (Array.isArray(json)) {
+      builder.line('[' + json.map((item) => JSON.stringify(item)).join(', ') + ']')
+    } else {
+      if (!isRoot) {
+        builder.line('{')
+        builder.indent()
+      }
+      const entries = Object.entries(json)
+      entries.forEach(([key, value], index) => {
+        if (Array.isArray(value)) {
+          builder.line(`"${key}": [${value.map((item) => JSON.stringify(item)).join(', ')}]`)
+        } else if (typeof value === 'object' && value !== null) {
+          builder.line(`"${key}": {`)
+          builder.indent()
+          formatJsonRecursive(value, builder, true)
+          builder.outdent()
+          builder.line('}')
+        } else {
+          builder.line(`"${key}": ${JSON.stringify(value)}`)
+        }
+        if (index < entries.length - 1) {
+          builder.append(',')
+        }
+      })
+      if (!isRoot) {
+        builder.outdent()
+        builder.line('}')
+      }
+    }
+  } else {
+    builder.line(JSON.stringify(json))
+  }
+}

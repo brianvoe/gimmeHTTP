@@ -60,7 +60,9 @@ $response = $client->request(
       "Content-Type" => "application/json",
       "Authorization" => "Bearer token",
     ],
-    "json" => {"key1":"value1"},
+    "json" => {
+      "key1": "value1"
+    }
   ],
 );
 
@@ -103,45 +105,59 @@ echo $response->getBody();
     )
   })
 
-  // TODO: Add test for handleErrors
-  //   test('should build a POST request with error handling', () => {
-  //     const httpRequest: Http = {
-  //       method: 'POST',
-  //       url: 'https://gofakeit.com/api',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: {
-  //         key1: 'value1'
-  //       }
-  //     }
-  //     const config: Config = { handleErrors: true }
-  //     const result = PhpGuzzle.generate(config, httpRequest)
-  //     expect(result).toBe(
-  //       `
-  // <?php
+  test('should build a POST request with advanced JSON body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://gofakeit.com/api',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        key1: 'value1',
+        key2: {
+          subKey1: 'subValue1',
+          subKey2: [1, 2, 3],
+          subKey3: {
+            subSubKey1: 'subSubValue1'
+          }
+        },
+        key3: [4, 5, 6]
+      }
+    }
+    const config: Config = {}
+    const result = PhpGuzzle.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+<?php
 
-  // require 'vendor/autoload.php';
+require 'vendor/autoload.php';
 
-  // use GuzzleHttp\\Client;
+use GuzzleHttp\\Client;
 
-  // $client = new Client();
-  // try {
-  //   $response = $client->request(
-  //     "POST",
-  //     "https://gofakeit.com/api",
-  //     [
-  //       "headers" => [
-  //         "Content-Type" => "application/json",
-  //       ],
-  //       "json" => {"key1":"value1"},
-  //     ]);
+$client = new Client();
+$response = $client->request(
+  "POST",
+  "https://gofakeit.com/api",
+  [
+    "headers" => [
+      "Content-Type" => "application/json",
+    ],
+    "json" => {
+      "key1": "value1",
+      "key2": {
+        "subKey1": "subValue1",
+        "subKey2": [1, 2, 3],
+        "subKey3": {
+          "subSubKey1": "subSubValue1"
+        }
+      },
+      "key3": [4, 5, 6]
+    }
+  ],
+);
 
-  //   echo $response->getBody();
-  // } catch (Exception $e) {
-  //   echo "Error: " . $e->getMessage();
-  // }
-  //     `.trim()
-  //     )
-  //   })
+echo $response->getBody();
+      `.trim()
+    )
+  })
 })

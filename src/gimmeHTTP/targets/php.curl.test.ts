@@ -121,7 +121,13 @@ $headers = [];
 $headers[] = "Content-Type: application/json";
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-curl_setopt($ch, CURLOPT_POSTFIELDS, '{"key1":"value1"}');
+curl_setopt($ch, CURLOPT_POSTFIELDS,
+<<<'JSON'
+{
+  "key1": "value1"
+}
+JSON
+);
 
 $response = curl_exec($ch);
 if (curl_errno($ch)) {

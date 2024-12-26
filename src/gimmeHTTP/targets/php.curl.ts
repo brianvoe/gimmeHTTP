@@ -12,15 +12,20 @@ export default {
       join: config.join || '\n'
     })
 
+    // Start our PHP file
     builder.line('<?php')
     builder.line()
+
+    // Initialize cURL
     builder.line('$ch = curl_init();')
     builder.line()
 
+    // Basic cURL options
     builder.line(`curl_setopt($ch, CURLOPT_URL, "${http.url}");`)
     builder.line('curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);')
     builder.line(`curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "${http.method.toUpperCase()}");`)
 
+    // Headers
     if (http.headers) {
       builder.line()
       builder.line('$headers = [];')
@@ -34,6 +39,7 @@ export default {
       builder.line('curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);')
     }
 
+    // Cookies
     if (http.cookies) {
       builder.line()
       builder.line('$cookies = [];')
@@ -43,11 +49,18 @@ export default {
       builder.line('curl_setopt($ch, CURLOPT_COOKIE, implode("; ", $cookies));')
     }
 
+    // Body
     if (http.body) {
       builder.line()
-      builder.line(`curl_setopt($ch, CURLOPT_POSTFIELDS, '${JSON.stringify(http.body)}');`)
+      builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS,')
+      builder.line("<<<'JSON'")
+      formatJsonRecursive(http.body, builder)
+      builder.line('JSON')
+      builder.line(');')
+      builder.outdent()
     }
 
+    // Execute and handle response
     builder.line()
     builder.line('$response = curl_exec($ch);')
 
@@ -66,3 +79,46 @@ export default {
     return builder.output()
   }
 } as Target
+
+/**
+ * Recursively formats an object/array into multi-line JSON for the generated code.
+ * This affects how the *generated* PHP code looks (i.e., the literal lines).
+ *
+ * Then at runtime, the final JSON string will be built and pretty-printed by
+ * json_encode(..., JSON_PRETTY_PRINT).
+ */
+function formatJsonRecursive(json: any, builder: Builder): void {
+  if (typeof json === 'object' && json !== null) {
+    // Handle arrays
+    if (Array.isArray(json)) {
+      // In the generated code, just put the array in a single line for brevity
+      builder.line('[' + json.map((item) => JSON.stringify(item)).join(', ') + ']')
+    } else {
+      // Handle objects
+      builder.line('{')
+      builder.indent()
+      const entries = Object.entries(json)
+      entries.forEach(([key, value], index) => {
+        if (Array.isArray(value)) {
+          builder.line(`"${key}": [${value.map((item) => JSON.stringify(item)).join(', ')}]`)
+        } else if (typeof value === 'object' && value !== null) {
+          builder.line(`"${key}": {`)
+          builder.indent()
+          formatJsonRecursive(value, builder)
+          builder.outdent()
+          builder.line('}')
+        } else {
+          builder.line(`"${key}": ${JSON.stringify(value)}`)
+        }
+        if (index < entries.length - 1) {
+          builder.append(',')
+        }
+      })
+      builder.outdent()
+      builder.line('}')
+    }
+  } else {
+    // For non-object (string, number, boolean, etc.)
+    builder.line(JSON.stringify(json))
+  }
+}
