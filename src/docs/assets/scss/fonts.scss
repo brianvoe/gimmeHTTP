@@ -1,0 +1,47 @@
+p {
+  margin: 0 0 8px 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 1.1;
+  color: inherit;
+}
+
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 24px;
+}
+h3 {
+  font-size: 18px;
+}
+h4 {
+  font-size: 14px;
+}
+h5 {
+  font-size: 13px;
+}
+h6 {
+  font-size: 8px;
+}
+
+small {
+  font-size: 80%;
+}
+strong {
+  font-weight: bold;
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.3s;
+}

@@ -17,6 +17,7 @@
 
   --color-section-bg: #d4d4d4;
   --color-text: #3d2c2c;
+  --color-link: var(--color-primary);
 
   // fonts
   --font-primary: 'Roboto', sans-serif;
@@ -28,7 +29,13 @@
   --spacing-quarter: 4px;
 
   // header
-  --header-height: 75px;
+  --header-height: 65px;
+  @media screen and (max-width: 800px) {
+    --header-height: 50px;
+  }
+
+  // Content
+  --content-width: 800px;
 
   // Misc
   --border-radius: 8px;

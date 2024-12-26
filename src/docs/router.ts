@@ -4,11 +4,12 @@ const router = createRouter({
   history: createWebHistory(),
   linkActiveClass: 'active',
   routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: () => import('./pages/home.vue')
-    }
+    // no routes at the moment
+    // {
+    //   path: '/',
+    //   name: 'Home',
+    //   component: () => import('./pages/home.vue')
+    // }
   ]
 })
 

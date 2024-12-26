@@ -1,10 +1,9 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
   import VueShiki from '../components/vue_shiki.vue'
-  import { Codes } from '../../gimmehttp'
+  import { Codes, Languages } from '../../gimmehttp'
 
   import type { Http } from '../../gimmehttp'
-  import { languages } from 'prismjs'
 
   const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
 
@@ -44,6 +43,7 @@
       return {
         logoUrl: logoUrl,
         language: language,
+        languages: Languages(),
         // Randomly select an http request
         http: httpGet,
 
@@ -51,11 +51,6 @@
           simple_get: httpGet,
           simple_post: httpPost
         } as Record<string, Http>
-      }
-    },
-    computed: {
-      languages(): string[] {
-        return Codes().map((c) => c.language)
       }
     },
     methods: {
@@ -84,28 +79,20 @@
         flex-direction: column;
         align-items: center;
         font-weight: bold;
-
-        small {
-          font-weight: normal;
-          font-size: calc(var(--font-size) * 0.7);
-        }
-      }
-
-      .separator {
-        width: 80%;
-        max-width: 400px;
       }
 
       .langs {
         display: flex;
         flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
         gap: var(--spacing-half);
 
         .lang {
-          cursor: pointer;
+          padding: var(--spacing-quarter);
           border: solid 1px var(--border-color);
           border-radius: var(--border-radius);
-          padding: var(--spacing-quarter);
+          cursor: pointer;
 
           img {
             width: 50px;
@@ -126,7 +113,7 @@
 </style>
 
 <template>
-  <div class="intro section">
+  <div class="section intro">
     <p>Easily output http request in many languages</p>
     <div class="available_languages">
       <div class="text">Available Languages: <small>click to see</small></div>

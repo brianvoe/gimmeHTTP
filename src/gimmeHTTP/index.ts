@@ -1,4 +1,4 @@
-import { Codes, SearchTarget, SetDefault, Register, ClearRegistry } from './utils/registry'
+import { Codes, Languages, SearchTarget, SetDefault, Register, ClearRegistry } from './utils/registry'
 import { Generate } from './utils/generate'
 import { Builder } from './utils/builder'
 import { IsJsonRequest } from './utils/utils'
@@ -51,6 +51,7 @@ export {
   // Registry
   Target,
   Codes,
+  Languages,
   SearchTarget,
   SetDefault,
   Register,

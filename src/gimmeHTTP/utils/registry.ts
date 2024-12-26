@@ -11,6 +11,11 @@ export function Codes(): Target[] {
   return codes
 }
 
+export function Languages(): string[] {
+  // return all unque languages
+  return codes.map((c) => c.language).filter((v, i, a) => a.indexOf(v) === i)
+}
+
 // Search for target, whether or not they pass in a client
 // If no client, return the default target of that language
 export function SearchTarget(language: string, client?: string): Target | Error {

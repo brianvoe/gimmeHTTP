@@ -203,7 +203,6 @@
     position: relative;
     border-radius: var(--border-radius);
     overflow: hidden;
-    min-height: 200px;
 
     .selector {
       display: flex;
@@ -249,11 +248,38 @@
 
     .output {
       width: auto;
+      overflow: hidden;
+
+      &.modalOpen {
+        pre.shiki {
+          min-height: 300px !important;
+        }
+      }
 
       pre.shiki {
+        height: auto;
+        min-height: 50px; // Set a default min-height for smooth transition
         margin: 0;
         padding: var(--spacing);
         border-radius: var(--border-radius);
+        overflow-x: auto;
+        overflow-y: hidden;
+        transition: min-height var(--timing) ease-in-out;
+
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: #555;
+          border-radius: 4px;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+          background-color: #777;
+        }
+        &::-webkit-scrollbar-track {
+          background-color: #2b2b2b;
+        }
       }
     }
 
@@ -358,7 +384,7 @@
         />
       </svg>
     </div>
-    <div class="output" :class="'language-' + internalLanguage" v-html="output" />
+    <div :class="'output language-' + internalLanguage + (openModal ? ' modalOpen' : '')" v-html="output" />
 
     <!-- modal -->
     <div v-show="openModal" class="modal" @click="clickModalBg">
