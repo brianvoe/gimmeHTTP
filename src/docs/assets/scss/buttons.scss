@@ -1,0 +1,16 @@
+button {
+  padding: var(--spacing-half) var(--spacing);
+  color: var(--color-text);
+  font-weight: bold;
+  font-size: var(--font-size);
+  background-color: var(--color-tertiary);
+  border: 0px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: var(--color-quaternary);
+    color: var(--color-text);
+  }
+}
