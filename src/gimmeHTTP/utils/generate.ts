@@ -50,7 +50,7 @@ export function Generate(req: Settings): Outcome {
   // Set default values for config
   req.config = setConfig(req.config)
 
-  // Search for target, return error if not found
+  // Search for target, grab default if not found
   const target = SearchTarget(req.language, req.client)
   if (target instanceof Error) {
     return { error: target.message }
