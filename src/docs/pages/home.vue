@@ -1,15 +1,13 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
+  import Intro from './intro.vue'
   import Install from './install.vue'
-  import Simple from './simple.vue'
-
-  import VueShiki from '../components/vue_shiki.vue'
 
   export default defineComponent({
     name: 'Home',
     components: {
-      Install,
-      Simple
+      Intro,
+      Install
     },
     data() {
       return {}
@@ -43,11 +41,7 @@
 
 <template>
   <div class="docs">
-    <div class="section">
-      <p>This is the documentation for the GimmeHttp package.</p>
-    </div>
-
+    <Intro />
     <Install />
-    <Simple />
   </div>
 </template>
