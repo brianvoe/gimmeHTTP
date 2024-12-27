@@ -4,20 +4,20 @@
   border-radius: var(--border-radius);
 
   &.info {
-    color: #31708f;
-    background-color: #d9edf7;
-    border-color: #bce8f1;
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
   }
 
   &.warning {
-    color: #8a6d3b;
-    background-color: #fcf8e3;
-    border-color: #faebcc;
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
   }
 
   &.error {
-    color: #a94442;
-    background-color: #f2dede;
-    border-color: #ebccd1;
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
   }
 }
