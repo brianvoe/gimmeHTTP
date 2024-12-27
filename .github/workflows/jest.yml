@@ -1,0 +1,29 @@
+name: 'Jest unit tests'
+on:
+  push:
+    paths-ignore:
+      - '**/dist/**'
+      - '**/docs/**'
+      - '**/*.md'
+      - '.github/**'
+      - '.vscode/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '**/dist/**'
+      - '**/docs/**'
+      - '**/*.md'
+      - '.github/**'
+      - '.vscode/**'
+jobs:
+  jest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.11.0'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test
