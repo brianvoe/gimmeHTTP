@@ -17,7 +17,7 @@ import json
 
 conn = http.client.HTTPSConnection("example.com", 443)
 
-conn.request("GET", "/api")
+conn.request("GET", "/")
 res = conn.getresponse()
 data = res.read()
 
@@ -49,7 +49,7 @@ headers = {
   "Authorization": "Bearer token",
 }
 
-conn.request("POST", "/api", headers)
+conn.request("POST", "/", headers)
 res = conn.getresponse()
 data = res.read()
 
@@ -77,7 +77,7 @@ conn = http.client.HTTPSConnection("example.com", 443)
 
 payload = json.dumps({"key1":"value1"})
 
-conn.request("POST", "/api", payload)
+conn.request("POST", "/", payload)
 res = conn.getresponse()
 data = res.read()
 
@@ -116,7 +116,7 @@ cookies = {
   "session": "1234",
 }
 
-conn.request("POST", "/api", headers, cookies)
+conn.request("POST", "/", headers, cookies)
 res = conn.getresponse()
 data = res.read()
 

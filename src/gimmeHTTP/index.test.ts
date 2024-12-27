@@ -1,9 +1,10 @@
-import { Register, Generate, Settings, Config, Http, Builder } from './index'
-import { beforeAll, describe, expect, test } from '@jest/globals'
+import { Register, Generate, Settings, Config, Http, Builder, ClearRegistry } from './index'
+import { beforeEach, describe, expect, test } from '@jest/globals'
 import ShellCurl from './targets/shell.curl'
 
 describe('Index', () => {
-  beforeAll(() => {
+  beforeEach(() => {
+    ClearRegistry()
     Register(ShellCurl)
   })
 
@@ -123,6 +124,11 @@ curl -X POST "https://example.com" \\
       expect(error).toBeUndefined()
     }
 
-    expect(code).toEqual('url: https://example.com\nmethod: GET')
+    expect(code).toEqual(
+      `
+url: https://example.com
+method: GET
+`.trim()
+    )
   })
 })

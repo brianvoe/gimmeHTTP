@@ -23,7 +23,7 @@ const http = require("http");
 const options = {
   method: "POST",
   hostname: "example.com",
-  path: "/api",
+  path: "/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -64,7 +64,7 @@ const http = require("http");
 const options = {
   method: "GET",
   hostname: "example.com",
-  path: "/api",
+  path: "/",
 };
 
 const req = http.request(options, (res) => {
@@ -102,7 +102,7 @@ const http = require("http");
 const options = {
   method: "POST",
   hostname: "example.com",
-  path: "/api",
+  path: "/",
   headers: {
     "Content-Type": "application/json",
     "Authorization": "Bearer token",
