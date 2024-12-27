@@ -25,8 +25,9 @@
     <ShikiStyle language="javascript">
       <pre>
         const settings = {
-          language: 'javascript', // Programming language - default is 'javascript'
-          client: 'axios',        // HTTP client - default set by language
+          // Required
+          language: 'javascript', // Programming Language
+          client: 'axios',        // Client - default set by language
 
           // Optional
           config: {
@@ -37,19 +38,28 @@
 
           http: {
             // Required
-            method: 'GET',
-            url: 'https://api.gofakeit.com',
+            method: 'GET', // GET, POST, PUT, DELETE, PATCH, etc.
+            url: 'https://example.com',
 
             // Optional
             headers: {
+              // string: string
               'Content-Type': 'application/json'
             },
             cookies: {
+              // string: string
               'session_id': 'abc123'
             },
             body: {
+              // any
               first_name: 'Billy',
-              email: 'billybob@gmail.com'
+              email: 'billybob@gmail.com',
+              address: {
+                street: '123 Main St',
+                city: 'Anytown',
+                state: 'CA',
+                zip: '12345'
+              }
             }
           }
         }

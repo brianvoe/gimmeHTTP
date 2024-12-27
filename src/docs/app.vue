@@ -6,6 +6,7 @@
   import Intro from './pages/intro.vue'
   import Install from './pages/install.vue'
   import Settings from './pages/settings.vue'
+  import Examples from './pages/examples.vue'
 
   export default defineComponent({
     name: 'App',
@@ -14,6 +15,7 @@
       Intro,
       Install,
       Settings,
+      Examples,
       Footer
     },
     data() {
@@ -39,6 +41,7 @@
     <Intro />
     <Install />
     <Settings />
+    <Examples />
     <Footer />
   </div>
 </template>

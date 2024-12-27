@@ -20,7 +20,7 @@
       // Simple Get request
       const httpGet: Http = {
         method: 'GET',
-        url: 'https://jsonplaceholder.typicode.com/posts/1',
+        url: 'https://example.com',
         headers: {
           'Content-Type': 'application/json'
         }
@@ -29,7 +29,7 @@
       // Simple Post request
       const httpPost: Http = {
         method: 'POST',
-        url: 'https://jsonplaceholder.typicode.com/posts',
+        url: 'https://example.com',
         headers: {
           'Content-Type': 'application/json'
         },
