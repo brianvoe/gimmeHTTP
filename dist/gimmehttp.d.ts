@@ -5,6 +5,7 @@ export declare class Builder {
     private currentDepth;
     constructor(options?: BuilderOptions);
     line(line?: string): void;
+    append(line: string): void;
     indent(): void;
     outdent(): void;
     output(): string;
@@ -42,6 +43,8 @@ export declare interface Http {
 export declare function IsJsonRequest(method: string, headers?: {
     [key: string]: string;
 }): boolean;
+
+export declare function Languages(): string[];
 
 export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
