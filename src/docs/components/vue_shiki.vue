@@ -316,8 +316,8 @@
 
           .lang {
             display: flex;
-            width: 32px;
-            height: 32px;
+            width: 50px;
+            height: 50px;
             padding: var(--spacing-half);
             border: solid 1px var(--border-color);
             border-radius: var(--border-radius);
