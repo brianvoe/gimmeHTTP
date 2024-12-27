@@ -17,7 +17,7 @@ describe('Generate', () => {
       client: 'curl',
       http: {
         method: 'GET',
-        url: 'https://gofakeit.com'
+        url: 'https://example.com'
       }
     } as Settings
 
@@ -30,7 +30,7 @@ describe('Generate', () => {
     expect(language).toEqual(settings.language)
     expect(client).toEqual(settings.client)
 
-    expect(code).toEqual(`curl -X GET "https://gofakeit.com"`)
+    expect(code).toEqual(`curl -X GET "https://example.com"`)
   })
 
   test('should run simple post example', () => {
@@ -40,7 +40,7 @@ describe('Generate', () => {
       client: 'curl',
       http: {
         method: 'POST',
-        url: 'https://gofakeit.com',
+        url: 'https://example.com',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer token'
@@ -63,7 +63,7 @@ describe('Generate', () => {
 
     expect(code).toEqual(
       `
-curl -X POST "https://gofakeit.com" \\
+curl -X POST "https://example.com" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer token" \\
   -d $'{ \\
@@ -88,7 +88,7 @@ curl -X POST "https://gofakeit.com" \\
       client: 'native',
       http: {
         method: 'GET',
-        url: 'https://gofakeit.com'
+        url: 'https://example.com'
       }
     } as Settings
 

@@ -14,7 +14,7 @@ describe('Index', () => {
       client: 'curl',
       http: {
         method: 'GET',
-        url: 'https://gofakeit.com'
+        url: 'https://example.com'
       }
     } as Settings
 
@@ -24,7 +24,7 @@ describe('Index', () => {
       expect(error).toBeUndefined()
     }
 
-    expect(code).toEqual(`curl -X GET "https://gofakeit.com"`)
+    expect(code).toEqual(`curl -X GET "https://example.com"`)
   })
 
   test('should run simple post example', () => {
@@ -34,7 +34,7 @@ describe('Index', () => {
       client: 'curl',
       http: {
         method: 'POST',
-        url: 'https://gofakeit.com',
+        url: 'https://example.com',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -53,7 +53,7 @@ describe('Index', () => {
 
     expect(code).toEqual(
       `
-curl -X POST "https://gofakeit.com" \\
+curl -X POST "https://example.com" \\
   -H "Content-Type: application/json" \\
   -d $'{ \\
     "key1": "value1", \\
@@ -79,7 +79,7 @@ curl -X POST "https://gofakeit.com" \\
       client: 'native',
       http: {
         method: 'GET',
-        url: 'https://gofakeit.com'
+        url: 'https://example.com'
       }
     } as Settings
 
@@ -89,7 +89,7 @@ curl -X POST "https://gofakeit.com" \\
       expect(error).toBeUndefined()
     }
 
-    expect(code).toEqual('url: https://gofakeit.com method: GET')
+    expect(code).toEqual('url: https://example.com method: GET')
   })
 
   test('should run custom language client with advanced builder usage', () => {
@@ -113,7 +113,7 @@ curl -X POST "https://gofakeit.com" \\
       client: 'native',
       http: {
         method: 'GET',
-        url: 'https://gofakeit.com'
+        url: 'https://example.com'
       }
     } as Settings
 
@@ -123,6 +123,6 @@ curl -X POST "https://gofakeit.com" \\
       expect(error).toBeUndefined()
     }
 
-    expect(code).toEqual('url: https://gofakeit.com\nmethod: GET')
+    expect(code).toEqual('url: https://example.com\nmethod: GET')
   })
 })
