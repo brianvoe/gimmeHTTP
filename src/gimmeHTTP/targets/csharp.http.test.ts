@@ -6,7 +6,7 @@ describe('CSharpHttp.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = CSharpHttp.generate(config, httpRequest)
@@ -24,7 +24,7 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://gofakeit.com/api");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
         string responseBody = await response.Content.ReadAsStringAsync();
@@ -40,7 +40,7 @@ namespace HttpClientExample
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -62,7 +62,7 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://gofakeit.com/api");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
         request.Headers.Add("Content-Type", "application/json");
         request.Headers.Add("Authorization", "Bearer token");
         HttpResponseMessage response = await client.SendAsync(request);
@@ -80,7 +80,7 @@ namespace HttpClientExample
   test('should build a POST request with body', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       body: {
         key1: 'value1'
       }
@@ -101,7 +101,7 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://gofakeit.com/api");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
         request.Content = new StringContent("{\"key1\":\"value1\"}", System.Text.Encoding.UTF8, "application/json");
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -118,7 +118,7 @@ namespace HttpClientExample
   test('should build a GET request with cookies', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       cookies: {
         session: 'abc123',
         user: 'testuser'
@@ -140,7 +140,7 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://gofakeit.com/api");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
         request.Headers.Add("Cookie", "session=abc123; user=testuser");
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();

@@ -6,7 +6,7 @@ describe('CSharpRestSharp.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = CSharpRestSharp.generate(config, httpRequest)
@@ -20,7 +20,7 @@ namespace RestSharpExample
   {
     static void Main(string[] args)
     {
-      var client = new RestClient("https://gofakeit.com/api");
+      var client = new RestClient("https://example.com");
       var request = new RestRequest(Method.GET);
       IRestResponse response = client.Execute(request);
       Console.WriteLine(response.Content);
@@ -34,7 +34,7 @@ namespace RestSharpExample
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -52,7 +52,7 @@ namespace RestSharpExample
   {
     static void Main(string[] args)
     {
-      var client = new RestClient("https://gofakeit.com/api");
+      var client = new RestClient("https://example.com");
       var request = new RestRequest(Method.POST);
       request.AddHeader("Content-Type", "application/json");
       request.AddHeader("Authorization", "Bearer token");
@@ -68,7 +68,7 @@ namespace RestSharpExample
   test('should build a POST request with body', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       body: {
         key1: 'value1'
       }
@@ -85,7 +85,7 @@ namespace RestSharpExample
   {
     static void Main(string[] args)
     {
-      var client = new RestClient("https://gofakeit.com/api");
+      var client = new RestClient("https://example.com");
       var request = new RestRequest(Method.POST);
       request.AddJsonBody({"key1":"value1"});
       IRestResponse response = client.Execute(request);
@@ -100,7 +100,7 @@ namespace RestSharpExample
   test('should build a GET request with cookies', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       cookies: {
         session: 'abc123',
         user: 'testuser'
@@ -118,7 +118,7 @@ namespace RestSharpExample
   {
     static void Main(string[] args)
     {
-      var client = new RestClient("https://gofakeit.com/api");
+      var client = new RestClient("https://example.com");
       var request = new RestRequest(Method.GET);
       request.AddHeader("Cookie", "session=abc123; user=testuser");
       IRestResponse response = client.Execute(request);

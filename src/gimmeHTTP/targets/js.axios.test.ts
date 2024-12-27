@@ -6,7 +6,7 @@ describe('JSAxios.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = JSAxios.generate(config, httpRequest)
@@ -14,7 +14,7 @@ describe('JSAxios.generate', () => {
       `
 axios({
   method: "get",
-  url: "https://gofakeit.com/api",
+  url: "https://example.com",
 })
 .then(response => console.log(response.data));
     `.trim()
@@ -24,7 +24,7 @@ axios({
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -36,7 +36,7 @@ axios({
       `
 axios({
   method: "post",
-  url: "https://gofakeit.com/api",
+  url: "https://example.com",
   headers: {
     "Content-Type": "application/json",
     "Authorization": "Bearer token",
@@ -50,7 +50,7 @@ axios({
   test('should build a POST request with cookies', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       cookies: {
         key1: 'value1',
         key2: 'value2'
@@ -62,7 +62,7 @@ axios({
       `
 axios({
   method: "post",
-  url: "https://gofakeit.com/api",
+  url: "https://example.com",
   cookies: {
     "key1": "value1",
     "key2": "value2",
@@ -76,7 +76,7 @@ axios({
   test('should build a POST request with error handling', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -90,7 +90,7 @@ axios({
       `
 axios({
   method: "post",
-  url: "https://gofakeit.com/api",
+  url: "https://example.com",
   headers: {
     "Content-Type": "application/json",
   },

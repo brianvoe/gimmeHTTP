@@ -6,7 +6,7 @@ describe('RustReqwest.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = RustReqwest.generate(config, httpRequest)
@@ -18,7 +18,7 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
   let client = Client::new();
 
-  let res = client.request(reqwest::Method::GET, "https://gofakeit.com/api")
+  let res = client.request(reqwest::Method::GET, "https://example.com")
     .send()?;
 
   println!("{}", res.text()?);
@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -47,7 +47,7 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
   let client = Client::new();
 
-  let res = client.request(reqwest::Method::POST, "https://gofakeit.com/api")
+  let res = client.request(reqwest::Method::POST, "https://example.com")
     .header("Content-Type", "application/json")
     .header("Authorization", "Bearer token")
     .send()?;
@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   test('should build a POST request with cookies', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       cookies: {
         cookie1: 'value1',
         cookie2: 'value2'
@@ -78,7 +78,7 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
   let client = Client::new();
 
-  let res = client.request(reqwest::Method::POST, "https://gofakeit.com/api")
+  let res = client.request(reqwest::Method::POST, "https://example.com")
     .cookie("cookie1", "value1")
     .cookie("cookie2", "value2")
     .send()?;
@@ -93,7 +93,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   test('should build a POST request with error handling', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -111,7 +111,7 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
   let client = Client::new();
 
-  let res = client.request(reqwest::Method::POST, "https://gofakeit.com/api")
+  let res = client.request(reqwest::Method::POST, "https://example.com")
     .header("Content-Type", "application/json")
     .body("{\"key1\":\"value1\"}")
     .send()?;

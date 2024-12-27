@@ -6,7 +6,7 @@ describe('Node.generate', () => {
   test('should build a POST request with error handling', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -22,7 +22,7 @@ const http = require("http");
 
 const options = {
   method: "POST",
-  hostname: "gofakeit.com",
+  hostname: "example.com",
   path: "/api",
   headers: {
     "Content-Type": "application/json",
@@ -53,7 +53,7 @@ req.end();
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = Node.generate(config, httpRequest)
@@ -63,7 +63,7 @@ const http = require("http");
 
 const options = {
   method: "GET",
-  hostname: "gofakeit.com",
+  hostname: "example.com",
   path: "/api",
 };
 
@@ -87,7 +87,7 @@ req.end();
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -101,7 +101,7 @@ const http = require("http");
 
 const options = {
   method: "POST",
-  hostname: "gofakeit.com",
+  hostname: "example.com",
   path: "/api",
   headers: {
     "Content-Type": "application/json",

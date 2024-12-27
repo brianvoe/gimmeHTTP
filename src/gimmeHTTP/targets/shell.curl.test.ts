@@ -7,17 +7,17 @@ describe('Curl.generate', () => {
     const config = {}
     const http: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com'
+      url: 'https://example.com'
     }
     const result = ShellCurl.generate(config, http)
-    expect(result).toBe(`curl -X GET "https://gofakeit.com"`)
+    expect(result).toBe(`curl -X GET "https://example.com"`)
   })
 
   test('POST - headers', () => {
     const config = {}
     const http: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -26,7 +26,7 @@ describe('Curl.generate', () => {
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
-curl -X POST "https://gofakeit.com" \\
+curl -X POST "https://example.com" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer token"
       `.trim()
@@ -37,7 +37,7 @@ curl -X POST "https://gofakeit.com" \\
     const config = {}
     const http: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -55,7 +55,7 @@ curl -X POST "https://gofakeit.com" \\
     // }'
     expect(result).toBe(
       `
-curl -X POST "https://gofakeit.com" \\
+curl -X POST "https://example.com" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer token" \\
   -d $'{ \\
@@ -70,7 +70,7 @@ curl -X POST "https://gofakeit.com" \\
     const config = {}
     const http: Http = {
       method: 'POST',
-      url: 'http://gofakeit.com',
+      url: 'http://example.com',
       cookies: {
         foo: 'bar',
         bar: 'baz'
@@ -79,7 +79,7 @@ curl -X POST "https://gofakeit.com" \\
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
-curl -X POST "http://gofakeit.com" \\
+curl -X POST "http://example.com" \\
   -b "foo=bar; bar=baz"
       `.trim()
     )
@@ -89,7 +89,7 @@ curl -X POST "http://gofakeit.com" \\
     const config = {}
     const http: Http = {
       method: 'POST',
-      url: 'http://gofakeit.com?foo=bar&foo=baz&baz=abc&key=value',
+      url: 'http://example.com?foo=bar&foo=baz&baz=abc&key=value',
       headers: {
         accept: 'application/json',
         'content-type': 'application/x-www-form-urlencoded'
@@ -105,7 +105,7 @@ curl -X POST "http://gofakeit.com" \\
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
-curl -X POST "http://gofakeit.com?foo=bar&foo=baz&baz=abc&key=value" \\
+curl -X POST "http://example.com?foo=bar&foo=baz&baz=abc&key=value" \\
   -H "accept: application/json" \\
   -H "content-type: application/x-www-form-urlencoded" \\
   -b "foo=bar; bar=baz" \\
@@ -118,7 +118,7 @@ curl -X POST "http://gofakeit.com?foo=bar&foo=baz&baz=abc&key=value" \\
     const config = {}
     const http: Http = {
       method: 'GET',
-      url: 'http://gofakeit.com',
+      url: 'http://example.com',
       headers: {
         accept: 'application/json',
         'quoted-value': `"quoted" 'string'`,
@@ -128,7 +128,7 @@ curl -X POST "http://gofakeit.com?foo=bar&foo=baz&baz=abc&key=value" \\
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
-curl -X GET "http://gofakeit.com" \\
+curl -X GET "http://example.com" \\
   -H "accept: application/json" \\
   -H "quoted-value: \\"quoted\\" 'string'" \\
   -H "x-foo: Bar"

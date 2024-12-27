@@ -6,13 +6,13 @@ describe('JSFetch.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = JSFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
-fetch("https://gofakeit.com/api", {
+fetch("https://example.com", {
   method: "GET",
 })
 .then(response => response.text())
@@ -24,7 +24,7 @@ fetch("https://gofakeit.com/api", {
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -34,7 +34,7 @@ fetch("https://gofakeit.com/api", {
     const result = JSFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
-fetch("https://gofakeit.com/api", {
+fetch("https://example.com", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -50,7 +50,7 @@ fetch("https://gofakeit.com/api", {
   test('should build a POST request with error handling', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -62,7 +62,7 @@ fetch("https://gofakeit.com/api", {
     const result = JSFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
-fetch("https://gofakeit.com/api", {
+fetch("https://example.com", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",

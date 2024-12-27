@@ -9,7 +9,7 @@ describe('Go.generate', () => {
     }
     const http: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com'
+      url: 'https://example.com'
     }
     const result = Go.generate(config, http)
     expect(result).toBe(
@@ -23,7 +23,7 @@ import (
 )
 
 func main() {
-  url := "https://gofakeit.com"
+  url := "https://example.com"
 
   req, _ := http.NewRequest("GET", url, nil)
 
@@ -44,7 +44,7 @@ func main() {
     }
     const http: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -68,7 +68,7 @@ import (
 )
 
 func main() {
-  url := "https://gofakeit.com"
+  url := "https://example.com"
 
   jsonBodyMap := map[string]any{
     "foo": "bar",
@@ -97,7 +97,7 @@ func main() {
     }
     const http: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -116,7 +116,7 @@ import (
 )
 
 func main() {
-  url := "https://gofakeit.com"
+  url := "https://example.com"
 
   req, err := http.NewRequest("POST", url, nil)
   if err != nil {
@@ -149,7 +149,7 @@ func main() {
     }
     const http: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com',
+      url: 'https://example.com',
       cookies: {
         foo: 'bar',
         bar: 'baz'
@@ -168,7 +168,7 @@ import (
 )
 
 func main() {
-  url := "https://gofakeit.com"
+  url := "https://example.com"
 
   req, err := http.NewRequest("POST", url, nil)
   if err != nil {

@@ -6,7 +6,7 @@ describe('PhpCurl.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = PhpCurl.generate(config, httpRequest)
@@ -16,7 +16,7 @@ describe('PhpCurl.generate', () => {
 
 $ch = curl_init();
 
-curl_setopt($ch, CURLOPT_URL, "https://gofakeit.com/api");
+curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 
@@ -31,7 +31,7 @@ echo $response;
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -45,7 +45,7 @@ echo $response;
 
 $ch = curl_init();
 
-curl_setopt($ch, CURLOPT_URL, "https://gofakeit.com/api");
+curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
@@ -65,7 +65,7 @@ echo $response;
   test('should build a POST request with cookies', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       cookies: {
         key1: 'value1'
       }
@@ -78,7 +78,7 @@ echo $response;
 
 $ch = curl_init();
 
-curl_setopt($ch, CURLOPT_URL, "https://gofakeit.com/api");
+curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
@@ -97,7 +97,7 @@ echo $response;
   test('should build a POST request with error handling', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -113,7 +113,7 @@ echo $response;
 
 $ch = curl_init();
 
-curl_setopt($ch, CURLOPT_URL, "https://gofakeit.com/api");
+curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 

@@ -6,7 +6,7 @@ describe('PythonHttpClient.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = PythonHttpClient.generate(config, httpRequest)
@@ -15,7 +15,7 @@ describe('PythonHttpClient.generate', () => {
 import http.client
 import json
 
-conn = http.client.HTTPSConnection("gofakeit.com", 443)
+conn = http.client.HTTPSConnection("example.com", 443)
 
 conn.request("GET", "/api")
 res = conn.getresponse()
@@ -29,7 +29,7 @@ print(data.decode("utf-8"))
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -42,7 +42,7 @@ print(data.decode("utf-8"))
 import http.client
 import json
 
-conn = http.client.HTTPSConnection("gofakeit.com", 443)
+conn = http.client.HTTPSConnection("example.com", 443)
 
 headers = {
   "Content-Type": "application/json",
@@ -61,7 +61,7 @@ print(data.decode("utf-8"))
   test('should build a POST request with body', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       body: {
         key1: 'value1'
       }
@@ -73,7 +73,7 @@ print(data.decode("utf-8"))
 import http.client
 import json
 
-conn = http.client.HTTPSConnection("gofakeit.com", 443)
+conn = http.client.HTTPSConnection("example.com", 443)
 
 payload = json.dumps({"key1":"value1"})
 
@@ -89,7 +89,7 @@ print(data.decode("utf-8"))
   test('should build a POST request with headers and cookies', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -105,7 +105,7 @@ print(data.decode("utf-8"))
 import http.client
 import json
 
-conn = http.client.HTTPSConnection("gofakeit.com", 443)
+conn = http.client.HTTPSConnection("example.com", 443)
 
 headers = {
   "Content-Type": "application/json",

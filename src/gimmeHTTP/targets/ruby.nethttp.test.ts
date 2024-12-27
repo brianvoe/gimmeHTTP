@@ -6,7 +6,7 @@ describe('RubyNetHttp.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = RubyNetHttp.generate(config, httpRequest)
@@ -15,7 +15,7 @@ describe('RubyNetHttp.generate', () => {
 require "net/http"
 require "uri"
 
-uri = URI.parse("https://gofakeit.com/api")
+uri = URI.parse("https://example.com")
 request = Net::HTTP::Get.new(uri)
 
 response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
@@ -30,7 +30,7 @@ puts response.body
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -43,7 +43,7 @@ puts response.body
 require "net/http"
 require "uri"
 
-uri = URI.parse("https://gofakeit.com/api")
+uri = URI.parse("https://example.com")
 request = Net::HTTP::Post.new(uri)
 request["Content-Type"] = "application/json"
 request["Authorization"] = "Bearer token"
@@ -60,7 +60,7 @@ puts response.body
   test('should build a POST request with cookies', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       cookies: {
         key1: 'value1'
       }
@@ -72,7 +72,7 @@ puts response.body
 require "net/http"
 require "uri"
 
-uri = URI.parse("https://gofakeit.com/api")
+uri = URI.parse("https://example.com")
 request = Net::HTTP::Post.new(uri)
 request["Cookie"] = "key1=value1"
 
@@ -88,7 +88,7 @@ puts response.body
   test('should build a POST request with body', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       body: {
         key1: 'value1'
       }
@@ -100,7 +100,7 @@ puts response.body
 require "net/http"
 require "uri"
 
-uri = URI.parse("https://gofakeit.com/api")
+uri = URI.parse("https://example.com")
 request = Net::HTTP::Post.new(uri)
 request.body = {"key1":"value1"}
 

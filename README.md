@@ -46,7 +46,7 @@ const settings = {
   target: 'native',
   http: {
     method: 'GET',
-    url: 'https://gofakeit.com'
+    url: 'https://example.com'
   }
 }
 
@@ -72,7 +72,7 @@ import (
 )
 
 func main() {
-  url := "https://gofakeit.com"
+  url := "https://example.com"
 
   req, _ := http.NewRequest("GET", url, nil)
 
@@ -103,7 +103,7 @@ interface Settigns {
   // HTTP request details
   http: {
     method: string // 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-    url: string // ex: 'https://gofakeit.com'
+    url: string // ex: 'https://example.com'
 
     // Optional request details
     headers?: { [key: string]: string }
@@ -190,7 +190,7 @@ const settings = {
   target: 'href',
   http: {
     method: 'GET',
-    url: 'https://gofakeit.com'
+    url: 'https://example.com'
   }
 }
 
@@ -204,7 +204,7 @@ console.log(code)
 Output:
 
 ```html
-<a href="https://gofakeit.com">GET</a>
+<a href="https://example.com">GET</a>
 ```
 
 ## Examples
@@ -217,7 +217,7 @@ const settings = {
   target: 'fetch',
   http: {
     method: 'POST',
-    url: 'https://gofakeit.com',
+    url: 'https://example.com',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -237,7 +237,7 @@ console.log(output)
 Output:
 
 ```javascript
-fetch("https://gofakeit.com", {
+fetch("https://example.com", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",

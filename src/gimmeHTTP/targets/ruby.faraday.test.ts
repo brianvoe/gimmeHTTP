@@ -6,7 +6,7 @@ describe('RubyFaraday.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = RubyFaraday.generate(config, httpRequest)
@@ -14,12 +14,12 @@ describe('RubyFaraday.generate', () => {
       `
 require "faraday"
 
-conn = Faraday.new(url: "https://gofakeit.com/api") do |f|
+conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
 response = conn.get do |req|
-  req.url "https://gofakeit.com/api"
+  req.url "https://example.com"
 end
 
 puts response.body
@@ -30,7 +30,7 @@ puts response.body
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -42,12 +42,12 @@ puts response.body
       `
 require "faraday"
 
-conn = Faraday.new(url: "https://gofakeit.com/api") do |f|
+conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
 response = conn.post do |req|
-  req.url "https://gofakeit.com/api"
+  req.url "https://example.com"
   req.headers["Content-Type"] = "application/json"
   req.headers["Authorization"] = "Bearer token"
 end
@@ -60,7 +60,7 @@ puts response.body
   test('should build a POST request with cookies', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       cookies: {
         key1: 'value1'
       }
@@ -71,12 +71,12 @@ puts response.body
       `
 require "faraday"
 
-conn = Faraday.new(url: "https://gofakeit.com/api") do |f|
+conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
 response = conn.post do |req|
-  req.url "https://gofakeit.com/api"
+  req.url "https://example.com"
   req.headers["Cookie"] = "key1=value1"
 end
 
@@ -88,7 +88,7 @@ puts response.body
   test('should build a POST request with body', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       body: {
         key1: 'value1'
       }
@@ -99,12 +99,12 @@ puts response.body
       `
 require "faraday"
 
-conn = Faraday.new(url: "https://gofakeit.com/api") do |f|
+conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
 response = conn.post do |req|
-  req.url "https://gofakeit.com/api"
+  req.url "https://example.com"
   req.body = {"key1":"value1"}
 end
 

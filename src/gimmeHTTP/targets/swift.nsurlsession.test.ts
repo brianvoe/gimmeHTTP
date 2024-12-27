@@ -6,7 +6,7 @@ describe('SwiftNSURLSession.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = SwiftNSURLSession.generate(config, httpRequest)
@@ -14,7 +14,7 @@ describe('SwiftNSURLSession.generate', () => {
       `
 import Foundation
 
-let url = URL(string: "https://gofakeit.com/api")!
+let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "GET"
 
@@ -42,7 +42,7 @@ task.resume()
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -54,7 +54,7 @@ task.resume()
       `
 import Foundation
 
-let url = URL(string: "https://gofakeit.com/api")!
+let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "POST"
 
@@ -85,7 +85,7 @@ task.resume()
   test('should build a POST request with cookies', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       cookies: {
         key1: 'value1',
         key2: 'value2'
@@ -97,7 +97,7 @@ task.resume()
       `
 import Foundation
 
-let url = URL(string: "https://gofakeit.com/api")!
+let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "POST"
 
@@ -128,7 +128,7 @@ task.resume()
   test('should build a POST request with body', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       body: {
         key1: 'value1'
       }
@@ -139,7 +139,7 @@ task.resume()
       `
 import Foundation
 
-let url = URL(string: "https://gofakeit.com/api")!
+let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "POST"
 

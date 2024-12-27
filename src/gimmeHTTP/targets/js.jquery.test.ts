@@ -6,14 +6,14 @@ describe('JSJQuery.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
-      url: 'https://gofakeit.com/api'
+      url: 'https://example.com'
     }
     const config: Config = {}
     const result = JSJQuery.generate(config, httpRequest)
     expect(result).toBe(
       `
 $.ajax({
-  url: "https://gofakeit.com/api",
+  url: "https://example.com",
   type: "GET",
   success: function(data) {
     console.log(data);
@@ -26,7 +26,7 @@ $.ajax({
   test('should build a POST request with headers', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token'
@@ -37,7 +37,7 @@ $.ajax({
     expect(result).toBe(
       `
 $.ajax({
-  url: "https://gofakeit.com/api",
+  url: "https://example.com",
   type: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -54,7 +54,7 @@ $.ajax({
   test('should build a POST request with error handling', () => {
     const httpRequest: Http = {
       method: 'POST',
-      url: 'https://gofakeit.com/api',
+      url: 'https://example.com',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -67,7 +67,7 @@ $.ajax({
     expect(result).toBe(
       `
 $.ajax({
-  url: "https://gofakeit.com/api",
+  url: "https://example.com",
   type: "POST",
   headers: {
     "Content-Type": "application/json",
