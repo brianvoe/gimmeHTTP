@@ -45,7 +45,7 @@
         language: language,
         languages: Languages(),
         // Randomly select an http request
-        http: httpGet,
+        http: httpPost,
 
         https: {
           simple_get: httpGet,
