@@ -1,6 +1,6 @@
 import { Register, Generate, Settings, Config, Http, Builder, ClearRegistry } from './index'
 import { beforeEach, describe, expect, test } from '@jest/globals'
-import ShellCurl from './targets/shell.curl'
+import ShellCurl from './clients/shell.curl'
 
 describe('Index', () => {
   beforeEach(() => {

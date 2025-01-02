@@ -3,7 +3,7 @@ import { Generate, Settings } from './generate'
 import { beforeAll, describe, expect, test } from '@jest/globals'
 
 // Target
-import ShellCurl from '../targets/shell.curl'
+import ShellCurl from '../clients/shell.curl'
 
 describe('Generate', () => {
   beforeAll(() => {

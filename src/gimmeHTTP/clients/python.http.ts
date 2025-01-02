@@ -1,6 +1,6 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
-import { Target } from '../utils/registry'
+import { Client } from '../utils/registry'
 
 export default {
   default: true,
@@ -80,7 +80,7 @@ export default {
 
     return builder.output()
   }
-} as Target
+} as Client
 
 function formatJsonBody(body: any, builder: Builder): void {
   const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
