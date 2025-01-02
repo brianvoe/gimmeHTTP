@@ -23,7 +23,7 @@
     <a href="#install"><h2 id="install">Installation</h2></a>
     <ShikiStyle language="shell">
       <pre>
-        npm install shiki
+        npm i gimmehttp
       </pre>
     </ShikiStyle>
   </div>
