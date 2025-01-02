@@ -4,6 +4,8 @@ export declare class Builder {
     private lineJoin;
     private currentDepth;
     constructor(options?: BuilderOptions);
+    getIndent(): string;
+    getJoin(): string;
     line(line?: string): void;
     append(line: string): void;
     indent(): void;
@@ -18,7 +20,14 @@ declare interface BuilderOptions {
 
 export declare function ClearRegistry(): void;
 
-export declare function Codes(): Target[];
+export declare interface Client {
+    default?: boolean;
+    language: string;
+    client: string;
+    generate: (config: any, http: any) => string;
+}
+
+export declare function Codes(): Client[];
 
 export declare interface Config {
     indent?: string;
@@ -55,9 +64,9 @@ declare interface Outcome {
     code?: string;
 }
 
-export declare function Register(target: Target | Target[]): void | Error;
+export declare function Register(client: Client | Client[]): void | Error;
 
-export declare function SearchTarget(language: string, client?: string): Target | Error;
+export declare function Search(language: string, client?: string): Client | Error;
 
 export declare function SetDefault(language: string, client: string): void | Error;
 
@@ -66,13 +75,6 @@ export declare interface Settings {
     client: string;
     config?: Config;
     http: Http;
-}
-
-export declare interface Target {
-    default?: boolean;
-    language: string;
-    client: string;
-    generate: (config: any, http: any) => string;
 }
 
 export { }
