@@ -7,7 +7,7 @@ HTTP request code snippet generator
 [![NPM Downloads](https://img.shields.io/npm/dt/gimmehttp.svg)](https://www.npmjs.com/package/gimmehttp)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/brianvoe/gimmehttp/jest.yml?logo=jest&label=unit%20tests) [![gimmehttp](https://snyk.io/advisor/npm-package/gimmehttp/badge.svg)](https://snyk.io/advisor/npm-package/gimmehttp)
 
-GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration. Whether you need to quickly prototype an API request or generate example code for documentation, GimmeHttp has you covered. Just provide the request details, and let GimmeHttp generate the code.
+GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration. Quickly output API requests .
 
 ## Features
 
@@ -16,21 +16,18 @@ GimmeHttp is a library for generating HTTP request code snippets in various lang
 - Add Custom Languages and Clients
 - Zero dependencies
 
-## Supported Languages and Targets
+## Limitation
 
-| Language   | Targets              |
-| ---------- | -------------------- |
-| c          | libcurl              |
-| csharp     | http, restsharp      |
-| curl       | native               |
-| go         | http                 |
-| javascript | fetch, axios, jQuery |
-| node       | http, nod-fetch      |
-| php        | curl, guzzle         |
-| python     | requests, http       |
-| ruby       | nethttp, faraday     |
-| rust       | reqwest              |
-| swift      | nsurlsession         |
+Currently body only supports JSON. Need help building out the body support for other types. See [Contributions](#contributing) for more details.
+
+## Supported Languages and Clients
+
+| Language                                                                                                                                 | Clients         | Language                                                                                                                                     | Clients              | Language                                                                                                                                | Clients          |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/c.svg" width="50" height="50">      | libcurl         | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/javascript.svg" width="50" height="50"> | fetch, axios, jQuery | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/ruby.svg" width="50" height="50">  | nethttp, faraday |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/csharp.svg" width="50" height="50"> | http, restsharp | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/node.svg" width="50" height="50">       | http, node-fetch     | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/rust.svg" width="50" height="50">  | reqwest          |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/shell.svg" width="50" height="50">  | curl            | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/php.svg" width="50" height="50">        | curl, guzzle         | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/swift.svg" width="50" height="50"> | nsurlsession     |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/go.svg" width="50" height="50">     | http            | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/python.svg" width="50" height="50">     | requests, http       |                                                                                                                                         |                  |
 
 ## Installation
 
