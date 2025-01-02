@@ -19,6 +19,14 @@ export class Builder {
     this.lineJoin = options.join || '\n'
   }
 
+  public getIndent(): string {
+    return this.indentChar
+  }
+
+  public getJoin(): string {
+    return this.lineJoin
+  }
+
   public line(line: string = ''): void {
     // dont indent empty lines
     this.code.push({ depth: line === '' ? 0 : this.currentDepth, line })
