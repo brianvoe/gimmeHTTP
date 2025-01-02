@@ -1,31 +1,31 @@
-import { Codes, Languages, SearchTarget, SetDefault, Register, ClearRegistry } from './utils/registry'
+import { Codes, Languages, Search, SetDefault, Register, ClearRegistry } from './utils/registry'
 import { Generate } from './utils/generate'
 import { Builder } from './utils/builder'
 import { IsJsonRequest } from './utils/utils'
 
 // Types
-import type { Target } from './utils/registry'
+import type { Client } from './utils/registry'
 import type { Method, Settings, Config, Http } from './utils/generate'
 
-// Targets
-import CLibCurl from './targets/c.libcurl'
-import CSharpHttp from './targets/csharp.http'
-import CSharpRest from './targets/csharp.restsharp'
-import Go from './targets/go'
-import JSFetch from './targets/js.fetch'
-import JSAxios from './targets/js.axios'
-import JSJquery from './targets/js.jquery'
-import Node from './targets/node.http'
-import NodeFetch from './targets/node.fetch'
-import PHPCurl from './targets/php.curl'
-import PHPGuzzle from './targets/php.guzzle'
-import PythonHttp from './targets/python.http'
-import PythonRequests from './targets/python.requests'
-import Ruby from './targets/ruby.nethttp'
-import RubyFaraday from './targets/ruby.faraday'
-import RustReqwest from './targets/rust.reqwest'
-import ShellCurl from './targets/shell.curl'
-import SwiftNsurlsession from './targets/swift.nsurlsession'
+// Clients
+import CLibCurl from './clients/c.libcurl'
+import CSharpHttp from './clients/csharp.http'
+import CSharpRest from './clients/csharp.restsharp'
+import Go from './clients/go'
+import JSFetch from './clients/js.fetch'
+import JSAxios from './clients/js.axios'
+import JSJquery from './clients/js.jquery'
+import Node from './clients/node.http'
+import NodeFetch from './clients/node.fetch'
+import PHPCurl from './clients/php.curl'
+import PHPGuzzle from './clients/php.guzzle'
+import PythonHttp from './clients/python.http'
+import PythonRequests from './clients/python.requests'
+import Ruby from './clients/ruby.nethttp'
+import RubyFaraday from './clients/ruby.faraday'
+import RustReqwest from './clients/rust.reqwest'
+import ShellCurl from './clients/shell.curl'
+import SwiftNsurlsession from './clients/swift.nsurlsession'
 
 // Register all languages
 Register(CLibCurl)
@@ -49,10 +49,10 @@ Register(SwiftNsurlsession)
 
 export {
   // Registry
-  Target,
+  Client,
   Codes,
   Languages,
-  SearchTarget,
+  Search,
   SetDefault,
   Register,
   ClearRegistry,

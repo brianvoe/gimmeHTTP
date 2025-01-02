@@ -1,13 +1,13 @@
-export interface Target {
+export interface Client {
   default?: boolean
   language: string
   client: string
   generate: (config: any, http: any) => string
 }
 
-const codes: Target[] = []
+const codes: Client[] = []
 
-export function Codes(): Target[] {
+export function Codes(): Client[] {
   return codes
 }
 
@@ -16,75 +16,75 @@ export function Languages(): string[] {
   return codes.map((c) => c.language).filter((v, i, a) => a.indexOf(v) === i)
 }
 
-// Search for target, whether or not they pass in a client
-// If no client, return the default target of that language
-export function SearchTarget(language: string, client?: string): Target | Error {
+// Search for client, whether or not they pass in a client
+// If no client, return the default client of that language
+export function Search(language: string, client?: string): Client | Error {
   if (language === '' || language === undefined) {
     return new Error('Language is required')
   }
 
-  // Loop through and get all targets for the language
-  const targets = codes.filter((c) => c.language.toLowerCase() === language.toLowerCase())
-  if (targets.length === 0) {
-    return new Error('No targets found of language: ' + language)
+  // Loop through and get all clients for the language
+  const clients = codes.filter((c) => c.language.toLowerCase() === language.toLowerCase())
+  if (clients.length === 0) {
+    return new Error('No client found for ' + language)
   }
 
   // Get default client
-  const defaultTarget: Target = targets.find((c) => c.default) || targets[0]
+  const defaultClient: Client = clients.find((c) => c.default) || clients[0]
 
   // If no client, return default
   if (!client) {
-    return defaultTarget
+    return defaultClient
   }
 
   // If client, return the client
-  const target = targets.find((c) => c.client.toLowerCase() === client.toLowerCase())
-  if (!target) {
-    return defaultTarget
+  const clientResult = clients.find((c) => c.client.toLowerCase() === client.toLowerCase())
+  if (!clientResult) {
+    return defaultClient
   }
 
-  return target
+  return clientResult
 }
 
 export function SetDefault(language: string, client: string): void | Error {
-  const targetResult = SearchTarget(language, client)
-  if (targetResult instanceof Error) {
-    return targetResult
+  const clientResult = Search(language, client)
+  if (clientResult instanceof Error) {
+    return clientResult
   }
 
-  // Set the target as default
-  targetResult.default = true
+  // Set the client as default
+  clientResult.default = true
 }
 
-export function Register(target: Target | Target[]): void | Error {
-  if (!target) {
-    return new Error('Target is required')
+export function Register(client: Client | Client[]): void | Error {
+  if (!client) {
+    return new Error('Client is required')
   }
 
-  // Register multiple targets
-  if (Array.isArray(target)) {
-    target.forEach((g) => Register(g))
+  // Register multiple clients
+  if (Array.isArray(client)) {
+    client.forEach((g) => Register(g))
     return
   }
 
-  // Get current list of targets from target.language
-  const curTargets = codes.filter((c) => c.language.toLowerCase() === target.language.toLowerCase())
-  const exists = curTargets.find((c) => c.client.toLowerCase() === target.client.toLowerCase())
+  // Get current list of clients from client.language
+  const curClients = codes.filter((c) => c.language.toLowerCase() === client.language.toLowerCase())
+  const exists = curClients.find((c) => c.client.toLowerCase() === client.client.toLowerCase())
 
   // Set default to false if undefined
-  if (target.default === undefined) {
-    target.default = curTargets.length === 0 ? true : false
+  if (client.default === undefined) {
+    client.default = curClients.length === 0 ? true : false
   }
 
-  // If it exist, overwrite the target
+  // If it exist, overwrite the client
   if (exists) {
-    const index = codes.indexOf(target)
-    codes[index] = target
+    const index = codes.indexOf(client)
+    codes[index] = client
     return
   }
 
-  // otherwise, add the target
-  codes.push(target)
+  // otherwise, add the client
+  codes.push(client)
 }
 
 export function ClearRegistry(): void {
