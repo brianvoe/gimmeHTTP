@@ -4,5 +4,6 @@
   "semi": false,
   "vueIndentScriptAndStyle": true,
   "printWidth": 120,
-  "trailingComma": "none"
+  "trailingComma": "none",
+  "proseWrap": "always"
 }

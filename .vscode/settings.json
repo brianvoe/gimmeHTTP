@@ -13,11 +13,6 @@
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "prettier.singleQuote": true,
-  "prettier.semi": false,
-  "prettier.trailingComma": "none",
-  "prettier.printWidth": 100,
-  "prettier.proseWrap": "always",
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
   },
