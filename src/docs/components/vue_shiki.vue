@@ -20,7 +20,7 @@
   import r from 'shiki/langs/r.mjs'
   import ruby from 'shiki/langs/ruby.mjs'
   import rust from 'shiki/langs/rust.mjs'
-  import shell from 'shiki/langs/shell.mjs'
+  import shell from 'shiki/langs/shellscript.mjs'
   import swift from 'shiki/langs/swift.mjs'
   import typescript from 'shiki/langs/typescript.mjs'
 
