@@ -45,7 +45,9 @@ headers = {
   "Content-Type": "application/json",
   "Authorization": "Bearer token",
 }
-data = {"key1":"value1"}
+data = {
+  "key1": "value1"
+}
 
 response = requests.post(url, headers=headers, data=data)
 print(response.text)
@@ -93,7 +95,9 @@ print(response.text)
 import requests
 
 url = "https://example.com"
-data = {"key1":"value1"}
+data = {
+  "key1": "value1"
+}
 
 response = requests.post(url, data=data)
 print(response.text)

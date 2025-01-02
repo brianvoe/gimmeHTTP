@@ -75,7 +75,9 @@ import json
 
 conn = http.client.HTTPSConnection("example.com", 443)
 
-payload = json.dumps({"key1":"value1"})
+payload = {
+  "key1": "value1"
+}
 
 conn.request("POST", "/", payload)
 res = conn.getresponse()

@@ -73,7 +73,9 @@ fetch("https://example.com", {
   headers: {
     "Content-Type": "application/json",
   },
-  body: JSON.stringify({"key1":"value1"}),
+  body: {
+    "key1": "value1"
+  },
 })
 .then(response => {
   if (!response.ok) {

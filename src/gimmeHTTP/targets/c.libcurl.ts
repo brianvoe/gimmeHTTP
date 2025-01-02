@@ -52,7 +52,9 @@ export default {
     }
 
     if (http.body) {
-      builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"(${JSON.stringify(http.body)})");`)
+      builder.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"(')
+      formatJsonBody(http.body, builder)
+      builder.append(')");')
     }
 
     builder.line('res = curl_easy_perform(curl);')
@@ -75,3 +77,17 @@ export default {
     return builder.output()
   }
 } as Target
+
+function formatJsonBody(json: any, builder: Builder): void {
+  const lines = JSON.stringify(json, null, 2).split('\n')
+  // for loop with indea and value
+  for (let i = 0; i < lines.length; i++) {
+    // if first line, append instead of line
+    if (i === 0) {
+      builder.append(`${lines[i]}`)
+      continue
+    }
+
+    builder.line(`${lines[i]}`)
+  }
+}

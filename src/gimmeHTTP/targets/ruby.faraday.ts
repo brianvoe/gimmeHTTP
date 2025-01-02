@@ -41,7 +41,9 @@ export default {
     }
 
     if (http.body) {
-      builder.line('req.body = ' + JSON.stringify(http.body))
+      builder.line('req.body = ')
+      builder.indent()
+      formatJsonBody(http.body, builder)
     }
 
     builder.outdent()
@@ -53,3 +55,22 @@ export default {
     return builder.output()
   }
 } as Target
+
+function formatJsonBody(body: any, builder: Builder): void {
+  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+
+    if (i === 0) {
+      builder.append(line)
+      continue
+    }
+
+    // If last line, outdent
+    if (i === lines.length - 1) {
+      builder.outdent()
+    }
+
+    builder.line(line)
+  }
+}

@@ -48,7 +48,9 @@ export default {
 
     if (hasPayload) {
       params.push('data=data')
-      builder.line('data = ' + JSON.stringify(http.body))
+      builder.line('data = ')
+      builder.indent()
+      formatJsonBody(http.body, builder)
     }
 
     builder.line()
@@ -64,3 +66,22 @@ export default {
     return builder.output()
   }
 } as Target
+
+function formatJsonBody(body: any, builder: Builder): void {
+  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+
+    if (i === 0) {
+      builder.append(line)
+      continue
+    }
+
+    // If last line, outdent
+    if (i === lines.length - 1) {
+      builder.outdent()
+    }
+
+    builder.line(line)
+  }
+}

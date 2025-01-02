@@ -49,19 +49,11 @@ export default {
 
       if (contentType.includes('application/json')) {
         // Pretty print JSON
-        const jsonData = JSON.stringify(http.body, null, 2).replace(/'/g, "'\\''")
-        const jsonLines = jsonData.split('\n')
-
-        // Start the data with $' to support embedded newlines
-        builder.line(`-d $'${jsonLines[0]} \\`)
-
-        // Middle lines
-        for (let i = 1; i < jsonLines.length - 1; i++) {
-          builder.line(`${jsonLines[i]} \\`)
-        }
-
-        // Last line closes the quote
-        builder.line(`${jsonLines[jsonLines.length - 1]}'`)
+        builder.line("-d $'")
+        builder.indent()
+        formatJsonBody(http.body, builder)
+        builder.append("'")
+        builder.outdent()
         addedBody = true
       } else if (contentType === 'application/x-www-form-urlencoded') {
         const formData = new URLSearchParams(http.body).toString().replace(/'/g, "'\\''")
@@ -85,3 +77,23 @@ export default {
     return output
   }
 } as Target
+
+function formatJsonBody(body: any, builder: Builder): void {
+  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
+  const backslash = '\\'
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+
+    if (i === 0) {
+      builder.append(line + ' ' + backslash)
+      continue
+    }
+
+    // If last line, outdent
+    if (i === lines.length - 1) {
+      builder.outdent()
+    }
+
+    builder.line(line + (i === lines.length - 1 ? '' : ' ' + backslash))
+  }
+}

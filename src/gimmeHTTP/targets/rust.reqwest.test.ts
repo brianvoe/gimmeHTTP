@@ -113,7 +113,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
   let res = client.request(reqwest::Method::POST, "https://example.com")
     .header("Content-Type", "application/json")
-    .body("{\"key1\":\"value1\"}")
+    .body({
+      "key1": "value1"
+    })
     .send()?;
 
   if res.status().is_success() {

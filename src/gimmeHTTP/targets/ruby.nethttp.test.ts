@@ -102,7 +102,9 @@ require "uri"
 
 uri = URI.parse("https://example.com")
 request = Net::HTTP::Post.new(uri)
-request.body = {"key1":"value1"}
+request.body = {
+  "key1": "value1"
+}
 
 response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
   http.request(request)

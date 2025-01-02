@@ -72,7 +72,9 @@ $.ajax({
   headers: {
     "Content-Type": "application/json",
   },
-  data: JSON.stringify({"key1":"value1"}),
+  data: {
+    "key1": "value1"
+  },
   contentType: "application/json",
   success: function(data) {
     console.log(data);

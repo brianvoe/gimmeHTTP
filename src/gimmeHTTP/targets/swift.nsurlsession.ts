@@ -40,9 +40,9 @@ export default {
     }
 
     if (http.body) {
-      builder.line(
-        'let body = try! JSONSerialization.data(withJSONObject: ' + JSON.stringify(http.body) + ', options: [])'
-      )
+      builder.line('let body = ')
+      builder.indent()
+      formatJsonBody(http.body, builder)
       builder.line('request.httpBody = body')
       builder.line()
     }
@@ -51,7 +51,7 @@ export default {
     builder.indent()
     builder.line('if let error = error {')
     builder.indent()
-    builder.line('print("Error: (error)")')
+    builder.line('print("Error: \\(error)")')
     builder.line('return')
     builder.outdent()
     builder.line('}')
@@ -66,7 +66,7 @@ export default {
     builder.outdent()
     builder.line('} else {')
     builder.indent()
-    builder.line('print("Request failed with status code: (httpResponse.statusCode)")')
+    builder.line('print("Request failed with status code: \\(httpResponse.statusCode)")')
     builder.outdent()
     builder.line('}')
     builder.outdent()
@@ -80,3 +80,22 @@ export default {
     return builder.output()
   }
 } as Target
+
+function formatJsonBody(body: any, builder: Builder): void {
+  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+
+    if (i === 0) {
+      builder.append(line)
+      continue
+    }
+
+    // If last line, outdent
+    if (i === lines.length - 1) {
+      builder.outdent()
+    }
+
+    builder.line(line)
+  }
+}

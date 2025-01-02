@@ -80,13 +80,6 @@ export default {
   }
 } as Target
 
-/**
- * Recursively formats an object/array into multi-line JSON for the generated code.
- * This affects how the *generated* PHP code looks (i.e., the literal lines).
- *
- * Then at runtime, the final JSON string will be built and pretty-printed by
- * json_encode(..., JSON_PRETTY_PRINT).
- */
 function formatJsonRecursive(json: any, builder: Builder): void {
   if (typeof json === 'object' && json !== null) {
     // Handle arrays

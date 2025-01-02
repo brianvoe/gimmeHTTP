@@ -105,7 +105,9 @@ end
 
 response = conn.post do |req|
   req.url "https://example.com"
-  req.body = {"key1":"value1"}
+  req.body = {
+    "key1": "value1"
+  }
 end
 
 puts response.body

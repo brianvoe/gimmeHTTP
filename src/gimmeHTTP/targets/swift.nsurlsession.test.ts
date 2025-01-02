@@ -20,7 +20,7 @@ request.httpMethod = "GET"
 
 let task = URLSession.shared.dataTask(with: request) { data, response, error in
   if let error = error {
-    print("Error: \(error)")
+    print("Error: \\(error)")
     return
   }
 
@@ -29,13 +29,13 @@ let task = URLSession.shared.dataTask(with: request) { data, response, error in
       let responseString = String(data: data, encoding: .utf8)
       print(responseString ?? "No response data")
     } else {
-      print("Request failed with status code: \(httpResponse.statusCode)")
+      print("Request failed with status code: \\(httpResponse.statusCode)")
     }
   }
 }
 
 task.resume()
-    `.trim()
+      `.trim()
     )
   })
 
@@ -63,7 +63,7 @@ request.addValue("Bearer token", forHTTPHeaderField: "Authorization")
 
 let task = URLSession.shared.dataTask(with: request) { data, response, error in
   if let error = error {
-    print("Error: \(error)")
+    print("Error: \\(error)")
     return
   }
 
@@ -72,13 +72,13 @@ let task = URLSession.shared.dataTask(with: request) { data, response, error in
       let responseString = String(data: data, encoding: .utf8)
       print(responseString ?? "No response data")
     } else {
-      print("Request failed with status code: \(httpResponse.statusCode)")
+      print("Request failed with status code: \\(httpResponse.statusCode)")
     }
   }
 }
 
 task.resume()
-    `.trim()
+      `.trim()
     )
   })
 
@@ -106,7 +106,7 @@ request.addValue("key2=value2", forHTTPHeaderField: "Cookie")
 
 let task = URLSession.shared.dataTask(with: request) { data, response, error in
   if let error = error {
-    print("Error: \(error)")
+    print("Error: \\(error)")
     return
   }
 
@@ -115,13 +115,13 @@ let task = URLSession.shared.dataTask(with: request) { data, response, error in
       let responseString = String(data: data, encoding: .utf8)
       print(responseString ?? "No response data")
     } else {
-      print("Request failed with status code: \(httpResponse.statusCode)")
+      print("Request failed with status code: \\(httpResponse.statusCode)")
     }
   }
 }
 
 task.resume()
-    `.trim()
+      `.trim()
     )
   })
 
@@ -143,12 +143,14 @@ let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "POST"
 
-let body = try! JSONSerialization.data(withJSONObject: {"key1":"value1"}, options: [])
+let body = {
+  "key1": "value1"
+}
 request.httpBody = body
 
 let task = URLSession.shared.dataTask(with: request) { data, response, error in
   if let error = error {
-    print("Error: \(error)")
+    print("Error: \\(error)")
     return
   }
 
@@ -157,13 +159,13 @@ let task = URLSession.shared.dataTask(with: request) { data, response, error in
       let responseString = String(data: data, encoding: .utf8)
       print(responseString ?? "No response data")
     } else {
-      print("Request failed with status code: \(httpResponse.statusCode)")
+      print("Request failed with status code: \\(httpResponse.statusCode)")
     }
   }
 }
 
 task.resume()
-    `.trim()
+      `.trim()
     )
   })
 })

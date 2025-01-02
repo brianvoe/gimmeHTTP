@@ -85,7 +85,7 @@ int main(void) {
         key1: 'value1'
       }
     }
-    const config: Config = {}
+    const config: Config = { indent: '  ' }
     const result = CLibCurl.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -101,7 +101,9 @@ int main(void) {
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"({\"key1\":\"value1\"})");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"({
+      "key1": "value1"
+    })");
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));

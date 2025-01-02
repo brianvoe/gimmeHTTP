@@ -94,7 +94,9 @@ axios({
   headers: {
     "Content-Type": "application/json",
   },
-  data: {"key1":"value1"},
+  data: {
+    "key1": "value1"
+  },
 })
 .then(response => {
   console.log(response.data);
