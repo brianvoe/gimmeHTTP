@@ -33,6 +33,7 @@ export default {
     }
 
     if (http.headers && Object.keys(http.headers).length > 0) {
+      builder.line()
       builder.line('struct curl_slist *headers = NULL;')
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
@@ -45,6 +46,7 @@ export default {
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
+      builder.line()
       const cookies = Object.entries(http.cookies)
         .map(([key, value]) => `${key}=${value}`)
         .join('; ')
@@ -52,15 +54,17 @@ export default {
     }
 
     if (http.body) {
+      builder.line()
       builder.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"(')
       formatJsonBody(http.body, builder)
       builder.append(')");')
     }
 
+    builder.line()
     builder.line('res = curl_easy_perform(curl);')
     builder.line('if(res != CURLE_OK)')
     builder.indent()
-    builder.line('fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));')
+    builder.line('fprintf(stderr, "failed: %s", curl_easy_strerror(res));')
     builder.outdent()
 
     if (http.headers && Object.keys(http.headers).length > 0) {

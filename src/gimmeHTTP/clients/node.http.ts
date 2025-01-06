@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { ParseUrl } from '../utils/utils'
 
 export default {
   language: 'node',
@@ -14,11 +15,13 @@ export default {
     builder.line('const http = require("http");')
     builder.line()
 
+    const { hostname, path, port, protocol } = ParseUrl(http.url)
+
     builder.line('const options = {')
     builder.indent()
     builder.line(`method: "${http.method.toUpperCase()}",`)
-    builder.line(`hostname: "${new URL(http.url).hostname}",`)
-    builder.line(`path: "${new URL(http.url).pathname}${new URL(http.url).search}",`)
+    builder.line(`hostname: "${hostname}",`)
+    builder.line(`path: "${path}",`)
 
     if (http.headers) {
       builder.line('headers: {')

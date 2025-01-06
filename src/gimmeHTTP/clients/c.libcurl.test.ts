@@ -23,9 +23,10 @@ int main(void) {
   curl = curl_easy_init();
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
+
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
     curl_easy_cleanup(curl);
   }
   curl_global_cleanup();
@@ -60,13 +61,15 @@ int main(void) {
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
     struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Content-Type: application/json");
     headers = curl_slist_append(headers, "Authorization: Bearer token");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
   }
@@ -101,12 +104,14 @@ int main(void) {
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"({
       "key1": "value1"
     })");
+
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
     curl_easy_cleanup(curl);
   }
   curl_global_cleanup();
@@ -140,10 +145,12 @@ int main(void) {
   curl = curl_easy_init();
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
+
     curl_easy_setopt(curl, CURLOPT_COOKIE, "session=abc123; user=testuser");
+
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
     curl_easy_cleanup(curl);
   }
   curl_global_cleanup();

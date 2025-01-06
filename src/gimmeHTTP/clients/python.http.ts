@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { ParseUrl } from '../utils/utils'
 
 export default {
   default: true,
@@ -21,10 +22,8 @@ export default {
     builder.line('import json')
     builder.line()
 
-    const url = new URL(http.url)
-    builder.line(
-      `conn = http.client.HTTPSConnection("${url.hostname}", ${url.port || (url.protocol === 'https:' ? 443 : 80)})`
-    )
+    const { hostname, path, port, protocol } = ParseUrl(http.url)
+    builder.line(`conn = http.client.HTTPSConnection("${hostname}", ${port})`)
     builder.line()
 
     // Payload
@@ -67,11 +66,7 @@ export default {
     }
 
     // Build request based upon whether headers, cookies and payload are present
-    builder.line(
-      `conn.request("${method}", "${url.pathname + url.search}"` +
-        (params.length > 0 ? `, ${params.join(', ')}` : '') +
-        ')'
-    )
+    builder.line(`conn.request("${method}", "${path}"` + (params.length > 0 ? `, ${params.join(', ')}` : '') + ')')
 
     builder.line('res = conn.getresponse()')
     builder.line('data = res.read()')

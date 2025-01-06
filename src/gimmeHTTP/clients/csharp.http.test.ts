@@ -25,6 +25,7 @@ namespace HttpClientExample
       using (HttpClient client = new HttpClient())
       {
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
+
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
         string responseBody = await response.Content.ReadAsStringAsync();
@@ -63,8 +64,10 @@ namespace HttpClientExample
       using (HttpClient client = new HttpClient())
       {
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
+
         request.Headers.Add("Content-Type", "application/json");
         request.Headers.Add("Authorization", "Bearer token");
+
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
         string responseBody = await response.Content.ReadAsStringAsync();
@@ -102,7 +105,11 @@ namespace HttpClientExample
       using (HttpClient client = new HttpClient())
       {
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
-        request.Content = new StringContent("{\"key1\":\"value1\"}", System.Text.Encoding.UTF8, "application/json");
+
+        request.Content = new StringContent({
+          "key1": "value1"
+        }, System.Text.Encoding.UTF8, "application/json");
+
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
         string responseBody = await response.Content.ReadAsStringAsync();
@@ -111,7 +118,7 @@ namespace HttpClientExample
     }
   }
 }
-    `.trim()
+      `.trim()
     )
   })
 
@@ -141,7 +148,9 @@ namespace HttpClientExample
       using (HttpClient client = new HttpClient())
       {
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
+
         request.Headers.Add("Cookie", "session=abc123; user=testuser");
+
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
         string responseBody = await response.Content.ReadAsStringAsync();

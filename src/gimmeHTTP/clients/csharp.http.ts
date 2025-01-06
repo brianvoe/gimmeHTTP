@@ -33,6 +33,7 @@ export default {
     )
 
     if (http.headers && Object.keys(http.headers).length > 0) {
+      builder.line()
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
           value.forEach((val) => builder.line(`request.Headers.Add("${key}", "${val}");`))
@@ -43,6 +44,7 @@ export default {
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
+      builder.line()
       const cookies = Object.entries(http.cookies)
         .map(([key, value]) => `${key}=${value}`)
         .join('; ')
@@ -50,14 +52,14 @@ export default {
     }
 
     if (http.body) {
-      builder.line(
-        `request.Content = new StringContent("${JSON.stringify(http.body).replace(
-          /"/g,
-          '"'
-        )}", System.Text.Encoding.UTF8, "application/json");`
-      )
+      builder.line()
+      builder.line('request.Content = new StringContent(')
+      builder.indent()
+      buildJsonBody(builder, http.body)
+      builder.append(', System.Text.Encoding.UTF8, "application/json");')
     }
 
+    builder.line()
     builder.line('HttpResponseMessage response = await client.SendAsync(request);')
     builder.line('response.EnsureSuccessStatusCode();')
     builder.line('string responseBody = await response.Content.ReadAsStringAsync();')
@@ -75,3 +77,22 @@ export default {
     return builder.output()
   }
 } as Client
+
+function buildJsonBody(builder: Builder, body: any): void {
+  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+
+    if (i === 0) {
+      builder.append(line)
+      continue
+    }
+
+    // If last line, outdent
+    if (i === lines.length - 1) {
+      builder.outdent()
+    }
+
+    builder.line(line)
+  }
+}

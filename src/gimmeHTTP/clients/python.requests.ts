@@ -10,6 +10,7 @@ export default {
       indent: config.indent || '  ',
       join: config.join || '\n'
     })
+
     const method = http.method.toUpperCase()
     const hasPayload = method !== 'GET' && http.body
     const hasHeaders = http.headers && Object.keys(http.headers).length > 0
