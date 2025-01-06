@@ -248,6 +248,8 @@
 
     .output {
       width: auto;
+      padding: 0;
+      margin: 0 !important;
       overflow: hidden;
 
       &.modalOpen {
