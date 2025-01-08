@@ -39,13 +39,9 @@ export default {
 
     let bodyVar = 'nil'
     if (isJsonBody) {
-      builder.line('jsonBodyMap := map[string]any{')
-      builder.indent()
-      for (const [key, value] of Object.entries(http.body)) {
-        builder.line(`"${key}": ${JSON.stringify(value)},`)
-      }
-      builder.outdent()
-      builder.line('}')
+      builder.line('jsonBodyMap := map[string]any')
+      builder.json(http.body)
+
       if (config.handleErrors) {
         builder.line('jsonBodyBytes, err := json.Marshal(jsonBodyMap)')
         builder.line('if err != nil {')

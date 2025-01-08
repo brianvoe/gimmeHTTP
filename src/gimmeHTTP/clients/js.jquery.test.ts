@@ -86,4 +86,50 @@ $.ajax({
     `.trim()
     )
   })
+
+  test('should build a POST request with advanced json body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        key1: 'value1',
+        key2: {
+          nestedKey: 'nestedValue'
+        },
+        key3: ['value1', 'value2'],
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = JSJQuery.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+$.ajax({
+  url: "https://example.com",
+  type: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  data: {
+    "key1": "value1",
+    "key2": {
+      "nestedKey": "nestedValue"
+    },
+    "key3": [
+      "value1",
+      "value2"
+    ],
+    "empty": null
+  },
+  contentType: "application/json",
+  success: function(data) {
+    console.log(data);
+  },
+});
+    `.trim()
+    )
+  })
 })

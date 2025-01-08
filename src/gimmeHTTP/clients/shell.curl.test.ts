@@ -2,15 +2,27 @@ import ShellCurl from './shell.curl'
 import { Http } from '../utils/generate'
 import { describe, expect, test } from '@jest/globals'
 
-describe('Curl.generate', () => {
-  test('Basic GET', () => {
+describe('shell.curl', () => {
+  test('GET - simple', () => {
     const config = {}
     const http: Http = {
       method: 'GET',
       url: 'https://example.com'
     }
+
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(`curl -X GET "https://example.com"`)
+  })
+
+  test('GET - no trailing slash with no headers, no cookies, no body', () => {
+    const config = {}
+    const http: Http = {
+      method: 'GET',
+      url: 'http://example.com'
+    }
+
+    const result = ShellCurl.generate(config, http)
+    expect(result).toBe('curl -X GET "http://example.com"')
   })
 
   test('POST - headers', () => {
@@ -23,6 +35,7 @@ describe('Curl.generate', () => {
         Authorization: 'Bearer token'
       }
     }
+
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
@@ -47,12 +60,8 @@ curl -X POST "https://example.com" \\
         key2: 'value2'
       }
     }
+
     const result = ShellCurl.generate(config, http)
-    // The JSON should be multiline and indented:
-    // -d $'{
-    //   "key1": "value1",
-    //   "key2": "value2"
-    // }'
     expect(result).toBe(
       `
 curl -X POST "https://example.com" \\
@@ -76,6 +85,7 @@ curl -X POST "https://example.com" \\
         bar: 'baz'
       }
     }
+
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
@@ -102,6 +112,7 @@ curl -X POST "http://example.com" \\
         foo: 'bar'
       }
     }
+
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
@@ -125,6 +136,7 @@ curl -X POST "http://example.com?foo=bar&foo=baz&baz=abc&key=value" \\
         'x-foo': 'Bar'
       }
     }
+
     const result = ShellCurl.generate(config, http)
     expect(result).toBe(
       `
@@ -136,49 +148,56 @@ curl -X GET "http://example.com" \\
     )
   })
 
-  test('Multiline JSON body with nested objects', () => {
+  test('POST - advanced json body', () => {
     const config = {}
     const http: Http = {
       method: 'POST',
-      url: 'https://example.com',
-      headers: { 'Content-Type': 'application/json' },
+      url: 'http://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: {
-        foo: 'bar',
-        nested: {
-          key: 'value'
+        key1: 'value1',
+        key2: 4325,
+        key3: {
+          key4: 'value4',
+          key5: 'value5'
         },
-        list: [1, 2, 3]
+        key6: {
+          key7: {
+            key8: 'value8'
+          }
+        },
+        key7: ['value1', 'value2', 'value3'],
+        empty: null
       }
     }
-    const result = ShellCurl.generate(config, http)
-    // Expect a nicely indented JSON:
-    // {
-    //   "foo": "bar",
-    //   "nested": {
-    //     "key": "value"
-    //   },
-    //   "list": [
-    //     1,
-    //     2,
-    //     3
-    //   ]
-    // }
-    expect(result).toContain("-d $'{")
-    expect(result).toContain('"foo": "bar"')
-    expect(result).toContain('"nested": {')
-    expect(result).toContain('"list": [')
-    // Ensure no trailing backslash after the last line
-    expect(result.endsWith("}'")).toBe(true)
-  })
 
-  test('GET - no trailing slash with no headers, no cookies, no body', () => {
-    const config = {}
-    const http: Http = {
-      method: 'GET',
-      url: 'http://example.com'
-    }
     const result = ShellCurl.generate(config, http)
-    // Should be a single line with no trailing slash
-    expect(result).toBe('curl -X GET "http://example.com"')
+    expect(result).toBe(
+      `
+curl -X POST "http://example.com" \\
+  -H "Content-Type: application/json" \\
+  -d $'{ \\
+    "key1": "value1", \\
+    "key2": 4325, \\
+    "key3": { \\
+      "key4": "value4", \\
+      "key5": "value5" \\
+    }, \\
+    "key6": { \\
+      "key7": { \\
+        "key8": "value8" \\
+      } \\
+    }, \\
+    "key7": [ \\
+      "value1", \\
+      "value2", \\
+      "value3" \\
+    ], \\
+    "empty": null \\
+  }'
+      `.trim()
+    )
   })
 })

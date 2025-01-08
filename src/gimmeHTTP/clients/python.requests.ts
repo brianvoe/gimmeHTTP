@@ -22,14 +22,15 @@ export default {
     builder.line('url = "' + http.url + '"')
 
     if (hasHeaders) {
+      builder.line()
       params.push('headers=headers')
       builder.line('headers = {')
       builder.indent()
       for (const [key, value] of Object.entries(http.headers!)) {
-        if (Array.isArray(value)) {
-          builder.line(`"${key}": "${value.join(', ')}",`)
-        } else {
-          builder.line(`"${key}": "${value}",`)
+        builder.line(`"${key}": "${value}"`)
+
+        if (Object.keys(http.headers!).indexOf(key) !== Object.keys(http.headers!).length - 1) {
+          builder.append(',')
         }
       }
       builder.outdent()
@@ -37,21 +38,26 @@ export default {
     }
 
     if (hasCookies) {
+      builder.line()
       params.push('cookies=cookies')
       builder.line('cookies = {')
       builder.indent()
       for (const [key, value] of Object.entries(http.cookies!)) {
-        builder.line(`"${key}": "${value}",`)
+        builder.line(`"${key}": "${value}"`)
+
+        if (Object.keys(http.cookies!).indexOf(key) !== Object.keys(http.cookies!).length - 1) {
+          builder.append(',')
+        }
       }
       builder.outdent()
       builder.line('}')
     }
 
     if (hasPayload) {
+      builder.line()
       params.push('data=data')
       builder.line('data = ')
-      builder.indent()
-      formatJsonBody(http.body, builder)
+      builder.json(http.body)
     }
 
     builder.line()
@@ -67,22 +73,3 @@ export default {
     return builder.output()
   }
 } as Client
-
-function formatJsonBody(body: any, builder: Builder): void {
-  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-
-    if (i === 0) {
-      builder.append(line)
-      continue
-    }
-
-    // If last line, outdent
-    if (i === lines.length - 1) {
-      builder.outdent()
-    }
-
-    builder.line(line)
-  }
-}

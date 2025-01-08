@@ -54,7 +54,8 @@ export default {
       builder.line()
       builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS,')
       builder.line("<<<'JSON'")
-      formatJsonRecursive(http.body, builder)
+      builder.line()
+      builder.json(http.body)
       builder.line('JSON')
       builder.line(');')
       builder.outdent()
@@ -79,39 +80,3 @@ export default {
     return builder.output()
   }
 } as Client
-
-function formatJsonRecursive(json: any, builder: Builder): void {
-  if (typeof json === 'object' && json !== null) {
-    // Handle arrays
-    if (Array.isArray(json)) {
-      // In the generated code, just put the array in a single line for brevity
-      builder.line('[' + json.map((item) => JSON.stringify(item)).join(', ') + ']')
-    } else {
-      // Handle objects
-      builder.line('{')
-      builder.indent()
-      const entries = Object.entries(json)
-      entries.forEach(([key, value], index) => {
-        if (Array.isArray(value)) {
-          builder.line(`"${key}": [${value.map((item) => JSON.stringify(item)).join(', ')}]`)
-        } else if (typeof value === 'object' && value !== null) {
-          builder.line(`"${key}": {`)
-          builder.indent()
-          formatJsonRecursive(value, builder)
-          builder.outdent()
-          builder.line('}')
-        } else {
-          builder.line(`"${key}": ${JSON.stringify(value)}`)
-        }
-        if (index < entries.length - 1) {
-          builder.append(',')
-        }
-      })
-      builder.outdent()
-      builder.line('}')
-    }
-  } else {
-    // For non-object (string, number, boolean, etc.)
-    builder.line(JSON.stringify(json))
-  }
-}

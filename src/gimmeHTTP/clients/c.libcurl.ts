@@ -56,7 +56,7 @@ export default {
     if (http.body) {
       builder.line()
       builder.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"(')
-      formatJsonBody(http.body, builder)
+      builder.json(http.body)
       builder.append(')");')
     }
 
@@ -73,6 +73,7 @@ export default {
     builder.line('curl_easy_cleanup(curl);')
     builder.outdent()
     builder.line('}')
+    builder.line()
     builder.line('curl_global_cleanup();')
     builder.line('return 0;')
     builder.outdent()
@@ -81,17 +82,3 @@ export default {
     return builder.output()
   }
 } as Client
-
-function formatJsonBody(json: any, builder: Builder): void {
-  const lines = JSON.stringify(json, null, 2).split('\n')
-  // for loop with indea and value
-  for (let i = 0; i < lines.length; i++) {
-    // if first line, append instead of line
-    if (i === 0) {
-      builder.append(`${lines[i]}`)
-      continue
-    }
-
-    builder.line(`${lines[i]}`)
-  }
-}

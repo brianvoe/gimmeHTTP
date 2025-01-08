@@ -80,6 +80,47 @@ namespace HttpClientExample
     )
   })
 
+  test('should build a GET request with cookies', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      cookies: {
+        session: 'abc123',
+        user: 'testuser'
+      }
+    }
+    const config: Config = {}
+    const result = CSharpHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace HttpClientExample
+{
+  class Program
+  {
+    static async Task Main(string[] args)
+    {
+      using (HttpClient client = new HttpClient())
+      {
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
+
+        request.Headers.Add("Cookie", "session=abc123; user=testuser");
+
+        HttpResponseMessage response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseBody);
+      }
+    }
+  }
+}
+    `.trim()
+    )
+  })
+
   test('should build a POST request with body', () => {
     const httpRequest: Http = {
       method: 'POST',
@@ -122,13 +163,16 @@ namespace HttpClientExample
     )
   })
 
-  test('should build a GET request with cookies', () => {
+  test('should build a POST with advanced request json body', () => {
     const httpRequest: Http = {
-      method: 'GET',
+      method: 'POST',
       url: 'https://example.com',
-      cookies: {
-        session: 'abc123',
-        user: 'testuser'
+      body: {
+        key1: 'value1',
+        key2: 123,
+        key3: true,
+        key4: ['value1', 'value2'],
+        key5: { nestedKey: 'nestedValue' }
       }
     }
     const config: Config = {}
@@ -147,9 +191,20 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
 
-        request.Headers.Add("Cookie", "session=abc123; user=testuser");
+        request.Content = new StringContent({
+          "key1": "value1",
+          "key2": 123,
+          "key3": true,
+          "key4": [
+            "value1",
+            "value2"
+          ],
+          "key5": {
+            "nestedKey": "nestedValue"
+          }
+        }, System.Text.Encoding.UTF8, "application/json");
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -159,7 +214,7 @@ namespace HttpClientExample
     }
   }
 }
-    `.trim()
+      `.trim()
     )
   })
 })

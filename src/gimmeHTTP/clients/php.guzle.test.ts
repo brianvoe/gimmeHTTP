@@ -60,9 +60,9 @@ $response = $client->request(
       "Content-Type" => "application/json",
       "Authorization" => "Bearer token",
     ],
-    "json" => {
-      "key1": "value1"
-    }
+    "json" => [
+      "key1" => "value1",
+    ],
   ],
 );
 
@@ -142,17 +142,25 @@ $response = $client->request(
     "headers" => [
       "Content-Type" => "application/json",
     ],
-    "json" => {
-      "key1": "value1",
-      "key2": {
-        "subKey1": "subValue1",
-        "subKey2": [1, 2, 3],
-        "subKey3": {
-          "subSubKey1": "subSubValue1"
-        }
-      },
-      "key3": [4, 5, 6]
-    }
+    "json" => [
+      "key1" => "value1",
+      "key2" => [
+        "subKey1" => "subValue1",
+        "subKey2" => [
+          1,
+          2,
+          3,
+        ],
+        "subKey3" => [
+          "subSubKey1" => "subSubValue1",
+        ],
+      ],
+      "key3" => [
+        4,
+        5,
+        6,
+      ],
+    ],
   ],
 );
 

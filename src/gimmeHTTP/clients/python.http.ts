@@ -24,19 +24,10 @@ export default {
 
     const { hostname, path, port, protocol } = ParseUrl(http.url)
     builder.line(`conn = http.client.HTTPSConnection("${hostname}", ${port})`)
-    builder.line()
-
-    // Payload
-    if (hasPayload) {
-      params.push('payload')
-      builder.line('payload = ')
-      builder.indent()
-      formatJsonBody(http.body, builder)
-      builder.line()
-    }
 
     // Headers
     if (hasHeaders) {
+      builder.line()
       params.push('headers')
       builder.line('headers = {')
       builder.indent()
@@ -49,11 +40,11 @@ export default {
       }
       builder.outdent()
       builder.line('}')
-      builder.line()
     }
 
     // Cookies
     if (hasCookies) {
+      builder.line()
       params.push('cookies')
       builder.line('cookies = {')
       builder.indent()
@@ -62,12 +53,19 @@ export default {
       }
       builder.outdent()
       builder.line('}')
+    }
+
+    // Payload
+    if (hasPayload) {
       builder.line()
+      params.push('payload')
+      builder.line('payload = ')
+      builder.json(http.body)
     }
 
     // Build request based upon whether headers, cookies and payload are present
+    builder.line()
     builder.line(`conn.request("${method}", "${path}"` + (params.length > 0 ? `, ${params.join(', ')}` : '') + ')')
-
     builder.line('res = conn.getresponse()')
     builder.line('data = res.read()')
     builder.line()
@@ -76,22 +74,3 @@ export default {
     return builder.output()
   }
 } as Client
-
-function formatJsonBody(body: any, builder: Builder): void {
-  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-
-    if (i === 0) {
-      builder.append(line)
-      continue
-    }
-
-    // If last line, outdent
-    if (i === lines.length - 1) {
-      builder.outdent()
-    }
-
-    builder.line(line)
-  }
-}

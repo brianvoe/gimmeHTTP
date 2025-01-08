@@ -75,7 +75,7 @@ fetch("https://example.com", {
   },
   body: {
     "key1": "value1"
-  },
+  }
 })
 .then(response => {
   if (!response.ok) {
@@ -85,6 +85,49 @@ fetch("https://example.com", {
 })
 .then(data => console.log(data))
 .catch(error => console.error("error:", error));
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with advanced json body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        key1: 'value1',
+        key2: ['value2', 'value3'],
+        key3: { key4: 'value4' },
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = NodeFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const fetch = require("node-fetch");
+
+fetch("https://example.com", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: {
+    "key1": "value1",
+    "key2": [
+      "value2",
+      "value3"
+    ],
+    "key3": {
+      "key4": "value4"
+    },
+    "empty": null
+  }
+})
+.then(response => response.text())
+.then(data => console.log(data))
     `.trim()
     )
   })

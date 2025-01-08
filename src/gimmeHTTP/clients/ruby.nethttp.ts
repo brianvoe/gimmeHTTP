@@ -47,40 +47,18 @@ export default {
 
     if (http.body) {
       builder.line('request.body = ')
-      builder.indent()
-      formatJsonBody(http.body, builder)
+      builder.json(http.body)
     }
 
     builder.line()
-
     builder.line('response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|')
     builder.indent()
     builder.line('http.request(request)')
     builder.outdent()
     builder.line('end')
     builder.line()
-
     builder.line('puts response.body')
 
     return builder.output()
   }
 } as Client
-
-function formatJsonBody(body: any, builder: Builder): void {
-  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-
-    if (i === 0) {
-      builder.append(line)
-      continue
-    }
-
-    // If last line, outdent
-    if (i === lines.length - 1) {
-      builder.outdent()
-    }
-
-    builder.line(line)
-  }
-}

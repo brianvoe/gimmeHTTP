@@ -69,7 +69,7 @@ fetch("https://example.com", {
   },
   body: {
     "key1": "value1"
-  },
+  }
 })
 .then(response => {
   if (!response.ok) {
@@ -79,6 +79,47 @@ fetch("https://example.com", {
 })
 .then(data => console.log(data))
 .catch(error => console.error("There was a problem with the fetch operation:", error));
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with advanced json body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        key1: 'value1',
+        key2: { nestedKey: 'nestedValue' },
+        key3: ['value1', 'value2'],
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = JSFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+fetch("https://example.com", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: {
+    "key1": "value1",
+    "key2": {
+      "nestedKey": "nestedValue"
+    },
+    "key3": [
+      "value1",
+      "value2"
+    ],
+    "empty": null
+  }
+})
+.then(response => response.text())
+.then(data => console.log(data));
     `.trim()
     )
   })

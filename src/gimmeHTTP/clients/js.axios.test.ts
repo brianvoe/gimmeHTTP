@@ -96,7 +96,7 @@ axios({
   },
   data: {
     "key1": "value1"
-  },
+  }
 })
 .then(response => {
   console.log(response.data);
@@ -104,6 +104,49 @@ axios({
 .catch(error => {
   console.error("There was an error:", error);
 });
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with advanced json body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        key1: 'value1',
+        key2: {
+          nestedKey: 'nestedValue'
+        },
+        key3: ['value1', 'value2'],
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = JSAxios.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+axios({
+  method: "post",
+  url: "https://example.com",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  data: {
+    "key1": "value1",
+    "key2": {
+      "nestedKey": "nestedValue"
+    },
+    "key3": [
+      "value1",
+      "value2"
+    ],
+    "empty": null
+  }
+})
+.then(response => console.log(response.data));
     `.trim()
     )
   })

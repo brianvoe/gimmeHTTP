@@ -63,12 +63,12 @@ describe('Generate', () => {
 
     expect(code).toEqual(
       `
-curl -X POST "https://example.com" \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer token" \\
-  -d $'{ \\
-    "key1": "value1", \\
-    "key2": "value2" \\
+curl -X POST "https://example.com"
+  -H "Content-Type: application/json"
+  -H "Authorization: Bearer token"
+  -d $'{
+    "key1": "value1",
+    "key2": "value2"
   }'
     `.trim()
     )

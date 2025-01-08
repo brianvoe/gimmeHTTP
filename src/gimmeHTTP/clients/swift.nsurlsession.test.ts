@@ -168,4 +168,69 @@ task.resume()
       `.trim()
     )
   })
+
+  test('should build a POST request with advanced json body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer token'
+      },
+      body: {
+        key1: 'value1',
+        key2: 4235,
+        key3: true,
+        key4: [1, 2, 3],
+        key5: { subkey: 'subvalue' }
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+let url = URL(string: "https://example.com")!
+var request = URLRequest(url: url)
+request.httpMethod = "POST"
+
+request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+request.addValue("Bearer token", forHTTPHeaderField: "Authorization")
+
+let body = {
+  "key1": "value1",
+  "key2": 4235,
+  "key3": true,
+  "key4": [
+    1,
+    2,
+    3
+  ],
+  "key5": {
+    "subkey": "subvalue"
+  }
+}
+request.httpBody = body
+
+let task = URLSession.shared.dataTask(with: request) { data, response, error in
+  if let error = error {
+    print("Error: \\(error)")
+    return
+  }
+
+  if let httpResponse = response as? HTTPURLResponse {
+    if httpResponse.statusCode == 200, let data = data {
+      let responseString = String(data: data, encoding: .utf8)
+      print(responseString ?? "No response data")
+    } else {
+      print("Request failed with status code: \\(httpResponse.statusCode)")
+    }
+  }
+}
+
+task.resume()
+      `.trim()
+    )
+  })
 })

@@ -17,9 +17,9 @@ export default {
     builder.line('let url = URL(string: "' + http.url + '")!')
     builder.line('var request = URLRequest(url: url)')
     builder.line('request.httpMethod = "' + http.method.toUpperCase() + '"')
-    builder.line()
 
     if (http.headers && Object.keys(http.headers).length > 0) {
+      builder.line()
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
           value.forEach((val) => builder.line(`request.addValue("${val}", forHTTPHeaderField: "${key}")`))
@@ -27,26 +27,23 @@ export default {
           builder.line(`request.addValue("${value}", forHTTPHeaderField: "${key}")`)
         }
       }
-
-      builder.line()
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
+      builder.line()
       for (const [key, value] of Object.entries(http.cookies)) {
         builder.line(`request.addValue("${key}=${value}", forHTTPHeaderField: "Cookie")`)
       }
-
-      builder.line()
     }
 
     if (http.body) {
-      builder.line('let body = ')
-      builder.indent()
-      formatJsonBody(http.body, builder)
-      builder.line('request.httpBody = body')
       builder.line()
+      builder.line('let body = ')
+      builder.json(http.body)
+      builder.line('request.httpBody = body')
     }
 
+    builder.line()
     builder.line('let task = URLSession.shared.dataTask(with: request) { data, response, error in')
     builder.indent()
     builder.line('if let error = error {')
@@ -80,22 +77,3 @@ export default {
     return builder.output()
   }
 } as Client
-
-function formatJsonBody(body: any, builder: Builder): void {
-  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-
-    if (i === 0) {
-      builder.append(line)
-      continue
-    }
-
-    // If last line, outdent
-    if (i === lines.length - 1) {
-      builder.outdent()
-    }
-
-    builder.line(line)
-  }
-}

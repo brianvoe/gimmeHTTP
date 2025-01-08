@@ -139,4 +139,53 @@ echo $response;
     `.trim()
     )
   })
+
+  test('should build a POST request with advanced json body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      body: {
+        key1: 'value1',
+        key2: {
+          nestedKey: 'nestedValue'
+        },
+        key3: ['value1', 'value2'],
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = PhpCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+<?php
+
+$ch = curl_init();
+
+curl_setopt($ch, CURLOPT_URL, "https://example.com");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+curl_setopt($ch, CURLOPT_POSTFIELDS,
+<<<'JSON'
+{
+  "key1": "value1",
+  "key2": {
+    "nestedKey": "nestedValue"
+  },
+  "key3": [
+    "value1",
+    "value2"
+  ],
+  "empty": null
+}
+JSON
+);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+echo $response;
+    `.trim()
+    )
+  })
 })

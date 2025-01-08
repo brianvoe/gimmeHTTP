@@ -72,7 +72,7 @@ func main() {
 
   jsonBodyMap := map[string]any{
     "foo": "bar",
-    "bar": "baz",
+    "bar": "baz"
   }
   jsonBodyBytes, _ := json.Marshal(jsonBodyMap)
 
@@ -188,6 +188,68 @@ func main() {
   if err != nil {
     log.Fatal(err)
   }
+
+  fmt.Println(string(body))
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with advanced json body', () => {
+    const config = {}
+    const http: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        foo: 'bar',
+        bar: {
+          baz: 'qux'
+        },
+        arr: ['one', 'two'],
+        bool: true
+      }
+    }
+
+    const result = Go.generate(config, http)
+    expect(result).toBe(
+      `
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io"
+  "bytes"
+  "encoding/json"
+)
+
+func main() {
+  url := "https://example.com"
+
+  jsonBodyMap := map[string]any{
+    "foo": "bar",
+    "bar": {
+      "baz": "qux"
+    },
+    "arr": [
+      "one",
+      "two"
+    ],
+    "bool": true
+  }
+  jsonBodyBytes, _ := json.Marshal(jsonBodyMap)
+
+  req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBodyBytes))
+
+  req.Header.Set("Content-Type", "application/json")
+
+  resp, _ := http.DefaultClient.Do(req)
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
 
   fmt.Println(string(body))
 }

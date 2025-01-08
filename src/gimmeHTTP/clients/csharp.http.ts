@@ -54,8 +54,7 @@ export default {
     if (http.body) {
       builder.line()
       builder.line('request.Content = new StringContent(')
-      builder.indent()
-      buildJsonBody(builder, http.body)
+      builder.json(http.body)
       builder.append(', System.Text.Encoding.UTF8, "application/json");')
     }
 
@@ -77,22 +76,3 @@ export default {
     return builder.output()
   }
 } as Client
-
-function buildJsonBody(builder: Builder, body: any): void {
-  const lines = JSON.stringify(body, null, builder.getIndent()).split('\n')
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-
-    if (i === 0) {
-      builder.append(line)
-      continue
-    }
-
-    // If last line, outdent
-    if (i === lines.length - 1) {
-      builder.outdent()
-    }
-
-    builder.line(line)
-  }
-}

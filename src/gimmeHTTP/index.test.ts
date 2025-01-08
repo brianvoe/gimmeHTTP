@@ -41,7 +41,7 @@ describe('Index', () => {
         },
         body: {
           key1: 'value1',
-          key2: 'value2'
+          key2: 8675309
         }
       }
     } as Settings
@@ -54,11 +54,11 @@ describe('Index', () => {
 
     expect(code).toEqual(
       `
-curl -X POST "https://example.com" \\
-  -H "Content-Type: application/json" \\
-  -d $'{ \\
-    "key1": "value1", \\
-    "key2": "value2" \\
+curl -X POST "https://example.com"
+  -H "Content-Type: application/json"
+  -d $'{
+    "key1": "value1",
+    "key2": 8675309
   }'
     `.trim()
     )

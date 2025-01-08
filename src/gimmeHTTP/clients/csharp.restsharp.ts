@@ -26,6 +26,7 @@ export default {
     builder.line(`var request = new RestRequest(Method.${http.method.toUpperCase()});`)
 
     if (http.headers && Object.keys(http.headers).length > 0) {
+      builder.line()
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
           value.forEach((val) => builder.line(`request.AddHeader("${key}", "${val}");`))
@@ -36,6 +37,7 @@ export default {
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
+      builder.line()
       const cookies = Object.entries(http.cookies)
         .map(([key, value]) => `${key}=${value}`)
         .join('; ')
@@ -43,9 +45,13 @@ export default {
     }
 
     if (http.body) {
-      builder.line(`request.AddJsonBody(${JSON.stringify(http.body)});`)
+      builder.line()
+      builder.line('request.AddJsonBody(')
+      builder.json(http.body)
+      builder.append(');')
     }
 
+    builder.line()
     builder.line('IRestResponse response = client.Execute(request);')
     builder.line('Console.WriteLine(response.Content);')
 

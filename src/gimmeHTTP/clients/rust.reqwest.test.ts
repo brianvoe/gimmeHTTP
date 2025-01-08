@@ -128,4 +128,49 @@ fn main() -> Result<(), Box<dyn Error>> {
     `.trim()
     )
   })
+
+  test('should build a POST request with advanced json body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      body: {
+        key1: 'value1',
+        key2: 2,
+        key3: [1, 2, 3],
+        key4: { nested: 'value' },
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = RustReqwest.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+use reqwest::blocking::Client;
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+  let client = Client::new();
+
+  let res = client.request(reqwest::Method::POST, "https://example.com")
+    .body({
+      "key1": "value1",
+      "key2": 2,
+      "key3": [
+        1,
+        2,
+        3
+      ],
+      "key4": {
+        "nested": "value"
+      },
+      "empty": null
+    })
+    .send()?;
+
+  println!("{}", res.text()?);
+  Ok(())
+}
+    `.trim()
+    )
+  })
 })
