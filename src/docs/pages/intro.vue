@@ -1,9 +1,10 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
   import VueShiki from '../components/vue_shiki.vue'
-  import { Codes, Languages } from '../../gimmehttp'
+  import { Codes, Languages, Client } from '../../gimmehttp'
 
   import type { Http } from '../../gimmehttp'
+  import { languages } from 'prismjs'
 
   const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
 
@@ -13,17 +14,10 @@
       VueShiki
     },
     data() {
-      // Need to set a random language
-      const uniqueLangs = Codes().map((c) => c.language)
-      const language = uniqueLangs[Math.floor(Math.random() * uniqueLangs.length)]
-
       // Simple Get request
       const httpGet: Http = {
         method: 'GET',
-        url: 'https://example.com',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        url: 'https://example.com'
       }
 
       // Simple Post request
@@ -36,26 +30,75 @@
         body: {
           first_name: 'Billy',
           email: 'billyboy@gmail.com',
-          userId: 8675309
+          user_id: 8675309
         }
       }
 
+      // Advanced Post request, with cookies, headers and json body
+      const httpPostAdv: Http = {
+        method: 'POST',
+        url: 'https://example.com',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        cookies: {
+          user_id: '1234567890'
+        },
+        body: {
+          first_name: 'Billy',
+          email: 'billyboy@gmail.com',
+          user_id: 8675309,
+          address: {
+            street: '123 Elm St',
+            city: 'Springfield',
+            state: 'IL',
+            zip: '62701'
+          },
+          hobbies: ['fishing', 'hiking', 'camping']
+        }
+      }
+
+      // Need to set a random language
+      const uniqueLangs = Languages()
+      const language = uniqueLangs[Math.floor(Math.random() * uniqueLangs.length)]
+
       return {
         logoUrl: logoUrl,
-        language: language,
-        languages: Languages(),
-        // Randomly select an http request
-        http: httpPost,
+        selectedLanguage: language,
+        selectedClient: '',
+        selectedHttp: '',
 
         https: {
           simple_get: httpGet,
-          simple_post: httpPost
+          simple_post: httpPost,
+          advanced_post: httpPostAdv
         } as Record<string, Http>
       }
     },
+    computed: {
+      languages(): string[] {
+        return Languages()
+      },
+      clients(): Client[] {
+        return Codes().filter((c) => c.language === this.selectedLanguage)
+      },
+      http() {
+        const sel =
+          this.selectedHttp !== ''
+            ? this.selectedHttp
+            : Object.keys(this.https)[Math.floor(Math.random() * Object.keys(this.https).length)]
+        return this.https[sel]
+      }
+    },
     methods: {
-      setExample(httpType: string) {
-        this.http = this.https[httpType]
+      setLanguage(lang: string) {
+        this.selectedLanguage = lang
+      },
+      setClient(client: string) {
+        this.selectedClient = client
+      },
+      setExample(example: string) {
+        this.selectedHttp = example
       }
     }
   })
@@ -85,19 +128,55 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
+        align-items: center;
         flex-wrap: wrap;
         gap: var(--spacing-half);
 
         .lang {
-          padding: var(--spacing-quarter);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: var(--spacing-quarter) var(--spacing-half);
           border: solid 1px var(--border-color);
           border-radius: var(--border-radius);
           cursor: pointer;
+          transition: background-color var(--animation-timing);
+
+          &.selected,
+          &:hover {
+            background-color: var(--color-quaternary);
+          }
 
           img {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
+            user-select: none;
           }
+        }
+      }
+    }
+
+    .clients {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-half);
+
+      .client {
+        min-width: 75px;
+        padding: var(--spacing-half) var(--spacing);
+        border: solid 1px var(--border-color);
+        border-radius: var(--border-radius);
+        text-align: center;
+        cursor: pointer;
+        transition: background-color var(--animation-timing);
+        user-select: none;
+
+        &.selected,
+        &:hover {
+          background-color: var(--color-quaternary);
         }
       }
     }
@@ -108,6 +187,13 @@
       justify-content: center;
       align-items: center;
       gap: var(--spacing-half);
+
+      button {
+        &.selected,
+        &:hover {
+          background-color: var(--color-quaternary);
+        }
+      }
     }
   }
 </style>
@@ -117,17 +203,39 @@
     <p>Easily output http request in many languages</p>
     <div class="available_languages">
       <div class="text">Available Languages: <small>click to see</small></div>
-      <div class="separator" />
       <div class="langs">
-        <div class="lang" v-for="lang in languages" :key="lang" @click="language = lang">
+        <div
+          :class="{ lang: true, selected: lang === selectedLanguage }"
+          v-for="lang in languages"
+          :key="lang"
+          @click="setLanguage(lang)"
+        >
           <img :src="logoUrl + lang + '.svg'" />
         </div>
       </div>
     </div>
-    <div class="select_example">
-      <button @click="setExample('simple_get')">Simple GET</button>
-      <button @click="setExample('simple_post')">Simple POST</button>
+    <div class="clients">
+      <div
+        :class="{ client: true, selected: client.client === selectedClient }"
+        v-for="client in clients"
+        :key="client.client"
+        @click="setClient(client.client)"
+      >
+        {{ client.client }}
+      </div>
     </div>
-    <VueShiki :language="language" :http="http" />
+    <div class="select_example">
+      <button
+        v-for="(http, example) in https"
+        :key="example"
+        :class="{
+          selected: example === selectedHttp
+        }"
+        @click="setExample(example)"
+      >
+        {{ example }}
+      </button>
+    </div>
+    <VueShiki :language="selectedLanguage" :client="selectedClient" :http="http" />
   </div>
 </template>
