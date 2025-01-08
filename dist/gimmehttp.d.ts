@@ -3,11 +3,13 @@ export declare class Builder {
     private indentChar;
     private lineJoin;
     private currentDepth;
+    private jsonConfig;
     constructor(options?: BuilderOptions);
     getIndent(): string;
     getJoin(): string;
     line(line?: string): void;
     append(line: string): void;
+    json(json: any, isSub?: boolean): void;
     indent(): void;
     outdent(): void;
     output(): string;
@@ -16,6 +18,7 @@ export declare class Builder {
 declare interface BuilderOptions {
     indent?: string;
     join?: string;
+    json?: JSON_2;
 }
 
 export declare function ClearRegistry(): void;
@@ -52,6 +55,15 @@ export declare interface Http {
 export declare function IsJsonRequest(method: string, headers?: {
     [key: string]: string;
 }): boolean;
+
+declare interface JSON_2 {
+    objOpen: string;
+    objClose: string;
+    arrOpen: string;
+    arrClose: string;
+    separator: string;
+    endComma?: boolean;
+}
 
 export declare function Languages(): string[];
 
