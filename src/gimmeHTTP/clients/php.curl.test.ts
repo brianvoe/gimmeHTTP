@@ -122,7 +122,7 @@ $headers[] = "Content-Type: application/json";
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
 curl_setopt($ch, CURLOPT_POSTFIELDS,
-<<<'JSON'
+<<<JSON
 {
   "key1": "value1"
 }
@@ -166,7 +166,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
 curl_setopt($ch, CURLOPT_POSTFIELDS,
-<<<'JSON'
+<<<JSON
 {
   "key1": "value1",
   "key2": {

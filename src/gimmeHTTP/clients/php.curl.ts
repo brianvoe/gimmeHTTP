@@ -53,7 +53,7 @@ export default {
     if (http.body) {
       builder.line()
       builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS,')
-      builder.line("<<<'JSON'")
+      builder.line('<<<JSON')
       builder.line()
       builder.json(http.body)
       builder.line('JSON')
