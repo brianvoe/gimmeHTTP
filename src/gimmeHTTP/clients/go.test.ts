@@ -231,13 +231,13 @@ func main() {
 
   jsonBodyMap := map[string]any{
     "foo": "bar",
-    "bar": {
+    "bar": map[string]any{
       "baz": "qux"
     },
-    "arr": [
+    "arr": []any{
       "one",
       "two"
-    ],
+    },
     "bool": true
   }
   jsonBodyBytes, _ := json.Marshal(jsonBodyMap)

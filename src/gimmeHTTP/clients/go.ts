@@ -10,7 +10,16 @@ export default {
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',
-      join: config.join || '\n'
+      join: config.join || '\n',
+
+      json: {
+        objOpen: 'map[string]any{',
+        objClose: '}',
+        arrOpen: '[]any{',
+        arrClose: '}',
+        separator: ': ',
+        endComma: false
+      }
     })
 
     const isJsonBody = IsJsonRequest(http.method, http.headers) && http.body
@@ -39,7 +48,7 @@ export default {
 
     let bodyVar = 'nil'
     if (isJsonBody) {
-      builder.line('jsonBodyMap := map[string]any')
+      builder.line('jsonBodyMap := ')
       builder.json(http.body)
 
       if (config.handleErrors) {
