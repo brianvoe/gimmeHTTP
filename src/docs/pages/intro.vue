@@ -1,7 +1,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
   import VueShiki from '../components/vue_shiki.vue'
-  import { Codes, Languages, Client } from '../../gimmehttp'
+  import { Clients, Languages, Client } from '../../gimmehttp'
 
   import type { Http } from '../../gimmehttp'
 
@@ -75,7 +75,7 @@
         return Languages()
       },
       clients(): Client[] {
-        return Codes().filter((c) => c.language === this.selectedLanguage)
+        return Clients().filter((c) => c.language === this.selectedLanguage)
       },
       http() {
         return this.https[this.selectedHttp] // Use string reference
@@ -226,6 +226,6 @@
         {{ example }}
       </button>
     </div>
-    <VueShiki :language="selectedLanguage" :client="selectedClient" :http="http" />
+    <VueShiki v-model:language="selectedLanguage" v-model:client="selectedClient" :http="http" />
   </div>
 </template>

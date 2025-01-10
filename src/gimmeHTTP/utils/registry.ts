@@ -5,15 +5,15 @@ export interface Client {
   generate: (config: any, http: any) => string
 }
 
-const codes: Client[] = []
+const clients: Client[] = []
 
-export function Codes(): Client[] {
-  return codes
+export function Clients(): Client[] {
+  return clients
 }
 
 export function Languages(): string[] {
   // return all unque languages
-  return codes.map((c) => c.language).filter((v, i, a) => a.indexOf(v) === i)
+  return clients.map((c) => c.language).filter((v, i, a) => a.indexOf(v) === i)
 }
 
 // Search for client, whether or not they pass in a client
@@ -24,13 +24,13 @@ export function Search(language: string, client?: string): Client | null {
   }
 
   // Loop through and get all clients for the language
-  const clients = codes.filter((c) => c.language.toLowerCase() === language.toLowerCase())
-  if (clients.length === 0) {
+  const clientsFilter = clients.filter((c) => c.language.toLowerCase() === language.toLowerCase())
+  if (clientsFilter.length === 0) {
     return null
   }
 
   // Get default client
-  const defaultClient: Client = clients.find((c) => c.default) || clients[0]
+  const defaultClient: Client = clientsFilter.find((c) => c.default) || clientsFilter[0]
 
   // If no client, return default
   if (!client) {
@@ -38,7 +38,7 @@ export function Search(language: string, client?: string): Client | null {
   }
 
   // If client, return the client
-  const clientResult = clients.find((c) => c.client.toLowerCase() === client.toLowerCase())
+  const clientResult = clientsFilter.find((c) => c.client.toLowerCase() === client.toLowerCase())
   if (!clientResult) {
     return defaultClient
   }
@@ -68,7 +68,7 @@ export function Register(client: Client | Client[]): Error | null {
   }
 
   // Get current list of clients from client.language
-  const curClients = codes.filter((c) => c.language.toLowerCase() === client.language.toLowerCase())
+  const curClients = clients.filter((c) => c.language.toLowerCase() === client.language.toLowerCase())
   const exists = curClients.find((c) => c.client.toLowerCase() === client.client.toLowerCase())
 
   // Set default to false if undefined
@@ -78,17 +78,17 @@ export function Register(client: Client | Client[]): Error | null {
 
   // If it exist, overwrite the client
   if (exists) {
-    const index = codes.indexOf(client)
-    codes[index] = client
+    const index = clients.indexOf(client)
+    clients[index] = client
     return null
   }
 
   // otherwise, add the client
-  codes.push(client)
+  clients.push(client)
 
   return null
 }
 
 export function ClearRegistry(): void {
-  codes.splice(0, codes.length)
+  clients.splice(0, clients.length)
 }

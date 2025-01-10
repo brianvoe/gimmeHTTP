@@ -1,4 +1,4 @@
-import { Codes, Languages, Search, SetDefault, Register, ClearRegistry } from './utils/registry'
+import { Clients, Languages, Search, SetDefault, Register, ClearRegistry } from './utils/registry'
 import { Generate } from './utils/generate'
 import { Builder } from './utils/builder'
 import { IsJsonRequest } from './utils/utils'
@@ -50,7 +50,7 @@ Register(SwiftNsurlsession)
 export {
   // Registry
   Client,
-  Codes,
+  Clients,
   Languages,
   Search,
   SetDefault,
