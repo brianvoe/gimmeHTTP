@@ -1,16 +1,16 @@
 const f = [];
-function D() {
+function F() {
   return f;
 }
-function F() {
+function D() {
   return f.map((i) => i.language).filter((i, n, e) => e.indexOf(i) === n);
 }
 function $(i, n) {
   if (i === "" || i === void 0)
-    return new Error("Language is required");
+    return null;
   const e = f.filter((t) => t.language.toLowerCase() === i.toLowerCase());
   if (e.length === 0)
-    return new Error("No client found for " + i);
+    return null;
   const o = e.find((t) => t.default) || e[0];
   if (!n)
     return o;
@@ -19,24 +19,19 @@ function $(i, n) {
 }
 function M(i, n) {
   const e = $(i, n);
-  if (e instanceof Error)
-    return e;
-  e.default = !0;
+  e && (e.default = !0);
 }
 function d(i) {
   if (!i)
     return new Error("Client is required");
-  if (Array.isArray(i)) {
-    i.forEach((o) => d(o));
-    return;
-  }
+  if (Array.isArray(i))
+    return i.forEach((o) => d(o)), null;
   const n = f.filter((o) => o.language.toLowerCase() === i.language.toLowerCase()), e = n.find((o) => o.client.toLowerCase() === i.client.toLowerCase());
   if (i.default === void 0 && (i.default = n.length === 0), e) {
     const o = f.indexOf(i);
-    f[o] = i;
-    return;
+    return f[o] = i, null;
   }
-  f.push(i);
+  return f.push(i), null;
 }
 function J() {
   f.splice(0, f.length);
@@ -45,10 +40,10 @@ function G(i) {
   let n = b(i);
   if (n)
     return { error: n.message };
-  i.config = g(i.config);
+  i.config = g(i.config), i.language || (i.language = "javascript");
   const e = $(i.language, i.client);
-  if (e instanceof Error)
-    return { error: e.message };
+  if (!e)
+    return { error: "Client not found" };
   const o = e.generate(i.config, i.http);
   return {
     language: e.language,
@@ -59,8 +54,6 @@ function G(i) {
 function b(i) {
   if (!i)
     return new Error("Request is required");
-  if (!i.language)
-    return new Error("language is required");
   if (!i.http)
     return new Error("http is required");
   if (!i.http.method)
@@ -227,11 +220,19 @@ const C = {
     const e = new u({
       indent: i.indent || "  ",
       join: i.join || `
-`
+`,
+      json: {
+        objOpen: "map[string]any{",
+        objClose: "}",
+        arrOpen: "[]any{",
+        arrClose: "}",
+        separator: ": ",
+        endComma: !1
+      }
     }), o = k(n.method, n.headers) && n.body;
     e.line("package main"), e.line(), e.line("import ("), e.indent(), e.line('"fmt"'), e.line('"net/http"'), e.line('"io"'), o && (e.line('"bytes"'), e.line('"encoding/json"')), i.handleErrors && e.line('"log"'), e.outdent(), e.line(")"), e.line(), e.line("func main() {"), e.indent(), e.line(`url := "${n.url}"`), e.line();
     let r = "nil";
-    if (o && (e.line("jsonBodyMap := map[string]any"), e.json(n.body), i.handleErrors ? (e.line("jsonBodyBytes, err := json.Marshal(jsonBodyMap)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("jsonBodyBytes, _ := json.Marshal(jsonBodyMap)"), r = "bytes.NewBuffer(jsonBodyBytes)", e.line()), i.handleErrors ? (e.line(`req, err := http.NewRequest("${n.method.toUpperCase()}", url, ${r})`), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}"), e.line()) : (e.line(`req, _ := http.NewRequest("${n.method.toUpperCase()}", url, ${r})`), e.line()), n.headers) {
+    if (o && (e.line("jsonBodyMap := "), e.json(n.body), i.handleErrors ? (e.line("jsonBodyBytes, err := json.Marshal(jsonBodyMap)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("jsonBodyBytes, _ := json.Marshal(jsonBodyMap)"), r = "bytes.NewBuffer(jsonBodyBytes)", e.line()), i.handleErrors ? (e.line(`req, err := http.NewRequest("${n.method.toUpperCase()}", url, ${r})`), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}"), e.line()) : (e.line(`req, _ := http.NewRequest("${n.method.toUpperCase()}", url, ${r})`), e.line()), n.headers) {
       for (const [t, l] of Object.entries(n.headers))
         if (Array.isArray(l))
           for (const s of l)
@@ -269,7 +270,7 @@ const C = {
     }
     return n.body && (e.line("body: "), e.json(n.body)), e.outdent(), e.line("})"), i.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("if (!response.ok) {"), e.indent(), e.line('throw new Error("Network response was not ok");'), e.outdent(), e.line("}"), e.line("return response.text();"), e.outdent(), e.line("})"), e.line(".then(data => console.log(data))"), e.line('.catch(error => console.error("There was a problem with the fetch operation:", error));')) : (e.line(".then(response => response.text())"), e.line(".then(data => console.log(data));")), e.output();
   }
-}, E = {
+}, R = {
   language: "javascript",
   client: "axios",
   generate(i, n) {
@@ -292,7 +293,7 @@ const C = {
     }
     return n.body && (e.line("data: "), e.json(n.body)), e.outdent(), e.line("})"), i.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("console.log(response.data);"), e.outdent(), e.line("})"), e.line(".catch(error => {"), e.indent(), e.line('console.error("There was an error:", error);'), e.outdent(), e.line("});")) : e.line(".then(response => console.log(response.data));"), e.output();
   }
-}, R = {
+}, A = {
   language: "javascript",
   client: "jquery",
   generate(i, n) {
@@ -309,7 +310,7 @@ const C = {
     }
     return n.body && (e.line("data: "), e.json(n.body), e.append(","), e.line('contentType: "application/json",')), e.line("success: function(data) {"), e.indent(), e.line("console.log(data);"), e.outdent(), e.line("},"), i.handleErrors && (e.line("error: function(jqXHR, textStatus, errorThrown) {"), e.indent(), e.line('console.error("Request failed:", textStatus, errorThrown);'), e.outdent(), e.line("},")), e.outdent(), e.line("});"), e.output();
   }
-}, A = {
+}, T = {
   language: "node",
   client: "http",
   generate(i, n) {
@@ -328,7 +329,7 @@ const C = {
     }
     return e.outdent(), e.line("};"), e.line(), e.line("const req = http.request(options, (res) => {"), e.indent(), e.line('let data = "";'), e.line(), e.line('res.on("data", (chunk) => {'), e.indent(), e.line("data += chunk;"), e.outdent(), e.line("});"), e.line(), e.line('res.on("end", () => {'), e.indent(), e.line("console.log(data);"), e.outdent(), e.line("});"), e.outdent(), e.line("});"), i.handleErrors && (e.line(), e.line('req.on("error", (error) => {'), e.indent(), e.line("console.error(error);"), e.outdent(), e.line("});")), e.line(), n.body && (e.line("req.write("), e.json(n.body), e.append(");")), e.line("req.end();"), e.output();
   }
-}, T = {
+}, E = {
   language: "node",
   client: "fetch",
   generate(i, n) {
@@ -367,7 +368,7 @@ const C = {
         e.line(`$cookies[] = "${o}=${r}";`);
       e.line('curl_setopt($ch, CURLOPT_COOKIE, implode("; ", $cookies));');
     }
-    return n.body && (e.line(), e.line("curl_setopt($ch, CURLOPT_POSTFIELDS,"), e.line("<<<'JSON'"), e.line(), e.json(n.body), e.line("JSON"), e.line(");"), e.outdent()), e.line(), e.line("$response = curl_exec($ch);"), i.handleErrors && (e.line("if (curl_errno($ch)) {"), e.indent(), e.line('echo "Error: " . curl_error($ch);'), e.outdent(), e.line("}")), e.line("curl_close($ch);"), e.line(), e.line("echo $response;"), e.output();
+    return n.body && (e.line(), e.line("curl_setopt($ch, CURLOPT_POSTFIELDS,"), e.line("<<<JSON"), e.line(), e.json(n.body), e.line("JSON"), e.line(");"), e.outdent()), e.line(), e.line("$response = curl_exec($ch);"), i.handleErrors && (e.line("if (curl_errno($ch)) {"), e.indent(), e.line('echo "Error: " . curl_error($ch);'), e.outdent(), e.line("}")), e.line("curl_close($ch);"), e.line(), e.line("echo $response;"), e.output();
   }
 }, U = {
   language: "php",
@@ -403,7 +404,7 @@ const C = {
     }
     return e.outdent(), e.line(");"), e.line(), e.line("echo $response->getBody();"), e.output();
   }
-}, L = {
+}, P = {
   default: !0,
   language: "python",
   client: "http",
@@ -430,7 +431,7 @@ const C = {
     }
     return r && (e.line(), s.push("payload"), e.line("payload = "), e.json(n.body)), e.line(), e.line(`conn.request("${o}", "${c}"` + (s.length > 0 ? `, ${s.join(", ")}` : "") + ")"), e.line("res = conn.getresponse()"), e.line("data = res.read()"), e.line(), e.line('print(data.decode("utf-8"))'), e.output();
   }
-}, P = {
+}, L = {
   language: "python",
   client: "requests",
   generate(i, n) {
@@ -577,14 +578,14 @@ d(m);
 d(O);
 d(w);
 d(q);
-d(E);
 d(R);
 d(A);
 d(T);
+d(E);
 d(_);
 d(U);
-d(L);
 d(P);
+d(L);
 d(S);
 d(v);
 d(H);
@@ -593,10 +594,10 @@ d(B);
 export {
   u as Builder,
   J as ClearRegistry,
-  D as Codes,
+  F as Clients,
   G as Generate,
   k as IsJsonRequest,
-  F as Languages,
+  D as Languages,
   d as Register,
   $ as Search,
   M as SetDefault

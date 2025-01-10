@@ -30,7 +30,7 @@ export declare interface Client {
     generate: (config: any, http: any) => string;
 }
 
-export declare function Codes(): Client[];
+export declare function Clients(): Client[];
 
 export declare interface Config {
     indent?: string;
@@ -76,15 +76,15 @@ declare interface Outcome {
     code?: string;
 }
 
-export declare function Register(client: Client | Client[]): void | Error;
+export declare function Register(client: Client | Client[]): Error | null;
 
-export declare function Search(language: string, client?: string): Client | Error;
+export declare function Search(language: string, client?: string): Client | null;
 
-export declare function SetDefault(language: string, client: string): void | Error;
+export declare function SetDefault(language: string, client: string): void;
 
 export declare interface Settings {
-    language: string;
-    client: string;
+    language?: string;
+    client?: string;
     config?: Config;
     http: Http;
 }
