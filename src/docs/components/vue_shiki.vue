@@ -1,6 +1,6 @@
 <script lang="ts">
   import { defineComponent, PropType } from 'vue'
-  import { Generate, Config, Http, Codes } from '../../gimmehttp/index'
+  import { Generate, Config, Http, Clients, Search } from '../../gimmehttp/index'
   import { createHighlighterCore, HighlighterCore } from 'shiki/core'
   import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
   import shikiWasm from 'shiki/wasm'
@@ -24,7 +24,7 @@
   import swift from 'shiki/langs/swift.mjs'
   import typescript from 'shiki/langs/typescript.mjs'
 
-  const defaultLang = 'php'
+  const defaultLang = 'javascript'
   const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
 
   export default defineComponent({
@@ -39,7 +39,7 @@
       language: {
         type: String,
         required: false,
-        default: defaultLang
+        default: ''
       },
       client: {
         type: String,
@@ -56,14 +56,28 @@
       }
     },
     data() {
+      // Get default language and client from localStorage
+      const lang = this.language && this.language !== '' ? this.language : null
+      const storedLanguage = lang || localStorage.getItem('gimmeLang') || defaultLang
+      let storedClient = this.client || localStorage.getItem('gimmeClient')
+      if (!storedClient || storedClient === '') {
+        const client = Search(storedLanguage)
+        if (client) {
+          storedClient = client.client
+        }
+      }
+
       return {
         highlighter: null as HighlighterCore | null,
         logoUrl: logoUrl,
-        codes: Codes(),
+        clientsList: Clients(),
+        showCopied: false,
         openModal: false,
+        codeStr: '',
         output: '',
-        internalLanguage: this.language,
-        internalClient: this.client
+        internalLanguage: storedLanguage,
+        internalClient: storedClient || '',
+        checkInterval: null as number | null
       }
     },
     async created() {
@@ -81,10 +95,18 @@
       this.highlighter = highlighter
 
       this.code()
+
+      // Set interval to check localStorage for changes
+      setTimeout(() => {
+        this.checkInterval = window.setInterval(this.checkLocalStorage, 1000)
+      }, 1000)
     },
     unmounted() {
       if (this.highlighter) {
         this.highlighter.dispose()
+      }
+      if (this.checkInterval) {
+        clearInterval(this.checkInterval)
       }
     },
     watch: {
@@ -92,11 +114,11 @@
         this.code()
       },
       language(newVal) {
-        this.internalLanguage = newVal || defaultLang
+        this.setLanguage(newVal)
         this.code()
       },
       client(newVal) {
-        this.internalClient = newVal || ''
+        this.setClient(newVal)
         this.code()
       },
       config: {
@@ -114,25 +136,35 @@
     },
     computed: {
       languages(): string[] {
-        const langs = this.codes.map((code) => code.language)
+        const langs = this.clientsList.map((client) => client.language)
 
         // Remove duplicates
-        const unique = langs.filter((lang, index) => langs.indexOf(lang) === index)
-
-        return unique
+        return langs.filter((lang, index) => langs.indexOf(lang) === index)
       },
       clients(): string[] {
         // Filter only client of the selected language
-        return this.codes.filter((code) => code.language === this.internalLanguage).map((code) => code.client)
+        return this.clientsList
+          .filter((client) => client.language === this.internalLanguage)
+          .map((client) => client.client)
       }
     },
     methods: {
+      setLanguage(lang: string | null) {
+        this.internalLanguage = lang || defaultLang
+        localStorage.setItem('gimmeLang', this.internalLanguage)
+        this.$emit('update:language', this.internalLanguage)
+      },
+      setClient(client: string | null) {
+        this.internalClient = client || ''
+        localStorage.setItem('gimmeClient', this.internalClient)
+        this.$emit('update:client', this.internalClient)
+      },
       code() {
         if (!this.highlighter) {
           return
         }
 
-        const { code, error } = Generate({
+        const { code, language, client, error } = Generate({
           language: this.internalLanguage,
           client: this.internalClient,
           config: this.config,
@@ -143,10 +175,25 @@
           return
         }
 
+        // Check if language and client are different if so update
+        this.setLanguage(language!)
+        this.setClient(client!)
+
+        this.codeStr = code!
         this.output = this.highlighter.codeToHtml(code!, {
           lang: this.internalLanguage,
           theme: this.theme
         })
+      },
+
+      clickCopy() {
+        this.showCopied = true
+
+        navigator.clipboard.writeText(this.codeStr)
+
+        setTimeout(() => {
+          this.showCopied = false
+        }, 2000)
       },
 
       // Modal
@@ -166,20 +213,29 @@
         }
       },
       clickModalLang(lang: string) {
-        this.internalLanguage = lang
-        this.$emit('update:language', lang)
+        this.setLanguage(lang)
 
         this.toggleModal()
 
         this.code()
       },
       clickModalClient(client: string) {
-        this.internalClient = client
-        this.$emit('update:client', client)
+        this.setClient(client)
 
         this.toggleModal()
 
         this.code()
+      },
+      checkLocalStorage() {
+        const storedLanguage = localStorage.getItem('gimmeLang')
+        const storedClient = localStorage.getItem('gimmeClient')
+
+        if (storedLanguage && storedLanguage !== this.internalLanguage) {
+          this.setLanguage(storedLanguage)
+        }
+        if (storedClient && storedClient !== this.internalClient) {
+          this.setClient(storedClient)
+        }
       }
     }
   })
@@ -194,6 +250,7 @@
     --spacing-quarter: 4px;
     --border-radius: 8px;
     --border-color: #636363;
+    --options-height: 40px;
     --modal-bg-color: rgba(0, 0, 0, 0.4);
     --modal-content-color: #2b2b2b;
     --timing: 0.3s;
@@ -204,45 +261,106 @@
     border-radius: var(--border-radius);
     overflow: hidden;
 
-    .selector {
+    .options {
       display: flex;
       align-items: center;
       justify-content: center;
       position: absolute;
       top: 0;
       right: 0;
-      z-index: 1000;
-      gap: var(--spacing-half);
+      z-index: 3;
+      padding: 0;
+      margin: 0;
+      height: var(--options-height);
+      max-height: var(--options-height);
       border-bottom-left-radius: var(--border-radius);
       border-left: solid 1px var(--border-color);
       border-bottom: solid 1px var(--border-color);
-      padding: var(--spacing-half);
       color: var(--text-color);
+      overflow: hidden;
       cursor: pointer;
       transition:
         height var(--timing),
         width var(--timing);
 
-      &:hover {
+      .copy {
+        flex: 0 1 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: var(--spacing-half);
+        margin: 0;
+        gap: var(--spacing-half);
+
+        &:hover:not(.show-copied) {
+          background-color: var(--border-color);
+          color: var(--text-color);
+        }
+
+        .txt {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--border-color);
+          font-size: 16px;
+          text-align: center;
+          line-height: 1;
+          background-color: var(---c);
+        }
+
+        svg {
+          height: 100%;
+          width: auto;
+          max-height: 20px;
+          max-width: 40px;
+          fill: var(--border-color);
+        }
+      }
+
+      .separator {
+        flex: 0 1 1px;
+        width: 1px;
+        min-width: 1px;
+        height: 60%;
+        padding: 0;
+        margin: 0;
         background-color: var(--border-color);
-        color: var(--text-color);
       }
 
-      .select {
+      .lang {
+        flex: 0 1 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
         height: 100%;
-        width: 100%;
-        max-height: 28px;
-        max-width: 40px;
-        background-color: transparent;
-        color: var(--border-color);
-      }
+        max-height: var(--options-height);
+        padding: var(--spacing-half);
+        margin: 0;
+        gap: var(--spacing-half);
 
-      .arrows {
-        height: 100%;
-        width: 100%;
-        max-height: 20px;
-        max-width: 40px;
-        fill: var(--border-color);
+        &:hover {
+          background-color: var(--border-color);
+          color: var(--text-color);
+        }
+
+        .select {
+          height: 100%;
+          width: auto; // Adjust width to auto to respect padding
+          max-width: 40px;
+          background-color: transparent;
+          color: var(--border-color);
+        }
+
+        .arrows {
+          height: 100%;
+          width: auto; // Adjust width to auto to respect padding
+          max-height: 16px;
+          max-width: 40px;
+          fill: var(--border-color);
+        }
       }
     }
 
@@ -294,7 +412,7 @@
       height: 100%;
       left: 0;
       top: 0;
-      z-index: 1000;
+      z-index: 4;
       overflow: auto;
       background-color: var(--modal-bg-color);
 
@@ -362,15 +480,6 @@
         }
       }
     }
-
-    .fade-enter-active,
-    .fade-leave-active {
-      transition: all var(--timing) ease;
-    }
-    .fade-enter,
-    .fade-leave-to {
-      opacity: 0;
-    }
   }
 </style>
 
@@ -378,13 +487,27 @@
 
 <template>
   <div class="gimmehttp">
-    <div @click="toggleModal()" class="selector">
-      <img :src="logoUrl + internalLanguage + '.svg'" class="select" />
-      <svg class="arrows" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="m3.707 2.293 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L6.586 8 2.293 3.707a1 1 0 0 1 1.414-1.414m5 0 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 8 7.293 3.707a1 1 0 0 1 1.414-1.414"
-        />
-      </svg>
+    <div class="options">
+      <div :class="['copy', { 'show-copied': showCopied }]" @click="clickCopy()">
+        <svg v-if="!showCopied" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path
+            d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+          />
+          <path
+            d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+          />
+        </svg>
+        <div v-else class="txt">Copied!</div>
+      </div>
+      <div class="separator" />
+      <div class="lang" @click="toggleModal()">
+        <img :src="logoUrl + internalLanguage + '.svg'" class="select" />
+        <svg class="arrows" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="m3.707 2.293 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L6.586 8 2.293 3.707a1 1 0 0 1 1.414-1.414m5 0 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 8 7.293 3.707a1 1 0 0 1 1.414-1.414"
+          />
+        </svg>
+      </div>
     </div>
     <div :class="'output language-' + internalLanguage + (openModal ? ' modalOpen' : '')" v-html="output" />
 
@@ -403,11 +526,11 @@
           </div>
         </div>
         <div class="separator"></div>
-        <transition-group name="fade" tag="div" class="clients">
+        <div class="clients">
           <div class="client" v-for="client in clients" :key="client" @click="clickModalClient(client)">
             {{ client }}
           </div>
-        </transition-group>
+        </div>
       </div>
     </div>
   </div>
