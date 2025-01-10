@@ -18,15 +18,15 @@ export function Languages(): string[] {
 
 // Search for client, whether or not they pass in a client
 // If no client, return the default client of that language
-export function Search(language: string, client?: string): Client | Error {
+export function Search(language: string, client?: string): Client | null {
   if (language === '' || language === undefined) {
-    return new Error('Language is required')
+    return null
   }
 
   // Loop through and get all clients for the language
   const clients = codes.filter((c) => c.language.toLowerCase() === language.toLowerCase())
   if (clients.length === 0) {
-    return new Error('No client found for ' + language)
+    return null
   }
 
   // Get default client
@@ -46,17 +46,17 @@ export function Search(language: string, client?: string): Client | Error {
   return clientResult
 }
 
-export function SetDefault(language: string, client: string): void | Error {
+export function SetDefault(language: string, client: string): void {
   const clientResult = Search(language, client)
-  if (clientResult instanceof Error) {
-    return clientResult
+  if (!clientResult) {
+    return
   }
 
   // Set the client as default
   clientResult.default = true
 }
 
-export function Register(client: Client | Client[]): void | Error {
+export function Register(client: Client | Client[]): Error | null {
   if (!client) {
     return new Error('Client is required')
   }
@@ -64,7 +64,7 @@ export function Register(client: Client | Client[]): void | Error {
   // Register multiple clients
   if (Array.isArray(client)) {
     client.forEach((g) => Register(g))
-    return
+    return null
   }
 
   // Get current list of clients from client.language
@@ -80,11 +80,13 @@ export function Register(client: Client | Client[]): void | Error {
   if (exists) {
     const index = codes.indexOf(client)
     codes[index] = client
-    return
+    return null
   }
 
   // otherwise, add the client
   codes.push(client)
+
+  return null
 }
 
 export function ClearRegistry(): void {

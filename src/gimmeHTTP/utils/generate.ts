@@ -3,11 +3,10 @@ import { Search } from './registry'
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export interface Settings {
-  language: string
-  client: string
+  language?: string
+  client?: string
 
   config?: Config
-
   http: Http
 }
 
@@ -50,30 +49,30 @@ export function Generate(req: Settings): Outcome {
   // Set default values for config
   req.config = setConfig(req.config)
 
-  // Search for target, grab default if not found
-  const target = Search(req.language, req.client)
-  if (target instanceof Error) {
-    return { error: target.message }
+  // Set default language if not set
+  if (!req.language) {
+    req.language = 'javascript' // I know, I know, but I have to pick a default
+  }
+
+  // Search for client, grab default if not found
+  const client = Search(req.language, req.client)
+  if (!client) {
+    return { error: 'Client not found' }
   }
 
   // Generate the code
-  const outcome = target.generate(req.config, req.http)
+  const code = client.generate(req.config, req.http)
 
   return {
-    language: target.language,
-    client: target.client,
-    code: outcome
+    language: client.language,
+    client: client.client,
+    code: code
   } as Outcome
 }
 
 function validate(req: Settings): Error | undefined {
   if (!req) {
     return new Error('Request is required')
-  }
-
-  // Language
-  if (!req.language) {
-    return new Error('language is required')
   }
 
   if (!req.http) {
@@ -91,7 +90,7 @@ function validate(req: Settings): Error | undefined {
   return undefined
 }
 
-function setConfig(config: any): any {
+function setConfig(config: Config | undefined): Config {
   config = config || {}
 
   if (!config.indent) {
