@@ -4,7 +4,6 @@
   import { Codes, Languages, Client } from '../../gimmehttp'
 
   import type { Http } from '../../gimmehttp'
-  import { languages } from 'prismjs'
 
   const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
 
@@ -58,15 +57,11 @@
         }
       }
 
-      // Need to set a random language
-      const uniqueLangs = Languages()
-      const language = uniqueLangs[Math.floor(Math.random() * uniqueLangs.length)]
-
       return {
         logoUrl: logoUrl,
-        selectedLanguage: language,
+        selectedLanguage: '',
         selectedClient: '',
-        selectedHttp: '',
+        selectedHttp: 'advanced_post',
 
         https: {
           simple_get: httpGet,
@@ -83,11 +78,7 @@
         return Codes().filter((c) => c.language === this.selectedLanguage)
       },
       http() {
-        const sel =
-          this.selectedHttp !== ''
-            ? this.selectedHttp
-            : Object.keys(this.https)[Math.floor(Math.random() * Object.keys(this.https).length)]
-        return this.https[sel]
+        return this.https[this.selectedHttp] // Use string reference
       }
     },
     methods: {
@@ -192,6 +183,7 @@
         &.selected,
         &:hover {
           background-color: var(--color-quaternary);
+          border: solid 1px var(--border-color);
         }
       }
     }
@@ -228,9 +220,7 @@
       <button
         v-for="(http, example) in https"
         :key="example"
-        :class="{
-          selected: example === selectedHttp
-        }"
+        :class="{ selected: example === selectedHttp }"
         @click="setExample(example)"
       >
         {{ example }}
