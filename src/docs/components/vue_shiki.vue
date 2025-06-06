@@ -1,28 +1,7 @@
 <script lang="ts">
   import { defineComponent, PropType } from 'vue'
   import { Generate, Config, Http, Clients, Search } from '../../gimmehttp/index'
-  import { createHighlighterCore, HighlighterCore } from 'shiki/core'
-  import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
-  import shikiWasm from 'shiki/wasm'
-
-  // Themes
-  import githubDark from 'shiki/themes/github-dark.mjs'
-  import githubLight from 'shiki/themes/github-light.mjs'
-
-  // Languages
-  import c from 'shiki/langs/c.mjs'
-  import csharp from 'shiki/langs/csharp.mjs'
-  import go from 'shiki/langs/go.mjs'
-  import java from 'shiki/langs/java.mjs'
-  import javascript from 'shiki/langs/javascript.mjs'
-  import php from 'shiki/langs/php.mjs'
-  import python from 'shiki/langs/python.mjs'
-  import r from 'shiki/langs/r.mjs'
-  import ruby from 'shiki/langs/ruby.mjs'
-  import rust from 'shiki/langs/rust.mjs'
-  import shell from 'shiki/langs/shellscript.mjs'
-  import swift from 'shiki/langs/swift.mjs'
-  import typescript from 'shiki/langs/typescript.mjs'
+  import { createHighlighter, Highlighter } from 'shiki'
 
   const defaultLang = 'javascript'
   const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
@@ -56,7 +35,6 @@
       }
     },
     data() {
-      // Get default language and client from localStorage
       const lang = this.language && this.language !== '' ? this.language : null
       const storedLanguage = lang || localStorage.getItem('gimmeLang') || defaultLang
       let storedClient = this.client || localStorage.getItem('gimmeClient')
@@ -68,7 +46,7 @@
       }
 
       return {
-        highlighter: null as HighlighterCore | null,
+        highlighter: null as Highlighter | null,
         logoUrl: logoUrl,
         clientsList: Clients(),
         showCopied: false,
@@ -81,22 +59,32 @@
       }
     },
     async created() {
-      const highlighter = await createHighlighterCore({
-        themes: [githubDark, githubLight],
-        langs: [c, csharp, go, java, javascript, php, python, r, ruby, rust, shell, swift, typescript],
+      this.highlighter = await createHighlighter({
+        themes: ['github-dark', 'github-light'],
+        langs: [
+          'c',
+          'csharp',
+          'go',
+          'java',
+          'javascript',
+          'php',
+          'python',
+          'r',
+          'ruby',
+          'rust',
+          'shellscript',
+          'swift',
+          'typescript'
+        ],
         langAlias: {
           ts: 'typescript',
           node: 'javascript',
           nodejs: 'javascript'
-        },
-        engine: createOnigurumaEngine(shikiWasm)
+        }
       })
-
-      this.highlighter = highlighter
 
       this.code()
 
-      // Set interval to check localStorage for changes
       setTimeout(() => {
         this.checkInterval = window.setInterval(this.checkLocalStorage, 1000)
       }, 1000)
@@ -137,12 +125,9 @@
     computed: {
       languages(): string[] {
         const langs = this.clientsList.map((client) => client.language)
-
-        // Remove duplicates
         return langs.filter((lang, index) => langs.indexOf(lang) === index)
       },
       clients(): string[] {
-        // Filter only client of the selected language
         return this.clientsList
           .filter((client) => client.language === this.internalLanguage)
           .map((client) => client.client)
@@ -175,12 +160,11 @@
           return
         }
 
-        // Check if language and client are different if so update
         this.setLanguage(language!)
         this.setClient(client!)
 
         this.codeStr = code!
-        this.output = this.highlighter.codeToHtml(code!, {
+        this.output = this.highlighter.codeToHtml(this.codeStr, {
           lang: this.internalLanguage,
           theme: this.theme
         })
@@ -200,7 +184,6 @@
       toggleModal() {
         this.openModal = !this.openModal
 
-        // If open add click event listener to modal
         if (this.openModal) {
           document.addEventListener('click', this.clickModalBg)
         } else {
@@ -214,27 +197,30 @@
       },
       clickModalLang(lang: string) {
         this.setLanguage(lang)
-
         this.toggleModal()
-
         this.code()
       },
       clickModalClient(client: string) {
         this.setClient(client)
-
         this.toggleModal()
-
         this.code()
       },
       checkLocalStorage() {
         const storedLanguage = localStorage.getItem('gimmeLang')
         const storedClient = localStorage.getItem('gimmeClient')
+        let didChange = false
 
         if (storedLanguage && storedLanguage !== this.internalLanguage) {
           this.setLanguage(storedLanguage)
+          didChange = true
         }
         if (storedClient && storedClient !== this.internalClient) {
           this.setClient(storedClient)
+          didChange = true
+        }
+
+        if (didChange) {
+          this.code()
         }
       }
     }
@@ -399,6 +385,11 @@
         }
         &::-webkit-scrollbar-track {
           background-color: #2b2b2b;
+        }
+
+        code {
+          padding: 0;
+          margin: 0;
         }
       }
     }
