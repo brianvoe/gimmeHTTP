@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { defineComponent, PropType } from 'vue'
-  import { Generate, Config, Http, Clients, Search } from '../../gimmehttp/index'
-  import { createHighlighter, Highlighter } from 'shiki'
+  import type { PropType } from 'vue'
+  import { defineComponent } from 'vue'
+  import type { Config, Http } from '@/gimmehttp/index'
+  import { Generate, Clients, Search } from '@/gimmehttp/index'
+  import type { Highlighter } from 'shiki'
+  import { createHighlighter } from 'shiki'
 
   const defaultLang = 'javascript'
   const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
@@ -245,6 +248,7 @@
     flex-direction: column;
     position: relative;
     border-radius: var(--border-radius);
+    border: solid 1px var(--border-color);
     overflow: hidden;
 
     .options {
