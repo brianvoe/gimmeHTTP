@@ -4,6 +4,7 @@ import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   build: {
+    target: 'es2020',
     lib: {
       entry: path.resolve(__dirname, 'src/gimmehttp/index.ts'),
       name: 'gimmeHTTP',
@@ -17,7 +18,8 @@ export default defineConfig({
       rollupTypes: true,
       outDir: path.resolve(__dirname, 'dist'),
       entryRoot: path.resolve(__dirname, 'src/gimmehttp'),
-      tsconfigPath: path.resolve(__dirname, 'src/gimmehttp/tsconfig.json')
+      tsconfigPath: path.resolve(__dirname, 'src/gimmehttp/tsconfig.json'),
+      exclude: [path.resolve(__dirname, 'src/gimmehttp/vue')]
     })
   ]
 })

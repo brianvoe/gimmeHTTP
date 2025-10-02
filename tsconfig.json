@@ -7,7 +7,7 @@
     "target": "esnext",
     "useDefineForClassFields": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "jsx": "preserve",
     "allowJs": false,
@@ -15,7 +15,12 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "importHelpers": true,
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom"],
+    "types": ["node", "vite/client"],
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }
