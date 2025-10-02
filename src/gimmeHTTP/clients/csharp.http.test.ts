@@ -1,6 +1,6 @@
 import CSharpHttp from './csharp.http'
 import { Config, Http } from '../utils/generate'
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 
 describe('CSharpHttp.generate', () => {
   test('should build a basic GET request', () => {

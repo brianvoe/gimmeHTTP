@@ -1,6 +1,6 @@
 import NodeFetch from './node.fetch'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from '@jest/globals'
+import { describe, test, expect } from 'vitest'
 
 describe('NodeFetch.generate', () => {
   test('should build a basic GET request', () => {

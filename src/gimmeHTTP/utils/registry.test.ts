@@ -1,5 +1,5 @@
 import { ClearRegistry, Register, Search, Client } from './registry'
-import { describe, expect, test, beforeEach } from '@jest/globals'
+import { describe, expect, test, beforeEach } from 'vitest'
 
 describe('Register', () => {
   // clear registry before each test

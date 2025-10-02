@@ -1,6 +1,6 @@
 import Node from './node.http'
 import { Config, Http } from '../utils/generate'
-import { test, describe, expect } from '@jest/globals'
+import { test, describe, expect } from 'vitest'
 
 describe('Node.generate', () => {
   test('should build a basic GET request', () => {

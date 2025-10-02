@@ -1,6 +1,6 @@
 import ShellCurl from './shell.curl'
 import { Http } from '../utils/generate'
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 
 describe('shell.curl', () => {
   test('GET - simple', () => {

@@ -1,6 +1,6 @@
 import JSAxios from './js.axios'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from '@jest/globals'
+import { describe, test, expect } from 'vitest'
 
 describe('JSAxios.generate', () => {
   test('should build a basic GET request', () => {

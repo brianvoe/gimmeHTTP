@@ -93,14 +93,6 @@ function validate(req: Settings): Error | undefined {
 function setConfig(config: Config | undefined): Config {
   config = config || {}
 
-  if (!config.indent) {
-    config.indent = '  '
-  }
-
-  if (!config.join) {
-    config.join = '\n'
-  }
-
   if (config.handleErrors === undefined) {
     config.handleErrors = false
   }

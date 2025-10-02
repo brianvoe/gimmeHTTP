@@ -1,5 +1,5 @@
 import { Register, Generate, Settings, Config, Http, Builder, ClearRegistry } from './index'
-import { beforeEach, describe, expect, test } from '@jest/globals'
+import { beforeEach, describe, expect, test } from 'vitest'
 import ShellCurl from './clients/shell.curl'
 
 describe('Index', () => {
@@ -54,11 +54,11 @@ describe('Index', () => {
 
     expect(code).toEqual(
       `
-curl -X POST "https://example.com"
-  -H "Content-Type: application/json"
-  -d $'{
-    "key1": "value1",
-    "key2": 8675309
+curl -X POST "https://example.com" \\
+  -H "Content-Type: application/json" \\
+  -d $'{ \\
+    "key1": "value1", \\
+    "key2": 8675309 \\
   }'
     `.trim()
     )

@@ -1,6 +1,6 @@
 import Go from './go'
 import { Http } from '../utils/generate'
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 
 describe('Go.generate', () => {
   test('should build a basic GET request', () => {

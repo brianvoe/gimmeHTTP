@@ -1,6 +1,6 @@
 import PythonHttpClient from './python.http'
 import { Config, Http } from '../utils/generate'
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 
 describe('PythonHttpClient.generate', () => {
   test('should build a basic GET request', () => {

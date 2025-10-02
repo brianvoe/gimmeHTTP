@@ -1,5 +1,5 @@
 import { IsJsonRequest, ParseUrl } from './utils'
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 
 describe('IsJsonRequest', () => {
   test('should return true for POST with Content-Type application/json', () => {
