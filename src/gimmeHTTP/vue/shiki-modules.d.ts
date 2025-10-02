@@ -1,0 +1,5 @@
+declare module 'shiki/core'
+declare module 'shiki/engine/oniguruma'
+declare module 'shiki/wasm'
+declare module 'shiki/langs/*.mjs'
+declare module 'shiki/themes/*.mjs'

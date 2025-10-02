@@ -1,23 +1,37 @@
 <script lang="ts">
   import type { PropType } from 'vue'
   import { defineComponent } from 'vue'
-  import type { Config, Http } from '@/gimmehttp/index'
-  import { Generate, Clients, Search } from '@/gimmehttp/index'
-  import type { Highlighter } from 'shiki'
-  import { createHighlighter } from 'shiki'
+  import type { Config, Http } from '../utils/generate'
+  import { Generate, Clients, Search } from '../index'
+  import { createHighlighterCore } from 'shiki/core'
+
+  import langC from 'shiki/langs/c.mjs'
+  import langCsharp from 'shiki/langs/csharp.mjs'
+  import langGo from 'shiki/langs/go.mjs'
+  import langJava from 'shiki/langs/java.mjs'
+  import langJavascript from 'shiki/langs/javascript.mjs'
+  import langPhp from 'shiki/langs/php.mjs'
+  import langPython from 'shiki/langs/python.mjs'
+  import langR from 'shiki/langs/r.mjs'
+  import langRuby from 'shiki/langs/ruby.mjs'
+  import langRust from 'shiki/langs/rust.mjs'
+  import langShell from 'shiki/langs/shellscript.mjs'
+  import langSwift from 'shiki/langs/swift.mjs'
+  import langTypescript from 'shiki/langs/typescript.mjs'
+  import langJson from 'shiki/langs/json.mjs'
+
+  import themeGithubDark from 'shiki/themes/github-dark.mjs'
+  import themeGithubLight from 'shiki/themes/github-light.mjs'
+
+  import shikiWasm from 'shiki/wasm'
+  import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
 
   const defaultLang = 'javascript'
-  const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
 
   export default defineComponent({
     name: 'GimmeHttp',
     emits: ['update:language', 'update:client'],
     props: {
-      theme: {
-        type: String,
-        required: false,
-        default: 'github-dark'
-      },
       language: {
         type: String,
         required: false,
@@ -38,9 +52,10 @@
       }
     },
     data() {
+      const isBrowser = typeof window !== 'undefined'
       const lang = this.language && this.language !== '' ? this.language : null
-      const storedLanguage = lang || localStorage.getItem('gimmeLang') || defaultLang
-      let storedClient = this.client || localStorage.getItem('gimmeClient')
+      const storedLanguage = lang || (isBrowser ? localStorage.getItem('gimmeLang') : null) || defaultLang
+      let storedClient = this.client || (isBrowser ? localStorage.getItem('gimmeClient') : null)
       if (!storedClient || storedClient === '') {
         const client = Search(storedLanguage)
         if (client) {
@@ -48,49 +63,55 @@
         }
       }
 
+      const theme = (isBrowser ? localStorage.getItem('gimmeTheme') : null) || 'github-dark'
+
       return {
-        highlighter: null as Highlighter | null,
-        logoUrl: logoUrl,
+        highlighter: null as any,
         clientsList: Clients(),
         showCopied: false,
         openModal: false,
         codeStr: '',
         output: '',
+        theme: theme,
         internalLanguage: storedLanguage,
         internalClient: storedClient || '',
         checkInterval: null as number | null
       }
     },
     async created() {
-      this.highlighter = await createHighlighter({
-        themes: ['github-dark', 'github-light'],
+      this.highlighter = await createHighlighterCore({
+        themes: [themeGithubDark, themeGithubLight],
         langs: [
-          'c',
-          'csharp',
-          'go',
-          'java',
-          'javascript',
-          'php',
-          'python',
-          'r',
-          'ruby',
-          'rust',
-          'shellscript',
-          'swift',
-          'typescript'
+          langC,
+          langCsharp,
+          langGo,
+          langJava,
+          langJavascript,
+          langPhp,
+          langPython,
+          langR,
+          langRuby,
+          langRust,
+          langShell,
+          langSwift,
+          langTypescript,
+          langJson
         ],
         langAlias: {
           ts: 'typescript',
           node: 'javascript',
           nodejs: 'javascript'
-        }
+        },
+        engine: createOnigurumaEngine(shikiWasm)
       })
 
       this.code()
 
-      setTimeout(() => {
-        this.checkInterval = window.setInterval(this.checkLocalStorage, 1000)
-      }, 1000)
+      if (typeof window !== 'undefined') {
+        setTimeout(() => {
+          this.checkInterval = window.setInterval(this.checkLocalStorage, 1000)
+        }, 1000)
+      }
     },
     unmounted() {
       if (this.highlighter) {
@@ -137,14 +158,25 @@
       }
     },
     methods: {
+      logoHref(name: string) {
+        try {
+          return new URL(`../logos/${name}.svg`, import.meta.url).href
+        } catch (_) {
+          return ''
+        }
+      },
       setLanguage(lang: string | null) {
         this.internalLanguage = lang || defaultLang
-        localStorage.setItem('gimmeLang', this.internalLanguage)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('gimmeLang', this.internalLanguage)
+        }
         this.$emit('update:language', this.internalLanguage)
       },
       setClient(client: string | null) {
         this.internalClient = client || ''
-        localStorage.setItem('gimmeClient', this.internalClient)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('gimmeClient', this.internalClient)
+        }
         this.$emit('update:client', this.internalClient)
       },
       code() {
@@ -152,44 +184,48 @@
           return
         }
 
-        const { code, language, client, error } = Generate({
-          language: this.internalLanguage,
-          client: this.internalClient,
-          config: this.config,
-          http: this.http
-        })
-        if (error) {
-          this.output = error
-          return
+        try {
+          const { code, language, client, error } = Generate({
+            language: this.internalLanguage,
+            client: this.internalClient,
+            config: this.config,
+            http: this.http
+          })
+          if (error) {
+            this.output = error
+            return
+          }
+
+          this.setLanguage(language!)
+          this.setClient(client!)
+
+          this.codeStr = code!
+          this.output = this.highlighter.codeToHtml(this.codeStr, {
+            lang: this.internalLanguage,
+            theme: this.theme
+          })
+        } catch (error) {
+          console.error('Error in code highlighting:', error)
+          this.output = this.codeStr
         }
-
-        this.setLanguage(language!)
-        this.setClient(client!)
-
-        this.codeStr = code!
-        this.output = this.highlighter.codeToHtml(this.codeStr, {
-          lang: this.internalLanguage,
-          theme: this.theme
-        })
       },
 
       clickCopy() {
         this.showCopied = true
-
-        navigator.clipboard.writeText(this.codeStr)
-
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+          navigator.clipboard.writeText(this.codeStr)
+        }
         setTimeout(() => {
           this.showCopied = false
         }, 2000)
       },
 
-      // Modal
       toggleModal() {
         this.openModal = !this.openModal
 
-        if (this.openModal) {
+        if (this.openModal && typeof document !== 'undefined') {
           document.addEventListener('click', this.clickModalBg)
-        } else {
+        } else if (typeof document !== 'undefined') {
           document.removeEventListener('click', this.clickModalBg)
         }
       },
@@ -209,8 +245,12 @@
         this.code()
       },
       checkLocalStorage() {
+        if (!this.highlighter || typeof window === 'undefined') {
+          return
+        }
         const storedLanguage = localStorage.getItem('gimmeLang')
         const storedClient = localStorage.getItem('gimmeClient')
+        const storedTheme = localStorage.getItem('theme')
         let didChange = false
 
         if (storedLanguage && storedLanguage !== this.internalLanguage) {
@@ -219,6 +259,10 @@
         }
         if (storedClient && storedClient !== this.internalClient) {
           this.setClient(storedClient)
+          didChange = true
+        }
+        if (storedTheme && storedTheme !== this.theme) {
+          this.theme = 'github-' + storedTheme
           didChange = true
         }
 
@@ -232,13 +276,8 @@
 
 <style lang="scss">
   .gimmehttp {
-    // variables
-    --text-color: #e0e0e0;
-    --spacing: 16px;
-    --spacing-half: 8px;
-    --spacing-quarter: 4px;
-    --border-radius: 8px;
-    --border-color: #636363;
+    --text-color: var(--color-font);
+    --border-color: var(--color-border);
     --options-height: 40px;
     --modal-bg-color: rgba(0, 0, 0, 0.4);
     --modal-content-color: #2b2b2b;
@@ -338,7 +377,7 @@
 
         .select {
           height: 100%;
-          width: auto; // Adjust width to auto to respect padding
+          width: auto;
           max-width: 40px;
           background-color: transparent;
           color: var(--border-color);
@@ -346,7 +385,7 @@
 
         .arrows {
           height: 100%;
-          width: auto; // Adjust width to auto to respect padding
+          width: auto;
           max-height: 16px;
           max-width: 40px;
           fill: var(--border-color);
@@ -368,7 +407,7 @@
 
       pre.shiki {
         height: auto;
-        min-height: 50px; // Set a default min-height for smooth transition
+        min-height: 50px;
         margin: 0;
         padding: var(--spacing);
         border-radius: var(--border-radius);
@@ -478,8 +517,6 @@
   }
 </style>
 
-<style></style>
-
 <template>
   <div class="gimmehttp">
     <div class="options">
@@ -496,7 +533,7 @@
       </div>
       <div class="separator" />
       <div class="lang" @click="toggleModal()">
-        <img :src="logoUrl + internalLanguage + '.svg'" class="select" />
+        <img :src="logoHref(internalLanguage)" class="select" />
         <svg class="arrows" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
           <path
             d="m3.707 2.293 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L6.586 8 2.293 3.707a1 1 0 0 1 1.414-1.414m5 0 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 8 7.293 3.707a1 1 0 0 1 1.414-1.414"
@@ -506,7 +543,6 @@
     </div>
     <div :class="'output language-' + internalLanguage + (openModal ? ' modalOpen' : '')" v-html="output" />
 
-    <!-- modal -->
     <div v-show="openModal" class="modal" @click="clickModalBg">
       <div class="content">
         <div class="langs">
@@ -517,7 +553,7 @@
             :key="lang"
             @click="clickModalLang(lang)"
           >
-            <img :alt="lang" :src="logoUrl + lang + '.svg'" />
+            <img :alt="lang" :src="logoHref(lang)" />
           </div>
         </div>
         <div class="separator"></div>
