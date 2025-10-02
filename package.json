@@ -21,12 +21,14 @@
     "dev": "vite --port=1111 --config vite.config.docs.mts",
     "format": "prettier --write --cache --parser typescript \"src/**/*.ts\"",
     "lint": "prettier --write ./src/**/*",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "build": "npm run build:clean && npm run build:docs && npm run build:lib",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "build": "npm run build:clean && npm run build:docs && npm run build:lib && npm run build:vue",
     "build:clean": "rimraf ./dist/* && rimraf ./docs/*",
     "build:docs": "vite build --config vite.config.docs.mts",
-    "build:lib": "vite build --config vite.config.lib.mts"
+    "build:lib": "vite build --config vite.config.lib.mts",
+    "build:vue": "vue-tsc -p tsconfig.vue.json && vite build --config vite.config.vue.mts",
+    "release": "node release.js"
   },
   "main": "dist/gimmehttp.umd.js",
   "browser": "dist/gimmehttp.umd.js",
@@ -38,28 +40,37 @@
       "types": "./dist/gimmehttp.d.ts",
       "require": "./dist/gimmehttp.cjs.js",
       "import": "./dist/gimmehttp.es.js"
+    },
+    "./vue": {
+      "types": "./dist/vue/index.d.ts",
+      "import": "./dist/vue/index.js"
     }
   },
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "shiki": "^3.13.0"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3.0"
+  },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
+    "@types/node": "^24.6.0",
     "@types/prismjs": "^1.26.5",
-    "@vitejs/plugin-vue": "^5.2.4",
-    "jest": "^29.7.0",
-    "prettier": "^3.5.3",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "sass": "^1.89.1",
-    "shiki": "^3.5.0",
-    "ts-jest": "^29.3.4",
+    "sass": "^1.93.2",
     "tslib": "^2.8.1",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5",
+    "typescript": "5.8.2",
+    "vite": "^7.1.7",
     "vite-plugin-dts": "^4.5.4",
-    "vue": "^3.5.16",
+    "vitest": "^3.2.4",
+    "vue": "^3.5.22",
     "vue-router": "^4.5.1",
-    "vue-tsc": "^2.2.10",
+    "vue-tsc": "^3.1.0",
     "vuex": "^4.0.2"
   }
 }
