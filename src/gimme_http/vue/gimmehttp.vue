@@ -276,8 +276,16 @@
 
 <style lang="scss">
   .gimmehttp {
-    --text-color: var(--color-font);
-    --border-color: var(--color-border);
+    --text-color: #3d2c2c;
+    --border-color: #535353;
+    --spacing: 16px;
+    --spacing-half: 8px;
+    --spacing-quarter: 4px;
+    --border-radius: 8px;
+    --accent-bg: #ff9122;
+    --accent-fg: #1f120b;
+    --accent-soft: rgba(255, 145, 34, 0.15);
+    --shadow-soft: rgba(30, 22, 17, 0.18);
     --options-height: 40px;
     --modal-bg-color: rgba(0, 0, 0, 0.4);
     --modal-content-color: #2b2b2b;
@@ -287,8 +295,14 @@
     flex-direction: column;
     position: relative;
     border-radius: var(--border-radius);
-    border: solid 1px var(--border-color);
     overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), var(--accent-soft));
+    border: 1px solid rgba(83, 83, 83, 0.32);
+    box-shadow: 0 20px 38px -22px var(--shadow-soft);
+    animation: gimme-fade-in 0.35s ease;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
 
     .options {
       display: flex;
@@ -324,8 +338,16 @@
         gap: var(--spacing-half);
 
         &:hover:not(.show-copied) {
-          background-color: var(--border-color);
-          color: var(--text-color);
+          background-color: var(--accent-bg);
+          color: var(--accent-fg);
+          transform: translateY(-1px);
+          box-shadow: 0 12px 18px -14px var(--shadow-soft);
+        }
+
+        &.show-copied {
+          background-color: var(--accent-bg);
+          color: var(--accent-fg);
+          animation: gimme-pulse 0.45s ease;
         }
 
         .txt {
@@ -371,8 +393,10 @@
         gap: var(--spacing-half);
 
         &:hover {
-          background-color: var(--border-color);
-          color: var(--text-color);
+          background-color: var(--accent-bg);
+          color: var(--accent-fg);
+          transform: translateY(-2px);
+          box-shadow: 0 12px 18px -16px var(--shadow-soft);
         }
 
         .select {
@@ -473,12 +497,21 @@
             width: 50px;
             height: 50px;
             padding: var(--spacing-half);
-            border: solid 1px var(--border-color);
+            border: solid 1px rgba(83, 83, 83, 0.3);
             border-radius: var(--border-radius);
             cursor: pointer;
+            transition:
+              transform 0.22s ease,
+              box-shadow 0.22s ease,
+              background-color 0.22s ease,
+              border-color 0.22s ease;
 
-            &.selected {
-              background-color: var(--border-color);
+            &.selected,
+            &:hover {
+              background-color: var(--accent-bg);
+              border-color: rgba(83, 83, 83, 0.45);
+              transform: translateY(-4px) scale(1.04);
+              box-shadow: 0 14px 24px -18px var(--shadow-soft);
             }
 
             img {
@@ -487,6 +520,7 @@
               align-self: center;
               width: 100%;
               height: 100%;
+              filter: drop-shadow(0 4px 10px rgba(31, 18, 11, 0.15));
             }
           }
         }
@@ -495,7 +529,7 @@
           width: 50%;
           height: 1px;
           margin: 0 auto;
-          background-color: var(--border-color);
+          background: linear-gradient(90deg, transparent, rgba(83, 83, 83, 0.4), transparent);
         }
 
         .clients {
@@ -506,13 +540,71 @@
           gap: var(--spacing);
 
           .client {
-            padding: var(--spacing-half);
-            border: solid 1px var(--border-color);
-            border-radius: var(--border-radius);
+            padding: var(--spacing-half) calc(var(--spacing-half) * 1.75);
+            border: solid 1px rgba(83, 83, 83, 0.3);
+            border-radius: 999px;
             cursor: pointer;
+            transition:
+              transform 0.18s ease,
+              box-shadow 0.18s ease,
+              background-color 0.18s ease,
+              border-color 0.18s ease;
+
+            &.selected,
+            &:hover {
+              background-color: var(--accent-bg);
+              border-color: rgba(83, 83, 83, 0.45);
+              color: var(--accent-fg);
+              transform: translateY(-2px);
+              box-shadow: 0 10px 16px -14px var(--shadow-soft);
+            }
           }
         }
       }
+    }
+  }
+
+  .gimmehttp .output pre.shiki {
+    animation: gimme-fade-in 0.35s ease;
+  }
+
+  .gimmehttp .modal .content {
+    animation: gimme-modal-in 0.3s ease;
+    background: linear-gradient(160deg, rgba(43, 43, 43, 0.95), rgba(43, 43, 43, 0.88));
+    box-shadow: 0 28px 48px -24px rgba(0, 0, 0, 0.55);
+  }
+
+  @keyframes gimme-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gimme-pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes gimme-modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 </style>
