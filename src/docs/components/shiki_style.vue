@@ -1,6 +1,6 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
-  import { createHighlighterCore, HighlighterCore } from 'shiki/core'
+  import { createHighlighterCore } from 'shiki/core'
   import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
   import shikiWasm from 'shiki/wasm'
 
@@ -33,7 +33,7 @@
     },
     data() {
       return {
-        highlighter: null as HighlighterCore | null,
+        highlighter: null as Awaited<ReturnType<typeof createHighlighterCore>> | null,
         highlightedCode: ''
       }
     },

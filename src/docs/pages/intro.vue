@@ -1,6 +1,6 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
-  import VueShiki from '../components/vue_shiki.vue'
+  import { GimmeHttp } from '@/gimmehttp/vue'
   import { Clients, Languages, Client } from '../../gimmehttp'
 
   import type { Http } from '../../gimmehttp'
@@ -9,9 +9,7 @@
 
   export default defineComponent({
     name: 'Intro',
-    components: {
-      VueShiki
-    },
+    components: { GimmeHttp },
     data() {
       // Simple Get request
       const httpGet: Http = {
@@ -226,6 +224,6 @@
         {{ example }}
       </button>
     </div>
-    <VueShiki v-model:language="selectedLanguage" v-model:client="selectedClient" :http="http" />
+    <GimmeHttp v-model:language="selectedLanguage" v-model:client="selectedClient" :http="http" />
   </div>
 </template>

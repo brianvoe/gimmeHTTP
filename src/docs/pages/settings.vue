@@ -1,6 +1,6 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
-  import ShikiStyle from '../components/shiki_style.vue'
+  import ShikiStyle from '@/docs/components/shiki_style.vue'
 
   export default defineComponent({
     components: {

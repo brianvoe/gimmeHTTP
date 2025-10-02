@@ -26,10 +26,6 @@
   .fake-header {
     min-height: calc(var(--header-height) + var(--spacing));
   }
-
-  .content {
-    /* scss in layout.scss */
-  }
 </style>
 
 <template>
