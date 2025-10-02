@@ -5,9 +5,11 @@
 HTTP request code snippet generator
 
 [![NPM Downloads](https://img.shields.io/npm/dt/gimmehttp.svg)](https://www.npmjs.com/package/gimmehttp)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/brianvoe/gimmehttp/jest.yml?logo=jest&label=unit%20tests) [![gimmehttp](https://snyk.io/advisor/npm-package/gimmehttp/badge.svg)](https://snyk.io/advisor/npm-package/gimmehttp)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/brianvoe/gimmehttp/ci.yml?logo=vitest&label=unit%20tests)
+[![gimmehttp](https://snyk.io/advisor/npm-package/gimmehttp/badge.svg)](https://snyk.io/advisor/npm-package/gimmehttp)
 
-GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration. Quickly output API requests .
+GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration.
+Quickly output API requests.
 
 ## Features
 
@@ -18,7 +20,8 @@ GimmeHttp is a library for generating HTTP request code snippets in various lang
 
 ## Limitation
 
-Currently body only supports JSON. Need help building out the body support for other types. See [Contributions](#contributing) for more details.
+Currently body only supports JSON. Need help building out the body support for other types. See
+[Contributions](#contributing) for more details.
 
 ## Supported Languages and Clients
 
@@ -91,7 +94,8 @@ func main() {
 
 ## Generate Function
 
-The core functionality of GimmeHttp is its `Generate` function. This function takes in a request object and returns the generated code snippet as a string. The request object should have the following structure:
+The core functionality of GimmeHttp is its `Generate` function. This function takes in a request object and returns the
+generated code snippet as a string. The request object should have the following structure:
 
 ```typescript
 Generate(settings: Settings): Outcome
@@ -117,7 +121,7 @@ interface Settigns {
 
   // Optional - configuration for the code generation
   config?: {
-      // The character(s) to use for indentation
+    // The character(s) to use for indentation
     indent?: string // default: '  '
 
     // The character(s) to use for joining lines
@@ -132,8 +136,8 @@ interface Settigns {
 
 ### Outcome Object
 
-The `Generate` function returns an `Outcome` object. If the object
-contains an `error` property, an error occurred during code generation.
+The `Generate` function returns an `Outcome` object. If the object contains an `error` property, an error occurred
+during code generation.
 
 ```typescript
 import { Generate } from 'gimmehttp'
@@ -152,7 +156,7 @@ console.log(client)
 ```typescript
 interface Outcome {
   error?: string // An error message if an error occurred
-  
+
   // or //
 
   language?: string // Language used
@@ -241,27 +245,28 @@ console.log(output)
 Output:
 
 ```javascript
-fetch("https://example.com", {
-  method: "POST",
+fetch('https://example.com', {
+  method: 'POST',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json'
   },
-  body: JSON.stringify({"key1":"value1"}),
+  body: JSON.stringify({ key1: 'value1' })
 })
-.then(response => {
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.text();
-})
-.then(data => console.log(data));
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    return response.text()
+  })
+  .then((data) => console.log(data))
 ```
 
 ---
 
 ## Contributing
 
-GimmeHttp is an open-source project that welcomes contributions from the community. If you would like to contribute, please follow these steps:
+GimmeHttp is an open-source project that welcomes contributions from the community. If you would like to contribute,
+please follow these steps:
 
 1. Fork the repository
 2. npm install
@@ -275,4 +280,3 @@ GimmeHttp is an open-source project that welcomes contributions from the communi
 ---
 
 Feel free to contribute to the project, suggest improvements, or report issues on our GitHub page!
-
