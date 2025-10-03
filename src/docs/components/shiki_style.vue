@@ -14,6 +14,7 @@
   import go from 'shiki/langs/go.mjs'
   import java from 'shiki/langs/java.mjs'
   import javascript from 'shiki/langs/javascript.mjs'
+  import vue from 'shiki/langs/vue.mjs'
   import php from 'shiki/langs/php.mjs'
   import python from 'shiki/langs/python.mjs'
   import r from 'shiki/langs/r.mjs'
@@ -40,7 +41,7 @@
     async created() {
       const highlighter = await createHighlighterCore({
         themes: [githubDark, githubLight],
-        langs: [c, csharp, go, java, javascript, php, python, r, ruby, rust, shell, swift, typescript],
+        langs: [c, csharp, go, java, javascript, vue, php, python, r, ruby, rust, shell, swift, typescript],
         langAlias: {
           ts: 'typescript',
           node: 'javascript',

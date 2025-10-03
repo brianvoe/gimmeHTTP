@@ -1,19 +1,14 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
   import Header from './header.vue'
+  import Sidebar from './sidebar.vue'
   import Footer from './footer.vue'
-
-  import Intro from './pages/intro.vue'
-  import Install from './pages/install.vue'
-  import Settings from './pages/settings.vue'
 
   export default defineComponent({
     name: 'App',
     components: {
       Header,
-      Intro,
-      Install,
-      Settings,
+      Sidebar,
       Footer
     },
     data() {
@@ -22,19 +17,18 @@
   })
 </script>
 
-<style lang="scss">
-  .fake-header {
-    min-height: calc(var(--header-height) + var(--spacing));
-  }
-</style>
+<style lang="scss"></style>
 
 <template>
   <Header />
 
-  <div class="content">
-    <Intro />
-    <Install />
-    <Settings />
-    <Footer />
+  <div class="layout">
+    <Sidebar />
+
+    <main class="content">
+      <!-- router view -->
+      <router-view />
+      <Footer />
+    </main>
   </div>
 </template>

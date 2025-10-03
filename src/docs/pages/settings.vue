@@ -20,8 +20,9 @@
 
 <template>
   <div class="section settings">
-    <a href="#settings"><h2 id="settings">Settings</h2></a>
+    <h2>Settings</h2>
     <div class="alert info"><strong>Info:</strong> The only required fields are language, http.method and http.url</div>
+
     <ShikiStyle language="javascript">
       <pre>
         const settings = {

@@ -7,6 +7,7 @@ html {
 body {
   position: relative;
   height: 100%;
+  width: 100%;
   padding: 0;
   margin: 0;
   overflow: hidden;
@@ -63,33 +64,46 @@ body {
     }
   }
 
-  > .content {
+  .layout {
     flex: 1 1 auto;
     position: relative;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
     width: 100%;
-    max-width: 100vw;
+    max-width: 100%;
     height: calc(100% - calc(var(--header-height) + var(--spacing) + var(--spacing)));
     margin: var(--header-height) 0 0 0;
-    padding: var(--spacing) 0 var(--spacing) 0;
+    padding: var(--spacing);
     gap: var(--spacing);
     z-index: 1;
     overflow-x: hidden;
     overflow-y: auto;
     box-sizing: border-box;
 
-    .section {
+    > .content {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
       width: 100%;
+      min-width: 500px;
       max-width: var(--content-width);
-      padding: var(--spacing);
+      padding: 0;
       margin: 0;
-      border-radius: var(--border-radius);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-      background-color: var(--color-section-bg);
+      gap: var(--spacing);
       box-sizing: border-box;
+
+      .section {
+        width: 100%;
+        padding: var(--spacing);
+        margin: 0;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        background-color: var(--color-section-bg);
+        box-sizing: border-box;
+      }
     }
   }
 }

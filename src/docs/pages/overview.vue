@@ -8,7 +8,7 @@
   const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
 
   export default defineComponent({
-    name: 'Intro',
+    name: 'Overview',
     components: { GimmeHttp },
     data() {
       // Simple Get request
