@@ -5,7 +5,7 @@
 
   import type { Http } from '../../gimmehttp'
 
-  const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmeHTTP/logos/'
+  const logoUrl = 'https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/'
 
   export default defineComponent({
     name: 'Overview',
