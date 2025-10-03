@@ -32,6 +32,10 @@
     name: 'GimmeHttp',
     emits: ['update:language', 'update:client'],
     props: {
+      http: {
+        type: Object as PropType<Http>,
+        required: true
+      },
       language: {
         type: String,
         required: false,
@@ -46,9 +50,9 @@
         type: Object as PropType<Config>,
         required: false
       },
-      http: {
-        type: Object as PropType<Http>,
-        required: true
+      theme: {
+        type: String as PropType<'light' | 'dark'>,
+        required: false
       }
     },
     data() {
@@ -63,7 +67,8 @@
         }
       }
 
-      const theme = (isBrowser ? localStorage.getItem('gimmeTheme') : null) || 'github-dark'
+      const prefersDark = isBrowser && window.matchMedia('(prefers-color-scheme: dark)').matches
+      const initialTheme = this.theme ? this.theme : prefersDark ? 'dark' : 'light'
 
       return {
         highlighter: null as any,
@@ -72,7 +77,7 @@
         openModal: false,
         codeStr: '',
         output: '',
-        theme: theme,
+        themeMode: initialTheme,
         internalLanguage: storedLanguage,
         internalClient: storedClient || '',
         checkInterval: null as number | null
@@ -122,8 +127,17 @@
       }
     },
     watch: {
-      theme() {
+      themeMode() {
         this.code()
+      },
+      theme(newTheme) {
+        const isBrowser = typeof window !== 'undefined'
+        if (newTheme === 'light' || newTheme === 'dark') {
+          this.themeMode = newTheme
+        } else {
+          const prefersDark = isBrowser && window.matchMedia('(prefers-color-scheme: dark)').matches
+          this.themeMode = prefersDark ? 'dark' : 'light'
+        }
       },
       language(newVal) {
         this.setLanguage(newVal)
@@ -155,6 +169,9 @@
         return this.clientsList
           .filter((client) => client.language === this.internalLanguage)
           .map((client) => client.client)
+      },
+      shikiTheme(): string {
+        return this.themeMode === 'dark' ? 'github-dark' : 'github-light'
       }
     },
     methods: {
@@ -202,7 +219,7 @@
           this.codeStr = code!
           this.output = this.highlighter.codeToHtml(this.codeStr, {
             lang: this.internalLanguage,
-            theme: this.theme
+            theme: this.shikiTheme
           })
         } catch (error) {
           console.error('Error in code highlighting:', error)
@@ -250,7 +267,6 @@
         }
         const storedLanguage = localStorage.getItem('gimmeLang')
         const storedClient = localStorage.getItem('gimmeClient')
-        const storedTheme = localStorage.getItem('theme')
         let didChange = false
 
         if (storedLanguage && storedLanguage !== this.internalLanguage) {
@@ -259,10 +275,6 @@
         }
         if (storedClient && storedClient !== this.internalClient) {
           this.setClient(storedClient)
-          didChange = true
-        }
-        if (storedTheme && storedTheme !== this.theme) {
-          this.theme = 'github-' + storedTheme
           didChange = true
         }
 
@@ -276,33 +288,35 @@
 
 <style lang="scss">
   .gimmehttp {
-    --text-color: #3d2c2c;
-    --border-color: #535353;
-    --spacing: 16px;
-    --spacing-half: 8px;
-    --spacing-quarter: 4px;
-    --border-radius: 8px;
-    --accent-bg: #ff9122;
-    --accent-fg: #1f120b;
-    --accent-soft: rgba(255, 145, 34, 0.15);
-    --shadow-soft: rgba(30, 22, 17, 0.18);
-    --options-height: 40px;
-    --modal-bg-color: rgba(0, 0, 0, 0.4);
-    --modal-content-color: #2b2b2b;
-    --timing: 0.3s;
+    // colors
+    --text-color: var(--gimme-text-color, #3d2c2c);
+    --text-color-accent: var(--gimme-text-color-accent, #1f120b);
+    --border-color: var(--gimme-border-color, #535353);
+    --accent-color: var(--gimme-accent-color, #ff9122);
+    --accent-foreground: var(--gimme-accent-foreground, #1f120b);
+    --shell-track-color: var(--gimme-shell-track-color, #2b2b2b);
+    --modal-bg-color: var(--gimme-modal-bg-color, rgba(0, 0, 0, 0.4));
+    --modal-content-color: var(--gimme-modal-content-color, #2b2b2b);
+
+    // spacing
+    --spacing: var(--gimme-spacing, 16px);
+    --spacing-half: var(--gimme-spacing-half, 8px);
+    --spacing-quarter: var(--gimme-spacing-quarter, 4px);
+
+    // misc
+    --border-radius: var(--gimme-border-radius, 8px);
+    --options-height: var(--gimme-options-height, 40px);
+    --box-shadow: var(--gimme-box-shadow, 0 4px 8px rgba(0, 0, 0, 0.5));
+    --timing: var(--gimme-timing, 0.3s);
 
     display: flex;
     flex-direction: column;
     position: relative;
     border-radius: var(--border-radius);
+    width: 100%;
+    max-width: 100%;
     overflow: hidden;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), var(--accent-soft));
-    border: 1px solid rgba(83, 83, 83, 0.32);
-    box-shadow: 0 20px 38px -22px var(--shadow-soft);
-    animation: gimme-fade-in 0.35s ease;
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.25s ease;
+    box-shadow: var(--box-shadow);
 
     .options {
       display: flex;
@@ -322,9 +336,6 @@
       color: var(--text-color);
       overflow: hidden;
       cursor: pointer;
-      transition:
-        height var(--timing),
-        width var(--timing);
 
       .copy {
         flex: 0 1 auto;
@@ -336,18 +347,18 @@
         padding: var(--spacing-half);
         margin: 0;
         gap: var(--spacing-half);
+        transition:
+          background-color var(--timing) ease,
+          color var(--timing) ease;
 
-        &:hover:not(.show-copied) {
-          background-color: var(--accent-bg);
-          color: var(--accent-fg);
-          transform: translateY(-1px);
-          box-shadow: 0 12px 18px -14px var(--shadow-soft);
+        &:hover {
+          background-color: var(--accent-color);
+          color: var(--text-color-accent);
         }
 
         &.show-copied {
-          background-color: var(--accent-bg);
-          color: var(--accent-fg);
-          animation: gimme-pulse 0.45s ease;
+          background-color: var(--accent-color);
+          color: var(--text-color-accent);
         }
 
         .txt {
@@ -358,7 +369,6 @@
           font-size: 16px;
           text-align: center;
           line-height: 1;
-          background-color: var(---c);
         }
 
         svg {
@@ -391,12 +401,13 @@
         padding: var(--spacing-half);
         margin: 0;
         gap: var(--spacing-half);
+        transition:
+          background-color var(--timing) ease,
+          color var(--timing) ease;
 
         &:hover {
-          background-color: var(--accent-bg);
-          color: var(--accent-fg);
-          transform: translateY(-2px);
-          box-shadow: 0 12px 18px -16px var(--shadow-soft);
+          background-color: var(--accent-color);
+          color: var(--text-color-accent);
         }
 
         .select {
@@ -418,7 +429,7 @@
     }
 
     .output {
-      width: auto;
+      width: 100%;
       padding: 0;
       margin: 0 !important;
       overflow: hidden;
@@ -430,6 +441,7 @@
       }
 
       pre.shiki {
+        width: 100%;
         height: auto;
         min-height: 50px;
         margin: 0;
@@ -465,7 +477,7 @@
       display: flex;
       position: absolute;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       width: 100%;
       height: 100%;
       left: 0;
@@ -473,17 +485,20 @@
       z-index: 4;
       overflow: auto;
       background-color: var(--modal-bg-color);
+      transition: opacity var(--timing) ease;
 
       .content {
         display: flex;
         flex-direction: column;
         width: 90%;
         max-width: 350px;
+        margin-top: var(--spacing);
         padding: var(--spacing);
         gap: var(--spacing);
         color: var(--text-color);
         background-color: var(--modal-content-color);
         border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
 
         .langs {
           display: flex;
@@ -497,21 +512,21 @@
             width: 50px;
             height: 50px;
             padding: var(--spacing-half);
-            border: solid 1px rgba(83, 83, 83, 0.3);
+            border: solid 1px var(--border-color);
             border-radius: var(--border-radius);
             cursor: pointer;
             transition:
-              transform 0.22s ease,
-              box-shadow 0.22s ease,
-              background-color 0.22s ease,
-              border-color 0.22s ease;
+              transform var(--timing) ease,
+              box-shadow var(--timing) ease,
+              background-color var(--timing) ease,
+              border-color var(--timing) ease;
 
             &.selected,
             &:hover {
-              background-color: var(--accent-bg);
-              border-color: rgba(83, 83, 83, 0.45);
-              transform: translateY(-4px) scale(1.04);
-              box-shadow: 0 14px 24px -18px var(--shadow-soft);
+              background-color: var(--accent-color);
+              border-color: var(--border-color);
+              transform: translateY(-5px);
+              box-shadow: var(--box-shadow);
             }
 
             img {
@@ -520,7 +535,7 @@
               align-self: center;
               width: 100%;
               height: 100%;
-              filter: drop-shadow(0 4px 10px rgba(31, 18, 11, 0.15));
+              filter: drop-shadow(0 4px 10px var(--border-color));
             }
           }
         }
@@ -529,7 +544,7 @@
           width: 50%;
           height: 1px;
           margin: 0 auto;
-          background: linear-gradient(90deg, transparent, rgba(83, 83, 83, 0.4), transparent);
+          background: var(--border-color);
         }
 
         .clients {
@@ -540,23 +555,24 @@
           gap: var(--spacing);
 
           .client {
-            padding: var(--spacing-half) calc(var(--spacing-half) * 1.75);
-            border: solid 1px rgba(83, 83, 83, 0.3);
-            border-radius: 999px;
+            padding: var(--spacing-half);
+            border: solid 1px var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--border-color);
             cursor: pointer;
             transition:
-              transform 0.18s ease,
-              box-shadow 0.18s ease,
-              background-color 0.18s ease,
-              border-color 0.18s ease;
+              transform var(--timing) ease,
+              box-shadow var(--timing) ease,
+              background-color var(--timing) ease,
+              border-color var(--timing) ease;
 
             &.selected,
             &:hover {
-              background-color: var(--accent-bg);
-              border-color: rgba(83, 83, 83, 0.45);
-              color: var(--accent-fg);
-              transform: translateY(-2px);
-              box-shadow: 0 10px 16px -14px var(--shadow-soft);
+              background-color: var(--accent-color);
+              border-color: var(--border-color);
+              color: var(--text-color-accent);
+              transform: translateY(-5px);
+              box-shadow: var(--box-shadow);
             }
           }
         }
@@ -564,48 +580,17 @@
     }
   }
 
-  .gimmehttp .output pre.shiki {
-    animation: gimme-fade-in 0.35s ease;
+  .gimme-modal-enter-active,
+  .gimme-modal-leave-active {
+    transition:
+      opacity var(--timing) ease,
+      transform var(--timing) ease;
   }
 
-  .gimmehttp .modal .content {
-    animation: gimme-modal-in 0.3s ease;
-    background: linear-gradient(160deg, rgba(43, 43, 43, 0.95), rgba(43, 43, 43, 0.88));
-    box-shadow: 0 28px 48px -24px rgba(0, 0, 0, 0.55);
-  }
-
-  @keyframes gimme-fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes gimme-pulse {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.05);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes gimme-modal-in {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .gimme-modal-enter-from,
+  .gimme-modal-leave-to {
+    opacity: 0;
+    transform: translateY(50px);
   }
 </style>
 
@@ -635,26 +620,28 @@
     </div>
     <div :class="'output language-' + internalLanguage + (openModal ? ' modalOpen' : '')" v-html="output" />
 
-    <div v-show="openModal" class="modal" @click="clickModalBg">
-      <div class="content">
-        <div class="langs">
-          <div
-            class="lang"
-            :class="{ selected: internalLanguage === lang }"
-            v-for="lang in languages"
-            :key="lang"
-            @click="clickModalLang(lang)"
-          >
-            <img :alt="lang" :src="logoHref(lang)" />
+    <div v-if="openModal" class="modal" @click="clickModalBg">
+      <transition name="gimme-modal">
+        <div class="content">
+          <div class="langs">
+            <div
+              class="lang"
+              :class="{ selected: internalLanguage === lang }"
+              v-for="lang in languages"
+              :key="lang"
+              @click="clickModalLang(lang)"
+            >
+              <img :alt="lang" :src="logoHref(lang)" />
+            </div>
+          </div>
+          <div class="separator"></div>
+          <div class="clients">
+            <div class="client" v-for="client in clients" :key="client" @click="clickModalClient(client)">
+              {{ client }}
+            </div>
           </div>
         </div>
-        <div class="separator"></div>
-        <div class="clients">
-          <div class="client" v-for="client in clients" :key="client" @click="clickModalClient(client)">
-            {{ client }}
-          </div>
-        </div>
-      </div>
+      </transition>
     </div>
   </div>
 </template>
