@@ -75,6 +75,7 @@
         clientsList: Clients(),
         showCopied: false,
         openModal: false,
+        openModalContent: false,
         codeStr: '',
         output: '',
         themeMode: initialTheme,
@@ -238,12 +239,26 @@
       },
 
       toggleModal() {
-        this.openModal = !this.openModal
+        const isOpening = !this.openModal
 
-        if (this.openModal && typeof document !== 'undefined') {
-          document.addEventListener('click', this.clickModalBg)
-        } else if (typeof document !== 'undefined') {
-          document.removeEventListener('click', this.clickModalBg)
+        if (isOpening) {
+          // Opening: show modal bg first, then content
+          this.openModal = true
+          if (typeof document !== 'undefined') {
+            document.addEventListener('click', this.clickModalBg)
+          }
+          setTimeout(() => {
+            this.openModalContent = true
+          }, 100)
+        } else {
+          // Closing: hide content first, then modal bg
+          this.openModalContent = false
+          setTimeout(() => {
+            this.openModal = false
+            if (typeof document !== 'undefined') {
+              document.removeEventListener('click', this.clickModalBg)
+            }
+          }, 200)
         }
       },
       clickModalBg(event: MouseEvent) {
@@ -499,6 +514,7 @@
         background-color: var(--modal-content-color);
         border-radius: var(--border-radius);
         box-shadow: var(--box-shadow);
+        will-change: transform, opacity;
 
         .langs {
           display: flex;
@@ -580,17 +596,34 @@
     }
   }
 
-  .gimme-modal-enter-active,
-  .gimme-modal-leave-active {
-    transition:
-      opacity var(--timing) ease,
-      transform var(--timing) ease;
+  /* modal background fade */
+  .gimme-modal-bg-enter-active,
+  .gimme-modal-bg-leave-active {
+    transition: opacity var(--timing) ease;
+  }
+  .gimme-modal-bg-enter-from,
+  .gimme-modal-bg-leave-to {
+    opacity: 0;
   }
 
-  .gimme-modal-enter-from,
-  .gimme-modal-leave-to {
+  /* Modal content fade/slide in */
+  .gimme-modal-content-enter-active,
+  .gimme-modal-content-leave-active {
+    transition:
+      transform var(--timing) ease,
+      opacity var(--timing) ease;
+  }
+
+  .gimme-modal-content-enter-from,
+  .gimme-modal-content-leave-to {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(-10px);
+  }
+
+  .gimme-modal-content-enter-to,
+  .gimme-modal-content-leave-from {
+    opacity: 1;
+    transform: translateY(0);
   }
 </style>
 
@@ -620,28 +653,30 @@
     </div>
     <div :class="'output language-' + internalLanguage + (openModal ? ' modalOpen' : '')" v-html="output" />
 
-    <div v-if="openModal" class="modal" @click="clickModalBg">
-      <transition name="gimme-modal">
-        <div class="content">
-          <div class="langs">
-            <div
-              class="lang"
-              :class="{ selected: internalLanguage === lang }"
-              v-for="lang in languages"
-              :key="lang"
-              @click="clickModalLang(lang)"
-            >
-              <img :alt="lang" :src="logoHref(lang)" />
+    <transition name="gimme-modal-bg">
+      <div v-if="openModal" class="modal" @click="clickModalBg">
+        <transition name="gimme-modal-content">
+          <div v-if="openModalContent" class="content">
+            <div class="langs">
+              <div
+                class="lang"
+                :class="{ selected: internalLanguage === lang }"
+                v-for="lang in languages"
+                :key="lang"
+                @click="clickModalLang(lang)"
+              >
+                <img :alt="lang" :src="logoHref(lang)" />
+              </div>
+            </div>
+            <div class="separator"></div>
+            <div class="clients">
+              <div class="client" v-for="client in clients" :key="client" @click="clickModalClient(client)">
+                {{ client }}
+              </div>
             </div>
           </div>
-          <div class="separator"></div>
-          <div class="clients">
-            <div class="client" v-for="client in clients" :key="client" @click="clickModalClient(client)">
-              {{ client }}
-            </div>
-          </div>
-        </div>
-      </transition>
-    </div>
+        </transition>
+      </div>
+    </transition>
   </div>
 </template>
