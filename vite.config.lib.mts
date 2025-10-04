@@ -3,6 +3,7 @@ import path from 'path'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig({
+  publicDir: false,
   build: {
     target: 'es2020',
     lib: {

@@ -4,15 +4,16 @@ import dts from 'vite-plugin-dts'
 import path from 'path'
 
 export default defineConfig({
+  publicDir: false,
   build: {
     target: 'es2020',
     lib: {
       entry: path.resolve(__dirname, 'src/gimmehttp/vue/index.ts'),
       name: 'GimmeHttpVue',
       formats: ['es', 'umd'],
-      fileName: (format) => `vue/index.${format === 'es' ? 'js' : 'umd.js'}`
+      fileName: (format) => `index.${format === 'es' ? 'js' : 'umd.js'}`
     },
-    outDir: path.resolve(__dirname, 'dist'),
+    outDir: path.resolve(__dirname, 'dist/vue'),
     rollupOptions: {
       external: ['vue', 'shiki', 'shiki/core', 'shiki/engine/oniguruma'],
       output: {
