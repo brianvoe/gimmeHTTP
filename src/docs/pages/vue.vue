@@ -84,5 +84,29 @@ createApp(App)
 &lt;/template&gt;
       </pre>
     </ShikiStyle>
+
+    <h3>Theme</h3>
+    <ShikiStyle language="vue">
+      <pre>
+&lt;script setup lang="ts"&gt;
+  import { GimmeHttp } from 'gimmehttp/vue'
+  import type { Http } from 'gimmehttp'
+
+  const request: Http = {
+    method: 'GET',
+    url: 'https://api.example.com/users?limit=10',
+    headers: { Accept: 'application/json'}
+  }
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;GimmeHttp 
+    :http="request" 
+    theme="light" 
+  /&gt;
+&lt;/template&gt;
+      </pre>
+    </ShikiStyle>
+    <GimmeHttp :http="demoHttp" theme="light" />
   </div>
 </template>
