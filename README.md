@@ -11,6 +11,8 @@ HTTP request code snippet generator
 GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration.
 Quickly output API requests.
 
+Using Vue 3? See the [Vue (v3) Usage](#vue-v3-usage) section.
+
 ## Features
 
 - Generate HTTP request code snippets in various languages
@@ -280,3 +282,67 @@ please follow these steps:
 ---
 
 Feel free to contribute to the project, suggest improvements, or report issues on our GitHub page!
+
+---
+
+## Vue (v3) Usage
+
+Use the built-in Vue component to render an interactive generator.
+
+### Install styles
+
+Add the package CSS once (e.g., in `main.ts`).
+
+```ts
+import 'gimmehttp/dist/gimmehttp.css'
+```
+
+### Global registration (plugin)
+
+```ts
+// main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+import GimmeHttpVue from 'gimmehttp/vue'
+
+const app = createApp(App)
+app.use(GimmeHttpVue)
+app.mount('#app')
+```
+
+### Local usage (component)
+
+```vue
+<script setup lang="ts">
+  import { ref } from 'vue'
+  import { GimmeHttp } from 'gimmehttp/vue'
+  import type { Http } from 'gimmehttp'
+
+  const http = ref<Http>({
+    method: 'GET',
+    url: 'https://example.com'
+  })
+</script>
+
+<template>
+  <GimmeHttp :http="http" theme="dark" />
+  <!-- Optional props: language, client, config -->
+  <!-- Emits: update:language, update:client -->
+  <!-- Types auto-resolve from `gimmehttp/vue` -->
+  <!-- CSS imported once globally as shown above -->
+  <!-- Component name: GimmeHttp -->
+  <!-- Slots: none -->
+  <!-- SSR: supported -->
+  <!-- Vue: v3+ -->
+  <!-- Peer dep: vue >= 3.3.0 -->
+  <!-- Example only -->
+</template>
+```
+
+Props overview:
+
+- `http` (required): request definition
+- `language` (optional): language key; auto-selected if omitted
+- `client` (optional): client key; auto-selected if omitted
+- `theme` (optional): 'light' | 'dark' (defaults to system preference)
+- `config` (optional): generator `Config`
