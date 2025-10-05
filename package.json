@@ -44,16 +44,20 @@
     "./vue": {
       "types": "./dist/vue/index.d.ts",
       "import": "./dist/vue/index.js"
+    },
+    "./vue.css": {
+      "default": "./dist/vue/gimmehttp.css"
     }
   },
   "files": [
     "dist"
   ],
+  "sideEffects": [
+    "*.css",
+    "dist/**/*.css"
+  ],
   "dependencies": {
     "shiki": "^3.13.0"
-  },
-  "peerDependencies": {
-    "vue": ">=3.3.0"
   },
   "devDependencies": {
     "@types/node": "^24.6.0",
