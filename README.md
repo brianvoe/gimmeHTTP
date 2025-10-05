@@ -265,22 +265,6 @@ fetch('https://example.com', {
 
 ---
 
-## Contributing
-
-GimmeHttp is an open-source project that welcomes contributions from the community. If you would like to contribute,
-please follow these steps:
-
-1. Fork the repository
-2. npm install
-3. npm run dev
-4. open http://localhost:1111
-5. Make your changes
-6. Write tests
-7. Git commit and push your changes
-8. Submit a pull request
-
----
-
 Feel free to contribute to the project, suggest improvements, or report issues on our GitHub page!
 
 ---
@@ -294,7 +278,7 @@ Use the built-in Vue component to render an interactive generator.
 Add the package CSS once (e.g., in `main.ts`).
 
 ```ts
-import 'gimmehttp/dist/gimmehttp.css'
+import 'gimmehttp/vue.css'
 ```
 
 ### Global registration (plugin)
@@ -326,16 +310,6 @@ app.mount('#app')
 
 <template>
   <GimmeHttp :http="http" theme="dark" />
-  <!-- Optional props: language, client, config -->
-  <!-- Emits: update:language, update:client -->
-  <!-- Types auto-resolve from `gimmehttp/vue` -->
-  <!-- CSS imported once globally as shown above -->
-  <!-- Component name: GimmeHttp -->
-  <!-- Slots: none -->
-  <!-- SSR: supported -->
-  <!-- Vue: v3+ -->
-  <!-- Peer dep: vue >= 3.3.0 -->
-  <!-- Example only -->
 </template>
 ```
 
@@ -346,3 +320,19 @@ Props overview:
 - `client` (optional): client key; auto-selected if omitted
 - `theme` (optional): 'light' | 'dark' (defaults to system preference)
 - `config` (optional): generator `Config`
+
+---
+
+## Contributing
+
+GimmeHttp is an open-source project that welcomes contributions from the community. If you would like to contribute,
+please follow these steps:
+
+1. Fork the repository
+2. npm install
+3. npm run dev
+4. open http://localhost:1111
+5. Make your changes
+6. Write tests
+7. Git commit and push your changes
+8. Submit a pull request
