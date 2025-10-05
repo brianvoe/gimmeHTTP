@@ -71,6 +71,10 @@ createApp(App)
   const client = 'http'
 &lt;/script&gt;
 
+&lt;style&gt;
+  @import 'gimmehttp/vue.css';
+&lt;/style&gt;
+
 &lt;template&gt;
   &lt;GimmeHttp 
     // Required
@@ -90,19 +94,15 @@ createApp(App)
       <pre>
 &lt;script setup lang="ts"&gt;
   import { GimmeHttp } from 'gimmehttp/vue'
-  import type { Http } from 'gimmehttp'
-
-  const request: Http = {
-    method: 'GET',
-    url: 'https://api.example.com/users?limit=10',
-    headers: { Accept: 'application/json'}
-  }
 &lt;/script&gt;
 
 &lt;template&gt;
   &lt;GimmeHttp 
-    :http="request" 
-    theme="light" 
+    :http="{
+      method: 'GET',
+      url: 'https://example.com',
+    }" 
+    theme="light" // 'light' | 'dark'
   /&gt;
 &lt;/template&gt;
       </pre>
