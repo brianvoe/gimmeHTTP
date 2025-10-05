@@ -17,7 +17,13 @@
       return {
         demoHttp,
         lang: '',
-        client: ''
+        client: '',
+        theme: 'light' as 'light' | 'dark'
+      }
+    },
+    methods: {
+      toggleTheme() {
+        this.theme = this.theme === 'light' ? 'dark' : 'light'
       }
     }
   })
@@ -92,7 +98,7 @@ createApp(App)
     <h3>Theme</h3>
     <ShikiStyle language="vue">
       <pre>
-&lt;script setup lang="ts"&gt;
+&lt;script lang="ts"&gt;
   import { GimmeHttp } from 'gimmehttp/vue'
 &lt;/script&gt;
 
@@ -102,11 +108,12 @@ createApp(App)
       method: 'GET',
       url: 'https://example.com',
     }" 
-    theme="light" // 'light' | 'dark'
+    :theme="light" // 'light' | 'dark'
   /&gt;
 &lt;/template&gt;
       </pre>
     </ShikiStyle>
-    <GimmeHttp :http="demoHttp" theme="light" />
+    <button @click="toggleTheme()">Toggle Theme ({{ theme }})</button>
+    <GimmeHttp :http="demoHttp" :theme="theme" />
   </div>
 </template>
