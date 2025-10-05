@@ -128,9 +128,6 @@
       }
     },
     watch: {
-      themeMode() {
-        this.code()
-      },
       theme(newTheme) {
         const isBrowser = typeof window !== 'undefined'
         if (newTheme === 'light' || newTheme === 'dark') {
@@ -139,6 +136,7 @@
           const prefersDark = isBrowser && window.matchMedia('(prefers-color-scheme: dark)').matches
           this.themeMode = prefersDark ? 'dark' : 'light'
         }
+        this.code()
       },
       language(newVal) {
         this.setLanguage(newVal)
