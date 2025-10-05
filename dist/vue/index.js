@@ -758,9 +758,6 @@ const we = be, Ie = async (n) => WebAssembly.instantiate(we, n).then((e) => e.in
     this.highlighter && this.highlighter.dispose(), this.checkInterval && clearInterval(this.checkInterval);
   },
   watch: {
-    themeMode() {
-      this.code();
-    },
     theme(n) {
       const e = typeof window < "u";
       if (n === "light" || n === "dark")
@@ -769,6 +766,7 @@ const we = be, Ie = async (n) => WebAssembly.instantiate(we, n).then((e) => e.in
         const A = e && window.matchMedia("(prefers-color-scheme: dark)").matches;
         this.themeMode = A ? "dark" : "light";
       }
+      this.code();
     },
     language(n) {
       this.setLanguage(n), this.code();

@@ -1,11 +1,11 @@
-import{G as s}from"./gimmehttp.js";import{S as a}from"./shiki_style.js";import{d as r,_ as u,r as l,c as g,o as d,a as e,b as p,w as n}from"./index.js";import"./index2.js";const h=r({name:"VueUsagePage",components:{GimmeHttp:s,ShikiStyle:a},data(){return{demoHttp:{method:"GET",url:"https://api.example.com/users?limit=5",headers:{Accept:"application/json"}},lang:"",client:""}}}),c={class:"section vue-usage"};function f(m,t,G,H,v,y){const o=l("ShikiStyle"),i=l("GimmeHttp");return d(),g("div",c,[t[3]||(t[3]=e("header",null,[e("h2",null,"Use as a Vue Component"),e("p",null," You can consume GimmeHTTP as a Vue component and let it handle Shiki and rendering for you. Install the package, then either register it globally as a plugin or import the component locally. ")],-1)),t[4]||(t[4]=e("h3",null,"Global registration (plugin)",-1)),p(o,{language:"typescript"},{default:n(()=>[...t[0]||(t[0]=[e("pre",null,`import { createApp } from 'vue'
+import{G as s}from"./gimmehttp.js";import{S as r}from"./shiki_style.js";import{d as a,_ as u,r as l,c as g,o as h,a as e,b as o,w as n,t as d}from"./index.js";import"./index2.js";const c=a({name:"VueUsagePage",components:{GimmeHttp:s,ShikiStyle:r},data(){return{demoHttp:{method:"GET",url:"https://api.example.com/users?limit=5",headers:{Accept:"application/json"}},lang:"",client:"",theme:"light"}},methods:{toggleTheme(){this.theme=this.theme==="light"?"dark":"light"}}}),f={class:"section vue-usage"};function v(m,t,G,H,y,k){const p=l("ShikiStyle"),i=l("GimmeHttp");return h(),g("div",f,[t[4]||(t[4]=e("header",null,[e("h2",null,"Use as a Vue Component"),e("p",null," You can consume GimmeHTTP as a Vue component and let it handle Shiki and rendering for you. Install the package, then either register it globally as a plugin or import the component locally. ")],-1)),t[5]||(t[5]=e("h3",null,"Global registration (plugin)",-1)),o(p,{language:"typescript"},{default:n(()=>[...t[1]||(t[1]=[e("pre",null,`import { createApp } from 'vue'
 import App from './App.vue'
 import GimmeHttpVue from 'gimmehttp/vue'
 
 createApp(App)
   .use(GimmeHttpVue)
   .mount('#app')
-      `,-1)])]),_:1}),t[5]||(t[5]=e("h3",null,"Local registration (single file component)",-1)),p(o,{language:"vue"},{default:n(()=>[...t[1]||(t[1]=[e("pre",null,`<script setup lang="ts">
+      `,-1)])]),_:1}),t[6]||(t[6]=e("h3",null,"Local registration (single file component)",-1)),o(p,{language:"vue"},{default:n(()=>[...t[2]||(t[2]=[e("pre",null,`<script setup lang="ts">
   import { GimmeHttp } from 'gimmehttp/vue'
   import type { Http } from 'gimmehttp'
 
@@ -34,7 +34,7 @@ createApp(App)
     theme="light" 
   />
 </template>
-      `,-1)])]),_:1}),t[6]||(t[6]=e("h3",null,"Theme",-1)),p(o,{language:"vue"},{default:n(()=>[...t[2]||(t[2]=[e("pre",null,`<script setup lang="ts">
+      `,-1)])]),_:1}),t[7]||(t[7]=e("h3",null,"Theme",-1)),o(p,{language:"vue"},{default:n(()=>[...t[3]||(t[3]=[e("pre",null,`<script lang="ts">
   import { GimmeHttp } from 'gimmehttp/vue'
 <\/script>
 
@@ -44,7 +44,7 @@ createApp(App)
       method: 'GET',
       url: 'https://example.com',
     }" 
-    theme="light" // 'light' | 'dark'
+    :theme="light" // 'light' | 'dark'
   />
 </template>
-      `,-1)])]),_:1}),p(i,{http:m.demoHttp,theme:"light"},null,8,["http"])])}const x=u(h,[["render",f]]);export{x as default};
+      `,-1)])]),_:1}),e("button",{onClick:t[0]||(t[0]=T=>m.toggleTheme())},"Toggle Theme ("+d(m.theme)+")",1),o(i,{http:m.demoHttp,theme:m.theme},null,8,["http","theme"])])}const $=u(c,[["render",v]]);export{$ as default};
