@@ -200,4 +200,56 @@ curl -X POST "http://example.com" \\
       `.trim()
     )
   })
+
+  test('GET - empty object body should not include -d flag', () => {
+    const config = {}
+    const http: Http = {
+      method: 'GET',
+      url: 'http://localhost:8869/funcs/countryabr',
+      body: {}
+    }
+
+    const result = ShellCurl.generate(config, http)
+    expect(result).toBe('curl -X GET "http://localhost:8869/funcs/countryabr"')
+  })
+
+  test('POST - empty object body should not include -d flag', () => {
+    const config = {}
+    const http: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {}
+    }
+
+    const result = ShellCurl.generate(config, http)
+    expect(result).toBe(
+      `
+curl -X POST "https://example.com" \\
+  -H "Content-Type: application/json"
+      `.trim()
+    )
+  })
+
+  test('POST - empty string body should not include -d flag', () => {
+    const config = {}
+    const http: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: ''
+    }
+
+    const result = ShellCurl.generate(config, http)
+    expect(result).toBe(
+      `
+curl -X POST "https://example.com" \\
+  -H "Content-Type: text/plain"
+      `.trim()
+    )
+  })
 })

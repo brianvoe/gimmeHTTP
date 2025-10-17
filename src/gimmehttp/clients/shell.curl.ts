@@ -40,7 +40,10 @@ export default {
     }
 
     // Add body
-    if (http.body) {
+    const isStringBody = typeof http.body === 'string'
+    const hasContent = isStringBody ? http.body && http.body.length > 0 : http.body && Object.keys(http.body).length > 0
+
+    if (hasContent) {
       const contentType = http.headers?.['content-type'] || http.headers?.['Content-Type'] || 'application/json'
 
       if (contentType.includes('application/json')) {
