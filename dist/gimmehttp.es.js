@@ -1,14 +1,14 @@
-const c = [];
+const f = [];
 function N() {
-  return c;
+  return f;
 }
 function F() {
-  return c.map((i) => i.language).filter((i, n, e) => e.indexOf(i) === n);
+  return f.map((i) => i.language).filter((i, n, e) => e.indexOf(i) === n);
 }
 function $(i, n) {
   if (i === "" || i === void 0)
     return null;
-  const e = c.filter((t) => t.language.toLowerCase() === i.toLowerCase());
+  const e = f.filter((t) => t.language.toLowerCase() === i.toLowerCase());
   if (e.length === 0)
     return null;
   const o = e.find((t) => t.default) || e[0];
@@ -26,15 +26,15 @@ function a(i) {
     return new Error("Client is required");
   if (Array.isArray(i))
     return i.forEach((o) => a(o)), null;
-  const n = c.filter((o) => o.language.toLowerCase() === i.language.toLowerCase()), e = n.find((o) => o.client.toLowerCase() === i.client.toLowerCase());
+  const n = f.filter((o) => o.language.toLowerCase() === i.language.toLowerCase()), e = n.find((o) => o.client.toLowerCase() === i.client.toLowerCase());
   if (i.default === void 0 && (i.default = n.length === 0), e) {
-    const o = c.indexOf(i);
-    return c[o] = i, null;
+    const o = f.indexOf(i);
+    return f[o] = i, null;
   }
-  return c.push(i), null;
+  return f.push(i), null;
 }
 function M() {
-  c.splice(0, c.length);
+  f.splice(0, f.length);
 }
 function J(i) {
   let n = b(i);
@@ -133,17 +133,17 @@ function j(i) {
   } catch {
     const l = i.split("/");
     n = l[0];
-    const u = "/" + l.slice(1).join("/"), [f, h] = u.split("?");
-    e = f, t = h ? "?" + h : "", o = 80, r = "http:";
+    const u = "/" + l.slice(1).join("/"), [c, h] = u.split("?");
+    e = c, t = h ? "?" + h : "", o = 80, r = "http:";
   }
   return e.startsWith("/") || (e = "/" + e), { hostname: n, path: e, port: o, protocol: r, params: t };
 }
-function k(i, n) {
+function C(i, n) {
   return i.toUpperCase() === "POST" && n !== void 0 && Object.keys(n).some(
     (e) => e.toLowerCase() === "content-type" && n[e].toLowerCase() === "application/json"
   );
 }
-const C = {
+const k = {
   default: !0,
   language: "c",
   client: "libcurl",
@@ -228,7 +228,7 @@ const C = {
         separator: ": ",
         endComma: !1
       }
-    }), o = k(n.method, n.headers) && n.body;
+    }), o = C(n.method, n.headers) && n.body;
     e.line("package main"), e.line(), e.line("import ("), e.indent(), e.line('"fmt"'), e.line('"net/http"'), e.line('"io"'), o && (e.line('"bytes"'), e.line('"encoding/json"')), i.handleErrors && e.line('"log"'), e.outdent(), e.line(")"), e.line(), e.line("func main() {"), e.indent(), e.line(`url := "${n.url}"`), e.line();
     let r = "nil";
     if (o && (e.line("jsonBodyMap := "), e.json(n.body), i.handleErrors ? (e.line("jsonBodyBytes, err := json.Marshal(jsonBodyMap)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("jsonBodyBytes, _ := json.Marshal(jsonBodyMap)"), r = "bytes.NewBuffer(jsonBodyBytes)", e.line()), i.handleErrors ? (e.line(`req, err := http.NewRequest("${n.method.toUpperCase()}", url, ${r})`), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}"), e.line()) : (e.line(`req, _ := http.NewRequest("${n.method.toUpperCase()}", url, ${r})`), e.line()), n.headers) {
@@ -415,7 +415,7 @@ const C = {
     }), o = n.method.toUpperCase(), r = o !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, s = n.cookies && Object.keys(n.cookies).length > 0;
     let l = [];
     e.line("import http.client"), e.line("import json"), e.line();
-    const { hostname: u, path: f, port: h } = j(n.url);
+    const { hostname: u, path: c, port: h } = j(n.url);
     if (e.line(`conn = http.client.HTTPSConnection("${u}", ${h})`), t) {
       e.line(), l.push("headers"), e.line("headers = {"), e.indent();
       for (const [p, y] of Object.entries(n.headers))
@@ -428,7 +428,7 @@ const C = {
         e.line(`"${p}": "${y}",`);
       e.outdent(), e.line("}");
     }
-    return r && (e.line(), l.push("payload"), e.line("payload = "), e.json(n.body)), e.line(), e.line(`conn.request("${o}", "${f}"` + (l.length > 0 ? `, ${l.join(", ")}` : "") + ")"), e.line("res = conn.getresponse()"), e.line("data = res.read()"), e.line(), e.line('print(data.decode("utf-8"))'), e.output();
+    return r && (e.line(), l.push("payload"), e.line("payload = "), e.json(n.body)), e.line(), e.line(`conn.request("${o}", "${c}"` + (l.length > 0 ? `, ${l.join(", ")}` : "") + ")"), e.line("res = conn.getresponse()"), e.line("data = res.read()"), e.line(), e.line('print(data.decode("utf-8"))'), e.output();
   }
 }, L = {
   language: "python",
@@ -442,14 +442,14 @@ const C = {
     let l = [];
     if (e.line("import requests"), e.line(), e.line('url = "' + n.url + '"'), t) {
       e.line(), l.push("headers=headers"), e.line("headers = {"), e.indent();
-      for (const [u, f] of Object.entries(n.headers))
-        e.line(`"${u}": "${f}"`), Object.keys(n.headers).indexOf(u) !== Object.keys(n.headers).length - 1 && e.append(",");
+      for (const [u, c] of Object.entries(n.headers))
+        e.line(`"${u}": "${c}"`), Object.keys(n.headers).indexOf(u) !== Object.keys(n.headers).length - 1 && e.append(",");
       e.outdent(), e.line("}");
     }
     if (s) {
       e.line(), l.push("cookies=cookies"), e.line("cookies = {"), e.indent();
-      for (const [u, f] of Object.entries(n.cookies))
-        e.line(`"${u}": "${f}"`), Object.keys(n.cookies).indexOf(u) !== Object.keys(n.cookies).length - 1 && e.append(",");
+      for (const [u, c] of Object.entries(n.cookies))
+        e.line(`"${u}": "${c}"`), Object.keys(n.cookies).indexOf(u) !== Object.keys(n.cookies).length - 1 && e.append(",");
       e.outdent(), e.line("}");
     }
     return r && (e.line(), l.push("data=data"), e.line("data = "), e.json(n.body)), e.line(), e.line(
@@ -523,30 +523,30 @@ const C = {
 `
     });
     if (e.line(`curl -X ${n.method} "${n.url}"`), e.indent(), n.headers)
-      for (const [r, t] of Object.entries(n.headers))
-        if (Array.isArray(t))
-          for (const s of t)
-            e.line(`-H "${r}: ${s.replace(/"/g, '\\"')}"`);
+      for (const [s, l] of Object.entries(n.headers))
+        if (Array.isArray(l))
+          for (const u of l)
+            e.line(`-H "${s}: ${u.replace(/"/g, '\\"')}"`);
         else
-          e.line(`-H "${r}: ${t.replace(/"/g, '\\"')}"`);
+          e.line(`-H "${s}: ${l.replace(/"/g, '\\"')}"`);
     if (n.cookies) {
-      const r = Object.entries(n.cookies).flatMap(([t, s]) => Array.isArray(s) ? s.map((l) => `${t}=${l}`) : `${t}=${s}`).join("; ");
-      e.line(`-b "${r}"`);
+      const s = Object.entries(n.cookies).flatMap(([l, u]) => Array.isArray(u) ? u.map((c) => `${l}=${c}`) : `${l}=${u}`).join("; ");
+      e.line(`-b "${s}"`);
     }
-    if (n.body) {
-      const r = n.headers?.["content-type"] || n.headers?.["Content-Type"] || "application/json";
-      if (r.includes("application/json"))
+    if (typeof n.body == "string" ? n.body && n.body.length > 0 : n.body && Object.keys(n.body).length > 0) {
+      const s = n.headers?.["content-type"] || n.headers?.["Content-Type"] || "application/json";
+      if (s.includes("application/json"))
         e.line("-d $'"), e.json(n.body), e.append("'");
-      else if (r === "application/x-www-form-urlencoded") {
-        const t = new URLSearchParams(n.body).toString().replace(/'/g, "'\\''");
-        e.line(`-d '${t}'`);
+      else if (s === "application/x-www-form-urlencoded") {
+        const l = new URLSearchParams(n.body).toString().replace(/'/g, "'\\''");
+        e.line(`-d '${l}'`);
       } else if (typeof n.body == "string") {
-        const t = n.body.replace(/'/g, "'\\''");
-        e.line(`-d '${t}'`);
+        const l = n.body.replace(/'/g, "'\\''");
+        e.line(`-d '${l}'`);
       }
     }
-    let o = e.output();
-    return o = o.replace(/\\\s*$/, "").trim(), o;
+    let t = e.output();
+    return t = t.replace(/\\\s*$/, "").trim(), t;
   }
 }, B = {
   default: !0,
@@ -571,7 +571,7 @@ const C = {
     return n.body && (e.line(), e.line("let body = "), e.json(n.body), e.line("request.httpBody = body")), e.line(), e.line("let task = URLSession.shared.dataTask(with: request) { data, response, error in"), e.indent(), e.line("if let error = error {"), e.indent(), e.line('print("Error: \\(error)")'), e.line("return"), e.outdent(), e.line("}"), e.line(), e.line("if let httpResponse = response as? HTTPURLResponse {"), e.indent(), e.line("if httpResponse.statusCode == 200, let data = data {"), e.indent(), e.line("let responseString = String(data: data, encoding: .utf8)"), e.line('print(responseString ?? "No response data")'), e.outdent(), e.line("} else {"), e.indent(), e.line('print("Request failed with status code: \\(httpResponse.statusCode)")'), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.line(), e.line("task.resume()"), e.output();
   }
 };
-a(C);
+a(k);
 a(m);
 a(O);
 a(w);
@@ -594,7 +594,7 @@ export {
   M as ClearRegistry,
   N as Clients,
   J as Generate,
-  k as IsJsonRequest,
+  C as IsJsonRequest,
   F as Languages,
   a as Register,
   $ as Search,
