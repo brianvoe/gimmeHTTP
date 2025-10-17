@@ -260,7 +260,7 @@
         }
       },
       clickModalBg(event: MouseEvent) {
-        if ((event.target as HTMLElement).classList.contains('modal')) {
+        if ((event.target as HTMLElement).classList.contains('gh-modal')) {
           this.toggleModal()
         }
       },
@@ -331,7 +331,7 @@
     overflow: hidden;
     box-shadow: var(--box-shadow);
 
-    .options {
+    .gh-options {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -350,7 +350,7 @@
       overflow: hidden;
       cursor: pointer;
 
-      .copy {
+      .gh-copy {
         flex: 0 1 auto;
         display: flex;
         flex-direction: row;
@@ -369,12 +369,12 @@
           color: var(--text-color-accent);
         }
 
-        &.show-copied {
+        &.gh-show-copied {
           background-color: var(--accent-color);
           color: var(--text-color-accent);
         }
 
-        .txt {
+        .gh-txt {
           display: flex;
           align-items: center;
           justify-content: center;
@@ -393,7 +393,7 @@
         }
       }
 
-      .separator {
+      .gh-separator {
         flex: 0 1 1px;
         width: 1px;
         min-width: 1px;
@@ -403,7 +403,7 @@
         background-color: var(--border-color);
       }
 
-      .lang {
+      .gh-lang {
         flex: 0 1 auto;
         display: flex;
         flex-direction: row;
@@ -423,7 +423,7 @@
           color: var(--text-color-accent);
         }
 
-        .select {
+        .gh-select {
           height: 100%;
           width: auto;
           max-width: 40px;
@@ -431,7 +431,7 @@
           color: var(--border-color);
         }
 
-        .arrows {
+        .gh-arrows {
           height: 100%;
           width: auto;
           max-height: 16px;
@@ -441,13 +441,13 @@
       }
     }
 
-    .output {
+    .gh-output {
       width: 100%;
       padding: 0;
       margin: 0 !important;
       overflow: hidden;
 
-      &.modalOpen {
+      &.gh-modalOpen {
         pre.shiki {
           min-height: 300px !important;
         }
@@ -486,7 +486,7 @@
       }
     }
 
-    .modal {
+    .gh-modal {
       display: flex;
       position: absolute;
       justify-content: center;
@@ -500,7 +500,7 @@
       background-color: var(--modal-bg-color);
       transition: opacity var(--timing) ease;
 
-      .content {
+      .gh-content {
         display: flex;
         flex-direction: column;
         width: 90%;
@@ -514,14 +514,14 @@
         box-shadow: var(--box-shadow);
         will-change: transform, opacity;
 
-        .langs {
+        .gh-langs {
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
           justify-content: center;
           gap: var(--spacing-half);
 
-          .lang {
+          .gh-lang {
             display: flex;
             width: 50px;
             height: 50px;
@@ -535,7 +535,7 @@
               background-color var(--timing) ease,
               border-color var(--timing) ease;
 
-            &.selected,
+            &.gh-selected,
             &:hover {
               background-color: var(--accent-color);
               border-color: var(--border-color);
@@ -554,21 +554,21 @@
           }
         }
 
-        .separator {
+        .gh-separator {
           width: 50%;
           height: 1px;
           margin: 0 auto;
           background: var(--border-color);
         }
 
-        .clients {
+        .gh-clients {
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
           justify-content: center;
           gap: var(--spacing);
 
-          .client {
+          .gh-client {
             padding: var(--spacing-half);
             border: solid 1px var(--border-color);
             border-radius: var(--border-radius);
@@ -580,7 +580,7 @@
               background-color var(--timing) ease,
               border-color var(--timing) ease;
 
-            &.selected,
+            &.gh-selected,
             &:hover {
               background-color: var(--accent-color);
               border-color: var(--border-color);
@@ -627,8 +627,8 @@
 
 <template>
   <div class="gimmehttp">
-    <div class="options">
-      <div :class="['copy', { 'show-copied': showCopied }]" @click="clickCopy()">
+    <div class="gh-options">
+      <div :class="['gh-copy', { 'gh-show-copied': showCopied }]" @click="clickCopy()">
         <svg v-if="!showCopied" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
           <path
             d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
@@ -637,28 +637,28 @@
             d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
           />
         </svg>
-        <div v-else class="txt">Copied!</div>
+        <div v-else class="gh-txt">Copied!</div>
       </div>
-      <div class="separator" />
-      <div class="lang" @click="toggleModal()">
-        <img :src="logoHref(internalLanguage)" class="select" />
-        <svg class="arrows" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <div class="gh-separator" />
+      <div class="gh-lang" @click="toggleModal()">
+        <img :src="logoHref(internalLanguage)" class="gh-select" />
+        <svg class="gh-arrows" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
           <path
             d="m3.707 2.293 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L6.586 8 2.293 3.707a1 1 0 0 1 1.414-1.414m5 0 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 8 7.293 3.707a1 1 0 0 1 1.414-1.414"
           />
         </svg>
       </div>
     </div>
-    <div :class="'output language-' + internalLanguage + (openModal ? ' modalOpen' : '')" v-html="output" />
+    <div :class="'gh-output language-' + internalLanguage + (openModal ? ' gh-modalOpen' : '')" v-html="output" />
 
     <transition name="gimme-modal-bg">
-      <div v-if="openModal" class="modal" @click="clickModalBg">
+      <div v-if="openModal" class="gh-modal" @click="clickModalBg">
         <transition name="gimme-modal-content">
-          <div v-if="openModalContent" class="content">
-            <div class="langs">
+          <div v-if="openModalContent" class="gh-content">
+            <div class="gh-langs">
               <div
-                class="lang"
-                :class="{ selected: internalLanguage === lang }"
+                class="gh-lang"
+                :class="{ 'gh-selected': internalLanguage === lang }"
                 v-for="lang in languages"
                 :key="lang"
                 @click="clickModalLang(lang)"
@@ -666,9 +666,9 @@
                 <img :alt="lang" :src="logoHref(lang)" />
               </div>
             </div>
-            <div class="separator"></div>
-            <div class="clients">
-              <div class="client" v-for="client in clients" :key="client" @click="clickModalClient(client)">
+            <div class="gh-separator"></div>
+            <div class="gh-clients">
+              <div class="gh-client" v-for="client in clients" :key="client" @click="clickModalClient(client)">
                 {{ client }}
               </div>
             </div>
