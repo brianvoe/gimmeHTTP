@@ -47,20 +47,20 @@ export function IsJsonRequest(method: string, headers?: { [key: string]: string 
   )
 }
 
-export function GetContentType(headers?: { [key: string]: string }): string {
+export function GetContentType(headers?: { [key: string]: string | string[] }): string {
   if (!headers) return ''
 
   // Check for content-type (case-insensitive)
   for (const [key, value] of Object.entries(headers)) {
     if (key.toLowerCase() === 'content-type') {
-      return value
+      return Array.isArray(value) ? value[0] : value
     }
   }
 
   // Check for accept header as fallback
   for (const [key, value] of Object.entries(headers)) {
     if (key.toLowerCase() === 'accept') {
-      return value
+      return Array.isArray(value) ? value[0] : value
     }
   }
 
