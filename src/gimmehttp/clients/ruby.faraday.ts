@@ -46,7 +46,7 @@ export default {
     if (http.body) {
       builder.line()
       const contentType = GetContentType(http.headers)
-      
+
       if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
         builder.line('req.body = ')
         builder.json(http.body)
