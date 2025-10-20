@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none">
+  <defs>
+    <linearGradient id="a" x1="0%" x2="100%" y1="100%" y2="0%">
+      <stop offset="9.677%" stop-color="#0095D5"/>
+      <stop offset="30.07%" stop-color="#238AD9"/>
+      <stop offset="62.11%" stop-color="#557BDE"/>
+      <stop offset="86.43%" stop-color="#7472E2"/>
+      <stop offset="100%" stop-color="#806EE3"/>
+    </linearGradient>
+    <linearGradient id="b" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="11.83%" stop-color="#0095D5"/>
+      <stop offset="41.78%" stop-color="#3C83DC"/>
+      <stop offset="69.62%" stop-color="#6D74E1"/>
+      <stop offset="83.33%" stop-color="#806EE3"/>
+    </linearGradient>
+    <linearGradient id="c" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="10.75%" stop-color="#C757BC"/>
+      <stop offset="21.38%" stop-color="#D0609A"/>
+      <stop offset="42.54%" stop-color="#E1725C"/>
+      <stop offset="53.09%" stop-color="#EE7E2F"/>
+      <stop offset="91.17%" stop-color="#F58613"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#a)" d="M0 60L30.1 29.9L60 60z"/>
+  <path fill="url(#b)" d="M0 0L30.1 0L0 32.5z"/>
+  <path fill="url(#c)" d="M30.1 0L0 32.5L0 60L30.1 29.9L60 0z"/>
+</svg>

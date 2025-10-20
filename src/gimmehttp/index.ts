@@ -11,10 +11,14 @@ import type { Method, Settings, Config, Http } from './utils/generate'
 import CLibCurl from './clients/c.libcurl'
 import CSharpHttp from './clients/csharp.http'
 import CSharpRest from './clients/csharp.restsharp'
+import DartHttp from './clients/dart.http'
 import Go from './clients/go'
+import JavaHttpURLConnection from './clients/java.httpurlconnection'
+import JavaOkHttp from './clients/java.okhttp'
 import JSFetch from './clients/js.fetch'
 import JSAxios from './clients/js.axios'
 import JSJquery from './clients/js.jquery'
+import KotlinKtor from './clients/kotlin.ktor'
 import Node from './clients/node.http'
 import NodeFetch from './clients/node.fetch'
 import PHPCurl from './clients/php.curl'
@@ -31,10 +35,14 @@ import SwiftNsurlsession from './clients/swift.nsurlsession'
 Register(CLibCurl)
 Register(CSharpHttp)
 Register(CSharpRest)
+Register(DartHttp)
 Register(Go)
+Register(JavaHttpURLConnection)
+Register(JavaOkHttp)
 Register(JSFetch)
 Register(JSAxios)
 Register(JSJquery)
+Register(KotlinKtor)
 Register(Node)
 Register(NodeFetch)
 Register(PHPCurl)

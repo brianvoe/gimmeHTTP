@@ -7,9 +7,11 @@
 
   import langC from 'shiki/langs/c.mjs'
   import langCsharp from 'shiki/langs/csharp.mjs'
+  import langDart from 'shiki/langs/dart.mjs'
   import langGo from 'shiki/langs/go.mjs'
   import langJava from 'shiki/langs/java.mjs'
   import langJavascript from 'shiki/langs/javascript.mjs'
+  import langKotlin from 'shiki/langs/kotlin.mjs'
   import langPhp from 'shiki/langs/php.mjs'
   import langPython from 'shiki/langs/python.mjs'
   import langR from 'shiki/langs/r.mjs'
@@ -91,9 +93,11 @@
         langs: [
           langC,
           langCsharp,
+          langDart,
           langGo,
           langJava,
           langJavascript,
+          langKotlin,
           langPhp,
           langPython,
           langR,

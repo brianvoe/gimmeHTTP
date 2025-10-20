@@ -1,52 +1,60 @@
 # HTTP Client Implementations
 
-This directory contains HTTP client code generators for 18 different programming languages and libraries.
+This directory contains HTTP client code generators for 21 different programming languages and libraries.
 
 ## Supported Languages & Clients
 
-| Language   | Client      | Default | Status      |
-| ---------- | ----------- | ------- | ----------- |
-| C          | libcurl     | ✓       | ✅ Complete |
-| C#         | HttpClient  | ✓       | ✅ Complete |
-| C#         | RestSharp   |         | ✅ Complete |
-| Go         | net/http    | ✓       | ✅ Complete |
-| JavaScript | axios       |         | ✅ Complete |
-| JavaScript | fetch       | ✓       | ✅ Complete |
-| JavaScript | jQuery      |         | ✅ Complete |
-| Node.js    | fetch       |         | ✅ Complete |
-| Node.js    | http        | ✓       | ✅ Complete |
-| PHP        | cURL        | ✓       | ✅ Complete |
-| PHP        | Guzzle      |         | ✅ Complete |
-| Python     | http.client | ✓       | ✅ Complete |
-| Python     | requests    |         | ✅ Complete |
-| Ruby       | Net::HTTP   | ✓       | ✅ Complete |
-| Ruby       | Faraday     |         | ✅ Complete |
-| Rust       | reqwest     | ✓       | ✅ Complete |
-| Shell      | cURL        | ✓       | ✅ Complete |
-| Swift      | URLSession  | ✓       | ✅ Complete |
+| Language   | Client            | Default | Status      |
+| ---------- | ----------------- | ------- | ----------- |
+| C          | libcurl           | ✓       | ✅ Complete |
+| C#         | HttpClient        | ✓       | ✅ Complete |
+| C#         | RestSharp         |         | ✅ Complete |
+| Dart       | http              | ✓       | ✅ Complete |
+| Go         | net/http          | ✓       | ✅ Complete |
+| Java       | HttpURLConnection | ✓       | ✅ Complete |
+| Java       | OkHttp            |         | ✅ Complete |
+| JavaScript | axios             |         | ✅ Complete |
+| JavaScript | fetch             | ✓       | ✅ Complete |
+| JavaScript | jQuery            |         | ✅ Complete |
+| Kotlin     | Ktor              | ✓       | ✅ Complete |
+| Node.js    | fetch             |         | ✅ Complete |
+| Node.js    | http              | ✓       | ✅ Complete |
+| PHP        | cURL              | ✓       | ✅ Complete |
+| PHP        | Guzzle            |         | ✅ Complete |
+| Python     | http.client       | ✓       | ✅ Complete |
+| Python     | requests          |         | ✅ Complete |
+| Ruby       | Net::HTTP         | ✓       | ✅ Complete |
+| Ruby       | Faraday           |         | ✅ Complete |
+| Rust       | reqwest           | ✓       | ✅ Complete |
+| Shell      | cURL              | ✓       | ✅ Complete |
+| Swift      | URLSession        | ✓       | ✅ Complete |
 
 ## Feature Support
 
-| Client                   | HTTP Methods                     | Headers | Cookies | Array Headers | JSON Body | Form Body | Text Body | XML Body | Response Parsing | Error Handling | Comments |
-| ------------------------ | -------------------------------- | ------- | ------- | ------------- | --------- | --------- | --------- | -------- | ---------------- | -------------- | -------- |
-| **C (libcurl)**          | ✅ GET, POST, PUT, DELETE        | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
-| **C# (HttpClient)**      | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
-| **C# (RestSharp)**       | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Go (net/http)**        | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **JS (axios)**           | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
-| **JS (fetch)**           | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
-| **JS (jQuery)**          | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
-| **Node (fetch)**         | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
-| **Node (http)**          | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **PHP (cURL)**           | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **PHP (Guzzle)**         | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Python (http.client)** | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Python (requests)**    | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Ruby (Net::HTTP)**     | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Ruby (Faraday)**       | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Rust (reqwest)**       | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Shell (cURL)**         | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
-| **Swift (URLSession)**   | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| Client                       | HTTP Methods                     | Headers | Cookies | Array Headers | JSON Body | Form Body | Text Body | XML Body | Response Parsing | Error Handling | Comments |
+| ---------------------------- | -------------------------------- | ------- | ------- | ------------- | --------- | --------- | --------- | -------- | ---------------- | -------------- | -------- |
+| **C (libcurl)**              | ✅ GET, POST, PUT, DELETE        | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| **C# (HttpClient)**          | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| **C# (RestSharp)**           | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Dart (http)**              | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ❌      | ✅            | ✅        | ❌        | ✅        | ✅       | ✅               | ✅             |          |
+| **Go (net/http)**            | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Java (HttpURLConnection)** | ✅ GET, POST, PUT, DELETE        | ✅      | ✅      | ✅            | ✅        | ❌        | ✅        | ✅       | ✅               | ✅             |          |
+| **Java (OkHttp)**            | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **JS (axios)**               | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
+| **JS (fetch)**               | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
+| **JS (jQuery)**              | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
+| **Kotlin (Ktor)**            | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Node (fetch)**             | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
+| **Node (http)**              | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **PHP (cURL)**               | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **PHP (Guzzle)**             | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Python (http.client)**     | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Python (requests)**        | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Ruby (Net::HTTP)**         | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Ruby (Faraday)**           | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Rust (reqwest)**           | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| **Shell (cURL)**             | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| **Swift (URLSession)**       | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
 
 **Legend:**
 
