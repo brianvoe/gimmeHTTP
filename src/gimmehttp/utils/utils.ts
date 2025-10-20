@@ -135,7 +135,7 @@ export function InferContentType(body: any): string {
 }
 
 export function GetEffectiveContentType(
-  headers?: { [key: string]: string },
+  headers?: { [key: string]: string | string[] },
   body?: any
 ): { contentType: string; wasInferred: boolean } {
   const explicit = GetContentType(headers)
