@@ -1,7 +1,16 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import GimmeHttp from './gimmehttp.vue'
 import type { Http } from '../utils/generate'
+
+// Mock Shiki to avoid creating multiple instances
+vi.mock('shiki/core', () => ({
+  createHighlighterCore: vi.fn(() =>
+    Promise.resolve({
+      codeToHtml: vi.fn((code: string) => `<pre>${code}</pre>`)
+    })
+  )
+}))
 
 /**
  * Note: These are basic smoke tests for the Vue component.
@@ -34,7 +43,7 @@ describe('GimmeHttp Vue Component', () => {
         }
       })
 
-      expect(wrapper.props('http')).toBeDefined()
+      expect(wrapper.vm.http).toBeDefined()
     })
 
     it('should accept optional language prop', () => {
@@ -45,7 +54,7 @@ describe('GimmeHttp Vue Component', () => {
         }
       })
 
-      expect(wrapper.props('language')).toBe('python')
+      expect(wrapper.vm.language).toBe('python')
     })
 
     it('should accept optional client prop', () => {
@@ -56,7 +65,7 @@ describe('GimmeHttp Vue Component', () => {
         }
       })
 
-      expect(wrapper.props('client')).toBe('requests')
+      expect(wrapper.vm.client).toBe('requests')
     })
 
     it('should accept optional theme prop', () => {
@@ -67,7 +76,7 @@ describe('GimmeHttp Vue Component', () => {
         }
       })
 
-      expect(wrapper.props('theme')).toBe('dark')
+      expect(wrapper.vm.theme).toBe('dark')
     })
   })
 
@@ -100,7 +109,7 @@ describe('GimmeHttp Vue Component', () => {
       })
 
       expect(wrapper.exists()).toBe(true)
-      expect(wrapper.props('http')).toEqual(complexHttp)
+      expect(wrapper.vm.http).toEqual(complexHttp)
     })
 
     it('should handle all HTTP methods', () => {
@@ -258,7 +267,7 @@ describe('GimmeHttp Vue Component', () => {
         }
       })
 
-      expect(wrapper.props('theme')).toBe('light')
+      expect(wrapper.vm.theme).toBe('light')
     })
 
     it('should accept dark theme', () => {
@@ -269,7 +278,7 @@ describe('GimmeHttp Vue Component', () => {
         }
       })
 
-      expect(wrapper.props('theme')).toBe('dark')
+      expect(wrapper.vm.theme).toBe('dark')
     })
   })
 })
