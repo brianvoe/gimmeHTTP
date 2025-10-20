@@ -44,7 +44,7 @@ export declare interface Http {
     method: Method;
     url: string;
     headers?: {
-        [key: string]: string;
+        [key: string]: string | string[];
     };
     cookies?: {
         [key: string]: string;
