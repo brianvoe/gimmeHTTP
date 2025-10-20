@@ -22,6 +22,11 @@ export default {
     builder.line('import json')
     builder.line()
 
+    if (config.handleErrors) {
+      builder.line('try:')
+      builder.indent()
+    }
+
     const { hostname, path, port, protocol } = ParseUrl(http.url)
     builder.line(`conn = http.client.HTTPSConnection("${hostname}", ${port})`)
 
@@ -90,6 +95,14 @@ export default {
     builder.line('data = res.read()')
     builder.line()
     builder.line('print(data.decode("utf-8"))')
+
+    if (config.handleErrors) {
+      builder.outdent()
+      builder.line('except Exception as e:')
+      builder.indent()
+      builder.line('print(f"Error: {e}")')
+      builder.outdent()
+    }
 
     return builder.output()
   }

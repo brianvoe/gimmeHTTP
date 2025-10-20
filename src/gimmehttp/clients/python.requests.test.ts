@@ -211,4 +211,40 @@ print(response.text)
     `.trim()
     )
   })
+
+  test('should build a POST request with error handling', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'test'
+      }
+    }
+    const config: Config = { handleErrors: true }
+    const result = PythonRequests.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import requests
+
+try:
+  url = "https://example.com"
+
+  headers = {
+    "Content-Type": "application/json"
+  }
+
+  json_data = {
+    "name": "test"
+  }
+
+  response = requests.post(url, headers=headers, json=json_data)
+  print(response.text)
+except requests.exceptions.RequestException as e:
+  print(f"Error: {e}")
+    `.trim()
+    )
+  })
 })

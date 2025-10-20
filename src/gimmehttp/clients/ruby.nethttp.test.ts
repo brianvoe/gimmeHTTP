@@ -338,4 +338,42 @@ puts response.body
     `.trim()
     )
   })
+
+  test('should build a POST request with error handling', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        test: 'data'
+      }
+    }
+    const config: Config = { handleErrors: true }
+    const result = RubyNetHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+require "net/http"
+require "uri"
+
+begin
+  uri = URI.parse("https://example.com")
+  request = Net::HTTP::Post.new(uri)
+  request["Content-Type"] = "application/json"
+  request.body = {
+    "test": "data"
+  }.to_json
+
+  response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
+    http.request(request)
+  end
+
+  puts response.body
+rescue StandardError => e
+  puts "Error: #{e.message}"
+end
+    `.trim()
+    )
+  })
 })

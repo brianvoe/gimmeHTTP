@@ -16,6 +16,12 @@ export default {
     builder.line('require "net/http"')
     builder.line('require "uri"')
     builder.line()
+
+    if (config.handleErrors) {
+      builder.line('begin')
+      builder.indent()
+    }
+
     builder.line('uri = URI.parse("' + http.url + '")')
 
     if (http.method.toUpperCase() === 'GET') {
@@ -72,6 +78,15 @@ export default {
     builder.line('end')
     builder.line()
     builder.line('puts response.body')
+
+    if (config.handleErrors) {
+      builder.outdent()
+      builder.line('rescue StandardError => e')
+      builder.indent()
+      builder.line('puts "Error: #{e.message}"')
+      builder.outdent()
+      builder.line('end')
+    }
 
     return builder.output()
   }

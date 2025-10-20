@@ -257,4 +257,44 @@ puts response.body
     `.trim()
     )
   })
+
+  test('should build a POST request with error handling', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'test'
+      }
+    }
+    const config: Config = { handleErrors: true }
+    const result = RubyFaraday.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+require "faraday"
+
+begin
+  conn = Faraday.new(url: "https://example.com") do |f|
+    f.adapter Faraday.default_adapter
+  end
+
+  response = conn.post do |req|
+    req.url "https://example.com"
+
+    req.headers["Content-Type"] = "application/json"
+
+    req.body = {
+      "name": "test"
+    }.to_json
+  end
+
+  puts response.body
+rescue Faraday::Error => e
+  puts "Error: #{e.message}"
+end
+    `.trim()
+    )
+  })
 })

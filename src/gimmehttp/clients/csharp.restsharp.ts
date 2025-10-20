@@ -13,6 +13,9 @@ export default {
     })
 
     builder.line('using RestSharp;')
+    if (config.handleErrors) {
+      builder.line('using System;')
+    }
     builder.line()
     builder.line('namespace RestSharpExample')
     builder.line('{')
@@ -23,6 +26,13 @@ export default {
     builder.line('static void Main(string[] args)')
     builder.line('{')
     builder.indent()
+
+    if (config.handleErrors) {
+      builder.line('try')
+      builder.line('{')
+      builder.indent()
+    }
+
     builder.line(`var client = new RestClient("${http.url}");`)
     builder.line(`var request = new RestRequest(Method.${http.method.toUpperCase()});`)
 
@@ -68,6 +78,17 @@ export default {
     builder.line()
     builder.line('IRestResponse response = client.Execute(request);')
     builder.line('Console.WriteLine(response.Content);')
+
+    if (config.handleErrors) {
+      builder.outdent()
+      builder.line('}')
+      builder.line('catch (Exception ex)')
+      builder.line('{')
+      builder.indent()
+      builder.line('Console.WriteLine($"Error: {ex.Message}");')
+      builder.outdent()
+      builder.line('}')
+    }
 
     builder.outdent()
     builder.line('}')

@@ -20,6 +20,12 @@ export default {
 
     builder.line('import requests')
     builder.line()
+
+    if (config.handleErrors) {
+      builder.line('try:')
+      builder.indent()
+    }
+
     builder.line('url = "' + http.url + '"')
 
     if (hasHeaders) {
@@ -79,6 +85,14 @@ export default {
         ')'
     )
     builder.line('print(response.text)')
+
+    if (config.handleErrors) {
+      builder.outdent()
+      builder.line('except requests.exceptions.RequestException as e:')
+      builder.indent()
+      builder.line('print(f"Error: {e}")')
+      builder.outdent()
+    }
 
     return builder.output()
   }

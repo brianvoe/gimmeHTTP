@@ -245,4 +245,45 @@ print(data.decode("utf-8"))
     `.trim()
     )
   })
+
+  test('should build a POST request with error handling', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        test: 'data'
+      }
+    }
+    const config: Config = { handleErrors: true }
+    const result = PythonHttpClient.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import http.client
+import json
+
+try:
+  conn = http.client.HTTPSConnection("example.com", 443)
+
+  headers = {
+    "Content-Type": "application/json",
+  }
+
+  payload_dict = {
+    "test": "data"
+  }
+  payload = json.dumps(payload_dict)
+
+  conn.request("POST", "/", payload, headers)
+  res = conn.getresponse()
+  data = res.read()
+
+  print(data.decode("utf-8"))
+except Exception as e:
+  print(f"Error: {e}")
+    `.trim()
+    )
+  })
 })

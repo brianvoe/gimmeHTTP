@@ -25,7 +25,15 @@ export default {
     builder.line("require 'vendor/autoload.php';")
     builder.line()
     builder.line('use GuzzleHttp\\Client;')
+    if (config.handleErrors) {
+      builder.line('use GuzzleHttp\\Exception\\RequestException;')
+    }
     builder.line()
+
+    if (config.handleErrors) {
+      builder.line('try {')
+      builder.indent()
+    }
 
     builder.line('$client = new Client();')
     builder.line('$response = $client->request(')
@@ -96,6 +104,15 @@ export default {
     builder.line()
 
     builder.line('echo $response->getBody();')
+
+    if (config.handleErrors) {
+      builder.outdent()
+      builder.line('} catch (RequestException $e) {')
+      builder.indent()
+      builder.line('echo "Error: " . $e->getMessage();')
+      builder.outdent()
+      builder.line('}')
+    }
 
     return builder.output()
   }

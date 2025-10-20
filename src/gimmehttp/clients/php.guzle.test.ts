@@ -247,4 +247,50 @@ echo $response->getBody();
       `.trim()
     )
   })
+
+  test('should build a POST request with error handling', () => {
+    const config = { handleErrors: true }
+    const http: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'test'
+      }
+    }
+
+    const result = PhpGuzzle.generate(config, http)
+    expect(result).toBe(
+      `
+<?php
+
+require 'vendor/autoload.php';
+
+use GuzzleHttp\\Client;
+use GuzzleHttp\\Exception\\RequestException;
+
+try {
+  $client = new Client();
+  $response = $client->request(
+    "POST",
+    "https://example.com",
+    [
+      "headers" => [
+        "Content-Type" => "application/json",
+      ],
+      "json" => [
+        "name" => "test",
+      ],
+    ],
+  );
+
+  echo $response->getBody();
+} catch (RequestException $e) {
+  echo "Error: " . $e->getMessage();
+}
+      `.trim()
+    )
+  })
 })

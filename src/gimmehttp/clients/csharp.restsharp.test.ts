@@ -266,4 +266,53 @@ namespace RestSharpExample
     `.trim()
     )
   })
+
+  test('should build a POST request with error handling', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        test: 'data'
+      }
+    }
+    const config: Config = { handleErrors: true }
+    const result = CSharpRestSharp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+using RestSharp;
+using System;
+
+namespace RestSharpExample
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      try
+      {
+        var client = new RestClient("https://example.com");
+        var request = new RestRequest(Method.POST);
+
+        request.AddHeader("Content-Type", "application/json");
+
+        request.AddJsonBody({
+          "test": "data"
+        });
+
+        IRestResponse response = client.Execute(request);
+        Console.WriteLine(response.Content);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Error: {ex.Message}");
+      }
+    }
+  }
+}
+    `.trim()
+    )
+  })
 })

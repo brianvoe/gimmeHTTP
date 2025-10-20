@@ -14,6 +14,12 @@ export default {
 
     builder.line('require "faraday"')
     builder.line()
+
+    if (config.handleErrors) {
+      builder.line('begin')
+      builder.indent()
+    }
+
     builder.line('conn = Faraday.new(url: "' + http.url + '") do |f|')
     builder.indent()
     builder.line('f.adapter Faraday.default_adapter')
@@ -65,6 +71,15 @@ export default {
     builder.line('end')
     builder.line()
     builder.line('puts response.body')
+
+    if (config.handleErrors) {
+      builder.outdent()
+      builder.line('rescue Faraday::Error => e')
+      builder.indent()
+      builder.line('puts "Error: #{e.message}"')
+      builder.outdent()
+      builder.line('end')
+    }
 
     return builder.output()
   }
