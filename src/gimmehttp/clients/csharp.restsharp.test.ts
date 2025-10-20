@@ -192,4 +192,78 @@ namespace RestSharpExample
     `.trim()
     )
   })
+
+  test('should build a POST request with text/plain body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Plain text content'
+    }
+    const config: Config = {}
+    const result = CSharpRestSharp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+using RestSharp;
+
+namespace RestSharpExample
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      var client = new RestClient("https://example.com");
+      var request = new RestRequest(Method.POST);
+
+      request.AddHeader("Content-Type", "text/plain");
+
+      request.AddParameter("text/plain", "Plain text content", ParameterType.RequestBody);
+
+      IRestResponse response = client.Execute(request);
+      Console.WriteLine(response.Content);
+    }
+  }
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with XML body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: '<data><node>content</node></data>'
+    }
+    const config: Config = {}
+    const result = CSharpRestSharp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+using RestSharp;
+
+namespace RestSharpExample
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      var client = new RestClient("https://example.com");
+      var request = new RestRequest(Method.POST);
+
+      request.AddHeader("Content-Type", "application/xml");
+
+      request.AddParameter("application/xml", "<data><node>content</node></data>", ParameterType.RequestBody);
+
+      IRestResponse response = client.Execute(request);
+      Console.WriteLine(response.Content);
+    }
+  }
+}
+    `.trim()
+    )
+  })
 })

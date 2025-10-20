@@ -252,4 +252,25 @@ curl -X POST "https://example.com" \\
       `.trim()
     )
   })
+
+  test('should build a POST request with XML body', () => {
+    const config = {}
+    const http: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: '<root><item>value</item></root>'
+    }
+
+    const result = ShellCurl.generate(config, http)
+    expect(result).toBe(
+      `
+curl -X POST "https://example.com" \\
+  -H "Content-Type: application/xml" \\
+  -d '<root><item>value</item></root>'
+      `.trim()
+    )
+  })
 })

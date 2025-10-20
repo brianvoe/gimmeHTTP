@@ -132,4 +132,82 @@ $.ajax({
     `.trim()
     )
   })
+
+  test('should handle XML content-type (jQuery auto-parses)', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/api',
+      headers: {
+        Accept: 'application/xml'
+      }
+    }
+    const config: Config = {}
+    const result = JSJQuery.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+$.ajax({
+  url: "https://example.com/api",
+  type: "GET",
+  headers: {
+    "Accept": "application/xml",
+  },
+  success: function(data) {
+    console.log(data);
+  },
+});
+    `.trim()
+    )
+  })
+
+  test('should handle text content-type (jQuery auto-parses)', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/readme.txt',
+      headers: {
+        Accept: 'text/plain'
+      }
+    }
+    const config: Config = {}
+    const result = JSJQuery.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+$.ajax({
+  url: "https://example.com/readme.txt",
+  type: "GET",
+  headers: {
+    "Accept": "text/plain",
+  },
+  success: function(data) {
+    console.log(data);
+  },
+});
+    `.trim()
+    )
+  })
+
+  test('should handle blob/binary content-type (jQuery auto-handles)', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/image.jpg',
+      headers: {
+        Accept: 'image/jpeg'
+      }
+    }
+    const config: Config = {}
+    const result = JSJQuery.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+$.ajax({
+  url: "https://example.com/image.jpg",
+  type: "GET",
+  headers: {
+    "Accept": "image/jpeg",
+  },
+  success: function(data) {
+    console.log(data);
+  },
+});
+    `.trim()
+    )
+  })
 })

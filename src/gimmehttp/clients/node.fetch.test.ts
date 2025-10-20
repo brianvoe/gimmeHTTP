@@ -45,7 +45,7 @@ fetch("https://example.com", {
     "Authorization": "Bearer token",
   },
 })
-.then(response => response.text())
+.then(response => response.json())
 .then(data => console.log(data))
     `.trim()
     )
@@ -81,7 +81,7 @@ fetch("https://example.com", {
   if (!response.ok) {
     throw new Error("response not ok");
   }
-  return response.text();
+  return response.json();
 })
 .then(data => console.log(data))
 .catch(error => console.error("error:", error));
@@ -126,9 +126,51 @@ fetch("https://example.com", {
     "empty": null
   }
 })
+.then(response => response.json())
+.then(data => console.log(data))
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with XML accept header', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/api',
+      headers: {
+        Accept: 'application/xml'
+      }
+    }
+    const config: Config = {}
+    const result = NodeFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const fetch = require("node-fetch");
+
+fetch("https://example.com/api", {
+  method: "GET",
+  headers: {
+    "Accept": "application/xml",
+  },
+})
 .then(response => response.text())
 .then(data => console.log(data))
     `.trim()
     )
+  })
+
+  test('should build a POST request with form-urlencoded (not supported by fetch, would use URLSearchParams)', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: { username: 'test', password: 'pass' }
+    }
+    const config: Config = {}
+    const result = NodeFetch.generate(config, httpRequest)
+    // Note: fetch doesn't auto-encode form data, would need URLSearchParams in real code
+    expect(result).toContain('method: "POST"')
+    expect(result).toContain('application/x-www-form-urlencoded')
   })
 })

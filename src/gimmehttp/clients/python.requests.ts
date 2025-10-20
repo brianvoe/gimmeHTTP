@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   language: 'python',
@@ -55,9 +56,18 @@ export default {
 
     if (hasPayload) {
       builder.line()
-      params.push('data=data')
-      builder.line('data = ')
-      builder.json(http.body)
+      const contentType = GetContentType(http.headers)
+
+      if (ContentTypeIncludes(contentType, 'form')) {
+        params.push('data=form_data')
+        builder.line('form_data = ')
+        builder.json(http.body)
+      } else {
+        // Default to JSON (if content-type is json or not specified with object body)
+        params.push('json=json_data')
+        builder.line('json_data = ')
+        builder.json(http.body)
+      }
     }
 
     builder.line()

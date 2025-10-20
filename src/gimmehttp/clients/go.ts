@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { IsJsonRequest } from '../utils/utils'
+import { GetContentType, HasBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   default: true,
@@ -22,7 +22,12 @@ export default {
       }
     })
 
-    const isJsonBody = IsJsonRequest(http.method, http.headers) && http.body
+    const contentType = GetContentType(http.headers)
+    const hasBody = HasBody(http.body)
+    const isJsonBody =
+      hasBody && (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body)))
+    const isFormBody = hasBody && ContentTypeIncludes(contentType, 'form')
+    const needsBytes = isJsonBody || isFormBody
 
     builder.line('package main')
     builder.line()
@@ -31,9 +36,14 @@ export default {
     builder.line('"fmt"')
     builder.line('"net/http"')
     builder.line('"io"')
-    if (isJsonBody) {
+    if (needsBytes) {
       builder.line('"bytes"')
+    }
+    if (isJsonBody) {
       builder.line('"encoding/json"')
+    }
+    if (isFormBody) {
+      builder.line('"net/url"')
     }
     if (config.handleErrors) {
       builder.line('"log"')
@@ -63,6 +73,16 @@ export default {
       }
       bodyVar = 'bytes.NewBuffer(jsonBodyBytes)'
       builder.line()
+    } else if (isFormBody) {
+      builder.line('formData := url.Values{}')
+      for (const [key, value] of Object.entries(http.body)) {
+        builder.line(`formData.Set("${key}", "${value}")`)
+      }
+      builder.line('formBody := formData.Encode()')
+      bodyVar = 'bytes.NewBufferString(formBody)'
+      builder.line()
+    } else if (hasBody && typeof http.body === 'string') {
+      bodyVar = `bytes.NewBufferString("${http.body.replace(/"/g, '\\"')}")`
     }
 
     if (config.handleErrors) {

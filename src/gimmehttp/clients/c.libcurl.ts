@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, IsStringBody } from '../utils/utils'
 
 export default {
   default: true,
@@ -55,9 +56,16 @@ export default {
 
     if (http.body) {
       builder.line()
-      builder.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"(')
-      builder.json(http.body)
-      builder.append(')");')
+      const contentType = GetContentType(http.headers)
+
+      if (IsStringBody(http.body)) {
+        builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${http.body.replace(/"/g, '\\"')}");`)
+      } else {
+        // For objects (JSON or form data), stringify as JSON
+        builder.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"(')
+        builder.json(http.body)
+        builder.append(')");')
+      }
     }
 
     builder.line()

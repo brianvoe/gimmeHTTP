@@ -187,4 +187,88 @@ req.end();
     `.trim()
     )
   })
+
+  test('should build a POST request with text/plain body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com/log',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Log message content'
+    }
+    const config: Config = {}
+    const result = Node.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const http = require("http");
+
+const options = {
+  method: "POST",
+  hostname: "example.com",
+  path: "/log",
+  headers: {
+    "Content-Type": "text/plain",
+  },
+};
+
+const req = http.request(options, (res) => {
+  let data = "";
+
+  res.on("data", (chunk) => {
+    data += chunk;
+  });
+
+  res.on("end", () => {
+    console.log(data);
+  });
+});
+
+req.write("Log message content");
+req.end();
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with XML body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: '<record><item>value</item></record>'
+    }
+    const config: Config = {}
+    const result = Node.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const http = require("http");
+
+const options = {
+  method: "POST",
+  hostname: "example.com",
+  path: "/",
+  headers: {
+    "Content-Type": "application/xml",
+  },
+};
+
+const req = http.request(options, (res) => {
+  let data = "";
+
+  res.on("data", (chunk) => {
+    data += chunk;
+  });
+
+  res.on("end", () => {
+    console.log(data);
+  });
+});
+
+req.write("<record><item>value</item></record>");
+req.end();
+    `.trim()
+    )
+  })
 })

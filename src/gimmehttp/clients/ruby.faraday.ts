@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   language: 'ruby',
@@ -36,15 +37,28 @@ export default {
 
     if (http.cookies) {
       builder.line()
-      for (const [key, value] of Object.entries(http.cookies)) {
-        builder.line(`req.headers["Cookie"] = "${key}=${value}"`)
-      }
+      const cookieString = Object.entries(http.cookies)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('; ')
+      builder.line(`req.headers["Cookie"] = "${cookieString}"`)
     }
 
     if (http.body) {
       builder.line()
-      builder.line('req.body = ')
-      builder.json(http.body)
+      const contentType = GetContentType(http.headers)
+      
+      if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
+        builder.line('req.body = ')
+        builder.json(http.body)
+        builder.append('.to_json')
+      } else if (IsStringBody(http.body)) {
+        builder.line(`req.body = "${http.body.replace(/"/g, '\\"')}"`)
+      } else {
+        // For form data or other objects, convert to JSON string
+        builder.line('req.body = ')
+        builder.json(http.body)
+        builder.append('.to_json')
+      }
     }
 
     builder.outdent()

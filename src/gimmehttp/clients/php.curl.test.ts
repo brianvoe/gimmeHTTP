@@ -188,4 +188,83 @@ echo $response;
     `.trim()
     )
   })
+
+  test('should build a POST request with form-urlencoded body', () => {
+    const config = {}
+    const http: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        username: 'testuser',
+        password: 'testpass'
+      }
+    }
+
+    const result = PhpCurl.generate(config, http)
+    expect(result).toBe(
+      `
+<?php
+
+$ch = curl_init();
+
+curl_setopt($ch, CURLOPT_URL, "https://example.com");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+$headers = [];
+$headers[] = "Content-Type: application/x-www-form-urlencoded";
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+$postData = {
+  "username": "testuser",
+  "password": "testpass"
+};
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+echo $response;
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with XML body', () => {
+    const config = {}
+    const http: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: '<request><action>submit</action></request>'
+    }
+
+    const result = PhpCurl.generate(config, http)
+    expect(result).toBe(
+      `
+<?php
+
+$ch = curl_init();
+
+curl_setopt($ch, CURLOPT_URL, "https://example.com");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+$headers = [];
+$headers[] = "Content-Type: application/xml";
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+curl_setopt($ch, CURLOPT_POSTFIELDS, '<request><action>submit</action></request>');
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+echo $response;
+    `.trim()
+    )
+  })
 })

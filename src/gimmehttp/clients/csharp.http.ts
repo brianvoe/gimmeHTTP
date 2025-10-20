@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   default: true,
@@ -53,9 +54,24 @@ export default {
 
     if (http.body) {
       builder.line()
-      builder.line('request.Content = new StringContent(')
-      builder.json(http.body)
-      builder.append(', System.Text.Encoding.UTF8, "application/json");')
+      const contentType = GetContentType(http.headers)
+
+      if (ContentTypeIncludes(contentType, 'form')) {
+        builder.line('var formContent = new FormUrlEncodedContent(new Dictionary<string, string>')
+        builder.line('{')
+        builder.indent()
+        for (const [key, value] of Object.entries(http.body)) {
+          builder.line(`{ "${key}", "${value}" },`)
+        }
+        builder.outdent()
+        builder.line('});')
+        builder.line('request.Content = formContent;')
+      } else {
+        // Default to JSON (if content-type is json or not specified)
+        builder.line('request.Content = new StringContent(')
+        builder.json(http.body)
+        builder.append(', System.Text.Encoding.UTF8, "application/json");')
+      }
     }
 
     builder.line()

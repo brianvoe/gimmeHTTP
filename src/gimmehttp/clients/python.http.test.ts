@@ -75,9 +75,10 @@ import json
 
 conn = http.client.HTTPSConnection("example.com", 443)
 
-payload = {
+payload_dict = {
   "key1": "value1"
 }
+payload = json.dumps(payload_dict)
 
 conn.request("POST", "/", payload)
 res = conn.getresponse()
@@ -149,7 +150,7 @@ import json
 
 conn = http.client.HTTPSConnection("example.com", 443)
 
-payload = {
+payload_dict = {
   "key1": "value1",
   "key2": {
     "key3": "value3"
@@ -160,8 +161,83 @@ payload = {
   ],
   "empty": null
 }
+payload = json.dumps(payload_dict)
 
 conn.request("POST", "/", payload)
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with form-urlencoded body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        username: 'user123',
+        password: 'pass456'
+      }
+    }
+    const config: Config = {}
+    const result = PythonHttpClient.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import http.client
+import json
+
+conn = http.client.HTTPSConnection("example.com", 443)
+
+headers = {
+  "Content-Type": "application/x-www-form-urlencoded",
+}
+
+from urllib.parse import urlencode
+payload_dict = {
+  "username": "user123",
+  "password": "pass456"
+}
+payload = urlencode(payload_dict)
+
+conn.request("POST", "/", payload, headers)
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with XML body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: '<root><node>value</node></root>'
+    }
+    const config: Config = {}
+    const result = PythonHttpClient.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import http.client
+import json
+
+conn = http.client.HTTPSConnection("example.com", 443)
+
+headers = {
+  "Content-Type": "application/xml",
+}
+
+payload = "<root><node>value</node></root>"
+
+conn.request("POST", "/", payload, headers)
 res = conn.getresponse()
 data = res.read()
 

@@ -113,7 +113,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
   let res = client.request(reqwest::Method::POST, "https://example.com")
     .header("Content-Type", "application/json")
-    .body({
+    .json(&{
       "key1": "value1"
     })
     .send()?;
@@ -152,7 +152,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   let client = Client::new();
 
   let res = client.request(reqwest::Method::POST, "https://example.com")
-    .body({
+    .json(&{
       "key1": "value1",
       "key2": 2,
       "key3": [
@@ -165,6 +165,74 @@ fn main() -> Result<(), Box<dyn Error>> {
       },
       "empty": null
     })
+    .send()?;
+
+  println!("{}", res.text()?);
+  Ok(())
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with form-urlencoded body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        username: 'testuser',
+        password: 'testpass'
+      }
+    }
+    const config: Config = {}
+    const result = RustReqwest.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+use reqwest::blocking::Client;
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+  let client = Client::new();
+
+  let res = client.request(reqwest::Method::POST, "https://example.com")
+    .header("Content-Type", "application/x-www-form-urlencoded")
+    .form(&{
+      "username": "testuser",
+      "password": "testpass"
+    })
+    .send()?;
+
+  println!("{}", res.text()?);
+  Ok(())
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with text/plain body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Plain text content'
+    }
+    const config: Config = {}
+    const result = RustReqwest.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+use reqwest::blocking::Client;
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+  let client = Client::new();
+
+  let res = client.request(reqwest::Method::POST, "https://example.com")
+    .header("Content-Type", "text/plain")
+    .body("Plain text content")
     .send()?;
 
   println!("{}", res.text()?);

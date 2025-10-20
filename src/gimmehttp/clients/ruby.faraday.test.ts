@@ -110,7 +110,7 @@ response = conn.post do |req|
 
   req.body = {
     "key1": "value1"
-  }
+  }.to_json
 end
 
 puts response.body
@@ -156,7 +156,101 @@ response = conn.post do |req|
       "value5"
     ],
     "empty": null
-  }
+  }.to_json
+end
+
+puts response.body
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with text/plain body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Plain text message'
+    }
+    const config: Config = {}
+    const result = RubyFaraday.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+require "faraday"
+
+conn = Faraday.new(url: "https://example.com") do |f|
+  f.adapter Faraday.default_adapter
+end
+
+response = conn.post do |req|
+  req.url "https://example.com"
+
+  req.headers["Content-Type"] = "text/plain"
+
+  req.body = "Plain text message"
+end
+
+puts response.body
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with XML body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: '<data><value>test</value></data>'
+    }
+    const config: Config = {}
+    const result = RubyFaraday.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+require "faraday"
+
+conn = Faraday.new(url: "https://example.com") do |f|
+  f.adapter Faraday.default_adapter
+end
+
+response = conn.post do |req|
+  req.url "https://example.com"
+
+  req.headers["Content-Type"] = "application/xml"
+
+  req.body = "<data><value>test</value></data>"
+end
+
+puts response.body
+    `.trim()
+    )
+  })
+
+  test('should handle array header values', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      headers: {
+        Accept: ['application/json', 'application/xml']
+      }
+    }
+    const config: Config = {}
+    const result = RubyFaraday.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+require "faraday"
+
+conn = Faraday.new(url: "https://example.com") do |f|
+  f.adapter Faraday.default_adapter
+end
+
+response = conn.get do |req|
+  req.url "https://example.com"
+
+  req.headers["Accept"] = "application/json"
+  req.headers["Accept"] = "application/xml"
 end
 
 puts response.body

@@ -143,10 +143,10 @@ let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "POST"
 
-let body = {
+let bodyDict: [String: Any] = {
   "key1": "value1"
 }
-request.httpBody = body
+request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)
 
 let task = URLSession.shared.dataTask(with: request) { data, response, error in
   if let error = error {
@@ -198,7 +198,7 @@ request.httpMethod = "POST"
 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 request.addValue("Bearer token", forHTTPHeaderField: "Authorization")
 
-let body = {
+let bodyDict: [String: Any] = {
   "key1": "value1",
   "key2": 4235,
   "key3": true,
@@ -211,7 +211,97 @@ let body = {
     "subkey": "subvalue"
   }
 }
-request.httpBody = body
+request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)
+
+let task = URLSession.shared.dataTask(with: request) { data, response, error in
+  if let error = error {
+    print("Error: \\(error)")
+    return
+  }
+
+  if let httpResponse = response as? HTTPURLResponse {
+    if httpResponse.statusCode == 200, let data = data {
+      let responseString = String(data: data, encoding: .utf8)
+      print(responseString ?? "No response data")
+    } else {
+      print("Request failed with status code: \\(httpResponse.statusCode)")
+    }
+  }
+}
+
+task.resume()
+      `.trim()
+    )
+  })
+
+  test('should build a POST request with text/plain body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Plain text message'
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+let url = URL(string: "https://example.com")!
+var request = URLRequest(url: url)
+request.httpMethod = "POST"
+
+request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+
+let bodyString = "Plain text message"
+request.httpBody = bodyString.data(using: .utf8)
+
+let task = URLSession.shared.dataTask(with: request) { data, response, error in
+  if let error = error {
+    print("Error: \\(error)")
+    return
+  }
+
+  if let httpResponse = response as? HTTPURLResponse {
+    if httpResponse.statusCode == 200, let data = data {
+      let responseString = String(data: data, encoding: .utf8)
+      print(responseString ?? "No response data")
+    } else {
+      print("Request failed with status code: \\(httpResponse.statusCode)")
+    }
+  }
+}
+
+task.resume()
+      `.trim()
+    )
+  })
+
+  test('should build a POST request with XML body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: '<data><item>value</item></data>'
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+let url = URL(string: "https://example.com")!
+var request = URLRequest(url: url)
+request.httpMethod = "POST"
+
+request.addValue("application/xml", forHTTPHeaderField: "Content-Type")
+
+let bodyString = "<data><item>value</item></data>"
+request.httpBody = bodyString.data(using: .utf8)
 
 let task = URLSession.shared.dataTask(with: request) { data, response, error in
   if let error = error {

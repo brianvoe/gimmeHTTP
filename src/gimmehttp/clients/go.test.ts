@@ -1,5 +1,5 @@
 import Go from './go'
-import { Http } from '../utils/generate'
+import { Http, Config } from '../utils/generate'
 import { describe, expect, test } from 'vitest'
 
 describe('Go.generate', () => {
@@ -245,6 +245,94 @@ func main() {
   req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBodyBytes))
 
   req.Header.Set("Content-Type", "application/json")
+
+  resp, _ := http.DefaultClient.Do(req)
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+
+  fmt.Println(string(body))
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with form-urlencoded body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        username: 'user123',
+        password: 'pass456'
+      }
+    }
+    const config: Config = {}
+    const result = Go.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io"
+  "bytes"
+  "net/url"
+)
+
+func main() {
+  url := "https://example.com"
+
+  formData := url.Values{}
+  formData.Set("username", "user123")
+  formData.Set("password", "pass456")
+  formBody := formData.Encode()
+
+  req, _ := http.NewRequest("POST", url, bytes.NewBufferString(formBody))
+
+  req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+  resp, _ := http.DefaultClient.Do(req)
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+
+  fmt.Println(string(body))
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with text/plain body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Plain text message content'
+    }
+    const config: Config = {}
+    const result = Go.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io"
+)
+
+func main() {
+  url := "https://example.com"
+
+  req, _ := http.NewRequest("POST", url, bytes.NewBufferString("Plain text message content"))
+
+  req.Header.Set("Content-Type", "text/plain")
 
   resp, _ := http.DefaultClient.Do(req)
   defer resp.Body.Close()

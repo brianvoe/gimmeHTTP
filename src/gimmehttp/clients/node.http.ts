@@ -23,16 +23,27 @@ export default {
     builder.line(`hostname: "${hostname}",`)
     builder.line(`path: "${path}",`)
 
-    if (http.headers) {
+    if (http.headers || http.cookies) {
       builder.line('headers: {')
       builder.indent()
-      for (const [key, value] of Object.entries(http.headers)) {
-        if (Array.isArray(value)) {
-          builder.line(`"${key}": "${value.join(', ')}",`)
-        } else {
-          builder.line(`"${key}": "${value}",`)
+
+      if (http.headers) {
+        for (const [key, value] of Object.entries(http.headers)) {
+          if (Array.isArray(value)) {
+            builder.line(`"${key}": "${value.join(', ')}",`)
+          } else {
+            builder.line(`"${key}": "${value}",`)
+          }
         }
       }
+
+      if (http.cookies) {
+        const cookieString = Object.entries(http.cookies)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('; ')
+        builder.line(`"Cookie": "${cookieString}",`)
+      }
+
       builder.outdent()
       builder.line('},')
     }

@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, HasBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   default: true,
@@ -40,19 +41,18 @@ export default {
     }
 
     // Add body
-    const isStringBody = typeof http.body === 'string'
-    const hasContent = isStringBody ? http.body && http.body.length > 0 : http.body && Object.keys(http.body).length > 0
+    const hasContent = HasBody(http.body)
 
     if (hasContent) {
-      const contentType = http.headers?.['content-type'] || http.headers?.['Content-Type'] || 'application/json'
+      const contentType = GetContentType(http.headers)
 
-      if (contentType.includes('application/json')) {
+      if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
         // Pretty print JSON
         builder.line("-d $'")
         // builder.indent()
         builder.json(http.body)
         builder.append("'")
-      } else if (contentType === 'application/x-www-form-urlencoded') {
+      } else if (ContentTypeIncludes(contentType, 'form')) {
         const formData = new URLSearchParams(http.body).toString().replace(/'/g, "'\\''")
         builder.line(`-d '${formData}'`)
       } else if (typeof http.body === 'string') {

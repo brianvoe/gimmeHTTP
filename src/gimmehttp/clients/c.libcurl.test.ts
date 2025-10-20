@@ -223,4 +223,96 @@ int main(void) {
     `.trim()
     )
   })
+
+  test('should build a POST request with text/plain body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Plain text content'
+    }
+    const config: Config = { indent: '  ' }
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: text/plain");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "Plain text content");
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with XML body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: '<root><item>value</item></root>'
+    }
+    const config: Config = { indent: '  ' }
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/xml");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "<root><item>value</item></root>");
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
 })

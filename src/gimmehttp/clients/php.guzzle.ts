@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   language: 'php',
@@ -70,9 +71,18 @@ export default {
 
       if (http.body) {
         builder.indent()
-        builder.line('"json" => ')
-        builder.json(http.body)
-        builder.append(',')
+        const contentType = GetContentType(http.headers)
+
+        if (ContentTypeIncludes(contentType, 'form')) {
+          builder.line('"form_params" => ')
+          builder.json(http.body)
+          builder.append(',')
+        } else {
+          // Default to JSON (if content-type is json or not specified)
+          builder.line('"json" => ')
+          builder.json(http.body)
+          builder.append(',')
+        }
         builder.outdent()
       }
 

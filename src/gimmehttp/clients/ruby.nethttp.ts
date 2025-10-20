@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   default: true,
@@ -40,14 +41,27 @@ export default {
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
-      for (const [key, value] of Object.entries(http.cookies)) {
-        builder.line(`request["Cookie"] = "${key}=${value}"`)
-      }
+      const cookieString = Object.entries(http.cookies)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('; ')
+      builder.line(`request["Cookie"] = "${cookieString}"`)
     }
 
     if (http.body) {
-      builder.line('request.body = ')
-      builder.json(http.body)
+      const contentType = GetContentType(http.headers)
+      
+      if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
+        builder.line('request.body = ')
+        builder.json(http.body)
+        builder.append('.to_json')
+      } else if (IsStringBody(http.body)) {
+        builder.line(`request.body = "${http.body.replace(/"/g, '\\"')}"`)
+      } else {
+        // For form data or other objects, convert to JSON string
+        builder.line('request.body = ')
+        builder.json(http.body)
+        builder.append('.to_json')
+      }
     }
 
     builder.line()

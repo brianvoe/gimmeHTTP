@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, ContentTypeIncludes, IsStringBody } from '../utils/utils'
 
 export default {
   language: 'csharp',
@@ -46,9 +47,22 @@ export default {
 
     if (http.body) {
       builder.line()
-      builder.line('request.AddJsonBody(')
-      builder.json(http.body)
-      builder.append(');')
+      const contentType = GetContentType(http.headers)
+
+      if (ContentTypeIncludes(contentType, 'form')) {
+        builder.line('request.AddParameter("application/x-www-form-urlencoded", ')
+        builder.json(http.body)
+        builder.append(', ParameterType.RequestBody);')
+      } else if (IsStringBody(http.body)) {
+        builder.line(
+          `request.AddParameter("${contentType || 'text/plain'}", "${http.body.replace(/"/g, '\\"')}", ParameterType.RequestBody);`
+        )
+      } else {
+        // Default to JSON
+        builder.line('request.AddJsonBody(')
+        builder.json(http.body)
+        builder.append(');')
+      }
     }
 
     builder.line()

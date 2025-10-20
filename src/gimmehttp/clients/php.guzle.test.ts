@@ -168,4 +168,83 @@ echo $response->getBody();
       `.trim()
     )
   })
+
+  test('should build a POST request with form-urlencoded body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        username: 'testuser',
+        action: 'login'
+      }
+    }
+    const config = {}
+    const result = PhpGuzzle.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+<?php
+
+require 'vendor/autoload.php';
+
+use GuzzleHttp\\Client;
+
+$client = new Client();
+$response = $client->request(
+  "POST",
+  "https://example.com",
+  [
+    "headers" => [
+      "Content-Type" => "application/x-www-form-urlencoded",
+    ],
+    "form_params" => [
+      "username" => "testuser",
+      "action" => "login",
+    ],
+  ],
+);
+
+echo $response->getBody();
+      `.trim()
+    )
+  })
+
+  test('should build a POST request with text/plain body', () => {
+    const config = {}
+    const http: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Plain text data for request'
+    }
+
+    const result = PhpGuzzle.generate(config, http)
+    expect(result).toBe(
+      `
+<?php
+
+require 'vendor/autoload.php';
+
+use GuzzleHttp\\Client;
+
+$client = new Client();
+$response = $client->request(
+  "POST",
+  "https://example.com",
+  [
+    "headers" => [
+      "Content-Type" => "text/plain",
+    ],
+    "json" => "Plain text data for request",
+  ],
+);
+
+echo $response->getBody();
+      `.trim()
+    )
+  })
 })

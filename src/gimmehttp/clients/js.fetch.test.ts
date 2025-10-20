@@ -41,7 +41,7 @@ fetch("https://example.com", {
     "Authorization": "Bearer token",
   },
 })
-.then(response => response.text())
+.then(response => response.json())
 .then(data => console.log(data));
     `.trim()
     )
@@ -75,7 +75,7 @@ fetch("https://example.com", {
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  return response.text();
+  return response.json();
 })
 .then(data => console.log(data))
 .catch(error => console.error("There was a problem with the fetch operation:", error));
@@ -118,7 +118,103 @@ fetch("https://example.com", {
     "empty": null
   }
 })
+.then(response => response.json())
+.then(data => console.log(data));
+    `.trim()
+    )
+  })
+
+  test('should use text() for XML content-type', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/api',
+      headers: {
+        Accept: 'application/xml'
+      }
+    }
+    const config: Config = {}
+    const result = JSFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+fetch("https://example.com/api", {
+  method: "GET",
+  headers: {
+    "Accept": "application/xml",
+  },
+})
 .then(response => response.text())
+.then(data => console.log(data));
+    `.trim()
+    )
+  })
+
+  test('should use blob() for binary content-type', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/image.png',
+      headers: {
+        Accept: 'image/png'
+      }
+    }
+    const config: Config = {}
+    const result = JSFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+fetch("https://example.com/image.png", {
+  method: "GET",
+  headers: {
+    "Accept": "image/png",
+  },
+})
+.then(response => response.blob())
+.then(data => console.log(data));
+    `.trim()
+    )
+  })
+
+  test('should use text() for plain text content-type', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/readme.txt',
+      headers: {
+        Accept: 'text/plain'
+      }
+    }
+    const config: Config = {}
+    const result = JSFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+fetch("https://example.com/readme.txt", {
+  method: "GET",
+  headers: {
+    "Accept": "text/plain",
+  },
+})
+.then(response => response.text())
+.then(data => console.log(data));
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with blob response type', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/image.png',
+      headers: {
+        Accept: 'image/png'
+      }
+    }
+    const config: Config = {}
+    const result = JSFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+fetch("https://example.com/image.png", {
+  method: "GET",
+  headers: {
+    "Accept": "image/png",
+  },
+})
+.then(response => response.blob())
 .then(data => console.log(data));
     `.trim()
     )

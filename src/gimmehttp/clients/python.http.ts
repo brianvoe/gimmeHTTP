@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { ParseUrl } from '../utils/utils'
+import { ParseUrl, GetContentType, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   default: true,
@@ -58,14 +58,34 @@ export default {
     // Payload
     if (hasPayload) {
       builder.line()
-      params.push('payload')
-      builder.line('payload = ')
-      builder.json(http.body)
+      const contentType = GetContentType(http.headers)
+
+      if (ContentTypeIncludes(contentType, 'form')) {
+        builder.line('from urllib.parse import urlencode')
+        builder.line('payload_dict = ')
+        builder.json(http.body)
+        builder.line('payload = urlencode(payload_dict)')
+      } else if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
+        builder.line('payload_dict = ')
+        builder.json(http.body)
+        builder.line('payload = json.dumps(payload_dict)')
+      } else if (IsStringBody(http.body)) {
+        builder.line(`payload = "${http.body.replace(/"/g, '\\"')}"`)
+      }
     }
 
     // Build request based upon whether headers, cookies and payload are present
     builder.line()
-    builder.line(`conn.request("${method}", "${path}"` + (params.length > 0 ? `, ${params.join(', ')}` : '') + ')')
+    if (hasPayload) {
+      const otherParams = params.filter((p) => p !== 'payload')
+      builder.line(
+        `conn.request("${method}", "${path}", payload` +
+          (otherParams.length > 0 ? `, ${otherParams.join(', ')}` : '') +
+          ')'
+      )
+    } else {
+      builder.line(`conn.request("${method}", "${path}"` + (params.length > 0 ? `, ${params.join(', ')}` : '') + ')')
+    }
     builder.line('res = conn.getresponse()')
     builder.line('data = res.read()')
     builder.line()

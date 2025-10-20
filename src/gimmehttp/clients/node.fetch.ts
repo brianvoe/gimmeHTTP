@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   language: 'node',
@@ -40,6 +41,20 @@ export default {
     builder.outdent()
     builder.line('})')
 
+    // Determine response parsing method based on content-type or accept headers
+    const responseType = GetContentType(http.headers)
+    let parseMethod = 'text()'
+
+    if (ContentTypeIncludes(responseType, 'json')) {
+      parseMethod = 'json()'
+    } else if (ContentTypeIncludes(responseType, 'xml')) {
+      parseMethod = 'text()'
+    } else if (ContentTypeIncludes(responseType, 'text')) {
+      parseMethod = 'text()'
+    } else if (ContentTypeIncludes(responseType, 'blob')) {
+      parseMethod = 'blob()'
+    }
+
     if (config.handleErrors) {
       builder.line('.then(response => {')
       builder.indent()
@@ -48,13 +63,13 @@ export default {
       builder.line('throw new Error("response not ok");')
       builder.outdent()
       builder.line('}')
-      builder.line('return response.text();')
+      builder.line(`return response.${parseMethod};`)
       builder.outdent()
       builder.line('})')
       builder.line('.then(data => console.log(data))')
       builder.line('.catch(error => console.error("error:", error));')
     } else {
-      builder.line('.then(response => response.text())')
+      builder.line(`.then(response => response.${parseMethod})`)
       builder.line('.then(data => console.log(data))')
     }
 

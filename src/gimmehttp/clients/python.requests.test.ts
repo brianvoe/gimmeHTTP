@@ -47,11 +47,11 @@ headers = {
   "Authorization": "Bearer token"
 }
 
-data = {
+json_data = {
   "key1": "value1"
 }
 
-response = requests.post(url, headers=headers, data=data)
+response = requests.post(url, headers=headers, json=json_data)
 print(response.text)
     `.trim()
     )
@@ -99,11 +99,11 @@ import requests
 
 url = "https://example.com"
 
-data = {
+json_data = {
   "key1": "value1"
 }
 
-response = requests.post(url, data=data)
+response = requests.post(url, json=json_data)
 print(response.text)
     `.trim()
     )
@@ -130,7 +130,7 @@ import requests
 
 url = "https://example.com"
 
-data = {
+json_data = {
   "key1": "value1",
   "key2": {
     "key3": "value3"
@@ -142,7 +142,71 @@ data = {
   "empty": null
 }
 
-response = requests.post(url, data=data)
+response = requests.post(url, json=json_data)
+print(response.text)
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with form-urlencoded body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        username: 'user123',
+        email: 'user@example.com'
+      }
+    }
+    const config: Config = {}
+    const result = PythonRequests.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import requests
+
+url = "https://example.com"
+
+headers = {
+  "Content-Type": "application/x-www-form-urlencoded"
+}
+
+form_data = {
+  "username": "user123",
+  "email": "user@example.com"
+}
+
+response = requests.post(url, headers=headers, data=form_data)
+print(response.text)
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with text/plain body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'Simple plain text message'
+    }
+    const config: Config = {}
+    const result = PythonRequests.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import requests
+
+url = "https://example.com"
+
+headers = {
+  "Content-Type": "text/plain"
+}
+
+json_data = "Simple plain text message"
+
+response = requests.post(url, headers=headers, json=json_data)
 print(response.text)
     `.trim()
     )

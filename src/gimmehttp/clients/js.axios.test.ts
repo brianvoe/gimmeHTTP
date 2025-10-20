@@ -150,4 +150,76 @@ axios({
     `.trim()
     )
   })
+
+  test('should handle XML content-type (axios auto-parses)', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/api',
+      headers: {
+        Accept: 'application/xml'
+      }
+    }
+    const config: Config = {}
+    const result = JSAxios.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+axios({
+  method: "get",
+  url: "https://example.com/api",
+  headers: {
+    "Accept": "application/xml",
+  },
+})
+.then(response => console.log(response.data));
+    `.trim()
+    )
+  })
+
+  test('should handle text content-type (axios auto-parses)', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/readme.txt',
+      headers: {
+        Accept: 'text/plain'
+      }
+    }
+    const config: Config = {}
+    const result = JSAxios.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+axios({
+  method: "get",
+  url: "https://example.com/readme.txt",
+  headers: {
+    "Accept": "text/plain",
+  },
+})
+.then(response => console.log(response.data));
+    `.trim()
+    )
+  })
+
+  test('should handle blob/binary content-type (axios auto-handles)', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/file.pdf',
+      headers: {
+        Accept: 'application/pdf'
+      }
+    }
+    const config: Config = {}
+    const result = JSAxios.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+axios({
+  method: "get",
+  url: "https://example.com/file.pdf",
+  headers: {
+    "Accept": "application/pdf",
+  },
+})
+.then(response => console.log(response.data));
+    `.trim()
+    )
+  })
 })

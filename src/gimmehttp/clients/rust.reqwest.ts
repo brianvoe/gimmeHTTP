@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   language: 'rust',
@@ -42,10 +43,19 @@ export default {
     }
 
     if (http.body) {
-      builder.line('.body(')
-      // builder.indent()
-      builder.json(http.body)
-      builder.append(')')
+      const contentType = GetContentType(http.headers)
+
+      if (ContentTypeIncludes(contentType, 'form')) {
+        builder.line('.form(&')
+        builder.json(http.body)
+        builder.append(')')
+      } else if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
+        builder.line('.json(&')
+        builder.json(http.body)
+        builder.append(')')
+      } else if (IsStringBody(http.body)) {
+        builder.line(`.body("${http.body.replace(/"/g, '\\"')}")`)
+      }
     }
 
     builder.line('.send()?;')

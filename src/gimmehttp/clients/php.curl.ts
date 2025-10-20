@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { GetContentType, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   default: true,
@@ -52,13 +53,24 @@ export default {
     // Body
     if (http.body) {
       builder.line()
-      builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS,')
-      builder.line('<<<JSON')
-      builder.line()
-      builder.json(http.body)
-      builder.line('JSON')
-      builder.line(');')
-      builder.outdent()
+      const contentType = GetContentType(http.headers)
+
+      if (ContentTypeIncludes(contentType, 'form')) {
+        builder.line('$postData = ')
+        builder.json(http.body)
+        builder.append(';')
+        builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));')
+      } else if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
+        builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS,')
+        builder.line('<<<JSON')
+        builder.line()
+        builder.json(http.body)
+        builder.line('JSON')
+        builder.line(');')
+      } else if (IsStringBody(http.body)) {
+        const escapedBody = http.body.replace(/'/g, "\\'")
+        builder.line(`curl_setopt($ch, CURLOPT_POSTFIELDS, '${escapedBody}');`)
+      }
     }
 
     // Execute and handle response

@@ -38,9 +38,14 @@ export default {
 
     if (http.body) {
       builder.line()
-      builder.line('let body = ')
-      builder.json(http.body)
-      builder.line('request.httpBody = body')
+      if (typeof http.body === 'string') {
+        builder.line(`let bodyString = "${http.body.replace(/"/g, '\\"')}"`)
+        builder.line('request.httpBody = bodyString.data(using: .utf8)')
+      } else {
+        builder.line('let bodyDict: [String: Any] = ')
+        builder.json(http.body)
+        builder.line('request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)')
+      }
     }
 
     builder.line()
