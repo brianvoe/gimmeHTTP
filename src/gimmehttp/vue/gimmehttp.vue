@@ -81,7 +81,8 @@
         themeMode: initialTheme,
         internalLanguage: storedLanguage,
         internalClient: storedClient || '',
-        checkInterval: null as number | null
+        checkInterval: null as number | null,
+        failedLogos: new Set<string>()
       }
     },
     async created() {
@@ -176,10 +177,20 @@
     methods: {
       logoHref(name: string) {
         try {
+          // In production, logos are in dist/vue/logos/
+          // In development, they're in src/gimmehttp/logos/
+          // Use new URL with import.meta.url to get proper resolution
           return new URL(`../logos/${name}.svg`, import.meta.url).href
-        } catch (_) {
+        } catch (error) {
+          console.warn(`Failed to load logo: ${name}.svg`, error)
           return ''
         }
+      },
+      onLogoError(name: string) {
+        this.failedLogos.add(name)
+      },
+      hasLogoFailed(name: string) {
+        return this.failedLogos.has(name)
       },
       setLanguage(lang: string | null) {
         this.internalLanguage = lang || defaultLang
@@ -431,6 +442,14 @@
           color: var(--border-color);
         }
 
+        .gh-lang-text {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--border-color);
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
+
         .gh-arrows {
           height: 100%;
           width: auto;
@@ -551,6 +570,17 @@
               height: 100%;
               filter: drop-shadow(0 4px 10px var(--border-color));
             }
+
+            .gh-lang-text-modal {
+              display: flex;
+              justify-self: center;
+              align-self: center;
+              font-size: 10px;
+              font-weight: 700;
+              color: var(--border-color);
+              text-transform: uppercase;
+              text-align: center;
+            }
           }
         }
 
@@ -641,7 +671,14 @@
       </div>
       <div class="gh-separator" />
       <div class="gh-lang" @click="toggleModal()">
-        <img :src="logoHref(internalLanguage)" class="gh-select" />
+        <img
+          v-if="!hasLogoFailed(internalLanguage)"
+          :src="logoHref(internalLanguage)"
+          :alt="internalLanguage"
+          class="gh-select"
+          @error="onLogoError(internalLanguage)"
+        />
+        <span v-else class="gh-lang-text">{{ internalLanguage }}</span>
         <svg class="gh-arrows" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
           <path
             d="m3.707 2.293 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L6.586 8 2.293 3.707a1 1 0 0 1 1.414-1.414m5 0 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 8 7.293 3.707a1 1 0 0 1 1.414-1.414"
@@ -663,7 +700,8 @@
                 :key="lang"
                 @click="clickModalLang(lang)"
               >
-                <img :alt="lang" :src="logoHref(lang)" />
+                <img v-if="!hasLogoFailed(lang)" :alt="lang" :src="logoHref(lang)" @error="onLogoError(lang)" />
+                <span v-else class="gh-lang-text-modal">{{ lang }}</span>
               </div>
             </div>
             <div class="gh-separator"></div>
