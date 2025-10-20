@@ -1,54 +1,54 @@
-const $ = [];
-function G() {
-  return $;
+const h = [];
+function W() {
+  return h;
 }
-function z() {
-  return $.map((i) => i.language).filter((i, n, e) => e.indexOf(i) === n);
+function Q() {
+  return h.map((i) => i.language).filter((i, n, e) => e.indexOf(i) === n);
 }
-function m(i, n) {
+function k(i, n) {
   if (i === "" || i === void 0)
     return null;
-  const e = $.filter((t) => t.language.toLowerCase() === i.toLowerCase());
+  const e = h.filter((t) => t.language.toLowerCase() === i.toLowerCase());
   if (e.length === 0)
     return null;
-  const r = e.find((t) => t.default) || e[0];
+  const o = e.find((t) => t.default) || e[0];
   if (!n)
-    return r;
-  const o = e.find((t) => t.client.toLowerCase() === n.toLowerCase());
-  return o || r;
+    return o;
+  const r = e.find((t) => t.client.toLowerCase() === n.toLowerCase());
+  return r || o;
 }
-function V(i, n) {
-  const e = m(i, n);
+function X(i, n) {
+  const e = k(i, n);
   e && (e.default = !0);
 }
 function u(i) {
   if (!i)
     return new Error("Client is required");
   if (Array.isArray(i))
-    return i.forEach((r) => u(r)), null;
-  const n = $.filter((r) => r.language.toLowerCase() === i.language.toLowerCase()), e = n.find((r) => r.client.toLowerCase() === i.client.toLowerCase());
+    return i.forEach((o) => u(o)), null;
+  const n = h.filter((o) => o.language.toLowerCase() === i.language.toLowerCase()), e = n.find((o) => o.client.toLowerCase() === i.client.toLowerCase());
   if (i.default === void 0 && (i.default = n.length === 0), e) {
-    const r = $.indexOf(i);
-    return $[r] = i, null;
+    const o = h.indexOf(i);
+    return h[o] = i, null;
   }
-  return $.push(i), null;
+  return h.push(i), null;
 }
-function W() {
-  $.splice(0, $.length);
+function Y() {
+  h.splice(0, h.length);
 }
-function K(i) {
+function Z(i) {
   let n = O(i);
   if (n)
     return { error: n.message };
-  i.config = E(i.config), i.language || (i.language = "javascript");
-  const e = m(i.language, i.client);
+  i.config = w(i.config), i.language || (i.language = "javascript");
+  const e = k(i.language, i.client);
   if (!e)
     return { error: "Client not found" };
-  const r = e.generate(i.config, i.http);
+  const o = e.generate(i.config, i.http);
   return {
     language: e.language,
     client: e.client,
-    code: r
+    code: o
   };
 }
 function O(i) {
@@ -61,7 +61,7 @@ function O(i) {
   if (!i.http.url)
     return new Error("http.url is required");
 }
-function E(i) {
+function w(i) {
   return i = i || {}, i.handleErrors === void 0 && (i.handleErrors = !1), i;
 }
 class c {
@@ -96,14 +96,14 @@ class c {
     switch (typeof n) {
       case "object":
         if (Array.isArray(n))
-          this.append(this.jsonConfig.arrOpen), this.indent(), n.forEach((r, o) => {
-            this.json(r, typeof n == "object" || Array.isArray(n)), (o < n.length - 1 || this.jsonConfig.endComma) && this.append(",");
+          this.append(this.jsonConfig.arrOpen), this.indent(), n.forEach((o, r) => {
+            this.json(o, typeof n == "object" || Array.isArray(n)), (r < n.length - 1 || this.jsonConfig.endComma) && this.append(",");
           }), this.outdent(), this.line(this.jsonConfig.arrClose);
         else {
           this.append(this.jsonConfig.objOpen), this.indent();
-          const r = Object.keys(n);
-          r.forEach((o, t) => {
-            this.line(`"${o}"` + this.jsonConfig.separator), this.json(n[o], typeof o == "object" || Array.isArray(o)), (t < r.length - 1 || this.jsonConfig.endComma) && this.append(",");
+          const o = Object.keys(n);
+          o.forEach((r, t) => {
+            this.line(`"${r}"` + this.jsonConfig.separator), this.json(n[r], typeof r == "object" || Array.isArray(r)), (t < o.length - 1 || this.jsonConfig.endComma) && this.append(",");
           }), this.outdent(), this.line(this.jsonConfig.objClose);
         }
         break;
@@ -126,24 +126,24 @@ class c {
   }
 }
 function C(i) {
-  let n, e, r, o, t;
+  let n, e, o, r, t;
   try {
     const s = new URL(i);
-    n = s.hostname, e = s.pathname, t = s.search, r = s.port ? parseInt(s.port) : s.protocol === "https:" ? 443 : 80, o = s.protocol;
+    n = s.hostname, e = s.pathname, t = s.search, o = s.port ? parseInt(s.port) : s.protocol === "https:" ? 443 : 80, r = s.protocol;
   } catch {
     const l = i.split("/");
     n = l[0];
-    const d = "/" + l.slice(1).join("/"), [f, p] = d.split("?");
-    e = f, t = p ? "?" + p : "", r = 80, o = "http:";
+    const d = "/" + l.slice(1).join("/"), [f, y] = d.split("?");
+    e = f, t = y ? "?" + y : "", o = 80, r = "http:";
   }
-  return e.startsWith("/") || (e = "/" + e), { hostname: n, path: e, port: r, protocol: o, params: t };
+  return e.startsWith("/") || (e = "/" + e), { hostname: n, path: e, port: o, protocol: r, params: t };
 }
-function Q(i, n) {
+function ee(i, n) {
   return i.toUpperCase() === "POST" && n !== void 0 && Object.keys(n).some(
     (e) => e.toLowerCase() === "content-type" && n[e].toLowerCase() === "application/json"
   );
 }
-function b(i) {
+function p(i) {
   if (!i) return "";
   for (const [n, e] of Object.entries(i))
     if (n.toLowerCase() === "content-type")
@@ -153,13 +153,13 @@ function b(i) {
       return Array.isArray(e) ? e[0] : e;
   return "";
 }
-function k(i) {
+function m(i) {
   return i ? typeof i == "string" ? i.length > 0 : typeof i == "object" ? Object.keys(i).length > 0 : !1 : !1;
 }
-function h(i) {
+function j(i) {
   return typeof i == "string";
 }
-function g(i) {
+function $(i) {
   return i != null && typeof i == "object";
 }
 function a(i, n) {
@@ -179,14 +179,14 @@ function a(i, n) {
       return !1;
   }
 }
-function w(i) {
+function E(i) {
   return "application/octet-stream";
 }
-function T(i, n) {
-  const e = b(i);
-  return e ? { contentType: e, wasInferred: !1 } : { contentType: w(), wasInferred: !0 };
+function q(i, n) {
+  const e = p(i);
+  return e ? { contentType: e, wasInferred: !1 } : { contentType: E(), wasInferred: !0 };
 }
-const q = {
+const T = {
   default: !0,
   language: "c",
   client: "libcurl",
@@ -198,18 +198,18 @@ const q = {
     });
     if (e.line("#include <stdio.h>"), e.line("#include <curl/curl.h>"), e.line(), e.line("int main(void) {"), e.indent(), e.line("CURL *curl;"), e.line("CURLcode res;"), e.line(), e.line("curl_global_init(CURL_GLOBAL_DEFAULT);"), e.line("curl = curl_easy_init();"), e.line("if(curl) {"), e.indent(), e.line(`curl_easy_setopt(curl, CURLOPT_URL, "${n.url}");`), n.method.toUpperCase() === "POST" ? e.line("curl_easy_setopt(curl, CURLOPT_POST, 1L);") : n.method.toUpperCase() !== "GET" && e.line(`curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "${n.method.toUpperCase()}");`), n.headers && Object.keys(n.headers).length > 0) {
       e.line(), e.line("struct curl_slist *headers = NULL;");
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? o.forEach((t) => e.line(`headers = curl_slist_append(headers, "${r}: ${t}");`)) : e.line(`headers = curl_slist_append(headers, "${r}: ${o}");`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? r.forEach((t) => e.line(`headers = curl_slist_append(headers, "${o}: ${t}");`)) : e.line(`headers = curl_slist_append(headers, "${o}: ${r}");`);
       e.line("curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);");
     }
     if (n.cookies && Object.keys(n.cookies).length > 0) {
       e.line();
-      const r = Object.entries(n.cookies).map(([o, t]) => `${o}=${t}`).join("; ");
-      e.line(`curl_easy_setopt(curl, CURLOPT_COOKIE, "${r}");`);
+      const o = Object.entries(n.cookies).map(([r, t]) => `${r}=${t}`).join("; ");
+      e.line(`curl_easy_setopt(curl, CURLOPT_COOKIE, "${o}");`);
     }
-    return n.body && (e.line(), b(n.headers), h(n.body) ? e.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${n.body.replace(/"/g, '\\"')}");`) : (e.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"('), e.json(n.body), e.append(')");'))), e.line(), e.line("res = curl_easy_perform(curl);"), e.line("if(res != CURLE_OK)"), e.indent(), e.line('fprintf(stderr, "failed: %s", curl_easy_strerror(res));'), e.outdent(), n.headers && Object.keys(n.headers).length > 0 && e.line("curl_slist_free_all(headers);"), e.line("curl_easy_cleanup(curl);"), e.outdent(), e.line("}"), e.line(), e.line("curl_global_cleanup();"), e.line("return 0;"), e.outdent(), e.line("}"), e.output();
+    return n.body && (e.line(), p(n.headers), j(n.body) ? e.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${n.body.replace(/"/g, '\\"')}");`) : (e.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"('), e.json(n.body), e.append(')");'))), e.line(), e.line("res = curl_easy_perform(curl);"), e.line("if(res != CURLE_OK)"), e.indent(), e.line('fprintf(stderr, "failed: %s", curl_easy_strerror(res));'), e.outdent(), n.headers && Object.keys(n.headers).length > 0 && e.line("curl_slist_free_all(headers);"), e.line("curl_easy_cleanup(curl);"), e.outdent(), e.line("}"), e.line(), e.line("curl_global_cleanup();"), e.line("return 0;"), e.outdent(), e.line("}"), e.output();
   }
-}, _ = {
+}, R = {
   default: !0,
   language: "csharp",
   client: "http",
@@ -223,28 +223,28 @@ const q = {
       `HttpRequestMessage request = new HttpRequestMessage(HttpMethod.${n.method.toUpperCase()}, "${n.url}");`
     ), n.headers && Object.keys(n.headers).length > 0) {
       e.line();
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? o.forEach((t) => e.line(`request.Headers.Add("${r}", "${t}");`)) : e.line(`request.Headers.Add("${r}", "${o}");`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? r.forEach((t) => e.line(`request.Headers.Add("${o}", "${t}");`)) : e.line(`request.Headers.Add("${o}", "${r}");`);
     }
     if (n.cookies && Object.keys(n.cookies).length > 0) {
       e.line();
-      const r = Object.entries(n.cookies).map(([o, t]) => `${o}=${t}`).join("; ");
-      e.line(`request.Headers.Add("Cookie", "${r}");`);
+      const o = Object.entries(n.cookies).map(([r, t]) => `${r}=${t}`).join("; ");
+      e.line(`request.Headers.Add("Cookie", "${o}");`);
     }
     if (n.body) {
       e.line();
-      const r = b(n.headers);
-      if (a(r, "form")) {
+      const o = p(n.headers);
+      if (a(o, "form")) {
         e.line("var formContent = new FormUrlEncodedContent(new Dictionary<string, string>"), e.line("{"), e.indent();
-        for (const [o, t] of Object.entries(n.body))
-          e.line(`{ "${o}", "${t}" },`);
+        for (const [r, t] of Object.entries(n.body))
+          e.line(`{ "${r}", "${t}" },`);
         e.outdent(), e.line("});"), e.line("request.Content = formContent;");
       } else
         e.line("request.Content = new StringContent("), e.json(n.body), e.append(', System.Text.Encoding.UTF8, "application/json");');
     }
     return e.line(), e.line("HttpResponseMessage response = await client.SendAsync(request);"), e.line("response.EnsureSuccessStatusCode();"), e.line("string responseBody = await response.Content.ReadAsStringAsync();"), e.line("Console.WriteLine(responseBody);"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.output();
   }
-}, R = {
+}, S = {
   language: "csharp",
   client: "restsharp",
   generate(i, n) {
@@ -255,24 +255,53 @@ const q = {
     });
     if (e.line("using RestSharp;"), i.handleErrors && e.line("using System;"), e.line(), e.line("namespace RestSharpExample"), e.line("{"), e.indent(), e.line("class Program"), e.line("{"), e.indent(), e.line("static void Main(string[] args)"), e.line("{"), e.indent(), i.handleErrors && (e.line("try"), e.line("{"), e.indent()), e.line(`var client = new RestClient("${n.url}");`), e.line(`var request = new RestRequest(Method.${n.method.toUpperCase()});`), n.headers && Object.keys(n.headers).length > 0) {
       e.line();
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? o.forEach((t) => e.line(`request.AddHeader("${r}", "${t}");`)) : e.line(`request.AddHeader("${r}", "${o}");`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? r.forEach((t) => e.line(`request.AddHeader("${o}", "${t}");`)) : e.line(`request.AddHeader("${o}", "${r}");`);
     }
     if (n.cookies && Object.keys(n.cookies).length > 0) {
       e.line();
-      const r = Object.entries(n.cookies).map(([o, t]) => `${o}=${t}`).join("; ");
-      e.line(`request.AddHeader("Cookie", "${r}");`);
+      const o = Object.entries(n.cookies).map(([r, t]) => `${r}=${t}`).join("; ");
+      e.line(`request.AddHeader("Cookie", "${o}");`);
     }
     if (n.body) {
       e.line();
-      const r = b(n.headers);
-      a(r, "form") ? (e.line('request.AddParameter("application/x-www-form-urlencoded", '), e.json(n.body), e.append(", ParameterType.RequestBody);")) : h(n.body) ? e.line(
-        `request.AddParameter("${r || "text/plain"}", "${n.body.replace(/"/g, '\\"')}", ParameterType.RequestBody);`
+      const o = p(n.headers);
+      a(o, "form") ? (e.line('request.AddParameter("application/x-www-form-urlencoded", '), e.json(n.body), e.append(", ParameterType.RequestBody);")) : j(n.body) ? e.line(
+        `request.AddParameter("${o || "text/plain"}", "${n.body.replace(/"/g, '\\"')}", ParameterType.RequestBody);`
       ) : (e.line("request.AddJsonBody("), e.json(n.body), e.append(");"));
     }
     return e.line(), e.line("IRestResponse response = client.Execute(request);"), e.line("Console.WriteLine(response.Content);"), i.handleErrors && (e.outdent(), e.line("}"), e.line("catch (Exception ex)"), e.line("{"), e.indent(), e.line('Console.WriteLine($"Error: {ex.Message}");'), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.output();
   }
 }, A = {
+  default: !0,
+  language: "dart",
+  client: "http",
+  generate(i, n) {
+    const e = new c({
+      indent: i.indent || "  ",
+      join: i.join || `
+`
+    }), o = m(n.body), r = p(n.headers), t = o && (a(r, "json") || !r && $(n.body));
+    if (e.line("import 'package:http/http.dart' as http;"), t && e.line("import 'dart:convert';"), e.line(), e.line("void main() async {"), e.indent(), i.handleErrors && (e.line("try {"), e.indent()), e.line(`var url = Uri.parse('${n.url}');`), e.line(), n.headers && Object.keys(n.headers).length > 0) {
+      e.line("var headers = {"), e.indent();
+      for (const [f, y] of Object.entries(n.headers))
+        Array.isArray(y) ? e.line(`'${f}': '${y.join(", ")}',`) : e.line(`'${f}': '${y}',`);
+      e.outdent(), e.line("};"), e.line();
+    }
+    let s = "null";
+    o && (a(r, "json") || !r && $(n.body) ? (e.line("var body = jsonEncode("), e.json(n.body), e.append(");"), s = "body", e.line()) : j(n.body) && (e.line(`var body = '${n.body.replace(/'/g, "\\'")}';`), s = "body", e.line()));
+    const l = n.method.toLowerCase(), d = n.headers && Object.keys(n.headers).length > 0;
+    return l === "get" ? e.line(`var response = await http.get(url${d ? ", headers: headers" : ""});`) : l === "post" ? e.line(
+      `var response = await http.post(url${d ? ", headers: headers" : ""}${s !== "null" ? ", body: " + s : ""});`
+    ) : l === "put" ? e.line(
+      `var response = await http.put(url${d ? ", headers: headers" : ""}${s !== "null" ? ", body: " + s : ""});`
+    ) : l === "delete" ? e.line(
+      `var response = await http.delete(url${d ? ", headers: headers" : ""}${s !== "null" ? ", body: " + s : ""});`
+    ) : l === "patch" && e.line(
+      `var response = await http.patch(url${d ? ", headers: headers" : ""}${s !== "null" ? ", body: " + s : ""});`
+    ), e.line(), e.line("print(response.body);"), i.handleErrors && (e.outdent(), e.line("} catch (e) {"), e.indent(), e.line('print("Error: $e");'), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.output();
+  }
+}, _ = {
   default: !0,
   language: "go",
   client: "http",
@@ -289,38 +318,99 @@ const q = {
         separator: ": ",
         endComma: !1
       }
-    }), r = b(n.headers), o = k(n.body), t = o && (a(r, "json") || !r && g(n.body)), s = o && a(r, "form"), l = t || s;
+    }), o = p(n.headers), r = m(n.body), t = r && (a(o, "json") || !o && $(n.body)), s = r && a(o, "form"), l = t || s;
     e.line("package main"), e.line(), e.line("import ("), e.indent(), e.line('"fmt"'), e.line('"net/http"'), e.line('"io"'), l && e.line('"bytes"'), t && e.line('"encoding/json"'), s && e.line('"net/url"'), i.handleErrors && e.line('"log"'), e.outdent(), e.line(")"), e.line(), e.line("func main() {"), e.indent(), e.line(`url := "${n.url}"`), e.line();
     let d = "nil";
     if (t)
       e.line("jsonBodyMap := "), e.json(n.body), i.handleErrors ? (e.line("jsonBodyBytes, err := json.Marshal(jsonBodyMap)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("jsonBodyBytes, _ := json.Marshal(jsonBodyMap)"), d = "bytes.NewBuffer(jsonBodyBytes)", e.line();
     else if (s) {
       e.line("formData := url.Values{}");
-      for (const [f, p] of Object.entries(n.body))
-        e.line(`formData.Set("${f}", "${p}")`);
+      for (const [f, y] of Object.entries(n.body))
+        e.line(`formData.Set("${f}", "${y}")`);
       e.line("formBody := formData.Encode()"), d = "bytes.NewBufferString(formBody)", e.line();
-    } else o && typeof n.body == "string" && (d = `bytes.NewBufferString("${n.body.replace(/"/g, '\\"')}")`);
+    } else r && typeof n.body == "string" && (d = `bytes.NewBufferString("${n.body.replace(/"/g, '\\"')}")`);
     if (i.handleErrors ? (e.line(`req, err := http.NewRequest("${n.method.toUpperCase()}", url, ${d})`), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}"), e.line()) : (e.line(`req, _ := http.NewRequest("${n.method.toUpperCase()}", url, ${d})`), e.line()), n.headers) {
-      for (const [f, p] of Object.entries(n.headers))
-        if (Array.isArray(p))
-          for (const y of p)
-            e.line(`req.Header.Add("${f}", "${y}")`);
+      for (const [f, y] of Object.entries(n.headers))
+        if (Array.isArray(y))
+          for (const b of y)
+            e.line(`req.Header.Add("${f}", "${b}")`);
         else
-          e.line(`req.Header.Set("${f}", "${p}")`);
+          e.line(`req.Header.Set("${f}", "${y}")`);
       e.line();
     }
     if (n.cookies) {
-      for (const [f, p] of Object.entries(n.cookies))
-        if (Array.isArray(p))
-          for (const y of p)
-            e.line(`req.AddCookie(&http.Cookie{Name: "${f}", Value: "${y}"})`);
+      for (const [f, y] of Object.entries(n.cookies))
+        if (Array.isArray(y))
+          for (const b of y)
+            e.line(`req.AddCookie(&http.Cookie{Name: "${f}", Value: "${b}"})`);
         else
-          e.line(`req.AddCookie(&http.Cookie{Name: "${f}", Value: "${p}"})`);
+          e.line(`req.AddCookie(&http.Cookie{Name: "${f}", Value: "${y}"})`);
       e.line();
     }
     return i.handleErrors ? (e.line("resp, err := http.DefaultClient.Do(req)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("resp, _ := http.DefaultClient.Do(req)"), e.line("defer resp.Body.Close()"), e.line(), i.handleErrors ? (e.line("body, err := io.ReadAll(resp.Body)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("body, _ := io.ReadAll(resp.Body)"), e.line(), e.line("fmt.Println(string(body))"), e.outdent(), e.line("}"), e.output();
   }
-}, S = {
+}, v = {
+  default: !0,
+  language: "java",
+  client: "httpurlconnection",
+  generate(i, n) {
+    const e = new c({
+      indent: i.indent || "  ",
+      join: i.join || `
+`
+    }), o = m(n.body), r = p(n.headers);
+    if (e.line("import java.io.*;"), e.line("import java.net.*;"), o && (a(r, "json") || !r && $(n.body)) && e.line("import org.json.JSONObject;"), e.line(), e.line("public class HttpExample {"), e.indent(), e.line("public static void main(String[] args) {"), e.indent(), i.handleErrors && (e.line("try {"), e.indent()), e.line(`URL url = new URL("${n.url}");`), e.line("HttpURLConnection conn = (HttpURLConnection) url.openConnection();"), e.line(`conn.setRequestMethod("${n.method.toUpperCase()}");`), n.headers && Object.keys(n.headers).length > 0) {
+      e.line();
+      for (const [t, s] of Object.entries(n.headers))
+        Array.isArray(s) ? s.forEach((l) => e.line(`conn.setRequestProperty("${t}", "${l}");`)) : e.line(`conn.setRequestProperty("${t}", "${s}");`);
+    }
+    if (n.cookies && Object.keys(n.cookies).length > 0) {
+      e.line();
+      const t = Object.entries(n.cookies).map(([s, l]) => `${s}=${l}`).join("; ");
+      e.line(`conn.setRequestProperty("Cookie", "${t}");`);
+    }
+    if (o)
+      if (e.line(), e.line("conn.setDoOutput(true);"), e.line(), a(r, "json") || !r && $(n.body)) {
+        e.line("JSONObject jsonBody = new JSONObject();");
+        for (const [t, s] of Object.entries(n.body))
+          typeof s == "string" ? e.line(`jsonBody.put("${t}", "${s}");`) : typeof s == "number" || typeof s == "boolean" ? e.line(`jsonBody.put("${t}", ${s});`) : s === null ? e.line(`jsonBody.put("${t}", JSONObject.NULL);`) : e.line(`jsonBody.put("${t}", ${JSON.stringify(s)});`);
+        e.line(), e.line("try (OutputStream os = conn.getOutputStream()) {"), e.indent(), e.line('byte[] input = jsonBody.toString().getBytes("utf-8");'), e.line("os.write(input, 0, input.length);"), e.outdent(), e.line("}");
+      } else j(n.body) && (e.line("try (OutputStream os = conn.getOutputStream()) {"), e.indent(), e.line(`byte[] input = "${n.body.replace(/"/g, '\\"')}".getBytes("utf-8");`), e.line("os.write(input, 0, input.length);"), e.outdent(), e.line("}"));
+    return e.line(), e.line("int responseCode = conn.getResponseCode();"), e.line("BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));"), e.line("String inputLine;"), e.line("StringBuilder response = new StringBuilder();"), e.line(), e.line("while ((inputLine = in.readLine()) != null) {"), e.indent(), e.line("response.append(inputLine);"), e.outdent(), e.line("}"), e.line("in.close();"), e.line(), e.line("System.out.println(response.toString());"), i.handleErrors && (e.outdent(), e.line("} catch (Exception e) {"), e.indent(), e.line("e.printStackTrace();"), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.output();
+  }
+}, B = {
+  language: "java",
+  client: "okhttp",
+  generate(i, n) {
+    const e = new c({
+      indent: i.indent || "  ",
+      join: i.join || `
+`
+    }), o = m(n.body), r = p(n.headers), t = o && (a(r, "json") || !r && $(n.body));
+    if (e.line("import okhttp3.*;"), t && e.line("import org.json.JSONObject;"), r && a(r, "form") && e.line("import java.util.*;"), e.line(), e.line("public class HttpExample {"), e.indent(), e.line("public static void main(String[] args) {"), e.indent(), i.handleErrors && (e.line("try {"), e.indent()), e.line("OkHttpClient client = new OkHttpClient();"), e.line(), o) {
+      if (a(r, "form")) {
+        e.line("FormBody.Builder formBuilder = new FormBody.Builder();");
+        for (const [s, l] of Object.entries(n.body))
+          e.line(`formBuilder.add("${s}", "${l}");`);
+        e.line("RequestBody body = formBuilder.build();");
+      } else if (t) {
+        e.line("JSONObject jsonBody = new JSONObject();");
+        for (const [s, l] of Object.entries(n.body))
+          typeof l == "string" ? e.line(`jsonBody.put("${s}", "${l}");`) : typeof l == "number" || typeof l == "boolean" ? e.line(`jsonBody.put("${s}", ${l});`) : l === null ? e.line(`jsonBody.put("${s}", JSONObject.NULL);`) : e.line(`jsonBody.put("${s}", ${JSON.stringify(l)});`);
+        e.line("RequestBody body = RequestBody.create("), e.indent(), e.line("jsonBody.toString(),"), e.line('MediaType.parse("application/json; charset=utf-8")'), e.outdent(), e.line(");");
+      } else j(n.body) && (e.line("RequestBody body = RequestBody.create("), e.indent(), e.line(`"${n.body.replace(/"/g, '\\"')}",`), e.line(`MediaType.parse("${r || "text/plain"}; charset=utf-8")`), e.outdent(), e.line(");"));
+      e.line();
+    }
+    if (e.line("Request.Builder requestBuilder = new Request.Builder()"), e.indent(), e.line(`.url("${n.url}")`), o ? e.line('.method("' + n.method.toUpperCase() + '", body)') : e.line('.method("' + n.method.toUpperCase() + '", null)'), n.headers && Object.keys(n.headers).length > 0)
+      for (const [s, l] of Object.entries(n.headers))
+        Array.isArray(l) ? l.forEach((d) => e.line(`.addHeader("${s}", "${d}")`)) : e.line(`.addHeader("${s}", "${l}")`);
+    if (n.cookies && Object.keys(n.cookies).length > 0) {
+      const s = Object.entries(n.cookies).map(([l, d]) => `${l}=${d}`).join("; ");
+      e.line(`.addHeader("Cookie", "${s}")`);
+    }
+    return e.line(".build();"), e.outdent(), e.line(), e.line("Request request = requestBuilder;"), e.line("Response response = client.newCall(request).execute();"), e.line(), e.line("System.out.println(response.body().string());"), i.handleErrors && (e.outdent(), e.line("} catch (Exception e) {"), e.indent(), e.line("e.printStackTrace();"), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.output();
+  }
+}, L = {
   default: !0,
   language: "javascript",
   client: "fetch",
@@ -337,9 +427,9 @@ const q = {
       e.outdent(), e.line("},");
     }
     n.body && (e.line("body: "), e.json(n.body)), e.outdent(), e.line("})");
-    const { contentType: r, wasInferred: o } = T(n.headers);
+    const { contentType: o, wasInferred: r } = q(n.headers);
     let t = "text()";
-    return (!o || r !== "application/octet-stream") && (a(r, "json") ? t = "json()" : a(r, "xml") || a(r, "text") ? t = "text()" : a(r, "blob") && (t = "blob()")), o && t === "json()" && e.line(`// Response Content-Type inferred as: ${r}`), i.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("if (!response.ok) {"), e.indent(), e.line('throw new Error("Network response was not ok");'), e.outdent(), e.line("}"), e.line(`return response.${t};`), e.outdent(), e.line("})"), e.line(".then(data => console.log(data))"), e.line('.catch(error => console.error("There was a problem with the fetch operation:", error));')) : (e.line(`.then(response => response.${t})`), e.line(".then(data => console.log(data));")), e.output();
+    return (!r || o !== "application/octet-stream") && (a(o, "json") ? t = "json()" : a(o, "xml") || a(o, "text") ? t = "text()" : a(o, "blob") && (t = "blob()")), r && t === "json()" && e.line(`// Response Content-Type inferred as: ${o}`), i.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("if (!response.ok) {"), e.indent(), e.line('throw new Error("Network response was not ok");'), e.outdent(), e.line("}"), e.line(`return response.${t};`), e.outdent(), e.line("})"), e.line(".then(data => console.log(data))"), e.line('.catch(error => console.error("There was a problem with the fetch operation:", error));')) : (e.line(`.then(response => response.${t})`), e.line(".then(data => console.log(data));")), e.output();
   }
 }, U = {
   language: "javascript",
@@ -352,14 +442,14 @@ const q = {
     });
     if (e.line("axios({"), e.indent(), e.line(`method: "${n.method.toLowerCase()}",`), e.line(`url: "${n.url}",`), n.headers) {
       e.line("headers: {"), e.indent();
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? e.line(`"${r}": "${o.join(", ")}",`) : e.line(`"${r}": "${o}",`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? e.line(`"${o}": "${r.join(", ")}",`) : e.line(`"${o}": "${r}",`);
       e.outdent(), e.line("},");
     }
     if (n.cookies) {
       e.line("cookies: {"), e.indent();
-      for (const [r, o] of Object.entries(n.cookies))
-        e.line(`"${r}": "${o}",`);
+      for (const [o, r] of Object.entries(n.cookies))
+        e.line(`"${o}": "${r}",`);
       e.outdent(), e.line("},");
     }
     return n.body && (e.line("data: "), e.json(n.body)), e.outdent(), e.line("})"), i.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("console.log(response.data);"), e.outdent(), e.line("})"), e.line(".catch(error => {"), e.indent(), e.line('console.error("There was an error:", error);'), e.outdent(), e.line("});")) : e.line(".then(response => console.log(response.data));"), e.output();
@@ -375,13 +465,44 @@ const q = {
     });
     if (e.line("$.ajax({"), e.indent(), e.line(`url: "${n.url}",`), e.line(`type: "${n.method.toUpperCase()}",`), n.headers) {
       e.line("headers: {"), e.indent();
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? e.line(`"${r}": "${o.join(", ")}",`) : e.line(`"${r}": "${o}",`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? e.line(`"${o}": "${r.join(", ")}",`) : e.line(`"${o}": "${r}",`);
       e.outdent(), e.line("},");
     }
     return n.body && (e.line("data: "), e.json(n.body), e.append(","), e.line('contentType: "application/json",')), e.line("success: function(data) {"), e.indent(), e.line("console.log(data);"), e.outdent(), e.line("},"), i.handleErrors && (e.line("error: function(jqXHR, textStatus, errorThrown) {"), e.indent(), e.line('console.error("Request failed:", textStatus, errorThrown);'), e.outdent(), e.line("},")), e.outdent(), e.line("});"), e.output();
   }
-}, L = {
+}, x = {
+  default: !0,
+  language: "kotlin",
+  client: "ktor",
+  generate(i, n) {
+    const e = new c({
+      indent: i.indent || "  ",
+      join: i.join || `
+`
+    }), o = m(n.body), r = p(n.headers);
+    if (e.line("import io.ktor.client.*"), e.line("import io.ktor.client.engine.cio.*"), e.line("import io.ktor.client.request.*"), e.line("import io.ktor.client.statement.*"), o && (a(r, "json") || !r && $(n.body)) && (e.line("import io.ktor.http.*"), e.line("import kotlinx.serialization.json.*")), r && a(r, "form") && e.line("import io.ktor.http.*"), e.line(), e.line("suspend fun main() {"), e.indent(), i.handleErrors && (e.line("try {"), e.indent()), e.line("val client = HttpClient(CIO)"), e.line(), e.line(`val response: HttpResponse = client.${n.method.toLowerCase()} {`), e.indent(), e.line(`url("${n.url}")`), n.headers && Object.keys(n.headers).length > 0)
+      for (const [t, s] of Object.entries(n.headers))
+        Array.isArray(s) ? s.forEach((l) => e.line(`header("${t}", "${l}")`)) : e.line(`header("${t}", "${s}")`);
+    if (n.cookies && Object.keys(n.cookies).length > 0) {
+      const t = Object.entries(n.cookies).map(([s, l]) => `${s}=${l}`).join("; ");
+      e.line(`header("Cookie", "${t}")`);
+    }
+    if (o)
+      if (a(r, "form")) {
+        e.line("setBody("), e.indent(), e.line("FormDataContent(Parameters.build {"), e.indent();
+        for (const [t, s] of Object.entries(n.body))
+          e.line(`append("${t}", "${s}")`);
+        e.outdent(), e.line("})"), e.outdent(), e.line(")");
+      } else if (a(r, "json") || !r && $(n.body)) {
+        e.line("contentType(ContentType.Application.Json)"), e.line("setBody("), e.indent(), e.line("buildJsonObject {"), e.indent();
+        for (const [t, s] of Object.entries(n.body))
+          typeof s == "string" ? e.line(`put("${t}", "${s}")`) : typeof s == "number" ? e.line(`put("${t}", ${s})`) : typeof s == "boolean" ? e.line(`put("${t}", ${s})`) : s === null ? e.line(`put("${t}", JsonNull)`) : e.line(`put("${t}", JsonPrimitive(${JSON.stringify(s)}))`);
+        e.outdent(), e.line("}"), e.outdent(), e.line(")");
+      } else j(n.body) && e.line(`setBody("${n.body.replace(/"/g, '\\"')}")`);
+    return e.outdent(), e.line("}"), e.line(), e.line("println(response.bodyAsText())"), e.line("client.close()"), i.handleErrors && (e.outdent(), e.line("} catch (e: Exception) {"), e.indent(), e.line('println("Error: ${e.message}")'), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.output();
+  }
+}, H = {
   language: "node",
   client: "http",
   generate(i, n) {
@@ -391,8 +512,8 @@ const q = {
 `
     });
     e.line('const http = require("http");'), e.line();
-    const { hostname: r, path: o } = C(n.url);
-    if (e.line("const options = {"), e.indent(), e.line(`method: "${n.method.toUpperCase()}",`), e.line(`hostname: "${r}",`), e.line(`path: "${o}",`), n.headers || n.cookies) {
+    const { hostname: o, path: r } = C(n.url);
+    if (e.line("const options = {"), e.indent(), e.line(`method: "${n.method.toUpperCase()}",`), e.line(`hostname: "${o}",`), e.line(`path: "${r}",`), n.headers || n.cookies) {
       if (e.line("headers: {"), e.indent(), n.headers)
         for (const [t, s] of Object.entries(n.headers))
           Array.isArray(s) ? e.line(`"${t}": "${s.join(", ")}",`) : e.line(`"${t}": "${s}",`);
@@ -404,7 +525,7 @@ const q = {
     }
     return e.outdent(), e.line("};"), e.line(), e.line("const req = http.request(options, (res) => {"), e.indent(), e.line('let data = "";'), e.line(), e.line('res.on("data", (chunk) => {'), e.indent(), e.line("data += chunk;"), e.outdent(), e.line("});"), e.line(), e.line('res.on("end", () => {'), e.indent(), e.line("console.log(data);"), e.outdent(), e.line("});"), e.outdent(), e.line("});"), i.handleErrors && (e.line(), e.line('req.on("error", (error) => {'), e.indent(), e.line("console.error(error);"), e.outdent(), e.line("});")), e.line(), n.body && (e.line("req.write("), e.json(n.body), e.append(");")), e.line("req.end();"), e.output();
   }
-}, x = {
+}, N = {
   language: "node",
   client: "fetch",
   generate(i, n) {
@@ -420,11 +541,11 @@ const q = {
       e.outdent(), e.line("},");
     }
     n.body && (e.line("body: "), e.json(n.body)), e.outdent(), e.line("})");
-    const r = b(n.headers);
-    let o = "text()";
-    return a(r, "json") ? o = "json()" : a(r, "xml") || a(r, "text") ? o = "text()" : a(r, "blob") && (o = "blob()"), i.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("if (!response.ok) {"), e.indent(), e.line('throw new Error("response not ok");'), e.outdent(), e.line("}"), e.line(`return response.${o};`), e.outdent(), e.line("})"), e.line(".then(data => console.log(data))"), e.line('.catch(error => console.error("error:", error));')) : (e.line(`.then(response => response.${o})`), e.line(".then(data => console.log(data))")), e.output();
+    const o = p(n.headers);
+    let r = "text()";
+    return a(o, "json") ? r = "json()" : a(o, "xml") || a(o, "text") ? r = "text()" : a(o, "blob") && (r = "blob()"), i.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("if (!response.ok) {"), e.indent(), e.line('throw new Error("response not ok");'), e.outdent(), e.line("}"), e.line(`return response.${r};`), e.outdent(), e.line("})"), e.line(".then(data => console.log(data))"), e.line('.catch(error => console.error("error:", error));')) : (e.line(`.then(response => response.${r})`), e.line(".then(data => console.log(data))")), e.output();
   }
-}, v = {
+}, J = {
   default: !0,
   language: "php",
   client: "curl",
@@ -436,31 +557,31 @@ const q = {
     });
     if (e.line("<?php"), e.line(), e.line("$ch = curl_init();"), e.line(), e.line(`curl_setopt($ch, CURLOPT_URL, "${n.url}");`), e.line("curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);"), e.line(`curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "${n.method.toUpperCase()}");`), n.headers) {
       e.line(), e.line("$headers = [];");
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? o.forEach((t) => e.line(`$headers[] = "${r}: ${t}";`)) : e.line(`$headers[] = "${r}: ${o}";`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? r.forEach((t) => e.line(`$headers[] = "${o}: ${t}";`)) : e.line(`$headers[] = "${o}: ${r}";`);
       e.line("curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);");
     }
     if (n.cookies) {
       e.line(), e.line("$cookies = [];");
-      for (const [r, o] of Object.entries(n.cookies))
-        e.line(`$cookies[] = "${r}=${o}";`);
+      for (const [o, r] of Object.entries(n.cookies))
+        e.line(`$cookies[] = "${o}=${r}";`);
       e.line('curl_setopt($ch, CURLOPT_COOKIE, implode("; ", $cookies));');
     }
     if (n.body) {
       e.line();
-      const r = b(n.headers);
-      if (a(r, "form"))
+      const o = p(n.headers);
+      if (a(o, "form"))
         e.line("$postData = "), e.json(n.body), e.append(";"), e.line("curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));");
-      else if (a(r, "json") || !r && g(n.body))
+      else if (a(o, "json") || !o && $(n.body))
         e.line("curl_setopt($ch, CURLOPT_POSTFIELDS,"), e.line("<<<JSON"), e.line(), e.json(n.body), e.line("JSON"), e.line(");");
-      else if (h(n.body)) {
-        const o = n.body.replace(/'/g, "\\'");
-        e.line(`curl_setopt($ch, CURLOPT_POSTFIELDS, '${o}');`);
+      else if (j(n.body)) {
+        const r = n.body.replace(/'/g, "\\'");
+        e.line(`curl_setopt($ch, CURLOPT_POSTFIELDS, '${r}');`);
       }
     }
     return e.line(), e.line("$response = curl_exec($ch);"), i.handleErrors && (e.line("if (curl_errno($ch)) {"), e.indent(), e.line('echo "Error: " . curl_error($ch);'), e.outdent(), e.line("}")), e.line("curl_close($ch);"), e.line(), e.line("echo $response;"), e.output();
   }
-}, H = {
+}, D = {
   language: "php",
   client: "guzzle",
   generate(i, n) {
@@ -480,26 +601,26 @@ const q = {
     if (e.line("<?php"), e.line(), e.line("require 'vendor/autoload.php';"), e.line(), e.line("use GuzzleHttp\\Client;"), i.handleErrors && e.line("use GuzzleHttp\\Exception\\RequestException;"), e.line(), i.handleErrors && (e.line("try {"), e.indent()), e.line("$client = new Client();"), e.line("$response = $client->request("), e.indent(), e.line('"' + n.method.toUpperCase() + '",'), e.line('"' + n.url + '",'), n.headers || n.cookies || n.body) {
       if (e.line("["), n.headers) {
         e.indent(), e.line('"headers" => ['), e.indent();
-        for (const [r, o] of Object.entries(n.headers))
-          Array.isArray(o) ? o.forEach((t) => e.line(`"${r}" => "${t}",`)) : e.line(`"${r}" => "${o}",`);
+        for (const [o, r] of Object.entries(n.headers))
+          Array.isArray(r) ? r.forEach((t) => e.line(`"${o}" => "${t}",`)) : e.line(`"${o}" => "${r}",`);
         e.outdent(), e.line("],"), e.outdent();
       }
       if (n.cookies) {
         e.indent(), e.line('"cookies" => ['), e.indent();
-        for (const [r, o] of Object.entries(n.cookies))
-          e.line(`"${r}" => "${o}",`);
+        for (const [o, r] of Object.entries(n.cookies))
+          e.line(`"${o}" => "${r}",`);
         e.outdent(), e.line("],"), e.outdent();
       }
       if (n.body) {
         e.indent();
-        const r = b(n.headers);
-        a(r, "form") ? (e.line('"form_params" => '), e.json(n.body), e.append(",")) : (e.line('"json" => '), e.json(n.body), e.append(",")), e.outdent();
+        const o = p(n.headers);
+        a(o, "form") ? (e.line('"form_params" => '), e.json(n.body), e.append(",")) : (e.line('"json" => '), e.json(n.body), e.append(",")), e.outdent();
       }
       e.line("],");
     }
     return e.outdent(), e.line(");"), e.line(), e.line("echo $response->getBody();"), i.handleErrors && (e.outdent(), e.line("} catch (RequestException $e) {"), e.indent(), e.line('echo "Error: " . $e->getMessage();'), e.outdent(), e.line("}")), e.output();
   }
-}, B = {
+}, F = {
   default: !0,
   language: "python",
   client: "http",
@@ -508,37 +629,37 @@ const q = {
       indent: i.indent || "  ",
       join: i.join || `
 `
-    }), r = n.method.toUpperCase(), o = r !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, s = n.cookies && Object.keys(n.cookies).length > 0;
+    }), o = n.method.toUpperCase(), r = o !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, s = n.cookies && Object.keys(n.cookies).length > 0;
     let l = [];
     e.line("import http.client"), e.line("import json"), e.line(), i.handleErrors && (e.line("try:"), e.indent());
-    const { hostname: d, path: f, port: p } = C(n.url);
-    if (e.line(`conn = http.client.HTTPSConnection("${d}", ${p})`), t) {
+    const { hostname: d, path: f, port: y } = C(n.url);
+    if (e.line(`conn = http.client.HTTPSConnection("${d}", ${y})`), t) {
       e.line(), l.push("headers"), e.line("headers = {"), e.indent();
-      for (const [y, j] of Object.entries(n.headers))
-        Array.isArray(j) ? e.line(`"${y}": "${j.join(", ")}",`) : e.line(`"${y}": "${j}",`);
+      for (const [b, g] of Object.entries(n.headers))
+        Array.isArray(g) ? e.line(`"${b}": "${g.join(", ")}",`) : e.line(`"${b}": "${g}",`);
       e.outdent(), e.line("}");
     }
     if (s) {
       e.line(), l.push("cookies"), e.line("cookies = {"), e.indent();
-      for (const [y, j] of Object.entries(n.cookies))
-        e.line(`"${y}": "${j}",`);
+      for (const [b, g] of Object.entries(n.cookies))
+        e.line(`"${b}": "${g}",`);
       e.outdent(), e.line("}");
     }
-    if (o) {
+    if (r) {
       e.line();
-      const y = b(n.headers);
-      a(y, "form") ? (e.line("from urllib.parse import urlencode"), e.line("payload_dict = "), e.json(n.body), e.line("payload = urlencode(payload_dict)")) : a(y, "json") || !y && g(n.body) ? (e.line("payload_dict = "), e.json(n.body), e.line("payload = json.dumps(payload_dict)")) : h(n.body) && e.line(`payload = "${n.body.replace(/"/g, '\\"')}"`);
+      const b = p(n.headers);
+      a(b, "form") ? (e.line("from urllib.parse import urlencode"), e.line("payload_dict = "), e.json(n.body), e.line("payload = urlencode(payload_dict)")) : a(b, "json") || !b && $(n.body) ? (e.line("payload_dict = "), e.json(n.body), e.line("payload = json.dumps(payload_dict)")) : j(n.body) && e.line(`payload = "${n.body.replace(/"/g, '\\"')}"`);
     }
-    if (e.line(), o) {
-      const y = l.filter((j) => j !== "payload");
+    if (e.line(), r) {
+      const b = l.filter((g) => g !== "payload");
       e.line(
-        `conn.request("${r}", "${f}", payload` + (y.length > 0 ? `, ${y.join(", ")}` : "") + ")"
+        `conn.request("${o}", "${f}", payload` + (b.length > 0 ? `, ${b.join(", ")}` : "") + ")"
       );
     } else
-      e.line(`conn.request("${r}", "${f}"` + (l.length > 0 ? `, ${l.join(", ")}` : "") + ")");
+      e.line(`conn.request("${o}", "${f}"` + (l.length > 0 ? `, ${l.join(", ")}` : "") + ")");
     return e.line("res = conn.getresponse()"), e.line("data = res.read()"), e.line(), e.line('print(data.decode("utf-8"))'), i.handleErrors && (e.outdent(), e.line("except Exception as e:"), e.indent(), e.line('print(f"Error: {e}")'), e.outdent()), e.output();
   }
-}, D = {
+}, M = {
   language: "python",
   client: "requests",
   generate(i, n) {
@@ -546,7 +667,7 @@ const q = {
       indent: i.indent || "  ",
       join: i.join || `
 `
-    }), o = n.method.toUpperCase() !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, s = n.cookies && Object.keys(n.cookies).length > 0;
+    }), r = n.method.toUpperCase() !== "GET" && n.body, t = n.headers && Object.keys(n.headers).length > 0, s = n.cookies && Object.keys(n.cookies).length > 0;
     let l = [];
     if (e.line("import requests"), e.line(), i.handleErrors && (e.line("try:"), e.indent()), e.line('url = "' + n.url + '"'), t) {
       e.line(), l.push("headers=headers"), e.line("headers = {"), e.indent();
@@ -560,16 +681,16 @@ const q = {
         e.line(`"${d}": "${f}"`), Object.keys(n.cookies).indexOf(d) !== Object.keys(n.cookies).length - 1 && e.append(",");
       e.outdent(), e.line("}");
     }
-    if (o) {
+    if (r) {
       e.line();
-      const d = b(n.headers);
+      const d = p(n.headers);
       a(d, "form") ? (l.push("data=form_data"), e.line("form_data = "), e.json(n.body)) : (l.push("json=json_data"), e.line("json_data = "), e.json(n.body));
     }
     return e.line(), e.line(
       "response = requests." + n.method.toLowerCase() + "(url" + (l.length > 0 ? `, ${l.join(", ")}` : "") + ")"
     ), e.line("print(response.text)"), i.handleErrors && (e.outdent(), e.line("except requests.exceptions.RequestException as e:"), e.indent(), e.line('print(f"Error: {e}")'), e.outdent()), e.output();
   }
-}, N = {
+}, I = {
   default: !0,
   language: "ruby",
   client: "nethttp",
@@ -580,19 +701,19 @@ const q = {
 `
     });
     if (e.line('require "net/http"'), e.line('require "uri"'), e.line(), i.handleErrors && (e.line("begin"), e.indent()), e.line('uri = URI.parse("' + n.url + '")'), n.method.toUpperCase() === "GET" ? e.line("request = Net::HTTP::Get.new(uri)") : n.method.toUpperCase() === "POST" ? e.line("request = Net::HTTP::Post.new(uri)") : n.method.toUpperCase() === "PUT" ? e.line("request = Net::HTTP::Put.new(uri)") : n.method.toUpperCase() === "DELETE" ? e.line("request = Net::HTTP::Delete.new(uri)") : e.line('request = Net::HTTP::GenericRequest.new("' + n.method.toUpperCase() + '", uri.path, nil, nil)'), n.headers && Object.keys(n.headers).length > 0)
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? o.forEach((t) => e.line(`request["${r}"] = "${t}"`)) : e.line(`request["${r}"] = "${o}"`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? r.forEach((t) => e.line(`request["${o}"] = "${t}"`)) : e.line(`request["${o}"] = "${r}"`);
     if (n.cookies && Object.keys(n.cookies).length > 0) {
-      const r = Object.entries(n.cookies).map(([o, t]) => `${o}=${t}`).join("; ");
-      e.line(`request["Cookie"] = "${r}"`);
+      const o = Object.entries(n.cookies).map(([r, t]) => `${r}=${t}`).join("; ");
+      e.line(`request["Cookie"] = "${o}"`);
     }
     if (n.body) {
-      const r = b(n.headers);
-      a(r, "json") || !r && g(n.body) ? (e.line("request.body = "), e.json(n.body), e.append(".to_json")) : h(n.body) ? e.line(`request.body = "${n.body.replace(/"/g, '\\"')}"`) : (e.line("request.body = "), e.json(n.body), e.append(".to_json"));
+      const o = p(n.headers);
+      a(o, "json") || !o && $(n.body) ? (e.line("request.body = "), e.json(n.body), e.append(".to_json")) : j(n.body) ? e.line(`request.body = "${n.body.replace(/"/g, '\\"')}"`) : (e.line("request.body = "), e.json(n.body), e.append(".to_json"));
     }
     return e.line(), e.line('response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|'), e.indent(), e.line("http.request(request)"), e.outdent(), e.line("end"), e.line(), e.line("puts response.body"), i.handleErrors && (e.outdent(), e.line("rescue StandardError => e"), e.indent(), e.line('puts "Error: #{e.message}"'), e.outdent(), e.line("end")), e.output();
   }
-}, F = {
+}, G = {
   language: "ruby",
   client: "faraday",
   generate(i, n) {
@@ -603,22 +724,22 @@ const q = {
     });
     if (e.line('require "faraday"'), e.line(), i.handleErrors && (e.line("begin"), e.indent()), e.line('conn = Faraday.new(url: "' + n.url + '") do |f|'), e.indent(), e.line("f.adapter Faraday.default_adapter"), e.outdent(), e.line("end"), e.line(), e.line("response = conn." + n.method.toLowerCase() + " do |req|"), e.indent(), e.line('req.url "' + n.url + '"'), n.headers) {
       e.line();
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? o.forEach((t) => e.line(`req.headers["${r}"] = "${t}"`)) : e.line(`req.headers["${r}"] = "${o}"`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? r.forEach((t) => e.line(`req.headers["${o}"] = "${t}"`)) : e.line(`req.headers["${o}"] = "${r}"`);
     }
     if (n.cookies) {
       e.line();
-      const r = Object.entries(n.cookies).map(([o, t]) => `${o}=${t}`).join("; ");
-      e.line(`req.headers["Cookie"] = "${r}"`);
+      const o = Object.entries(n.cookies).map(([r, t]) => `${r}=${t}`).join("; ");
+      e.line(`req.headers["Cookie"] = "${o}"`);
     }
     if (n.body) {
       e.line();
-      const r = b(n.headers);
-      a(r, "json") || !r && g(n.body) ? (e.line("req.body = "), e.json(n.body), e.append(".to_json")) : h(n.body) ? e.line(`req.body = "${n.body.replace(/"/g, '\\"')}"`) : (e.line("req.body = "), e.json(n.body), e.append(".to_json"));
+      const o = p(n.headers);
+      a(o, "json") || !o && $(n.body) ? (e.line("req.body = "), e.json(n.body), e.append(".to_json")) : j(n.body) ? e.line(`req.body = "${n.body.replace(/"/g, '\\"')}"`) : (e.line("req.body = "), e.json(n.body), e.append(".to_json"));
     }
     return e.outdent(), e.line("end"), e.line(), e.line("puts response.body"), i.handleErrors && (e.outdent(), e.line("rescue Faraday::Error => e"), e.indent(), e.line('puts "Error: #{e.message}"'), e.outdent(), e.line("end")), e.output();
   }
-}, M = {
+}, z = {
   language: "rust",
   client: "reqwest",
   generate(i, n) {
@@ -628,18 +749,18 @@ const q = {
 `
     });
     if (e.line("use reqwest::blocking::Client;"), e.line("use std::error::Error;"), e.line(), e.line("fn main() -> Result<(), Box<dyn Error>> {"), e.indent(), e.line("let client = Client::new();"), e.line(), e.line("let res = client.request(reqwest::Method::" + n.method.toUpperCase() + ', "' + n.url + '")'), e.indent(), n.headers)
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? o.forEach((t) => e.line(`.header("${r}", "${t}")`)) : e.line(`.header("${r}", "${o}")`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? r.forEach((t) => e.line(`.header("${o}", "${t}")`)) : e.line(`.header("${o}", "${r}")`);
     if (n.cookies)
-      for (const [r, o] of Object.entries(n.cookies))
-        Array.isArray(o) ? o.forEach((t) => e.line(`.cookie("${r}", "${t}")`)) : e.line(`.cookie("${r}", "${o}")`);
+      for (const [o, r] of Object.entries(n.cookies))
+        Array.isArray(r) ? r.forEach((t) => e.line(`.cookie("${o}", "${t}")`)) : e.line(`.cookie("${o}", "${r}")`);
     if (n.body) {
-      const r = b(n.headers);
-      a(r, "form") ? (e.line(".form(&"), e.json(n.body), e.append(")")) : a(r, "json") || !r && g(n.body) ? (e.line(".json(&"), e.json(n.body), e.append(")")) : h(n.body) && e.line(`.body("${n.body.replace(/"/g, '\\"')}")`);
+      const o = p(n.headers);
+      a(o, "form") ? (e.line(".form(&"), e.json(n.body), e.append(")")) : a(o, "json") || !o && $(n.body) ? (e.line(".json(&"), e.json(n.body), e.append(")")) : j(n.body) && e.line(`.body("${n.body.replace(/"/g, '\\"')}")`);
     }
     return e.line(".send()?;"), e.outdent(), e.line(), i.handleErrors ? (e.line("if res.status().is_success() {"), e.indent(), e.line('println!("{}", res.text()?);'), e.outdent(), e.line("} else {"), e.indent(), e.line('eprintln!("Request failed with status: {}", res.status());'), e.outdent(), e.line("}")) : e.line('println!("{}", res.text()?);'), e.line("Ok(())"), e.outdent(), e.line("}"), e.output();
   }
-}, I = {
+}, V = {
   default: !0,
   language: "shell",
   client: "curl",
@@ -660,9 +781,9 @@ const q = {
       const t = Object.entries(n.cookies).flatMap(([s, l]) => Array.isArray(l) ? l.map((d) => `${s}=${d}`) : `${s}=${l}`).join("; ");
       e.line(`-b "${t}"`);
     }
-    if (k(n.body)) {
-      const t = b(n.headers);
-      if (a(t, "json") || !t && g(n.body))
+    if (m(n.body)) {
+      const t = p(n.headers);
+      if (a(t, "json") || !t && $(n.body))
         e.line("-d $'"), e.json(n.body), e.append("'");
       else if (a(t, "form")) {
         const s = new URLSearchParams(n.body).toString().replace(/'/g, "'\\''");
@@ -672,10 +793,10 @@ const q = {
         e.line(`-d '${s}'`);
       }
     }
-    let o = e.output();
-    return o = o.replace(/\\\s*$/, "").trim(), o;
+    let r = e.output();
+    return r = r.replace(/\\\s*$/, "").trim(), r;
   }
-}, J = {
+}, K = {
   default: !0,
   language: "swift",
   client: "nsurlsession",
@@ -687,43 +808,47 @@ const q = {
     });
     if (e.line("import Foundation"), e.line(), e.line('let url = URL(string: "' + n.url + '")!'), e.line("var request = URLRequest(url: url)"), e.line('request.httpMethod = "' + n.method.toUpperCase() + '"'), n.headers && Object.keys(n.headers).length > 0) {
       e.line();
-      for (const [r, o] of Object.entries(n.headers))
-        Array.isArray(o) ? o.forEach((t) => e.line(`request.addValue("${t}", forHTTPHeaderField: "${r}")`)) : e.line(`request.addValue("${o}", forHTTPHeaderField: "${r}")`);
+      for (const [o, r] of Object.entries(n.headers))
+        Array.isArray(r) ? r.forEach((t) => e.line(`request.addValue("${t}", forHTTPHeaderField: "${o}")`)) : e.line(`request.addValue("${r}", forHTTPHeaderField: "${o}")`);
     }
     if (n.cookies && Object.keys(n.cookies).length > 0) {
       e.line();
-      for (const [r, o] of Object.entries(n.cookies))
-        e.line(`request.addValue("${r}=${o}", forHTTPHeaderField: "Cookie")`);
+      for (const [o, r] of Object.entries(n.cookies))
+        e.line(`request.addValue("${o}=${r}", forHTTPHeaderField: "Cookie")`);
     }
     return n.body && (e.line(), typeof n.body == "string" ? (e.line(`let bodyString = "${n.body.replace(/"/g, '\\"')}"`), e.line("request.httpBody = bodyString.data(using: .utf8)")) : (e.line("let bodyDict: [String: Any] = "), e.json(n.body), e.line("request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)"))), e.line(), e.line("let task = URLSession.shared.dataTask(with: request) { data, response, error in"), e.indent(), e.line("if let error = error {"), e.indent(), e.line('print("Error: \\(error)")'), e.line("return"), e.outdent(), e.line("}"), e.line(), e.line("if let httpResponse = response as? HTTPURLResponse {"), e.indent(), e.line("if httpResponse.statusCode == 200, let data = data {"), e.indent(), e.line("let responseString = String(data: data, encoding: .utf8)"), e.line('print(responseString ?? "No response data")'), e.outdent(), e.line("} else {"), e.indent(), e.line('print("Request failed with status code: \\(httpResponse.statusCode)")'), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.line(), e.line("task.resume()"), e.output();
   }
 };
-u(q);
-u(_);
+u(T);
 u(R);
-u(A);
 u(S);
+u(A);
+u(_);
+u(v);
+u(B);
+u(L);
 u(U);
 u(P);
-u(L);
 u(x);
-u(v);
 u(H);
-u(B);
-u(D);
 u(N);
+u(J);
+u(D);
 u(F);
 u(M);
 u(I);
-u(J);
+u(G);
+u(z);
+u(V);
+u(K);
 export {
   c as Builder,
-  W as ClearRegistry,
-  G as Clients,
-  K as Generate,
-  Q as IsJsonRequest,
-  z as Languages,
+  Y as ClearRegistry,
+  W as Clients,
+  Z as Generate,
+  ee as IsJsonRequest,
+  Q as Languages,
   u as Register,
-  m as Search,
-  V as SetDefault
+  k as Search,
+  X as SetDefault
 };

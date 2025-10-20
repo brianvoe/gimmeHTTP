@@ -4,6 +4,7 @@
   import type { Config, Http } from '../utils/generate'
   import { Generate, Clients, Search } from '../index'
   import { createHighlighterCore } from 'shiki/core'
+  import { getLogo } from '../logos/index'
 
   import langC from 'shiki/langs/c.mjs'
   import langCsharp from 'shiki/langs/csharp.mjs'
@@ -83,8 +84,7 @@
         themeMode: initialTheme,
         internalLanguage: storedLanguage,
         internalClient: storedClient || '',
-        checkInterval: null as number | null,
-        failedLogos: new Set<string>()
+        checkInterval: null as number | null
       }
     },
     async created() {
@@ -179,22 +179,8 @@
       }
     },
     methods: {
-      logoHref(name: string) {
-        try {
-          // In production, logos are in dist/vue/logos/
-          // In development, they're in src/gimmehttp/logos/
-          // Use new URL with import.meta.url to get proper resolution
-          return new URL(`../logos/${name}.svg`, import.meta.url).href
-        } catch (error) {
-          console.warn(`Failed to load logo: ${name}.svg`, error)
-          return ''
-        }
-      },
-      onLogoError(name: string) {
-        this.failedLogos.add(name)
-      },
-      hasLogoFailed(name: string) {
-        return this.failedLogos.has(name)
+      logoSvg(name: string): string | null {
+        return getLogo(name)
       },
       setLanguage(lang: string | null) {
         this.internalLanguage = lang || defaultLang
@@ -444,6 +430,17 @@
           max-width: 40px;
           background-color: transparent;
           color: var(--border-color);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            width: 100%;
+            height: 100%;
+            max-width: 40px;
+            max-height: 40px;
+            display: block;
+          }
         }
 
         .gh-lang-text {
@@ -557,6 +554,17 @@
               box-shadow var(--timing) ease,
               background-color var(--timing) ease,
               border-color var(--timing) ease;
+
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              width: 100%;
+              height: 100%;
+              max-width: 40px;
+              max-height: 40px;
+              display: block;
+            }
 
             &.gh-selected,
             &:hover {
@@ -675,13 +683,7 @@
       </div>
       <div class="gh-separator" />
       <div class="gh-lang" @click="toggleModal()">
-        <img
-          v-if="!hasLogoFailed(internalLanguage)"
-          :src="logoHref(internalLanguage)"
-          :alt="internalLanguage"
-          class="gh-select"
-          @error="onLogoError(internalLanguage)"
-        />
+        <span v-if="logoSvg(internalLanguage)" v-html="logoSvg(internalLanguage)" class="gh-select"></span>
         <span v-else class="gh-lang-text">{{ internalLanguage }}</span>
         <svg class="gh-arrows" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -704,7 +706,7 @@
                 :key="lang"
                 @click="clickModalLang(lang)"
               >
-                <img v-if="!hasLogoFailed(lang)" :alt="lang" :src="logoHref(lang)" @error="onLogoError(lang)" />
+                <span v-if="logoSvg(lang)" v-html="logoSvg(lang)"></span>
                 <span v-else class="gh-lang-text-modal">{{ lang }}</span>
               </div>
             </div>

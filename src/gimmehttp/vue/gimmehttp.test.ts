@@ -141,7 +141,6 @@ describe('GimmeHttp Vue Component', () => {
       // Check that data properties are initialized
       expect(wrapper.vm.openModal).toBe(false)
       expect(wrapper.vm.openModalContent).toBe(false)
-      expect(wrapper.vm.failedLogos).toBeInstanceOf(Set)
       expect(wrapper.vm.clientsList).toBeInstanceOf(Array)
     })
   })

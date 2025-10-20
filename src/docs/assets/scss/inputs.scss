@@ -1,0 +1,30 @@
+// Form inputs styling
+
+input,
+select,
+textarea {
+  padding: var(--spacing-half);
+  border: solid 1px var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: 'Monaspace Neon', monospace;
+  font-size: 0.9rem;
+  background-color: var(--color-secondary);
+  color: var(--text-color);
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: 'Monaspace Neon', monospace;
+}
+
+label {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
