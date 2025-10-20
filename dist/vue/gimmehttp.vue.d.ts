@@ -35,12 +35,15 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     internalLanguage: string;
     internalClient: string;
     checkInterval: number | null;
+    failedLogos: Set<string>;
 }, {
     languages(): string[];
     clients(): string[];
     shikiTheme(): string;
 }, {
     logoHref(name: string): string;
+    onLogoError(name: string): void;
+    hasLogoFailed(name: string): any;
     setLanguage(lang: string | null): void;
     setClient(client: string | null): void;
     code(): void;
