@@ -172,16 +172,11 @@
       }
 
       .langs {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-        max-width: 800px;
+        display: flex;
+        flex-wrap: wrap;
         justify-content: center;
         gap: var(--spacing-half);
-        width: 100%;
-
-        @media (max-width: 768px) {
-          grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-        }
+        margin: 0 auto;
 
         .lang {
           display: flex;

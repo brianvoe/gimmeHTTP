@@ -1,5 +1,6 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
+  import AdSense from './components/adsense.vue'
 
   const links = [
     { path: '/', label: 'Overview' },
@@ -11,6 +12,9 @@
 
   export default defineComponent({
     name: 'DocsSidebar',
+    components: {
+      AdSense
+    },
     data() {
       return {
         links
@@ -69,5 +73,6 @@
         {{ link.label }}
       </button>
     </nav>
+    <AdSense adSlot="9560132183" />
   </aside>
 </template>

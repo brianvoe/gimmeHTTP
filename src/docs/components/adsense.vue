@@ -8,7 +8,7 @@
     props: {
       adClient: { type: String, default: 'ca-pub-4428453911800052' },
       // your ad unit id (required) default content ad unit id
-      adSlot: { type: String, default: '1270131515', required: true },
+      adSlot: { type: String, default: '', required: true },
       adFormat: { type: String, default: 'auto' },
       fullWidthResponsive: { type: [Boolean, String], default: true }
     },
