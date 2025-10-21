@@ -5,7 +5,6 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   publicDir: false,
   build: {
-    target: 'es2020',
     minify: true,
     lib: {
       entry: path.resolve(__dirname, 'src/gimmehttp/index.ts'),

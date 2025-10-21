@@ -6,7 +6,6 @@ import path from 'path'
 export default defineConfig({
   publicDir: false,
   build: {
-    target: 'es2020',
     minify: true,
     lib: {
       entry: path.resolve(__dirname, 'src/gimmehttp/vue/index.ts'),
@@ -34,7 +33,8 @@ export default defineConfig({
       outDir: 'dist/vue',
       tsconfigPath: 'tsconfig.vue.json',
       insertTypesEntry: true,
-      include: ['src/gimmehttp/vue/**/*.ts', 'src/gimmehttp/vue/**/*.vue']
+      include: ['src/gimmehttp/vue/**/*.ts'],
+      exclude: ['**/*.test.ts', '**/*.spec.ts']
     })
   ]
 })
