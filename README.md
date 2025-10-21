@@ -20,11 +20,6 @@ Using Vue 3? See the [Vue (v3) Usage](#vue-v3-usage) section.
 - Add Custom Languages and Clients
 - Zero dependencies
 
-## Limitation
-
-Currently body only supports JSON. Need help building out the body support for other types. See
-[Contributions](#contributing) for more details.
-
 ## Supported Languages and Clients
 
 | Language                                                                                                                                 | Clients         | Language                                                                                                                                     | Clients              | Language                                                                                                                                | Clients          |
