@@ -24,5 +24,7 @@
     © {{ year }} <a href="http://webiswhatido.com" target="_blank">Brian Voelker</a>.
     <br />
     GimmeHTTP is under the MIT license.
+    <br />
+    <a href="/privacy" target="_blank">Privacy Policy</a>
   </footer>
 </template>

@@ -28,6 +28,11 @@ const router = createRouter({
       path: '/vue',
       name: 'vue',
       component: () => import('./pages/vue.vue')
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import('./pages/privacy.vue')
     }
   ]
 })
