@@ -19,9 +19,12 @@ h1 {
 }
 h2 {
   font-size: 24px;
+  margin-top: var(--spacing);
 }
 h3 {
   font-size: 18px;
+  margin-top: calc(var(--spacing) * 1.5);
+  color: var(--color-primary);
 }
 h4 {
   font-size: 14px;
@@ -44,4 +47,13 @@ a {
   color: var(--color-link);
   text-decoration: none;
   transition: color 0.3s;
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: var(--spacing);
+}
+
+li {
+  margin-bottom: var(--spacing-quarter);
 }
