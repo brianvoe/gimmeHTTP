@@ -30,7 +30,8 @@
     <main class="content">
       <!-- router view -->
       <router-view />
-      <AdSense adSlot="1270131515" />
+      <!-- Smart AdSense with content gating -->
+      <AdSense adSlot="1270131515" :minContentLength="150" :minSentences="2" />
       <Footer />
     </main>
   </div>
