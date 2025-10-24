@@ -20,7 +20,7 @@ import{G as s}from"./gimmehttp-DZFXXoLO.js";import{d as a,S as r,_ as u,e as g,g
         <\/script>
 
         <style>
-          @import 'gimmehttp/vue.css';
+          @use 'gimmehttp/vue.css';
         </style>
 
         <template>
