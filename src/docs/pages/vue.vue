@@ -78,7 +78,7 @@
         &lt;/script&gt;
 
         &lt;style&gt;
-          @import 'gimmehttp/vue.css';
+          @use 'gimmehttp/vue.css';
         &lt;/style&gt;
 
         &lt;template&gt;
