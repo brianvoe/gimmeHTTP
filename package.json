@@ -50,10 +50,14 @@
     }
   },
   "peerDependencies": {
-    "shiki": "^3.13.0"
+    "shiki": "^3.13.0",
+    "vue": "^3.5.22"
   },
   "peerDependenciesMeta": {
     "shiki": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   },
