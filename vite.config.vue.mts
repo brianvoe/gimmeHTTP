@@ -45,7 +45,14 @@ export default defineConfig({
         globals: {
           vue: 'Vue',
           'shiki/core': 'shikiCore',
-          'shiki/engine/javascript': 'shikiEngineJavascript'
+          'shiki/engine/javascript': 'shikiEngineJavascript',
+          ...shikiModules.reduce(
+            (acc, module) => {
+              acc[module] = module
+              return acc
+            },
+            {} as Record<string, string>
+          )
         }
       }
     }
