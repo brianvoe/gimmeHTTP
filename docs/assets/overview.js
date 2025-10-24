@@ -1,4 +1,4 @@
-import{G as c,g as C,C as y,L as v}from"./gimmehttp.js";import{d as f,_ as k,r as b,c as n,o as l,a as o,b as T,e as S,F as r,f as p,w as a,v as H,g as L,h as u,n as m,t as h}from"./index.js";import"./index2.js";const O=f({name:"Overview",components:{GimmeHttp:c},data(){return{selectedLanguage:"",selectedClient:"",selectedHttp:"advanced_post",customUrl:"https://example.com",customMethod:"POST",customHeaders:`{
+import{G as c,g as C,C as y,L as v}from"./gimmehttp.js";import{d as f,_ as k,r as b,c as n,o as l,a as o,b as T,e as S,F as r,f as p,w as a,v as H,g as L,h as u,n as m,t as h}from"./index.js";import"./github-light.js";const O=f({name:"Overview",components:{GimmeHttp:c},data(){return{selectedLanguage:"",selectedClient:"",selectedHttp:"advanced_post",customUrl:"https://example.com",customMethod:"POST",customHeaders:`{
   "Content-Type": "application/json"
 }`,customCookies:"{}",customBody:`{
   "name": "value"
