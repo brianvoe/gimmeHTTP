@@ -3,10 +3,6 @@ node_modules/
 .github/
 
 coverage/
-
-docs/
-src/docs/
-
 public/
 
 /*.tgz
