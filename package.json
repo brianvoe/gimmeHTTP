@@ -49,17 +49,16 @@
       "default": "./dist/vue/gimmehttp.css"
     }
   },
-  "files": [
-    "dist"
-  ],
-  "sideEffects": [
-    "*.css",
-    "dist/**/*.css"
-  ],
-  "dependencies": {
+  "peerDependencies": {
     "shiki": "^3.13.0"
   },
+  "peerDependenciesMeta": {
+    "shiki": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "shiki": "^3.13.0",
     "@types/node": "^24.6.0",
     "@types/prismjs": "^1.26.5",
     "@vitejs/plugin-vue": "^6.0.1",

@@ -4,7 +4,7 @@
   import type { Config, Http } from '../utils/generate'
   import { Generate, Clients, Search } from '../index'
   import { createHighlighterCore } from 'shiki/core'
-  import { getLogo } from '../logos/index'
+  import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 
   import langC from 'shiki/langs/c.mjs'
   import langCsharp from 'shiki/langs/csharp.mjs'
@@ -26,8 +26,7 @@
   import themeGithubDark from 'shiki/themes/github-dark.mjs'
   import themeGithubLight from 'shiki/themes/github-light.mjs'
 
-  import shikiWasm from 'shiki/wasm'
-  import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
+  import { getLogo } from '../logos/index'
 
   const defaultLang = 'javascript'
 
@@ -113,7 +112,7 @@
           node: 'javascript',
           nodejs: 'javascript'
         },
-        engine: createOnigurumaEngine(shikiWasm)
+        engine: createJavaScriptRegexEngine()
       })
 
       this.code()

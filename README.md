@@ -18,7 +18,7 @@ Using Vue 3? See the [Vue (v3) Usage](#vue-v3-usage) section.
 - Generate HTTP request code snippets in various languages
 - Dead simple configuration(help me keep it that way)
 - Add Custom Languages and Clients
-- Zero dependencies
+- Zero dependencies (Vue component requires shiki as peer dependency)
 
 ## Supported Languages and Clients
 
@@ -268,6 +268,13 @@ Feel free to contribute to the project, suggest improvements, or report issues o
 ## Vue (v3) Usage
 
 Use the built-in Vue component to render an interactive generator.
+
+**Note:** The Vue component requires `shiki` as a peer dependency for syntax highlighting. Install it alongside
+gimmehttp:
+
+```sh
+npm install gimmehttp shiki
+```
 
 ### Install styles
 

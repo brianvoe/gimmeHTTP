@@ -1,8 +1,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
   import { createHighlighterCore } from 'shiki/core'
-  import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
-  import shikiWasm from 'shiki/wasm'
+  import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 
   // Themes
   import githubDark from 'shiki/themes/github-dark.mjs'
@@ -47,7 +46,7 @@
           node: 'javascript',
           nodejs: 'javascript'
         },
-        engine: createOnigurumaEngine(shikiWasm)
+        engine: createJavaScriptRegexEngine()
       })
 
       this.highlighter = highlighter

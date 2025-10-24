@@ -50,67 +50,67 @@
     <h3>Global registration (plugin)</h3>
     <ShikiStyle language="typescript">
       <pre>
-import { createApp } from 'vue'
-import App from './App.vue'
-import GimmeHttpVue from 'gimmehttp/vue'
+        import { createApp } from 'vue'
+        import App from './App.vue'
+        import GimmeHttpVue from 'gimmehttp/vue'
 
-createApp(App)
-  .use(GimmeHttpVue)
-  .mount('#app')
+        createApp(App)
+          .use(GimmeHttpVue)
+          .mount('#app')
       </pre>
     </ShikiStyle>
 
     <h3>Local registration (single file component)</h3>
     <ShikiStyle language="vue">
       <pre>
-&lt;script setup lang="ts"&gt;
-  import { GimmeHttp } from 'gimmehttp/vue'
-  import type { Http } from 'gimmehttp'
+        &lt;script setup lang="ts"&gt;
+          import { GimmeHttp } from 'gimmehttp/vue'
+          import type { Http } from 'gimmehttp'
 
-  const request: Http = {
-    method: 'GET',
-    url: 'https://api.example.com/users?limit=10',
-    headers: { Accept: 'application/json'}
-  }
+          const request: Http = {
+            method: 'GET',
+            url: 'https://api.example.com/users?limit=10',
+            headers: { Accept: 'application/json'}
+          }
 
-  const lang = 'go'
-  const client = 'http'
-&lt;/script&gt;
+          const lang = 'go'
+          const client = 'http'
+        &lt;/script&gt;
 
-&lt;style&gt;
-  @import 'gimmehttp/vue.css';
-&lt;/style&gt;
+        &lt;style&gt;
+          @import 'gimmehttp/vue.css';
+        &lt;/style&gt;
 
-&lt;template&gt;
-  &lt;GimmeHttp 
-    // Required
-    :http="request" 
-    
-    // Optional
-    v-model:language="lang" 
-    v-model:client="client" 
-    theme="light" 
-  /&gt;
-&lt;/template&gt;
+        &lt;template&gt;
+          &lt;GimmeHttp 
+            // Required
+            :http="request" 
+            
+            // Optional
+            v-model:language="lang" 
+            v-model:client="client" 
+            theme="light" 
+          /&gt;
+        &lt;/template&gt;
       </pre>
     </ShikiStyle>
 
     <h3>Theme</h3>
     <ShikiStyle language="vue">
       <pre>
-&lt;script lang="ts"&gt;
-  import { GimmeHttp } from 'gimmehttp/vue'
-&lt;/script&gt;
+        &lt;script lang="ts"&gt;
+          import { GimmeHttp } from 'gimmehttp/vue'
+        &lt;/script&gt;
 
-&lt;template&gt;
-  &lt;GimmeHttp 
-    :http="{
-      method: 'GET',
-      url: 'https://example.com',
-    }" 
-    :theme="light" // 'light' | 'dark'
-  /&gt;
-&lt;/template&gt;
+        &lt;template&gt;
+          &lt;GimmeHttp 
+            :http="{
+              method: 'GET',
+              url: 'https://example.com',
+            }" 
+            :theme="light" // 'light' | 'dark'
+          /&gt;
+        &lt;/template&gt;
       </pre>
     </ShikiStyle>
     <button @click="toggleTheme()">Toggle Theme ({{ theme }})</button>
