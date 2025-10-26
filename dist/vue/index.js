@@ -76,15 +76,20 @@ function le(o) {
   return o = o || {}, o.handleErrors === void 0 && (o.handleErrors = !1), o;
 }
 class u {
+  code = [];
+  indentChar;
+  lineJoin;
+  currentDepth = 0;
+  jsonConfig = {
+    objOpen: "{",
+    objClose: "}",
+    arrOpen: "[",
+    arrClose: "]",
+    separator: ": ",
+    endComma: !1
+  };
   constructor(n = {}) {
-    this.code = [], this.currentDepth = 0, this.jsonConfig = {
-      objOpen: "{",
-      objClose: "}",
-      arrOpen: "[",
-      arrClose: "]",
-      separator: ": ",
-      endComma: !1
-    }, this.indentChar = n.indent || "  ", this.lineJoin = n.join || `
+    this.indentChar = n.indent || "  ", this.lineJoin = n.join || `
 `, this.jsonConfig = n.json || this.jsonConfig;
   }
   getIndent() {
