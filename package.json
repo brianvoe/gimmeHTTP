@@ -33,10 +33,10 @@
     "typecheck": "npx tsc --noEmit",
     "release": "node release.js"
   },
-  "main": "dist/gimmehttp.umd.js",
-  "browser": "dist/gimmehttp.umd.js",
+  "main": "dist/gimmehttp.js",
+  "browser": "dist/gimmehttp.js",
   "module": "dist/gimmehttp.es.js",
-  "unpkg": "dist/gimmehttp.umd.js",
+  "unpkg": "dist/gimmehttp.js",
   "types": "dist/gimmehttp.d.ts",
   "exports": {
     ".": {
@@ -48,7 +48,7 @@
       "types": "./dist/vue/index.d.ts",
       "import": "./dist/vue/index.js"
     },
-    "./vue.css": {
+    "./vue/css": {
       "default": "./dist/vue/gimmehttp.css"
     }
   },
