@@ -260,7 +260,7 @@ XID_Start XIDS`.split(/\s/).map(e=>[Yi(e),e])),_w=new Map([["s",Ce(383)],[Ce(383
         <\/script>
 
         <style>
-          @use 'gimmehttp/vue.css';
+          @use 'gimmehttp/vue/css';
         </style>
 
         <template>
