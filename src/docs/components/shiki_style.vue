@@ -13,6 +13,7 @@
   import go from 'shiki/langs/go.mjs'
   import java from 'shiki/langs/java.mjs'
   import javascript from 'shiki/langs/javascript.mjs'
+  import typescript from 'shiki/langs/typescript.mjs'
   import vue from 'shiki/langs/vue.mjs'
   import php from 'shiki/langs/php.mjs'
   import python from 'shiki/langs/python.mjs'
@@ -21,7 +22,75 @@
   import rust from 'shiki/langs/rust.mjs'
   import shell from 'shiki/langs/shellscript.mjs'
   import swift from 'shiki/langs/swift.mjs'
-  import typescript from 'shiki/langs/typescript.mjs'
+  import bash from 'shiki/langs/bash.mjs'
+  import css from 'shiki/langs/css.mjs'
+  import html from 'shiki/langs/html.mjs'
+
+  type Highlighter = Awaited<ReturnType<typeof createHighlighterCore>>
+
+  // Shiki singleton service
+  class ShikiService {
+    private static instance: ShikiService
+    private highlighter: Highlighter | null = null
+    private initPromise: Promise<Highlighter> | null = null
+
+    private constructor() {}
+
+    public static getInstance(): ShikiService {
+      if (!ShikiService.instance) {
+        ShikiService.instance = new ShikiService()
+      }
+      return ShikiService.instance
+    }
+
+    public async getHighlighter(): Promise<Highlighter> {
+      if (this.highlighter) {
+        return this.highlighter
+      }
+
+      if (this.initPromise) {
+        return this.initPromise
+      }
+
+      this.initPromise = this.initializeHighlighter()
+      this.highlighter = await this.initPromise
+      return this.highlighter
+    }
+
+    private async initializeHighlighter(): Promise<Highlighter> {
+      return await createHighlighterCore({
+        themes: [githubDark, githubLight],
+        langs: [
+          bash,
+          css,
+          html,
+          javascript,
+          typescript,
+          vue,
+          c,
+          csharp,
+          go,
+          java,
+          php,
+          python,
+          r,
+          ruby,
+          rust,
+          shell,
+          swift
+        ],
+        engine: createJavaScriptRegexEngine()
+      })
+    }
+
+    public dispose(): void {
+      if (this.highlighter) {
+        this.highlighter.dispose()
+        this.highlighter = null
+      }
+      this.initPromise = null
+    }
+  }
 
   export default defineComponent({
     name: 'ShikiStyle',
@@ -33,23 +102,13 @@
     },
     data() {
       return {
-        highlighter: null as Awaited<ReturnType<typeof createHighlighterCore>> | null,
+        highlighter: null as Highlighter | null,
         highlightedCode: ''
       }
     },
     async created() {
-      const highlighter = await createHighlighterCore({
-        themes: [githubDark, githubLight],
-        langs: [c, csharp, go, java, javascript, vue, php, python, r, ruby, rust, shell, swift, typescript],
-        langAlias: {
-          ts: 'typescript',
-          node: 'javascript',
-          nodejs: 'javascript'
-        },
-        engine: createJavaScriptRegexEngine()
-      })
-
-      this.highlighter = highlighter
+      const shikiService = ShikiService.getInstance()
+      this.highlighter = await shikiService.getHighlighter()
       this.highlightCode()
 
       this.$watch(
@@ -60,11 +119,6 @@
           }
         }
       )
-    },
-    unmounted() {
-      if (this.highlighter) {
-        this.highlighter.dispose()
-      }
     },
     watch: {
       language() {
@@ -101,12 +155,17 @@
 
 <style lang="scss">
   .shiki-style {
+    display: flex;
+    width: 100%;
+
     pre.shiki {
+      min-width: 0;
+      width: 100%;
       padding: var(--spacing);
+      margin: 0;
       border-radius: var(--border-radius);
       overflow-x: auto;
       overflow-y: hidden;
-      white-space: pre-wrap; /* Preserve whitespace and newlines */
     }
   }
 </style>
