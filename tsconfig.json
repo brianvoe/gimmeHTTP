@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": ".",
+    "rootDir": "src",
     "outDir": "dist",
     "declaration": true,
     "target": "esnext",
@@ -9,18 +9,17 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "strict": true,
-    "jsx": "preserve",
     "allowJs": false,
+    "skipLibCheck": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "importHelpers": true,
     "lib": ["esnext", "dom"],
-    "types": ["node", "vite/client"],
-    "skipLibCheck": true,
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "exclude": ["dist", "node_modules"]
 }
