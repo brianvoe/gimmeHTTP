@@ -231,9 +231,14 @@
 
 <style lang="scss">
   .smart-adsense-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: var(--spacing, 16px) 0;
     text-align: center;
     min-height: 90px; // Reserve space to prevent layout shift
+    width: 100%;
+    box-sizing: border-box;
 
     .ad-placeholder {
       padding: var(--spacing, 16px);
