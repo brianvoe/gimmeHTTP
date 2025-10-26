@@ -281,7 +281,7 @@ npm install gimmehttp shiki
 Add the package CSS once (e.g., in `main.ts`).
 
 ```ts
-import 'gimmehttp/vue.css'
+import 'gimmehttp/vue/css'
 ```
 
 ### Global registration (plugin)
