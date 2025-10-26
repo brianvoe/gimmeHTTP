@@ -17,23 +17,10 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        chunkFileNames: 'js/[name]-[hash].js',
-        entryFileNames: 'js/[name]-[hash].js',
-        manualChunks: (id) => {
-          if (id.includes('shiki')) {
-            return 'shiki'
-          }
-        },
-        assetFileNames: (assetInfo) => {
-          const ext = assetInfo.name.split('.').pop()
-          if (ext === 'css') {
-            return `css/[name]-[hash].${ext}`
-          }
-          if (['woff', 'woff2', 'eot', 'ttf', 'otf'].includes(ext)) {
-            return `fonts/[name]-[hash].${ext}`
-          }
-          return `assets/[name]-[hash].${ext}`
-        }
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`,
+        manualChunks: () => 'index'
       }
     }
   },

@@ -29,6 +29,11 @@ const shikiModules = [
 
 export default defineConfig({
   publicDir: false,
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    }
+  },
   build: {
     minify: true,
     lib: {
@@ -62,10 +67,9 @@ export default defineConfig({
     dts({
       entryRoot: 'src/gimmehttp/vue',
       outDir: 'dist/vue',
-      tsconfigPath: 'tsconfig.vue.json',
       insertTypesEntry: true,
       include: ['src/gimmehttp/vue/**/*.ts'],
-      exclude: ['**/*.test.ts', '**/*.spec.ts']
+      exclude: ['**/*.test.ts']
     })
   ]
 })
