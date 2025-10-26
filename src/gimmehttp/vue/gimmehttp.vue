@@ -1,27 +1,27 @@
 <script lang="ts">
   import type { PropType } from 'vue'
   import { defineComponent } from 'vue'
-  import type { Config, Http } from '../utils/generate'
-  import { Generate, Clients, Search } from '../index'
+  import type { Config, Http } from '@/gimmehttp/utils/generate'
+  import { Generate, Clients, Search } from '@/gimmehttp/index'
   import { createHighlighterCore } from 'shiki/core'
   import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 
-  import langC from 'shiki/langs/c.mjs'
-  import langCsharp from 'shiki/langs/csharp.mjs'
-  import langDart from 'shiki/langs/dart.mjs'
-  import langGo from 'shiki/langs/go.mjs'
-  import langJava from 'shiki/langs/java.mjs'
-  import langJavascript from 'shiki/langs/javascript.mjs'
-  import langKotlin from 'shiki/langs/kotlin.mjs'
-  import langPhp from 'shiki/langs/php.mjs'
-  import langPython from 'shiki/langs/python.mjs'
-  import langR from 'shiki/langs/r.mjs'
-  import langRuby from 'shiki/langs/ruby.mjs'
-  import langRust from 'shiki/langs/rust.mjs'
-  import langShell from 'shiki/langs/shellscript.mjs'
-  import langSwift from 'shiki/langs/swift.mjs'
-  import langTypescript from 'shiki/langs/typescript.mjs'
-  import langJson from 'shiki/langs/json.mjs'
+  import C from 'shiki/langs/c.mjs'
+  import Csharp from 'shiki/langs/csharp.mjs'
+  import Dart from 'shiki/langs/dart.mjs'
+  import Go from 'shiki/langs/go.mjs'
+  import Java from 'shiki/langs/java.mjs'
+  import Javascript from 'shiki/langs/javascript.mjs'
+  import Kotlin from 'shiki/langs/kotlin.mjs'
+  import Php from 'shiki/langs/php.mjs'
+  import Python from 'shiki/langs/python.mjs'
+  import R from 'shiki/langs/r.mjs'
+  import Ruby from 'shiki/langs/ruby.mjs'
+  import Rust from 'shiki/langs/rust.mjs'
+  import Shell from 'shiki/langs/shellscript.mjs'
+  import Swift from 'shiki/langs/swift.mjs'
+  import Typescript from 'shiki/langs/typescript.mjs'
+  import Json from 'shiki/langs/json.mjs'
 
   import themeGithubDark from 'shiki/themes/github-dark.mjs'
   import themeGithubLight from 'shiki/themes/github-light.mjs'
@@ -90,22 +90,22 @@
       this.highlighter = await createHighlighterCore({
         themes: [themeGithubDark, themeGithubLight],
         langs: [
-          langC,
-          langCsharp,
-          langDart,
-          langGo,
-          langJava,
-          langJavascript,
-          langKotlin,
-          langPhp,
-          langPython,
-          langR,
-          langRuby,
-          langRust,
-          langShell,
-          langSwift,
-          langTypescript,
-          langJson
+          C,
+          Csharp,
+          Dart,
+          Go,
+          Java,
+          Javascript,
+          Kotlin,
+          Php,
+          Python,
+          R,
+          Ruby,
+          Rust,
+          Shell,
+          Swift,
+          Typescript,
+          Json
         ],
         langAlias: {
           ts: 'typescript',
@@ -300,36 +300,38 @@
 </script>
 
 <style lang="scss">
-  .gimmehttp {
+  :root {
     // colors
-    --text-color: var(--gimme-text-color, #3d2c2c);
-    --text-color-accent: var(--gimme-text-color-accent, #1f120b);
-    --border-color: var(--gimme-border-color, #535353);
-    --accent-color: var(--gimme-accent-color, #ff9122);
-    --accent-foreground: var(--gimme-accent-foreground, #1f120b);
-    --shell-track-color: var(--gimme-shell-track-color, #2b2b2b);
-    --modal-bg-color: var(--gimme-modal-bg-color, rgba(0, 0, 0, 0.4));
-    --modal-content-color: var(--gimme-modal-content-color, #2b2b2b);
+    --gh-text-color: #3d2c2c;
+    --gh-text-color-accent: #1f120b;
+    --gh-border-color: #535353;
+    --gh-accent-color: #ff9122;
+    --gh-accent-foreground: #1f120b;
+    --gh-shell-track-color: #2b2b2b;
+    --gh-modal-bg-color: rgba(0, 0, 0, 0.4);
+    --gh-modal-content-color: #2b2b2b;
 
     // spacing
-    --spacing: var(--gimme-spacing, 16px);
-    --spacing-half: var(--gimme-spacing-half, 8px);
-    --spacing-quarter: var(--gimme-spacing-quarter, 4px);
+    --gh-spacing: 16px;
+    --gh-spacing-half: 8px;
+    --gh-spacing-quarter: 4px;
 
     // misc
-    --border-radius: var(--gimme-border-radius, 8px);
-    --options-height: var(--gimme-options-height, 40px);
-    --box-shadow: var(--gimme-box-shadow, 0 4px 8px rgba(0, 0, 0, 0.5));
-    --timing: var(--gimme-timing, 0.3s);
+    --gh-border-radius: 8px;
+    --gh-options-height: 40px;
+    --gh-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    --gh-timing: 0.3s;
+  }
 
+  .gimmehttp {
     display: flex;
     flex-direction: column;
     position: relative;
-    border-radius: var(--border-radius);
+    border-radius: var(--gh-border-radius);
     width: 100%;
     max-width: 100%;
     overflow: hidden;
-    box-shadow: var(--box-shadow);
+    box-shadow: var(--gh-box-shadow);
 
     .gh-options {
       display: flex;
@@ -341,12 +343,12 @@
       z-index: 3;
       padding: 0;
       margin: 0;
-      height: var(--options-height);
-      max-height: var(--options-height);
-      border-bottom-left-radius: var(--border-radius);
-      border-left: solid 1px var(--border-color);
-      border-bottom: solid 1px var(--border-color);
-      color: var(--text-color);
+      height: var(--gh-options-height);
+      max-height: var(--gh-options-height);
+      border-bottom-left-radius: var(--gh-border-radius);
+      border-left: solid 1px var(--gh-border-color);
+      border-bottom: solid 1px var(--gh-border-color);
+      color: var(--gh-text-color);
       overflow: hidden;
       cursor: pointer;
 
@@ -357,28 +359,28 @@
         align-items: center;
         justify-content: center;
         height: 100%;
-        padding: var(--spacing-half);
+        padding: var(--gh-spacing-half);
         margin: 0;
-        gap: var(--spacing-half);
+        gap: var(--gh-spacing-half);
         transition:
-          background-color var(--timing) ease,
-          color var(--timing) ease;
+          background-color var(--gh-timing) ease,
+          color var(--gh-timing) ease;
 
         &:hover {
-          background-color: var(--accent-color);
-          color: var(--text-color-accent);
+          background-color: var(--gh-accent-color);
+          color: var(--gh-text-color-accent);
         }
 
         &.gh-show-copied {
-          background-color: var(--accent-color);
-          color: var(--text-color-accent);
+          background-color: var(--gh-accent-color);
+          color: var(--gh-text-color-accent);
         }
 
         .gh-txt {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--border-color);
+          color: var(--gh-border-color);
           font-size: 16px;
           text-align: center;
           line-height: 1;
@@ -389,7 +391,7 @@
           width: auto;
           max-height: 20px;
           max-width: 40px;
-          fill: var(--border-color);
+          fill: var(--gh-border-color);
         }
       }
 
@@ -400,7 +402,7 @@
         height: 60%;
         padding: 0;
         margin: 0;
-        background-color: var(--border-color);
+        background-color: var(--gh-border-color);
       }
 
       .gh-lang {
@@ -410,17 +412,17 @@
         align-items: center;
         justify-content: center;
         height: 100%;
-        max-height: var(--options-height);
-        padding: var(--spacing-half);
+        max-height: var(--gh-options-height);
+        padding: var(--gh-spacing-half);
         margin: 0;
-        gap: var(--spacing-half);
+        gap: var(--gh-spacing-half);
         transition:
-          background-color var(--timing) ease,
-          color var(--timing) ease;
+          background-color var(--gh-timing) ease,
+          color var(--gh-timing) ease;
 
         &:hover {
-          background-color: var(--accent-color);
-          color: var(--text-color-accent);
+          background-color: var(--gh-accent-color);
+          color: var(--gh-text-color-accent);
         }
 
         .gh-select {
@@ -428,7 +430,7 @@
           width: auto;
           max-width: 40px;
           background-color: transparent;
-          color: var(--border-color);
+          color: var(--gh-border-color);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -445,7 +447,7 @@
         .gh-lang-text {
           font-size: 12px;
           font-weight: 600;
-          color: var(--border-color);
+          color: var(--gh-border-color);
           text-transform: uppercase;
           white-space: nowrap;
         }
@@ -455,7 +457,7 @@
           width: auto;
           max-height: 16px;
           max-width: 40px;
-          fill: var(--border-color);
+          fill: var(--gh-border-color);
         }
       }
     }
@@ -477,11 +479,11 @@
         height: auto;
         min-height: 50px;
         margin: 0;
-        padding: var(--spacing);
-        border-radius: var(--border-radius);
+        padding: var(--gh-spacing);
+        border-radius: var(--gh-border-radius);
         overflow-x: auto;
         overflow-y: hidden;
-        transition: min-height var(--timing) ease-in-out;
+        transition: min-height var(--gh-timing) ease-in-out;
 
         &::-webkit-scrollbar {
           width: 8px;
@@ -516,21 +518,21 @@
       top: 0;
       z-index: 4;
       overflow: auto;
-      background-color: var(--modal-bg-color);
-      transition: opacity var(--timing) ease;
+      background-color: var(--gh-modal-bg-color);
+      transition: opacity var(--gh-timing) ease;
 
       .gh-content {
         display: flex;
         flex-direction: column;
         width: 90%;
         max-width: 350px;
-        margin-top: var(--spacing);
-        padding: var(--spacing);
-        gap: var(--spacing);
-        color: var(--text-color);
-        background-color: var(--modal-content-color);
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
+        margin-top: var(--gh-spacing);
+        padding: var(--gh-spacing);
+        gap: var(--gh-spacing);
+        color: var(--gh-text-color);
+        background-color: var(--gh-modal-content-color);
+        border-radius: var(--gh-border-radius);
+        box-shadow: var(--gh-box-shadow);
         will-change: transform, opacity;
 
         .gh-langs {
@@ -538,21 +540,21 @@
           flex-direction: row;
           flex-wrap: wrap;
           justify-content: center;
-          gap: var(--spacing-half);
+          gap: var(--gh-spacing-half);
 
           .gh-lang {
             display: flex;
             width: 50px;
             height: 50px;
-            padding: var(--spacing-half);
-            border: solid 1px var(--border-color);
-            border-radius: var(--border-radius);
+            padding: var(--gh-spacing-half);
+            border: solid 1px var(--gh-border-color);
+            border-radius: var(--gh-border-radius);
             cursor: pointer;
             transition:
-              transform var(--timing) ease,
-              box-shadow var(--timing) ease,
-              background-color var(--timing) ease,
-              border-color var(--timing) ease;
+              transform var(--gh-timing) ease,
+              box-shadow var(--gh-timing) ease,
+              background-color var(--gh-timing) ease,
+              border-color var(--gh-timing) ease;
 
             align-items: center;
             justify-content: center;
@@ -567,10 +569,10 @@
 
             &.gh-selected,
             &:hover {
-              background-color: var(--accent-color);
-              border-color: var(--border-color);
+              background-color: var(--gh-accent-color);
+              border-color: var(--gh-border-color);
               transform: translateY(-5px);
-              box-shadow: var(--box-shadow);
+              box-shadow: var(--gh-box-shadow);
             }
 
             img {
@@ -579,7 +581,7 @@
               align-self: center;
               width: 100%;
               height: 100%;
-              filter: drop-shadow(0 4px 10px var(--border-color));
+              filter: drop-shadow(0 4px 10px var(--gh-border-color));
             }
 
             .gh-lang-text-modal {
@@ -588,7 +590,7 @@
               align-self: center;
               font-size: 10px;
               font-weight: 700;
-              color: var(--border-color);
+              color: var(--gh-border-color);
               text-transform: uppercase;
               text-align: center;
             }
@@ -599,7 +601,7 @@
           width: 50%;
           height: 1px;
           margin: 0 auto;
-          background: var(--border-color);
+          background: var(--gh-border-color);
         }
 
         .gh-clients {
@@ -607,27 +609,27 @@
           flex-direction: row;
           flex-wrap: wrap;
           justify-content: center;
-          gap: var(--spacing);
+          gap: var(--gh-spacing);
 
           .gh-client {
-            padding: var(--spacing-half);
-            border: solid 1px var(--border-color);
-            border-radius: var(--border-radius);
-            color: var(--border-color);
+            padding: var(--gh-spacing-half);
+            border: solid 1px var(--gh-border-color);
+            border-radius: var(--gh-border-radius);
+            color: var(--gh-border-color);
             cursor: pointer;
             transition:
-              transform var(--timing) ease,
-              box-shadow var(--timing) ease,
-              background-color var(--timing) ease,
-              border-color var(--timing) ease;
+              transform var(--gh-timing) ease,
+              box-shadow var(--gh-timing) ease,
+              background-color var(--gh-timing) ease,
+              border-color var(--gh-timing) ease;
 
             &.gh-selected,
             &:hover {
-              background-color: var(--accent-color);
-              border-color: var(--border-color);
-              color: var(--text-color-accent);
+              background-color: var(--gh-accent-color);
+              border-color: var(--gh-border-color);
+              color: var(--gh-text-color-accent);
               transform: translateY(-5px);
-              box-shadow: var(--box-shadow);
+              box-shadow: var(--gh-box-shadow);
             }
           }
         }
@@ -638,7 +640,7 @@
   /* modal background fade */
   .gimme-modal-bg-enter-active,
   .gimme-modal-bg-leave-active {
-    transition: opacity var(--timing) ease;
+    transition: opacity var(--gh-timing) ease;
   }
   .gimme-modal-bg-enter-from,
   .gimme-modal-bg-leave-to {
@@ -649,8 +651,8 @@
   .gimme-modal-content-enter-active,
   .gimme-modal-content-leave-active {
     transition:
-      transform var(--timing) ease,
-      opacity var(--timing) ease;
+      transform var(--gh-timing) ease,
+      opacity var(--gh-timing) ease;
   }
 
   .gimme-modal-content-enter-from,
