@@ -330,7 +330,9 @@
     border-radius: var(--gh-border-radius);
     width: 100%;
     max-width: 100%;
-    overflow: hidden;
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
     box-shadow: var(--gh-box-shadow);
 
     .gh-options {
@@ -463,10 +465,11 @@
     }
 
     .gh-output {
+      flex: 1 1 auto;
       width: 100%;
       padding: 0;
       margin: 0 !important;
-      overflow: hidden;
+      overflow: auto;
 
       &.gh-modalOpen {
         pre.shiki {
@@ -482,7 +485,7 @@
         padding: var(--gh-spacing);
         border-radius: var(--gh-border-radius);
         overflow-x: auto;
-        overflow-y: hidden;
+        overflow-y: auto;
         transition: min-height var(--gh-timing) ease-in-out;
 
         &::-webkit-scrollbar {
