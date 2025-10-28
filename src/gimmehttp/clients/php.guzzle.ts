@@ -41,9 +41,28 @@ export default {
     builder.line('"' + http.method.toUpperCase() + '",')
     builder.line('"' + http.url + '",')
 
-    // Headers and body
-    if (http.headers || http.cookies || http.body) {
+    // Headers, query params, and body
+    if (http.headers || http.cookies || http.body || http.params) {
       builder.line('[')
+
+      // Query parameters
+      if (http.params && Object.keys(http.params).length > 0) {
+        builder.indent()
+        builder.line('"query" => [')
+        builder.indent()
+        for (const [key, value] of Object.entries(http.params)) {
+          if (Array.isArray(value)) {
+            for (const val of value) {
+              builder.line(`"${key}" => "${val}",`)
+            }
+          } else {
+            builder.line(`"${key}" => "${value}",`)
+          }
+        }
+        builder.outdent()
+        builder.line('],')
+        builder.outdent()
+      }
 
       if (http.headers) {
         builder.indent()

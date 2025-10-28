@@ -18,6 +18,9 @@ export default {
 
     builder.line('import java.io.*;')
     builder.line('import java.net.*;')
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('import java.net.URLEncoder;')
+    }
     if (hasBody && (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body)))) {
       builder.line('import org.json.JSONObject;')
     }
@@ -33,7 +36,45 @@ export default {
       builder.indent()
     }
 
-    builder.line(`URL url = new URL("${http.url}");`)
+    // Build URL with parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line(`String baseUrl = "${http.url}";`)
+      builder.line('StringBuilder urlBuilder = new StringBuilder(baseUrl);')
+      builder.line('urlBuilder.append(baseUrl.contains("?") ? "&" : "?");')
+      builder.line()
+      builder.line('String[] paramPairs = {')
+      builder.indent()
+      const paramPairs: string[] = []
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            paramPairs.push(`"${key}=" + URLEncoder.encode("${val}", "UTF-8")`)
+          }
+        } else {
+          paramPairs.push(`"${key}=" + URLEncoder.encode("${value}", "UTF-8")`)
+        }
+      }
+      for (let i = 0; i < paramPairs.length; i++) {
+        if (i === paramPairs.length - 1) {
+          builder.line(paramPairs[i])
+        } else {
+          builder.line(paramPairs[i] + ',')
+        }
+      }
+      builder.outdent()
+      builder.line('};')
+      builder.line()
+      builder.line('for (int i = 0; i < paramPairs.length; i++) {')
+      builder.indent()
+      builder.line('if (i > 0) urlBuilder.append("&");')
+      builder.line('urlBuilder.append(paramPairs[i]);')
+      builder.outdent()
+      builder.line('}')
+      builder.line()
+      builder.line('URL url = new URL(urlBuilder.toString());')
+    } else {
+      builder.line(`URL url = new URL("${http.url}");`)
+    }
     builder.line('HttpURLConnection conn = (HttpURLConnection) url.openConnection();')
     builder.line(`conn.setRequestMethod("${http.method.toUpperCase()}");`)
 

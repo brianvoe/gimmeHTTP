@@ -286,4 +286,73 @@ except Exception as e:
     `.trim()
     )
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = PythonHttpClient.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import http.client
+import json
+
+from urllib.parse import urlencode
+params = {
+  "address.zip": "66031",
+  "address.country": "Wallis",
+}
+query_string = urlencode(params, doseq=True)
+final_path = f"/?{query_string}"
+conn = http.client.HTTPSConnection("example.com", 443)
+
+conn.request("GET", final_path)
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['python', 'http'],
+        category: 'backend'
+      }
+    }
+    const config: Config = {}
+    const result = PythonHttpClient.generate(config, httpRequest)
+    expect(result).toContain('"tags": ["python", "http"],')
+    expect(result).toContain('"category": "backend",')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = PythonHttpClient.generate(config, httpRequest)
+    expect(result).toContain('"version": "1.0",')
+    expect(result).toContain('"name": "John"')
+  })
 })

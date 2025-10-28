@@ -130,4 +130,79 @@ public class HttpExample {
     const result = JavaOkHttp.generate(config, httpRequest)
     expect(result).toContain('.method("PUT", body)')
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = JavaOkHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) {
+    OkHttpClient client = new OkHttpClient();
+
+    HttpUrl.Builder urlBuilder = HttpUrl.parse("https://example.com").newBuilder();
+    urlBuilder.addQueryParameter("address.zip", "66031");
+    urlBuilder.addQueryParameter("address.country", "Wallis");
+    HttpUrl url = urlBuilder.build();
+
+    Request.Builder requestBuilder = new Request.Builder()
+      .url(url)
+      .method("GET", null)
+      .build();
+
+    Request request = requestBuilder;
+    Response response = client.newCall(request).execute();
+
+    System.out.println(response.body().string());
+  }
+}
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['java', 'okhttp'],
+        category: 'backend'
+      }
+    }
+    const config: Config = {}
+    const result = JavaOkHttp.generate(config, httpRequest)
+    expect(result).toContain('urlBuilder.addQueryParameter("tags", "java");')
+    expect(result).toContain('urlBuilder.addQueryParameter("tags", "okhttp");')
+    expect(result).toContain('urlBuilder.addQueryParameter("category", "backend");')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = JavaOkHttp.generate(config, httpRequest)
+    expect(result).toContain('urlBuilder.addQueryParameter("version", "1.0");')
+    expect(result).toContain('jsonBody.put("name", "John");')
+  })
 })

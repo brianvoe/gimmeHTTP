@@ -131,4 +131,94 @@ public class HttpExample {
     expect(result).toContain('conn.setRequestProperty("Accept", "application/json");')
     expect(result).toContain('conn.setRequestProperty("Accept", "text/plain");')
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = JavaHttpURLConnection.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+import java.net.URLEncoder;
+
+public class HttpExample {
+  public static void main(String[] args) {
+    String baseUrl = "https://example.com";
+    StringBuilder urlBuilder = new StringBuilder(baseUrl);
+    urlBuilder.append(baseUrl.contains("?") ? "&" : "?");
+
+    String[] paramPairs = {
+      "address.zip=" + URLEncoder.encode("66031", "UTF-8"),
+      "address.country=" + URLEncoder.encode("Wallis", "UTF-8")
+    };
+
+    for (int i = 0; i < paramPairs.length; i++) {
+      if (i > 0) urlBuilder.append("&");
+      urlBuilder.append(paramPairs[i]);
+    }
+
+    URL url = new URL(urlBuilder.toString());
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("GET");
+
+    int responseCode = conn.getResponseCode();
+    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['java', 'http'],
+        category: 'backend'
+      }
+    }
+    const config: Config = {}
+    const result = JavaHttpURLConnection.generate(config, httpRequest)
+    expect(result).toContain('"tags=" + URLEncoder.encode("java", "UTF-8")')
+    expect(result).toContain('"tags=" + URLEncoder.encode("http", "UTF-8")')
+    expect(result).toContain('"category=" + URLEncoder.encode("backend", "UTF-8")')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = JavaHttpURLConnection.generate(config, httpRequest)
+    expect(result).toContain('"version=" + URLEncoder.encode("1.0", "UTF-8")')
+    expect(result).toContain('jsonBody.put("name", "John");')
+  })
 })

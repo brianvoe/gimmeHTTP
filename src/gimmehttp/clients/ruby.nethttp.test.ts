@@ -376,4 +376,72 @@ end
     `.trim()
     )
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = RubyNetHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+require "net/http"
+require "uri"
+
+uri = URI.parse("https://example.com")
+params = {
+  "address.zip" => "66031",
+  "address.country" => "Wallis",
+}
+uri.query = URI.encode_www_form(params)
+request = Net::HTTP::Get.new(uri)
+
+response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
+  http.request(request)
+end
+
+puts response.body
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['ruby', 'nethttp'],
+        category: 'backend'
+      }
+    }
+    const config: Config = {}
+    const result = RubyNetHttp.generate(config, httpRequest)
+    expect(result).toContain('"tags" => ["ruby", "nethttp"],')
+    expect(result).toContain('"category" => "backend",')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = RubyNetHttp.generate(config, httpRequest)
+    expect(result).toContain('"version" => "1.0",')
+    expect(result).toContain('"name": "John"')
+  })
 })

@@ -43,6 +43,19 @@ export default {
     builder.indent()
     builder.line(`url("${http.url}")`)
 
+    // URL Parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`parameter("${key}", "${val}")`)
+          }
+        } else {
+          builder.line(`parameter("${key}", "${value}")`)
+        }
+      }
+    }
+
     if (http.headers && Object.keys(http.headers).length > 0) {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {

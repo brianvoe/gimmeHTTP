@@ -320,7 +320,88 @@ let task = URLSession.shared.dataTask(with: request) { data, response, error in
 }
 
 task.resume()
-      `.trim()
+    `.trim()
     )
+  })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+var urlComponents = URLComponents(string: "https://example.com")!
+var queryItems: [URLQueryItem] = []
+queryItems.append(URLQueryItem(name: "address.zip", value: "66031"))
+queryItems.append(URLQueryItem(name: "address.country", value: "Wallis"))
+urlComponents.queryItems = queryItems
+let url = urlComponents.url!
+var request = URLRequest(url: url)
+request.httpMethod = "GET"
+
+let task = URLSession.shared.dataTask(with: request) { data, response, error in
+  if let error = error {
+    print("Error: \\(error)")
+    return
+  }
+
+  if let httpResponse = response as? HTTPURLResponse {
+    if httpResponse.statusCode == 200, let data = data {
+      let responseString = String(data: data, encoding: .utf8)
+      print(responseString ?? "No response data")
+    } else {
+      print("Request failed with status code: \\(httpResponse.statusCode)")
+    }
+  }
+}
+
+task.resume()
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['swift', 'urlsession'],
+        category: 'backend'
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toContain('queryItems.append(URLQueryItem(name: "tags", value: "swift"))')
+    expect(result).toContain('queryItems.append(URLQueryItem(name: "tags", value: "urlsession"))')
+    expect(result).toContain('queryItems.append(URLQueryItem(name: "category", value: "backend"))')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toContain('queryItems.append(URLQueryItem(name: "version", value: "1.0"))')
+    expect(result).toContain('"name": "John"')
   })
 })

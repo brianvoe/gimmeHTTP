@@ -21,8 +21,25 @@ export default {
     builder.line('$ch = curl_init();')
     builder.line()
 
-    // Basic cURL options
-    builder.line(`curl_setopt($ch, CURLOPT_URL, "${http.url}");`)
+    // Build URL with parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('$url = "' + http.url + '";')
+      builder.line('$params = [];')
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`$params[] = "${key}=" . urlencode("${val}");`)
+          }
+        } else {
+          builder.line(`$params[] = "${key}=" . urlencode("${value}");`)
+        }
+      }
+      builder.line('$url .= (strpos($url, "?") !== false ? "&" : "?") . implode("&", $params);')
+      builder.line()
+      builder.line('curl_setopt($ch, CURLOPT_URL, $url);')
+    } else {
+      builder.line(`curl_setopt($ch, CURLOPT_URL, "${http.url}");`)
+    }
     builder.line('curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);')
     builder.line(`curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "${http.method.toUpperCase()}");`)
 

@@ -37,6 +37,133 @@ int main(void) {
     )
   })
 
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL,
+      "https://example.com"
+      "?address.zip=66031"
+      "&address.country=Wallis"
+    );
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['javascript', 'typescript'],
+        category: 'programming'
+      }
+    }
+    const config: Config = {}
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL,
+      "https://example.com"
+      "?tags=javascript"
+      "&tags=typescript"
+      "&category=programming"
+    );
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with URL parameters containing special characters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        search: 'hello world',
+        filter: 'test&value'
+      }
+    }
+    const config: Config = {}
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL,
+      "https://example.com"
+      "?search=hello+world"
+      "&filter=test%26value"
+    );
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
   test('should build a GET request with cookies', () => {
     const httpRequest: Http = {
       method: 'GET',

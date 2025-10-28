@@ -297,4 +297,71 @@ end
     `.trim()
     )
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = RubyFaraday.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+require "faraday"
+
+conn = Faraday.new(url: "https://example.com") do |f|
+  f.adapter Faraday.default_adapter
+end
+
+response = conn.get do |req|
+  req.url "https://example.com"
+
+  req.params["address.zip"] = "66031"
+  req.params["address.country"] = "Wallis"
+end
+
+puts response.body
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['ruby', 'faraday'],
+        category: 'backend'
+      }
+    }
+    const config: Config = {}
+    const result = RubyFaraday.generate(config, httpRequest)
+    expect(result).toContain('req.params["tags"] = "ruby"')
+    expect(result).toContain('req.params["tags"] = "faraday"')
+    expect(result).toContain('req.params["category"] = "backend"')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = RubyFaraday.generate(config, httpRequest)
+    expect(result).toContain('req.params["version"] = "1.0"')
+    expect(result).toContain('"name": "John"')
+  })
 })

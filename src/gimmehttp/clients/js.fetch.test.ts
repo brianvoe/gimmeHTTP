@@ -219,4 +219,68 @@ fetch("https://example.com/image.png", {
     `.trim()
     )
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = JSFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const url = new URL("https://example.com");
+const params = new URLSearchParams();
+params.set("address.zip", "66031");
+params.set("address.country", "Wallis");
+url.search = params.toString();
+
+fetch(url.toString(), {
+  method: "GET",
+})
+.then(response => response.text())
+.then(data => console.log(data));
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['javascript', 'fetch'],
+        category: 'frontend'
+      }
+    }
+    const config: Config = {}
+    const result = JSFetch.generate(config, httpRequest)
+    expect(result).toContain('params.append("tags", "javascript");')
+    expect(result).toContain('params.append("tags", "fetch");')
+    expect(result).toContain('params.set("category", "frontend");')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = JSFetch.generate(config, httpRequest)
+    expect(result).toContain('params.set("version", "1.0");')
+    expect(result).toContain('"name": "John"')
+  })
 })

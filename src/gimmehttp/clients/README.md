@@ -31,30 +31,30 @@ This directory contains HTTP client code generators for 21 different programming
 
 ## Feature Support
 
-| Client                       | HTTP Methods                     | Headers | Cookies | Array Headers | JSON Body | Form Body | Text Body | XML Body | Response Parsing | Error Handling | Comments |
-| ---------------------------- | -------------------------------- | ------- | ------- | ------------- | --------- | --------- | --------- | -------- | ---------------- | -------------- | -------- |
-| **C (libcurl)**              | ✅ GET, POST, PUT, DELETE        | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
-| **C# (HttpClient)**          | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
-| **C# (RestSharp)**           | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Dart (http)**              | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ❌      | ✅            | ✅        | ❌        | ✅        | ✅       | ✅               | ✅             |          |
-| **Go (net/http)**            | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Java (HttpURLConnection)** | ✅ GET, POST, PUT, DELETE        | ✅      | ✅      | ✅            | ✅        | ❌        | ✅        | ✅       | ✅               | ✅             |          |
-| **Java (OkHttp)**            | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **JS (axios)**               | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
-| **JS (fetch)**               | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
-| **JS (jQuery)**              | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
-| **Kotlin (Ktor)**            | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Node (fetch)**             | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
-| **Node (http)**              | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **PHP (cURL)**               | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **PHP (Guzzle)**             | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Python (http.client)**     | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Python (requests)**        | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Ruby (Net::HTTP)**         | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Ruby (Faraday)**           | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Rust (reqwest)**           | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
-| **Shell (cURL)**             | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
-| **Swift (URLSession)**       | ✅ All methods                   | ✅      | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| Language   | Client            | HTTP Methods                     | Headers | Params | Cookies | Array Headers | JSON Body | Form Body | Text Body | XML Body | Response Parsing | Error Handling | Comments |
+| ---------- | ----------------- | -------------------------------- | ------- | ------ | ------- | ------------- | --------- | --------- | --------- | -------- | ---------------- | -------------- | -------- |
+| C          | libcurl           | ✅ GET, POST, PUT, DELETE        | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| C#         | HttpClient        | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| C#         | RestSharp         | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Dart       | http              | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ❌      | ✅            | ✅        | ❌        | ✅        | ✅       | ✅               | ✅             |          |
+| Go         | net/http          | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Java       | HttpURLConnection | ✅ GET, POST, PUT, DELETE        | ✅      | ✅     | ✅      | ✅            | ✅        | ❌        | ✅        | ✅       | ✅               | ✅             |          |
+| Java       | OkHttp            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| JavaScript | axios             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
+| JavaScript | fetch             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
+| JavaScript | jQuery            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
+| Kotlin     | Ktor              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Node.js    | fetch             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
+| Node.js    | http              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| PHP        | cURL              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| PHP        | Guzzle            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Python     | http.client       | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Python     | requests          | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Ruby       | Net::HTTP         | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Ruby       | Faraday           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Rust       | reqwest           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Shell      | cURL              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| Swift      | URLSession        | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
 
 **Legend:**
 
@@ -82,6 +82,11 @@ Use this checklist when adding a new language/client or auditing existing implem
   - [ ] Single header values
   - [ ] Array header values (multiple values for same key)
   - [ ] Case handling (some libraries are case-sensitive)
+
+- [ ] **URL Parameters**
+  - [ ] Query parameter support
+  - [ ] Multiple parameter values for same key
+  - [ ] URL parameter line breaking for long URLs
 
 - [ ] **Cookies**
   - [ ] Cookie header generation
@@ -126,6 +131,7 @@ Use this checklist when adding a new language/client or auditing existing implem
 
 - [ ] **Tests**
   - [ ] Basic GET request
+  - [ ] GET with URL parameters
   - [ ] POST with headers
   - [ ] POST with cookies
   - [ ] POST with JSON body
@@ -134,8 +140,10 @@ Use this checklist when adding a new language/client or auditing existing implem
   - [ ] POST with XML body
   - [ ] Advanced/nested JSON body
   - [ ] Array header values test
+  - [ ] Array parameter values test
   - [ ] Additional HTTP methods (PUT, DELETE, PATCH)
   - [ ] Empty body scenarios
+  - [ ] Long URL parameter breaking test
 
 - [ ] **Code Generation**
   - [ ] Uses `Builder` utility correctly

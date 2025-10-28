@@ -129,4 +129,68 @@ void main() async {
     const result = DartHttp.generate(config, httpRequest)
     expect(result).toContain("'Accept': 'application/json, text/plain',")
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = DartHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import 'package:http/http.dart' as http;
+
+void main() async {
+  var url = Uri.parse('https://example.com').replace(queryParameters: {
+    'address.zip': '66031',
+    'address.country': 'Wallis',
+  });
+
+  var response = await http.get(url);
+
+  print(response.body);
+}
+      `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['dart', 'flutter'],
+        category: 'mobile'
+      }
+    }
+    const config: Config = {}
+    const result = DartHttp.generate(config, httpRequest)
+    expect(result).toContain("'tags': ['dart', 'flutter'],")
+    expect(result).toContain("'category': 'mobile',")
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = DartHttp.generate(config, httpRequest)
+    expect(result).toContain("'version': '1.0',")
+    expect(result).toContain('await http.post(url, headers: headers, body: body);')
+  })
 })

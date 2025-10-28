@@ -112,4 +112,74 @@ suspend fun main() {
     expect(result).toContain('} catch (e: Exception) {')
     expect(result).toContain('println("Error: ${e.message}")')
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = KotlinKtor.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+
+suspend fun main() {
+  val client = HttpClient(CIO)
+
+  val response: HttpResponse = client.get {
+    url("https://example.com")
+    parameter("address.zip", "66031")
+    parameter("address.country", "Wallis")
+  }
+
+  println(response.bodyAsText())
+  client.close()
+}
+      `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['kotlin', 'ktor'],
+        category: 'backend'
+      }
+    }
+    const config: Config = {}
+    const result = KotlinKtor.generate(config, httpRequest)
+    expect(result).toContain('parameter("tags", "kotlin")')
+    expect(result).toContain('parameter("tags", "ktor")')
+    expect(result).toContain('parameter("category", "backend")')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = KotlinKtor.generate(config, httpRequest)
+    expect(result).toContain('parameter("version", "1.0")')
+    expect(result).toContain('put("name", "John")')
+  })
 })

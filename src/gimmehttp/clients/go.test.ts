@@ -344,4 +344,84 @@ func main() {
     `.trim()
     )
   })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = Go.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io"
+  "net/url"
+)
+
+func main() {
+  baseURL := "https://example.com"
+  u, err := url.Parse(baseURL)
+  q := u.Query()
+  q.Set("address.zip", "66031")
+  q.Set("address.country", "Wallis")
+  u.RawQuery = q.Encode()
+  url := u.String()
+
+  req, _ := http.NewRequest("GET", url, nil)
+
+  resp, _ := http.DefaultClient.Do(req)
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+
+  fmt.Println(string(body))
+}
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['go', 'http'],
+        category: 'backend'
+      }
+    }
+    const config: Config = {}
+    const result = Go.generate(config, httpRequest)
+    expect(result).toContain('q.Add("tags", "go")')
+    expect(result).toContain('q.Add("tags", "http")')
+    expect(result).toContain('q.Set("category", "backend")')
+  })
+
+  test('should build a POST request with URL parameters and body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      params: {
+        version: '1.0'
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        name: 'John'
+      }
+    }
+    const config: Config = {}
+    const result = Go.generate(config, httpRequest)
+    expect(result).toContain('q.Set("version", "1.0")')
+    expect(result).toContain('"name": "John"')
+  })
 })

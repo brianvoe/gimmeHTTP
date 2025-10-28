@@ -28,6 +28,27 @@ export default {
     }
 
     const { hostname, path, port, protocol } = ParseUrl(http.url)
+
+    // Build path with parameters
+    let finalPath = `"${path}"`
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('from urllib.parse import urlencode')
+      builder.line('params = {')
+      builder.indent()
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          builder.line(`"${key}": [${value.map((v) => `"${v}"`).join(', ')}],`)
+        } else {
+          builder.line(`"${key}": "${value}",`)
+        }
+      }
+      builder.outdent()
+      builder.line('}')
+      builder.line('query_string = urlencode(params, doseq=True)')
+      builder.line(`final_path = f"${path}?{query_string}"`)
+      finalPath = 'final_path'
+    }
+
     builder.line(`conn = http.client.HTTPSConnection("${hostname}", ${port})`)
 
     // Headers
@@ -84,12 +105,12 @@ export default {
     if (hasPayload) {
       const otherParams = params.filter((p) => p !== 'payload')
       builder.line(
-        `conn.request("${method}", "${path}", payload` +
+        `conn.request("${method}", ${finalPath}, payload` +
           (otherParams.length > 0 ? `, ${otherParams.join(', ')}` : '') +
           ')'
       )
     } else {
-      builder.line(`conn.request("${method}", "${path}"` + (params.length > 0 ? `, ${params.join(', ')}` : '') + ')')
+      builder.line(`conn.request("${method}", ${finalPath}` + (params.length > 0 ? `, ${params.join(', ')}` : '') + ')')
     }
     builder.line('res = conn.getresponse()')
     builder.line('data = res.read()')

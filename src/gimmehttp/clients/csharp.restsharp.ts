@@ -36,6 +36,20 @@ export default {
     builder.line(`var client = new RestClient("${http.url}");`)
     builder.line(`var request = new RestRequest(Method.${http.method.toUpperCase()});`)
 
+    // Add URL parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line()
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`request.AddParameter("${key}", "${val}", ParameterType.QueryString);`)
+          }
+        } else {
+          builder.line(`request.AddParameter("${key}", "${value}", ParameterType.QueryString);`)
+        }
+      }
+    }
+
     if (http.headers && Object.keys(http.headers).length > 0) {
       builder.line()
       for (const [key, value] of Object.entries(http.headers)) {

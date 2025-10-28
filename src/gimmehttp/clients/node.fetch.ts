@@ -15,7 +15,25 @@ export default {
     builder.line('const fetch = require("node-fetch");')
     builder.line()
 
-    builder.line('fetch("' + http.url + '", {')
+    // Build URL with parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('const url = new URL("' + http.url + '");')
+      builder.line('const params = new URLSearchParams();')
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`params.append("${key}", "${val}");`)
+          }
+        } else {
+          builder.line(`params.set("${key}", "${value}");`)
+        }
+      }
+      builder.line('url.search = params.toString();')
+      builder.line()
+      builder.line('fetch(url.toString(), {')
+    } else {
+      builder.line('fetch("' + http.url + '", {')
+    }
     builder.indent()
     builder.line('method: "' + http.method.toUpperCase() + '",')
 

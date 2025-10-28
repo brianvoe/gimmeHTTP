@@ -19,6 +19,19 @@ export default {
     // Everything is indented
     builder.indent()
 
+    // Add URL parameters using -G flag
+    if (http.params) {
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`-G -d "${key}=${val.replace(/"/g, '\\"')}"`)
+          }
+        } else {
+          builder.line(`-G -d "${key}=${value.replace(/"/g, '\\"')}"`)
+        }
+      }
+    }
+
     // Add headers
     if (http.headers) {
       for (const [key, value] of Object.entries(http.headers)) {

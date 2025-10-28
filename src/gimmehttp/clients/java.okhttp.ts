@@ -77,9 +77,28 @@ export default {
     }
 
     // Build request
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('HttpUrl.Builder urlBuilder = HttpUrl.parse("' + http.url + '").newBuilder();')
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`urlBuilder.addQueryParameter("${key}", "${val}");`)
+          }
+        } else {
+          builder.line(`urlBuilder.addQueryParameter("${key}", "${value}");`)
+        }
+      }
+      builder.line('HttpUrl url = urlBuilder.build();')
+      builder.line()
+    }
+
     builder.line('Request.Builder requestBuilder = new Request.Builder()')
     builder.indent()
-    builder.line(`.url("${http.url}")`)
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('.url(url)')
+    } else {
+      builder.line(`.url("${http.url}")`)
+    }
 
     if (hasBody) {
       builder.line('.method("' + http.method.toUpperCase() + '", body)')

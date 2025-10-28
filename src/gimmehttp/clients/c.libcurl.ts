@@ -25,7 +25,39 @@ export default {
     builder.line('curl = curl_easy_init();')
     builder.line('if(curl) {')
     builder.indent()
-    builder.line(`curl_easy_setopt(curl, CURLOPT_URL, "${http.url}");`)
+
+    // Build URL with parameters using multi-line string concatenation
+    if (http.params && Object.keys(http.params).length > 0) {
+      const params = new URLSearchParams()
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            params.append(key, val)
+          }
+        } else {
+          params.append(key, value)
+        }
+      }
+      const paramString = params.toString()
+      if (paramString) {
+        const separator = http.url.includes('?') ? '&' : '?'
+        const paramParts = paramString.split('&')
+
+        builder.line('curl_easy_setopt(curl, CURLOPT_URL,')
+        builder.indent()
+        builder.line(`"${http.url}"`)
+        builder.line(`"${separator}${paramParts[0]}"`)
+        for (let i = 1; i < paramParts.length; i++) {
+          builder.line(`"&${paramParts[i]}"`)
+        }
+        builder.outdent()
+        builder.line(');')
+      } else {
+        builder.line(`curl_easy_setopt(curl, CURLOPT_URL, "${http.url}");`)
+      }
+    } else {
+      builder.line(`curl_easy_setopt(curl, CURLOPT_URL, "${http.url}");`)
+    }
 
     if (http.method.toUpperCase() === 'POST') {
       builder.line('curl_easy_setopt(curl, CURLOPT_POST, 1L);')

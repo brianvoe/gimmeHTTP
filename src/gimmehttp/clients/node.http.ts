@@ -17,11 +17,31 @@ export default {
 
     const { hostname, path, port, protocol } = ParseUrl(http.url)
 
+    // Build path with parameters
+    let finalPath = path
+    if (http.params && Object.keys(http.params).length > 0) {
+      const params = new URLSearchParams()
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            params.append(key, val)
+          }
+        } else {
+          params.append(key, value)
+        }
+      }
+      const paramString = params.toString()
+      if (paramString) {
+        const separator = path.includes('?') ? '&' : '?'
+        finalPath = `${path}${separator}${paramString}`
+      }
+    }
+
     builder.line('const options = {')
     builder.indent()
     builder.line(`method: "${http.method.toUpperCase()}",`)
     builder.line(`hostname: "${hostname}",`)
-    builder.line(`path: "${path}",`)
+    builder.line(`path: "${finalPath}",`)
 
     if (http.headers || http.cookies) {
       builder.line('headers: {')

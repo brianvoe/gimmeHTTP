@@ -35,6 +35,7 @@ export interface Config {
 export interface Http {
   method: Method
   url: string
+  params?: { [key: string]: string | string[] }
   headers?: { [key: string]: string | string[] }
   cookies?: { [key: string]: string }
   body?: any

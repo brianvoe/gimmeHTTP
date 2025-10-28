@@ -15,6 +15,7 @@ describe('CSharpHttp.generate', () => {
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace HttpClientExample
 {
@@ -25,6 +26,142 @@ namespace HttpClientExample
       using (HttpClient client = new HttpClient())
       {
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
+
+        HttpResponseMessage response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseBody);
+      }
+    }
+  }
+}
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+    const config: Config = {}
+    const result = CSharpHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace HttpClientExample
+{
+  class Program
+  {
+    static async Task Main(string[] args)
+    {
+      using (HttpClient client = new HttpClient())
+      {
+        var uriBuilder = new UriBuilder("https://example.com");
+        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+        query.Add("address.zip", "66031");
+        query.Add("address.country", "Wallis");
+        uriBuilder.Query = query.ToString();
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, uriBuilder.ToString());
+
+        HttpResponseMessage response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseBody);
+      }
+    }
+  }
+}
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with array URL parameters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['javascript', 'typescript'],
+        category: 'programming'
+      }
+    }
+    const config: Config = {}
+    const result = CSharpHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace HttpClientExample
+{
+  class Program
+  {
+    static async Task Main(string[] args)
+    {
+      using (HttpClient client = new HttpClient())
+      {
+        var uriBuilder = new UriBuilder("https://example.com");
+        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+        query.Add("tags", "javascript");
+        query.Add("tags", "typescript");
+        query.Add("category", "programming");
+        uriBuilder.Query = query.ToString();
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, uriBuilder.ToString());
+
+        HttpResponseMessage response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseBody);
+      }
+    }
+  }
+}
+    `.trim()
+    )
+  })
+
+  test('should build a GET request with URL parameters containing special characters', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        search: 'hello world',
+        filter: 'test&value'
+      }
+    }
+    const config: Config = {}
+    const result = CSharpHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace HttpClientExample
+{
+  class Program
+  {
+    static async Task Main(string[] args)
+    {
+      using (HttpClient client = new HttpClient())
+      {
+        var uriBuilder = new UriBuilder("https://example.com");
+        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+        query.Add("search", "hello world");
+        query.Add("filter", "test&value");
+        uriBuilder.Query = query.ToString();
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, uriBuilder.ToString());
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -54,6 +191,7 @@ namespace HttpClientExample
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace HttpClientExample
 {
@@ -96,6 +234,7 @@ namespace HttpClientExample
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace HttpClientExample
 {
@@ -136,6 +275,7 @@ namespace HttpClientExample
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace HttpClientExample
 {
@@ -182,6 +322,7 @@ namespace HttpClientExample
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace HttpClientExample
 {
@@ -237,6 +378,7 @@ namespace HttpClientExample
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace HttpClientExample
 {
@@ -285,6 +427,7 @@ namespace HttpClientExample
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace HttpClientExample
 {

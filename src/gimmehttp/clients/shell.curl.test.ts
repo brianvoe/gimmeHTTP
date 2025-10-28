@@ -14,6 +14,70 @@ describe('shell.curl', () => {
     expect(result).toBe(`curl -X GET "https://example.com"`)
   })
 
+  test('GET - with URL parameters', () => {
+    const config = {}
+    const http: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        'address.zip': '66031',
+        'address.country': 'Wallis'
+      }
+    }
+
+    const result = ShellCurl.generate(config, http)
+    expect(result).toBe(
+      `
+curl -X GET "https://example.com" \\
+  -G -d "address.zip=66031" \\
+  -G -d "address.country=Wallis"
+      `.trim()
+    )
+  })
+
+  test('GET - with array URL parameters', () => {
+    const config = {}
+    const http: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        tags: ['javascript', 'typescript'],
+        category: 'programming'
+      }
+    }
+
+    const result = ShellCurl.generate(config, http)
+    expect(result).toBe(
+      `
+curl -X GET "https://example.com" \\
+  -G -d "tags=javascript" \\
+  -G -d "tags=typescript" \\
+  -G -d "category=programming"
+      `.trim()
+    )
+  })
+
+  test('GET - with URL parameters containing quotes', () => {
+    const config = {}
+    const http: Http = {
+      method: 'GET',
+      url: 'https://example.com',
+      params: {
+        search: 'hello "world"',
+        filter: 'test'
+      }
+    }
+
+    const result = ShellCurl.generate(config, http)
+    expect(result).toBe(
+      `
+curl -X GET "https://example.com" \\
+  -G -d "search=hello \\"world\\"" \\
+  -G -d "filter=test"
+      `.trim()
+    )
+  })
+
   test('GET - no trailing slash with no headers, no cookies, no body', () => {
     const config = {}
     const http: Http = {

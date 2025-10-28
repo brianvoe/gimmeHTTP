@@ -22,6 +22,23 @@ export default {
     builder.line('let res = client.request(reqwest::Method::' + http.method.toUpperCase() + ', "' + http.url + '")')
     builder.indent()
 
+    // URL Parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('.query(&[')
+      builder.indent()
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`("${key}", "${val}"),`)
+          }
+        } else {
+          builder.line(`("${key}", "${value}"),`)
+        }
+      }
+      builder.outdent()
+      builder.line('])')
+    }
+
     if (http.headers) {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {

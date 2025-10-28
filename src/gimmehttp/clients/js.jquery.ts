@@ -16,6 +16,21 @@ export default {
     builder.line(`url: "${http.url}",`)
     builder.line(`type: "${http.method.toUpperCase()}",`)
 
+    // URL Parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('data: {')
+      builder.indent()
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          builder.line(`"${key}": [${value.map((v) => `"${v}"`).join(', ')}],`)
+        } else {
+          builder.line(`"${key}": "${value}",`)
+        }
+      }
+      builder.outdent()
+      builder.line('},')
+    }
+
     if (http.headers) {
       builder.line('headers: {')
       builder.indent()

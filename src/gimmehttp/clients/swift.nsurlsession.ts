@@ -14,7 +14,25 @@ export default {
 
     builder.line('import Foundation')
     builder.line()
-    builder.line('let url = URL(string: "' + http.url + '")!')
+
+    // Build URL with parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('var urlComponents = URLComponents(string: "' + http.url + '")!')
+      builder.line('var queryItems: [URLQueryItem] = []')
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`queryItems.append(URLQueryItem(name: "${key}", value: "${val}"))`)
+          }
+        } else {
+          builder.line(`queryItems.append(URLQueryItem(name: "${key}", value: "${value}"))`)
+        }
+      }
+      builder.line('urlComponents.queryItems = queryItems')
+      builder.line('let url = urlComponents.url!')
+    } else {
+      builder.line('let url = URL(string: "' + http.url + '")!')
+    }
     builder.line('var request = URLRequest(url: url)')
     builder.line('request.httpMethod = "' + http.method.toUpperCase() + '"')
 

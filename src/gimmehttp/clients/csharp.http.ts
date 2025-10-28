@@ -16,6 +16,7 @@ export default {
     builder.line('using System;')
     builder.line('using System.Net.Http;')
     builder.line('using System.Threading.Tasks;')
+    builder.line('using System.Web;')
     builder.line()
     builder.line('namespace HttpClientExample')
     builder.line('{')
@@ -29,9 +30,31 @@ export default {
     builder.line('using (HttpClient client = new HttpClient())')
     builder.line('{')
     builder.indent()
-    builder.line(
-      `HttpRequestMessage request = new HttpRequestMessage(HttpMethod.${http.method.toUpperCase()}, "${http.url}");`
-    )
+
+    // Build URL with parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line('var uriBuilder = new UriBuilder("' + http.url + '");')
+      builder.line('var query = HttpUtility.ParseQueryString(uriBuilder.Query);')
+
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`query.Add("${key}", "${val}");`)
+          }
+        } else {
+          builder.line(`query.Add("${key}", "${value}");`)
+        }
+      }
+
+      builder.line('uriBuilder.Query = query.ToString();')
+      builder.line(
+        `HttpRequestMessage request = new HttpRequestMessage(HttpMethod.${http.method.toUpperCase()}, uriBuilder.ToString());`
+      )
+    } else {
+      builder.line(
+        `HttpRequestMessage request = new HttpRequestMessage(HttpMethod.${http.method.toUpperCase()}, "${http.url}");`
+      )
+    }
 
     if (http.headers && Object.keys(http.headers).length > 0) {
       builder.line()

@@ -42,7 +42,7 @@ export default {
     if (isJsonBody) {
       builder.line('"encoding/json"')
     }
-    if (isFormBody) {
+    if (isFormBody || (http.params && Object.keys(http.params).length > 0)) {
       builder.line('"net/url"')
     }
     if (config.handleErrors) {
@@ -53,7 +53,33 @@ export default {
     builder.line()
     builder.line('func main() {')
     builder.indent()
-    builder.line(`url := "${http.url}"`)
+
+    // Build URL with parameters
+    if (http.params && Object.keys(http.params).length > 0) {
+      builder.line(`baseURL := "${http.url}"`)
+      builder.line('u, err := url.Parse(baseURL)')
+      if (config.handleErrors) {
+        builder.line('if err != nil {')
+        builder.indent()
+        builder.line('log.Fatal(err)')
+        builder.outdent()
+        builder.line('}')
+      }
+      builder.line('q := u.Query()')
+      for (const [key, value] of Object.entries(http.params)) {
+        if (Array.isArray(value)) {
+          for (const val of value) {
+            builder.line(`q.Add("${key}", "${val}")`)
+          }
+        } else {
+          builder.line(`q.Set("${key}", "${value}")`)
+        }
+      }
+      builder.line('u.RawQuery = q.Encode()')
+      builder.line('url := u.String()')
+    } else {
+      builder.line(`url := "${http.url}"`)
+    }
     builder.line()
 
     let bodyVar = 'nil'
