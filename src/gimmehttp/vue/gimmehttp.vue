@@ -26,6 +26,76 @@
   import themeGithubDark from 'shiki/themes/github-dark.mjs'
   import themeGithubLight from 'shiki/themes/github-light.mjs'
 
+  type Highlighter = Awaited<ReturnType<typeof createHighlighterCore>>
+
+  // Shiki singleton service
+  class ShikiService {
+    private static instance: ShikiService
+    private highlighter: Highlighter | null = null
+    private initPromise: Promise<Highlighter> | null = null
+
+    private constructor() {}
+
+    public static getInstance(): ShikiService {
+      if (!ShikiService.instance) {
+        ShikiService.instance = new ShikiService()
+      }
+      return ShikiService.instance
+    }
+
+    public async getHighlighter(): Promise<Highlighter> {
+      if (this.highlighter) {
+        return this.highlighter
+      }
+
+      if (this.initPromise) {
+        return this.initPromise
+      }
+
+      this.initPromise = this.initializeHighlighter()
+      this.highlighter = await this.initPromise
+      return this.highlighter
+    }
+
+    private async initializeHighlighter(): Promise<Highlighter> {
+      return await createHighlighterCore({
+        themes: [themeGithubDark, themeGithubLight],
+        langs: [
+          C,
+          Csharp,
+          Dart,
+          Go,
+          Java,
+          Javascript,
+          Kotlin,
+          Php,
+          Python,
+          R,
+          Ruby,
+          Rust,
+          Shell,
+          Swift,
+          Typescript,
+          Json
+        ],
+        langAlias: {
+          ts: 'typescript',
+          node: 'javascript',
+          nodejs: 'javascript'
+        },
+        engine: createJavaScriptRegexEngine()
+      })
+    }
+
+    public dispose(): void {
+      if (this.highlighter) {
+        this.highlighter.dispose()
+        this.highlighter = null
+      }
+      this.initPromise = null
+    }
+  }
+
   import { getLogo } from '../logos/index'
 
   const defaultLang = 'javascript'
@@ -87,33 +157,8 @@
       }
     },
     async created() {
-      this.highlighter = await createHighlighterCore({
-        themes: [themeGithubDark, themeGithubLight],
-        langs: [
-          C,
-          Csharp,
-          Dart,
-          Go,
-          Java,
-          Javascript,
-          Kotlin,
-          Php,
-          Python,
-          R,
-          Ruby,
-          Rust,
-          Shell,
-          Swift,
-          Typescript,
-          Json
-        ],
-        langAlias: {
-          ts: 'typescript',
-          node: 'javascript',
-          nodejs: 'javascript'
-        },
-        engine: createJavaScriptRegexEngine()
-      })
+      const shikiService = ShikiService.getInstance()
+      this.highlighter = await shikiService.getHighlighter()
 
       this.code()
 
@@ -124,9 +169,6 @@
       }
     },
     unmounted() {
-      if (this.highlighter) {
-        this.highlighter.dispose()
-      }
       if (this.checkInterval) {
         clearInterval(this.checkInterval)
       }
@@ -457,7 +499,7 @@
         .gh-arrows {
           height: 100%;
           width: auto;
-          max-height: 16px;
+          max-height: 20px;
           max-width: 40px;
           fill: var(--gh-border-color);
         }
@@ -677,9 +719,11 @@
       <div :class="['gh-copy', { 'gh-show-copied': showCopied }]" @click="clickCopy()">
         <svg v-if="!showCopied" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
           <path
+            class="gh-copy-top"
             d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
           />
           <path
+            class="gh-copy-bottom"
             d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
           />
         </svg>
@@ -689,9 +733,9 @@
       <div class="gh-lang" @click="toggleModal()">
         <span v-if="logoSvg(internalLanguage)" v-html="logoSvg(internalLanguage)" class="gh-select"></span>
         <span v-else class="gh-lang-text">{{ internalLanguage }}</span>
-        <svg class="gh-arrows" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        <svg class="gh-arrows" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg">
           <path
-            d="m3.707 2.293 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L6.586 8 2.293 3.707a1 1 0 0 1 1.414-1.414m5 0 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 8 7.293 3.707a1 1 0 0 1 1.414-1.414"
+            d="M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z"
           />
         </svg>
       </div>
