@@ -411,13 +411,19 @@
           color var(--gh-timing) ease;
 
         &:hover {
-          background-color: var(--gh-accent-color);
-          color: var(--gh-text-color-accent);
+          background-color: var(--gh-border-color);
+
+          svg {
+            fill: var(--gh-accent-color);
+          }
         }
 
         &.gh-show-copied {
-          background-color: var(--gh-accent-color);
-          color: var(--gh-text-color-accent);
+          background-color: var(--gh-border-color);
+
+          .gh-txt {
+            color: var(--gh-accent-color);
+          }
         }
 
         .gh-txt {
@@ -465,8 +471,11 @@
           color var(--gh-timing) ease;
 
         &:hover {
-          background-color: var(--gh-accent-color);
-          color: var(--gh-text-color-accent);
+          background-color: var(--gh-border-color);
+
+          svg {
+            fill: var(--gh-accent-color);
+          }
         }
 
         .gh-select {
@@ -614,8 +623,8 @@
 
             &.gh-selected,
             &:hover {
-              background-color: var(--gh-accent-color);
-              border-color: var(--gh-border-color);
+              background-color: var(--gh-border-color);
+              border-color: var(--gh-accent-color);
               transform: translateY(-5px);
               box-shadow: var(--gh-box-shadow);
             }
@@ -670,9 +679,9 @@
 
             &.gh-selected,
             &:hover {
-              background-color: var(--gh-accent-color);
-              border-color: var(--gh-border-color);
-              color: var(--gh-text-color-accent);
+              background-color: var(--gh-border-color);
+              border-color: var(--gh-accent-color);
+              color: var(--gh-accent-color);
               transform: translateY(-5px);
               box-shadow: var(--gh-box-shadow);
             }
