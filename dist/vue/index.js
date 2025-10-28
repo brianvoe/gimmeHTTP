@@ -1,32 +1,32 @@
-import { defineComponent as M, createElementBlock as m, openBlock as b, createElementVNode as $, createVNode as O, normalizeClass as w, toDisplayString as E, Transition as q, withCtx as x, createCommentVNode as L, Fragment as B, renderList as S } from "vue";
-import { createHighlighterCore as R } from "shiki/core";
+import { defineComponent as R, createElementBlock as m, openBlock as b, createElementVNode as $, createVNode as q, normalizeClass as E, toDisplayString as O, Transition as x, withCtx as L, createCommentVNode as B, Fragment as S, renderList as T } from "vue";
+import { createHighlighterCore as H } from "shiki/core";
 import { createJavaScriptRegexEngine as _ } from "shiki/engine/javascript";
-import H from "shiki/langs/c.mjs";
-import G from "shiki/langs/csharp.mjs";
+import G from "shiki/langs/c.mjs";
+import P from "shiki/langs/csharp.mjs";
 import U from "shiki/langs/dart.mjs";
-import P from "shiki/langs/go.mjs";
+import z from "shiki/langs/go.mjs";
 import D from "shiki/langs/java.mjs";
-import z from "shiki/langs/javascript.mjs";
-import N from "shiki/langs/kotlin.mjs";
-import J from "shiki/langs/php.mjs";
-import I from "shiki/langs/python.mjs";
-import V from "shiki/langs/r.mjs";
-import K from "shiki/langs/ruby.mjs";
-import Z from "shiki/langs/rust.mjs";
-import W from "shiki/langs/shellscript.mjs";
-import Q from "shiki/langs/swift.mjs";
-import X from "shiki/langs/typescript.mjs";
-import Y from "shiki/langs/json.mjs";
-import ee from "shiki/themes/github-dark.mjs";
-import ne from "shiki/themes/github-light.mjs";
-const k = [];
-function oe() {
-  return k;
+import N from "shiki/langs/javascript.mjs";
+import J from "shiki/langs/kotlin.mjs";
+import I from "shiki/langs/php.mjs";
+import V from "shiki/langs/python.mjs";
+import K from "shiki/langs/r.mjs";
+import Z from "shiki/langs/ruby.mjs";
+import W from "shiki/langs/rust.mjs";
+import Q from "shiki/langs/shellscript.mjs";
+import X from "shiki/langs/swift.mjs";
+import Y from "shiki/langs/typescript.mjs";
+import ee from "shiki/langs/json.mjs";
+import ne from "shiki/themes/github-dark.mjs";
+import oe from "shiki/themes/github-light.mjs";
+const w = [];
+function te() {
+  return w;
 }
-function A(o, n) {
+function F(o, n) {
   if (o === "" || o === void 0)
     return null;
-  const e = k.filter((r) => r.language.toLowerCase() === o.toLowerCase());
+  const e = w.filter((r) => r.language.toLowerCase() === o.toLowerCase());
   if (e.length === 0)
     return null;
   const t = e.find((r) => r.default) || e[0];
@@ -40,19 +40,19 @@ function c(o) {
     return new Error("Client is required");
   if (Array.isArray(o))
     return o.forEach((t) => c(t)), null;
-  const n = k.filter((t) => t.language.toLowerCase() === o.language.toLowerCase()), e = n.find((t) => t.client.toLowerCase() === o.client.toLowerCase());
+  const n = w.filter((t) => t.language.toLowerCase() === o.language.toLowerCase()), e = n.find((t) => t.client.toLowerCase() === o.client.toLowerCase());
   if (o.default === void 0 && (o.default = n.length === 0), e) {
-    const t = k.indexOf(o);
-    return k[t] = o, null;
+    const t = w.indexOf(o);
+    return w[t] = o, null;
   }
-  return k.push(o), null;
+  return w.push(o), null;
 }
-function te(o) {
-  let n = ie(o);
+function ie(o) {
+  let n = le(o);
   if (n)
     return { error: n.message };
-  o.config = le(o.config), o.language || (o.language = "javascript");
-  const e = A(o.language, o.client);
+  o.config = re(o.config), o.language || (o.language = "javascript");
+  const e = F(o.language, o.client);
   if (!e)
     return { error: "Client not found" };
   const t = e.generate(o.config, o.http);
@@ -62,7 +62,7 @@ function te(o) {
     code: t
   };
 }
-function ie(o) {
+function le(o) {
   if (!o)
     return new Error("Request is required");
   if (!o.http)
@@ -72,7 +72,7 @@ function ie(o) {
   if (!o.http.url)
     return new Error("http.url is required");
 }
-function le(o) {
+function re(o) {
   return o = o || {}, o.handleErrors === void 0 && (o.handleErrors = !1), o;
 }
 class u {
@@ -141,7 +141,7 @@ class u {
     return this.code.map(({ depth: n, line: e }) => `${this.indentChar.repeat(n)}${e}`).join(this.lineJoin).trimEnd();
   }
 }
-function F(o) {
+function M(o) {
   let n, e, t, i, r;
   try {
     const l = new URL(o);
@@ -190,14 +190,14 @@ function a(o, n) {
       return !1;
   }
 }
-function re(o) {
+function se(o) {
   return "application/octet-stream";
 }
-function se(o, n) {
+function ae(o, n) {
   const e = h(o);
-  return e ? { contentType: e, wasInferred: !1 } : { contentType: re(), wasInferred: !0 };
+  return e ? { contentType: e, wasInferred: !1 } : { contentType: se(), wasInferred: !0 };
 }
-const ae = {
+const de = {
   default: !0,
   language: "c",
   client: "libcurl",
@@ -220,7 +220,7 @@ const ae = {
     }
     return n.body && (e.line(), h(n.headers), j(n.body) ? e.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${n.body.replace(/"/g, '\\"')}");`) : (e.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"('), e.json(n.body), e.append(')");'))), e.line(), e.line("res = curl_easy_perform(curl);"), e.line("if(res != CURLE_OK)"), e.indent(), e.line('fprintf(stderr, "failed: %s", curl_easy_strerror(res));'), e.outdent(), n.headers && Object.keys(n.headers).length > 0 && e.line("curl_slist_free_all(headers);"), e.line("curl_easy_cleanup(curl);"), e.outdent(), e.line("}"), e.line(), e.line("curl_global_cleanup();"), e.line("return 0;"), e.outdent(), e.line("}"), e.output();
   }
-}, de = {
+}, ce = {
   default: !0,
   language: "csharp",
   client: "http",
@@ -255,7 +255,7 @@ const ae = {
     }
     return e.line(), e.line("HttpResponseMessage response = await client.SendAsync(request);"), e.line("response.EnsureSuccessStatusCode();"), e.line("string responseBody = await response.Content.ReadAsStringAsync();"), e.line("Console.WriteLine(responseBody);"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.output();
   }
-}, ce = {
+}, ue = {
   language: "csharp",
   client: "restsharp",
   generate(o, n) {
@@ -283,7 +283,7 @@ const ae = {
     }
     return e.line(), e.line("IRestResponse response = client.Execute(request);"), e.line("Console.WriteLine(response.Content);"), o.handleErrors && (e.outdent(), e.line("}"), e.line("catch (Exception ex)"), e.line("{"), e.indent(), e.line('Console.WriteLine($"Error: {ex.Message}");'), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.output();
   }
-}, ue = {
+}, fe = {
   default: !0,
   language: "dart",
   client: "http",
@@ -312,7 +312,7 @@ const ae = {
       `var response = await http.patch(url${d ? ", headers: headers" : ""}${l !== "null" ? ", body: " + l : ""});`
     ), e.line(), e.line("print(response.body);"), o.handleErrors && (e.outdent(), e.line("} catch (e) {"), e.indent(), e.line('print("Error: $e");'), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.output();
   }
-}, fe = {
+}, pe = {
   default: !0,
   language: "go",
   client: "http",
@@ -360,7 +360,7 @@ const ae = {
     }
     return o.handleErrors ? (e.line("resp, err := http.DefaultClient.Do(req)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("resp, _ := http.DefaultClient.Do(req)"), e.line("defer resp.Body.Close()"), e.line(), o.handleErrors ? (e.line("body, err := io.ReadAll(resp.Body)"), e.line("if err != nil {"), e.indent(), e.line("log.Fatal(err)"), e.outdent(), e.line("}")) : e.line("body, _ := io.ReadAll(resp.Body)"), e.line(), e.line("fmt.Println(string(body))"), e.outdent(), e.line("}"), e.output();
   }
-}, pe = {
+}, he = {
   default: !0,
   language: "java",
   client: "httpurlconnection",
@@ -389,7 +389,7 @@ const ae = {
       } else j(n.body) && (e.line("try (OutputStream os = conn.getOutputStream()) {"), e.indent(), e.line(`byte[] input = "${n.body.replace(/"/g, '\\"')}".getBytes("utf-8");`), e.line("os.write(input, 0, input.length);"), e.outdent(), e.line("}"));
     return e.line(), e.line("int responseCode = conn.getResponseCode();"), e.line("BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));"), e.line("String inputLine;"), e.line("StringBuilder response = new StringBuilder();"), e.line(), e.line("while ((inputLine = in.readLine()) != null) {"), e.indent(), e.line("response.append(inputLine);"), e.outdent(), e.line("}"), e.line("in.close();"), e.line(), e.line("System.out.println(response.toString());"), o.handleErrors && (e.outdent(), e.line("} catch (Exception e) {"), e.indent(), e.line("e.printStackTrace();"), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.output();
   }
-}, he = {
+}, ye = {
   language: "java",
   client: "okhttp",
   generate(o, n) {
@@ -421,7 +421,7 @@ const ae = {
     }
     return e.line(".build();"), e.outdent(), e.line(), e.line("Request request = requestBuilder;"), e.line("Response response = client.newCall(request).execute();"), e.line(), e.line("System.out.println(response.body().string());"), o.handleErrors && (e.outdent(), e.line("} catch (Exception e) {"), e.indent(), e.line("e.printStackTrace();"), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.output();
   }
-}, ye = {
+}, ge = {
   default: !0,
   language: "javascript",
   client: "fetch",
@@ -438,11 +438,11 @@ const ae = {
       e.outdent(), e.line("},");
     }
     n.body && (e.line("body: "), e.json(n.body)), e.outdent(), e.line("})");
-    const { contentType: t, wasInferred: i } = se(n.headers);
+    const { contentType: t, wasInferred: i } = ae(n.headers);
     let r = "text()";
     return (!i || t !== "application/octet-stream") && (a(t, "json") ? r = "json()" : a(t, "xml") || a(t, "text") ? r = "text()" : a(t, "blob") && (r = "blob()")), i && r === "json()" && e.line(`// Response Content-Type inferred as: ${t}`), o.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("if (!response.ok) {"), e.indent(), e.line('throw new Error("Network response was not ok");'), e.outdent(), e.line("}"), e.line(`return response.${r};`), e.outdent(), e.line("})"), e.line(".then(data => console.log(data))"), e.line('.catch(error => console.error("There was a problem with the fetch operation:", error));')) : (e.line(`.then(response => response.${r})`), e.line(".then(data => console.log(data));")), e.output();
   }
-}, ge = {
+}, me = {
   language: "javascript",
   client: "axios",
   generate(o, n) {
@@ -465,7 +465,7 @@ const ae = {
     }
     return n.body && (e.line("data: "), e.json(n.body)), e.outdent(), e.line("})"), o.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("console.log(response.data);"), e.outdent(), e.line("})"), e.line(".catch(error => {"), e.indent(), e.line('console.error("There was an error:", error);'), e.outdent(), e.line("});")) : e.line(".then(response => console.log(response.data));"), e.output();
   }
-}, me = {
+}, be = {
   language: "javascript",
   client: "jquery",
   generate(o, n) {
@@ -482,7 +482,7 @@ const ae = {
     }
     return n.body && (e.line("data: "), e.json(n.body), e.append(","), e.line('contentType: "application/json",')), e.line("success: function(data) {"), e.indent(), e.line("console.log(data);"), e.outdent(), e.line("},"), o.handleErrors && (e.line("error: function(jqXHR, textStatus, errorThrown) {"), e.indent(), e.line('console.error("Request failed:", textStatus, errorThrown);'), e.outdent(), e.line("},")), e.outdent(), e.line("});"), e.output();
   }
-}, be = {
+}, $e = {
   default: !0,
   language: "kotlin",
   client: "ktor",
@@ -513,7 +513,7 @@ const ae = {
       } else j(n.body) && e.line(`setBody("${n.body.replace(/"/g, '\\"')}")`);
     return e.outdent(), e.line("}"), e.line(), e.line("println(response.bodyAsText())"), e.line("client.close()"), o.handleErrors && (e.outdent(), e.line("} catch (e: Exception) {"), e.indent(), e.line('println("Error: ${e.message}")'), e.outdent(), e.line("}")), e.outdent(), e.line("}"), e.output();
   }
-}, $e = {
+}, je = {
   language: "node",
   client: "http",
   generate(o, n) {
@@ -523,7 +523,7 @@ const ae = {
 `
     });
     e.line('const http = require("http");'), e.line();
-    const { hostname: t, path: i } = F(n.url);
+    const { hostname: t, path: i } = M(n.url);
     if (e.line("const options = {"), e.indent(), e.line(`method: "${n.method.toUpperCase()}",`), e.line(`hostname: "${t}",`), e.line(`path: "${i}",`), n.headers || n.cookies) {
       if (e.line("headers: {"), e.indent(), n.headers)
         for (const [r, l] of Object.entries(n.headers))
@@ -536,7 +536,7 @@ const ae = {
     }
     return e.outdent(), e.line("};"), e.line(), e.line("const req = http.request(options, (res) => {"), e.indent(), e.line('let data = "";'), e.line(), e.line('res.on("data", (chunk) => {'), e.indent(), e.line("data += chunk;"), e.outdent(), e.line("});"), e.line(), e.line('res.on("end", () => {'), e.indent(), e.line("console.log(data);"), e.outdent(), e.line("});"), e.outdent(), e.line("});"), o.handleErrors && (e.line(), e.line('req.on("error", (error) => {'), e.indent(), e.line("console.error(error);"), e.outdent(), e.line("});")), e.line(), n.body && (e.line("req.write("), e.json(n.body), e.append(");")), e.line("req.end();"), e.output();
   }
-}, je = {
+}, Ce = {
   language: "node",
   client: "fetch",
   generate(o, n) {
@@ -556,7 +556,7 @@ const ae = {
     let i = "text()";
     return a(t, "json") ? i = "json()" : a(t, "xml") || a(t, "text") ? i = "text()" : a(t, "blob") && (i = "blob()"), o.handleErrors ? (e.line(".then(response => {"), e.indent(), e.line("if (!response.ok) {"), e.indent(), e.line('throw new Error("response not ok");'), e.outdent(), e.line("}"), e.line(`return response.${i};`), e.outdent(), e.line("})"), e.line(".then(data => console.log(data))"), e.line('.catch(error => console.error("error:", error));')) : (e.line(`.then(response => response.${i})`), e.line(".then(data => console.log(data))")), e.output();
   }
-}, Ce = {
+}, we = {
   default: !0,
   language: "php",
   client: "curl",
@@ -643,7 +643,7 @@ const ae = {
     }), t = n.method.toUpperCase(), i = t !== "GET" && n.body, r = n.headers && Object.keys(n.headers).length > 0, l = n.cookies && Object.keys(n.cookies).length > 0;
     let s = [];
     e.line("import http.client"), e.line("import json"), e.line(), o.handleErrors && (e.line("try:"), e.indent());
-    const { hostname: d, path: f, port: p } = F(n.url);
+    const { hostname: d, path: f, port: p } = M(n.url);
     if (e.line(`conn = http.client.HTTPSConnection("${d}", ${p})`), r) {
       e.line(), s.push("headers"), e.line("headers = {"), e.indent();
       for (const [y, C] of Object.entries(n.headers))
@@ -670,7 +670,7 @@ const ae = {
       e.line(`conn.request("${t}", "${f}"` + (s.length > 0 ? `, ${s.join(", ")}` : "") + ")");
     return e.line("res = conn.getresponse()"), e.line("data = res.read()"), e.line(), e.line('print(data.decode("utf-8"))'), o.handleErrors && (e.outdent(), e.line("except Exception as e:"), e.indent(), e.line('print(f"Error: {e}")'), e.outdent()), e.output();
   }
-}, we = {
+}, Ee = {
   language: "python",
   client: "requests",
   generate(o, n) {
@@ -701,7 +701,7 @@ const ae = {
       "response = requests." + n.method.toLowerCase() + "(url" + (s.length > 0 ? `, ${s.join(", ")}` : "") + ")"
     ), e.line("print(response.text)"), o.handleErrors && (e.outdent(), e.line("except requests.exceptions.RequestException as e:"), e.indent(), e.line('print(f"Error: {e}")'), e.outdent()), e.output();
   }
-}, Ee = {
+}, Oe = {
   default: !0,
   language: "ruby",
   client: "nethttp",
@@ -724,7 +724,7 @@ const ae = {
     }
     return e.line(), e.line('response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|'), e.indent(), e.line("http.request(request)"), e.outdent(), e.line("end"), e.line(), e.line("puts response.body"), o.handleErrors && (e.outdent(), e.line("rescue StandardError => e"), e.indent(), e.line('puts "Error: #{e.message}"'), e.outdent(), e.line("end")), e.output();
   }
-}, Oe = {
+}, qe = {
   language: "ruby",
   client: "faraday",
   generate(o, n) {
@@ -750,7 +750,7 @@ const ae = {
     }
     return e.outdent(), e.line("end"), e.line(), e.line("puts response.body"), o.handleErrors && (e.outdent(), e.line("rescue Faraday::Error => e"), e.indent(), e.line('puts "Error: #{e.message}"'), e.outdent(), e.line("end")), e.output();
   }
-}, qe = {
+}, xe = {
   language: "rust",
   client: "reqwest",
   generate(o, n) {
@@ -771,7 +771,7 @@ const ae = {
     }
     return e.line(".send()?;"), e.outdent(), e.line(), o.handleErrors ? (e.line("if res.status().is_success() {"), e.indent(), e.line('println!("{}", res.text()?);'), e.outdent(), e.line("} else {"), e.indent(), e.line('eprintln!("Request failed with status: {}", res.status());'), e.outdent(), e.line("}")) : e.line('println!("{}", res.text()?);'), e.line("Ok(())"), e.outdent(), e.line("}"), e.output();
   }
-}, xe = {
+}, Le = {
   default: !0,
   language: "shell",
   client: "curl",
@@ -807,7 +807,7 @@ const ae = {
     let i = e.output();
     return i = i.replace(/\\\s*$/, "").trim(), i;
   }
-}, Le = {
+}, Be = {
   default: !0,
   language: "swift",
   client: "nsurlsession",
@@ -830,7 +830,6 @@ const ae = {
     return n.body && (e.line(), typeof n.body == "string" ? (e.line(`let bodyString = "${n.body.replace(/"/g, '\\"')}"`), e.line("request.httpBody = bodyString.data(using: .utf8)")) : (e.line("let bodyDict: [String: Any] = "), e.json(n.body), e.line("request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)"))), e.line(), e.line("let task = URLSession.shared.dataTask(with: request) { data, response, error in"), e.indent(), e.line("if let error = error {"), e.indent(), e.line('print("Error: \\(error)")'), e.line("return"), e.outdent(), e.line("}"), e.line(), e.line("if let httpResponse = response as? HTTPURLResponse {"), e.indent(), e.line("if httpResponse.statusCode == 200, let data = data {"), e.indent(), e.line("let responseString = String(data: data, encoding: .utf8)"), e.line('print(responseString ?? "No response data")'), e.outdent(), e.line("} else {"), e.indent(), e.line('print("Request failed with status code: \\(httpResponse.statusCode)")'), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.outdent(), e.line("}"), e.line(), e.line("task.resume()"), e.output();
   }
 };
-c(ae);
 c(de);
 c(ce);
 c(ue);
@@ -844,15 +843,16 @@ c(be);
 c($e);
 c(je);
 c(Ce);
+c(we);
 c(ke);
 c(ve);
-c(we);
 c(Ee);
 c(Oe);
 c(qe);
 c(xe);
 c(Le);
-const Be = {
+c(Be);
+const Se = {
   c: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 256"><g fill="none" fill-rule="evenodd"><path d="M227.988 75.264c-.001-4.305-.923-8.108-2.786-11.372-1.83-3.211-4.573-5.9-8.25-8.029C186.6 38.38 156.218 20.948 125.875 3.445c-8.18-4.717-16.112-4.545-24.232.24-12.082 7.119-72.57 41.739-90.594 52.168C3.626 60.147.013 66.716.012 75.256 0 110.419.012 145.58 0 180.743c.002 4.21.884 7.94 2.666 11.156 1.83 3.306 4.61 6.07 8.372 8.247 18.026 10.43 78.521 45.047 90.6 52.167 8.124 4.788 16.055 4.959 24.238.24 30.344-17.503 60.729-34.933 91.086-52.418 3.762-2.175 6.542-4.941 8.373-8.245 1.779-3.216 2.663-6.946 2.665-11.157 0 0 0-70.305-.012-105.469" fill="#A9B9CB"/><path d="M125.668 3.675c-8.167-4.706-16.086-4.535-24.192.239-12.062 7.1-72.45 41.63-90.446 52.033C3.62 60.228.013 66.78.012 75.299 0 110.369.012 145.44 0 180.512c.002 4.2.883 7.92 2.661 11.126 1.829 3.299 4.604 6.056 8.36 8.226a8027 8027 0 0 0 17.954 10.329L195.604 43.889c-23.315-13.4-46.636-26.788-69.936-40.214" fill="#7F8B99"/><path d="m137.562 111.972 35.482.25c0-14.755-14.964-50.889-57.867-50.889-27.334 0-64.081 17.344-64.081 67.21 0 49.863 36.023 66.124 64.081 66.124 45.437 0 56.297-31.38 56.297-49.113l-33.85-1.932s.906 20.511-22.627 20.511c-21.723 0-25.348-26.558-25.348-35.59 0-13.731 4.893-35.773 25.348-35.773s22.565 19.202 22.565 19.202" fill="#FFF"/></g></svg>',
   csharp: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><path fill="#9B4F96" d="M115.4 30.7 67.1 2.9c-.8-.5-1.9-.7-3.1-.7s-2.3.3-3.1.7l-48 27.9c-1.7 1-2.9 3.5-2.9 5.4v55.7c0 1.1.2 2.4 1 3.5l106.8-62c-.6-1.2-1.5-2.1-2.4-2.7"/><path fill="#68217A" d="M10.7 95.3c.5.8 1.2 1.5 1.9 1.9l48.2 27.9c.8.5 1.9.7 3.1.7s2.3-.3 3.1-.7l48-27.9c1.7-1 2.9-3.5 2.9-5.4V36.1c0-.9-.1-1.9-.6-2.8z"/><path fill="#fff" d="M85.3 76.1C81.1 83.5 73.1 88.5 64 88.5c-13.5 0-24.5-11-24.5-24.5s11-24.5 24.5-24.5c9.1 0 17.1 5 21.3 12.5l13-7.5c-6.8-11.9-19.6-20-34.3-20-21.8 0-39.5 17.7-39.5 39.5s17.7 39.5 39.5 39.5c14.6 0 27.4-8 34.2-19.8zM97 66.2l.9-4.3h-4.2v-4.7h5.1L100 51h4.9l-1.2 6.1h3.8l1.2-6.1h4.8l-1.2 6.1h2.4v4.7h-3.3l-.9 4.3h4.2v4.7h-5.1l-1.2 6h-4.9l1.2-6h-3.8l-1.2 6h-4.8l1.2-6h-2.4v-4.7H97zm4.8 0h3.8l.9-4.3h-3.8z"/></svg>',
   dart: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none"><defs><linearGradient id="dart-a" x1="3.952%" y1="26.993%" x2="75.897%" y2="52.919%"><stop offset="0%" stop-color="#00D2B8"/><stop offset="100%" stop-color="#55DDCA"/></linearGradient><linearGradient id="dart-b" x1="26.174%" y1="46.887%" x2="79.77%" y2="65.621%"><stop offset="0%" stop-color="#0075C9"/><stop offset="38.8%" stop-color="#0075C9"/><stop offset="75.3%" stop-color="#007BC9"/></linearGradient><linearGradient id="dart-c" x1="50%" y1="97.21%" x2="50%" y2="-.277%"><stop offset="0%" stop-color="#FFB700"/><stop offset="100%" stop-color="#FFA700"/></linearGradient></defs><polygon fill="url(#dart-a)" points="128 0 256 0 256 128"/><polygon fill="url(#dart-b)" points="0 128 0 256 128 256"/><polygon fill="url(#dart-c)" points="0 256 128 128 256 128 128 256"/><path fill="#00D2B8" d="M128,128 L256,0 L128,0 L128,128 Z" opacity=".2"/><path fill="#0075C9" d="M0,128 L128,128 L0,256 L0,128 Z" opacity=".2"/></svg>',
@@ -870,11 +870,56 @@ const Be = {
   swift: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 255"><defs><linearGradient x1="59.404%" y1="-3.568%" x2="40.49%" y2="103.581%" id="swift-a"><stop stop-color="#FAAE42" offset="0%"/><stop stop-color="#EF3E31" offset="100%"/></linearGradient><linearGradient x1="59.84%" y1="1.974%" x2="43.622%" y2="97.794%" id="swift-b"><stop stop-color="#E39F3A" offset="0%"/><stop stop-color="#D33929" offset="100%"/></linearGradient></defs><g fill="none" fill-rule="evenodd"><path d="M56.679 0h141.248c6.873 0 13.547 1.096 20.022 3.387 9.363 3.386 17.83 9.363 24.205 17.133 6.475 7.77 10.758 17.332 12.252 27.293.598 3.685.698 7.37.698 11.056v137.76c0 4.383-.2 8.865-1.096 13.148a56.4 56.4 0 0 1-13.448 26.596c-6.674 7.47-15.44 13.049-24.902 16.037-5.778 1.793-11.754 2.59-17.83 2.59-2.69 0-141.548 0-143.64-.1-10.16-.498-20.22-3.785-28.688-9.463-8.267-5.578-15.04-13.347-19.424-22.312-3.785-7.67-5.678-16.236-5.678-24.803V56.678C.2 48.21 1.992 39.844 5.678 32.273 9.96 23.31 16.635 15.44 24.903 9.861 33.37 4.084 43.33.697 53.49.2c.997-.2 2.093-.2 3.19-.2" fill="url(#swift-a)"/><path d="M215.16 208.582c-.897-1.394-1.893-2.789-2.989-4.084-2.49-2.988-5.379-5.578-8.566-7.77-3.985-2.689-8.666-4.382-13.448-4.582-3.387-.199-6.773.399-9.96 1.594-3.188 1.096-6.276 2.69-9.265 4.283-3.486 1.793-6.972 3.586-10.658 5.08a80 80 0 0 1-13.647 4.184c-5.877 1.096-11.853 1.494-17.73 1.395-10.659-.2-21.317-1.793-31.478-4.782-8.965-2.69-17.531-6.375-25.6-11.056-7.072-4.084-13.646-8.766-19.822-14.045-5.08-4.383-9.762-9.065-14.145-14.045a154 154 0 0 1-8.566-10.957 47 47 0 0 1-2.989-4.682L0 120.727V56.479C0 25.3 25.202 0 56.38 0h50.303l37.255 37.852c84.071 57.175 56.878 120.228 56.878 120.228s23.906 26.895 14.344 50.502" fill="url(#swift-b)"/><path d="M144.137 37.852c84.072 57.175 56.878 120.228 56.878 120.228s23.906 26.994 14.244 50.602c0 0-9.861-16.536-26.397-16.536-15.937 0-25.3 16.536-57.376 16.536-71.42 0-105.189-59.666-105.189-59.666 64.349 42.334 108.277 12.351 108.277 12.351-28.986-16.834-90.646-97.318-90.646-97.318 53.69 45.72 76.9 57.773 76.9 57.773-13.846-11.455-52.694-67.435-52.694-67.435 31.078 31.476 92.837 75.404 92.837 75.404 17.532-48.61-16.834-91.94-16.834-91.94" fill="#FFF"/></g></svg>',
   typescript: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><g fill="none" fill-rule="evenodd"><path fill="#007ACC" d="M0 128v128h256V0H0z"/><path d="m56.612 128.849-.081 10.484h33.32v94.68h23.569v-94.68h33.32v-10.28c0-5.69-.122-10.444-.284-10.566-.122-.162-20.4-.244-44.983-.203l-44.74.122zm149.955-10.741c6.501 1.625 11.459 4.51 16.01 9.224 2.357 2.52 5.851 7.111 6.136 8.208.08.325-11.053 7.802-17.798 11.988-.244.162-1.22-.894-2.317-2.52-3.291-4.795-6.745-6.867-12.028-7.233-7.76-.528-12.759 3.535-12.718 10.321 0 1.992.284 3.17 1.097 4.795 1.707 3.536 4.876 5.649 14.832 9.956 18.326 7.883 26.168 13.084 31.045 20.48 5.445 8.249 6.664 21.415 2.966 31.208-4.063 10.646-14.14 17.879-28.323 20.276-4.388.772-14.79.65-19.504-.203-10.28-1.828-20.033-6.908-26.047-13.572-2.357-2.6-6.949-9.387-6.664-9.874.122-.163 1.178-.813 2.356-1.504 1.138-.65 5.446-3.129 9.509-5.485l7.355-4.267 1.544 2.276c2.154 3.29 6.867 7.801 9.712 9.305 8.167 4.307 19.383 3.698 24.909-1.26 2.357-2.153 3.332-4.388 3.332-7.68 0-2.966-.366-4.266-1.91-6.501-1.99-2.845-6.054-5.242-17.595-10.24-13.206-5.69-18.895-9.224-24.096-14.832-3.007-3.25-5.852-8.452-7.03-12.8-.975-3.617-1.22-12.678-.447-16.335 2.723-12.76 12.353-21.659 26.25-24.3 4.51-.853 14.994-.528 19.424.569" fill="#FFF"/></g></svg>'
 };
-function Se(o) {
+function Te(o) {
   const n = o.toLowerCase();
-  return Be[n] || null;
+  return Se[n] || null;
 }
-const T = "javascript", Te = M({
+class k {
+  static instance;
+  highlighter = null;
+  initPromise = null;
+  constructor() {
+  }
+  static getInstance() {
+    return k.instance || (k.instance = new k()), k.instance;
+  }
+  async getHighlighter() {
+    return this.highlighter ? this.highlighter : this.initPromise ? this.initPromise : (this.initPromise = this.initializeHighlighter(), this.highlighter = await this.initPromise, this.highlighter);
+  }
+  async initializeHighlighter() {
+    return await H({
+      themes: [ne, oe],
+      langs: [
+        G,
+        P,
+        U,
+        z,
+        D,
+        N,
+        J,
+        I,
+        V,
+        K,
+        Z,
+        W,
+        Q,
+        X,
+        Y,
+        ee
+      ],
+      langAlias: {
+        ts: "typescript",
+        node: "javascript",
+        nodejs: "javascript"
+      },
+      engine: _()
+    });
+  }
+  dispose() {
+    this.highlighter && (this.highlighter.dispose(), this.highlighter = null), this.initPromise = null;
+  }
+}
+const A = "javascript", Ae = R({
   name: "GimmeHttp",
   emits: ["update:language", "update:client"],
   props: {
@@ -902,16 +947,16 @@ const T = "javascript", Te = M({
     }
   },
   data() {
-    const o = typeof window < "u", e = (this.language && this.language !== "" ? this.language : null) || (o ? localStorage.getItem("gimmeLang") : null) || T;
+    const o = typeof window < "u", e = (this.language && this.language !== "" ? this.language : null) || (o ? localStorage.getItem("gimmeLang") : null) || A;
     let t = this.client || (o ? localStorage.getItem("gimmeClient") : null);
     if (!t || t === "") {
-      const l = A(e);
+      const l = F(e);
       l && (t = l.client);
     }
     const i = o && window.matchMedia("(prefers-color-scheme: dark)").matches, r = this.theme ? this.theme : i ? "dark" : "light";
     return {
       highlighter: null,
-      clientsList: oe(),
+      clientsList: te(),
       showCopied: !1,
       openModal: !1,
       openModalContent: !1,
@@ -924,38 +969,13 @@ const T = "javascript", Te = M({
     };
   },
   async created() {
-    this.highlighter = await R({
-      themes: [ee, ne],
-      langs: [
-        H,
-        G,
-        U,
-        P,
-        D,
-        z,
-        N,
-        J,
-        I,
-        V,
-        K,
-        Z,
-        W,
-        Q,
-        X,
-        Y
-      ],
-      langAlias: {
-        ts: "typescript",
-        node: "javascript",
-        nodejs: "javascript"
-      },
-      engine: _()
-    }), this.code(), typeof window < "u" && setTimeout(() => {
+    const o = k.getInstance();
+    this.highlighter = await o.getHighlighter(), this.code(), typeof window < "u" && setTimeout(() => {
       this.checkInterval = window.setInterval(this.checkLocalStorage, 1e3);
     }, 1e3);
   },
   unmounted() {
-    this.highlighter && this.highlighter.dispose(), this.checkInterval && clearInterval(this.checkInterval);
+    this.checkInterval && clearInterval(this.checkInterval);
   },
   watch: {
     theme(o) {
@@ -1001,10 +1021,10 @@ const T = "javascript", Te = M({
   },
   methods: {
     logoSvg(o) {
-      return Se(o);
+      return Te(o);
     },
     setLanguage(o) {
-      this.internalLanguage = o || T, typeof window < "u" && localStorage.setItem("gimmeLang", this.internalLanguage), this.$emit("update:language", this.internalLanguage);
+      this.internalLanguage = o || A, typeof window < "u" && localStorage.setItem("gimmeLang", this.internalLanguage), this.$emit("update:language", this.internalLanguage);
     },
     setClient(o) {
       this.internalClient = o || "", typeof window < "u" && localStorage.setItem("gimmeClient", this.internalClient), this.$emit("update:client", this.internalClient);
@@ -1012,7 +1032,7 @@ const T = "javascript", Te = M({
     code() {
       if (this.highlighter)
         try {
-          const { code: o, language: n, client: e, error: t } = te({
+          const { code: o, language: n, client: e, error: t } = ie({
             language: this.internalLanguage,
             client: this.internalClient,
             config: this.config,
@@ -1059,12 +1079,12 @@ const T = "javascript", Te = M({
       o && o !== this.internalLanguage && (this.setLanguage(o), e = !0), n && n !== this.internalClient && (this.setClient(n), e = !0), e && this.code();
     }
   }
-}), Ae = (o, n) => {
+}), Fe = (o, n) => {
   const e = o.__vccOpts || o;
   for (const [t, i] of n)
     e[t] = i;
   return e;
-}, Fe = { class: "gimmehttp" }, Me = { class: "gh-options" }, Re = {
+}, Me = { class: "gimmehttp" }, Re = { class: "gh-options" }, He = {
   key: 0,
   "aria-hidden": "true",
   viewBox: "0 0 16 16",
@@ -1074,26 +1094,32 @@ const T = "javascript", Te = M({
 }, _e = {
   key: 1,
   class: "gh-txt"
-}, He = ["innerHTML"], Ge = {
+}, Ge = ["innerHTML"], Pe = {
   key: 1,
   class: "gh-lang-text"
-}, Ue = ["innerHTML"], Pe = {
+}, Ue = ["innerHTML"], ze = {
   key: 0,
   class: "gh-content"
-}, De = { class: "gh-langs" }, ze = ["onClick"], Ne = ["innerHTML"], Je = {
+}, De = { class: "gh-langs" }, Ne = ["onClick"], Je = ["innerHTML"], Ie = {
   key: 1,
   class: "gh-lang-text-modal"
-}, Ie = { class: "gh-clients" }, Ve = ["onClick"];
-function Ke(o, n, e, t, i, r) {
-  return b(), m("div", Fe, [
-    $("div", Me, [
+}, Ve = { class: "gh-clients" }, Ke = ["onClick"];
+function Ze(o, n, e, t, i, r) {
+  return b(), m("div", Me, [
+    $("div", Re, [
       $("div", {
-        class: w(["gh-copy", { "gh-show-copied": o.showCopied }]),
+        class: E(["gh-copy", { "gh-show-copied": o.showCopied }]),
         onClick: n[0] || (n[0] = (l) => o.clickCopy())
       }, [
-        o.showCopied ? (b(), m("div", _e, "Copied!")) : (b(), m("svg", Re, [...n[3] || (n[3] = [
-          $("path", { d: "M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z" }, null, -1),
-          $("path", { d: "M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z" }, null, -1)
+        o.showCopied ? (b(), m("div", _e, "Copied!")) : (b(), m("svg", He, [...n[3] || (n[3] = [
+          $("path", {
+            class: "gh-copy-top",
+            d: "M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+          }, null, -1),
+          $("path", {
+            class: "gh-copy-bottom",
+            d: "M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+          }, null, -1)
         ])]))
       ], 2),
       n[5] || (n[5] = $("div", { class: "gh-separator" }, null, -1)),
@@ -1105,66 +1131,66 @@ function Ke(o, n, e, t, i, r) {
           key: 0,
           innerHTML: o.logoSvg(o.internalLanguage),
           class: "gh-select"
-        }, null, 8, He)) : (b(), m("span", Ge, E(o.internalLanguage), 1)),
+        }, null, 8, Ge)) : (b(), m("span", Pe, O(o.internalLanguage), 1)),
         n[4] || (n[4] = $("svg", {
           class: "gh-arrows",
-          viewBox: "0 0 16 16",
+          viewBox: "0 0 640 640",
           xmlns: "http://www.w3.org/2000/svg"
         }, [
-          $("path", { d: "m3.707 2.293 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L6.586 8 2.293 3.707a1 1 0 0 1 1.414-1.414m5 0 5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 8 7.293 3.707a1 1 0 0 1 1.414-1.414" })
+          $("path", { d: "M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z" })
         ], -1))
       ])
     ]),
     $("div", {
-      class: w("gh-output language-" + o.internalLanguage + (o.openModal ? " gh-modalOpen" : "")),
+      class: E("gh-output language-" + o.internalLanguage + (o.openModal ? " gh-modalOpen" : "")),
       innerHTML: o.output
     }, null, 10, Ue),
-    O(q, { name: "gimme-modal-bg" }, {
-      default: x(() => [
+    q(x, { name: "gimme-modal-bg" }, {
+      default: L(() => [
         o.openModal ? (b(), m("div", {
           key: 0,
           class: "gh-modal",
           onClick: n[2] || (n[2] = (...l) => o.clickModalBg && o.clickModalBg(...l))
         }, [
-          O(q, { name: "gimme-modal-content" }, {
-            default: x(() => [
-              o.openModalContent ? (b(), m("div", Pe, [
+          q(x, { name: "gimme-modal-content" }, {
+            default: L(() => [
+              o.openModalContent ? (b(), m("div", ze, [
                 $("div", De, [
-                  (b(!0), m(B, null, S(o.languages, (l) => (b(), m("div", {
-                    class: w(["gh-lang", { "gh-selected": o.internalLanguage === l }]),
+                  (b(!0), m(S, null, T(o.languages, (l) => (b(), m("div", {
+                    class: E(["gh-lang", { "gh-selected": o.internalLanguage === l }]),
                     key: l,
                     onClick: (s) => o.clickModalLang(l)
                   }, [
                     o.logoSvg(l) ? (b(), m("span", {
                       key: 0,
                       innerHTML: o.logoSvg(l)
-                    }, null, 8, Ne)) : (b(), m("span", Je, E(l), 1))
-                  ], 10, ze))), 128))
+                    }, null, 8, Je)) : (b(), m("span", Ie, O(l), 1))
+                  ], 10, Ne))), 128))
                 ]),
                 n[6] || (n[6] = $("div", { class: "gh-separator" }, null, -1)),
-                $("div", Ie, [
-                  (b(!0), m(B, null, S(o.clients, (l) => (b(), m("div", {
+                $("div", Ve, [
+                  (b(!0), m(S, null, T(o.clients, (l) => (b(), m("div", {
                     class: "gh-client",
                     key: l,
                     onClick: (s) => o.clickModalClient(l)
-                  }, E(l), 9, Ve))), 128))
+                  }, O(l), 9, Ke))), 128))
                 ])
-              ])) : L("", !0)
+              ])) : B("", !0)
             ]),
             _: 1
           })
-        ])) : L("", !0)
+        ])) : B("", !0)
       ]),
       _: 1
     })
   ]);
 }
-const Ze = /* @__PURE__ */ Ae(Te, [["render", Ke]]), bn = {
+const We = /* @__PURE__ */ Fe(Ae, [["render", Ze]]), $n = {
   install(o) {
-    o.component("GimmeHttp", Ze);
+    o.component("GimmeHttp", We);
   }
 };
 export {
-  Ze as GimmeHttp,
-  bn as default
+  We as GimmeHttp,
+  $n as default
 };
