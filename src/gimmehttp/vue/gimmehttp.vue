@@ -439,7 +439,7 @@
         svg {
           height: 100%;
           width: auto;
-          max-height: 20px;
+          max-height: 16px;
           max-width: 40px;
           fill: var(--gh-border-color);
         }
