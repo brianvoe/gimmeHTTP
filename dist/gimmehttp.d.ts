@@ -43,6 +43,9 @@ export declare function Generate(req: Settings): Outcome;
 export declare interface Http {
     method: Method;
     url: string;
+    params?: {
+        [key: string]: string | string[];
+    };
     headers?: {
         [key: string]: string | string[];
     };
