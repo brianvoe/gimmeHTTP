@@ -3,18 +3,19 @@ import { mount } from '@vue/test-utils'
 import GimmeHttp from './gimmehttp.vue'
 import type { Http } from '../utils/generate'
 
-// Mock Shiki to avoid creating multiple instances
-vi.mock('shiki/core', () => ({
-  createHighlighterCore: vi.fn(() =>
-    Promise.resolve({
-      codeToHtml: vi.fn((code: string) => `<pre>${code}</pre>`)
-    })
-  )
+// Mock Highlight.js to avoid issues in tests
+vi.mock('highlight.js', () => ({
+  default: {
+    highlight: vi.fn((code: string) => ({
+      value: code
+    })),
+    registerLanguage: vi.fn()
+  }
 }))
 
 /**
  * Note: These are basic smoke tests for the Vue component.
- * Full integration testing would require mocking Shiki and browser APIs.
+ * Full integration testing would require mocking Highlight.js and browser APIs.
  * The component is primarily tested through manual QA and E2E tests.
  */
 describe('GimmeHttp Vue Component', () => {

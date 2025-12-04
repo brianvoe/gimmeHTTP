@@ -1,10 +1,10 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
-  import ShikiStyle from '@/docs/components/shiki_style.vue'
+  import HighlightStyle from '@/docs/components/highlight_style.vue'
 
   export default defineComponent({
     components: {
-      ShikiStyle
+      HighlightStyle
     },
     name: 'Settings'
   })
@@ -23,7 +23,7 @@
     <h2>Settings</h2>
     <div class="alert info"><strong>Info:</strong> The only required fields are language, http.method and http.url</div>
 
-    <ShikiStyle language="javascript">
+    <HighlightStyle language="javascript">
       <pre>
         const settings = {
           // Required
@@ -65,6 +65,6 @@
           }
         }
       </pre>
-    </ShikiStyle>
+    </HighlightStyle>
   </div>
 </template>

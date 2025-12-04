@@ -3,97 +3,59 @@
   import { defineComponent } from 'vue'
   import type { Config, Http } from '@/gimmehttp/utils/generate'
   import { Generate, Clients, Search } from '@/gimmehttp/index'
-  import { createHighlighterCore } from 'shiki/core'
-  import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
+  import hljs from 'highlight.js'
+  // Import both themes - we'll use CSS to switch between them
+  import 'highlight.js/styles/github-dark.css'
+  import 'highlight.js/styles/github.css'
 
-  import C from 'shiki/langs/c.mjs'
-  import Csharp from 'shiki/langs/csharp.mjs'
-  import Dart from 'shiki/langs/dart.mjs'
-  import Go from 'shiki/langs/go.mjs'
-  import Java from 'shiki/langs/java.mjs'
-  import Javascript from 'shiki/langs/javascript.mjs'
-  import Kotlin from 'shiki/langs/kotlin.mjs'
-  import Php from 'shiki/langs/php.mjs'
-  import Python from 'shiki/langs/python.mjs'
-  import R from 'shiki/langs/r.mjs'
-  import Ruby from 'shiki/langs/ruby.mjs'
-  import Rust from 'shiki/langs/rust.mjs'
-  import Shell from 'shiki/langs/shellscript.mjs'
-  import Swift from 'shiki/langs/swift.mjs'
-  import Typescript from 'shiki/langs/typescript.mjs'
-  import Json from 'shiki/langs/json.mjs'
+  // Register languages
+  import c from 'highlight.js/lib/languages/c'
+  import csharp from 'highlight.js/lib/languages/csharp'
+  import dart from 'highlight.js/lib/languages/dart'
+  import go from 'highlight.js/lib/languages/go'
+  import java from 'highlight.js/lib/languages/java'
+  import javascript from 'highlight.js/lib/languages/javascript'
+  import kotlin from 'highlight.js/lib/languages/kotlin'
+  import php from 'highlight.js/lib/languages/php'
+  import python from 'highlight.js/lib/languages/python'
+  import r from 'highlight.js/lib/languages/r'
+  import ruby from 'highlight.js/lib/languages/ruby'
+  import rust from 'highlight.js/lib/languages/rust'
+  import bash from 'highlight.js/lib/languages/bash'
+  import swift from 'highlight.js/lib/languages/swift'
+  import typescript from 'highlight.js/lib/languages/typescript'
+  import json from 'highlight.js/lib/languages/json'
 
-  import themeGithubDark from 'shiki/themes/github-dark.mjs'
-  import themeGithubLight from 'shiki/themes/github-light.mjs'
+  // Register all languages
+  hljs.registerLanguage('c', c)
+  hljs.registerLanguage('csharp', csharp)
+  hljs.registerLanguage('dart', dart)
+  hljs.registerLanguage('go', go)
+  hljs.registerLanguage('java', java)
+  hljs.registerLanguage('javascript', javascript)
+  hljs.registerLanguage('kotlin', kotlin)
+  hljs.registerLanguage('php', php)
+  hljs.registerLanguage('python', python)
+  hljs.registerLanguage('r', r)
+  hljs.registerLanguage('ruby', ruby)
+  hljs.registerLanguage('rust', rust)
+  hljs.registerLanguage('bash', bash)
+  hljs.registerLanguage('shell', bash)
+  hljs.registerLanguage('shellscript', bash)
+  hljs.registerLanguage('swift', swift)
+  hljs.registerLanguage('typescript', typescript)
+  hljs.registerLanguage('ts', typescript)
+  hljs.registerLanguage('json', json)
+  hljs.registerLanguage('node', javascript)
+  hljs.registerLanguage('nodejs', javascript)
 
-  type Highlighter = Awaited<ReturnType<typeof createHighlighterCore>>
-
-  // Shiki singleton service
-  class ShikiService {
-    private static instance: ShikiService
-    private highlighter: Highlighter | null = null
-    private initPromise: Promise<Highlighter> | null = null
-
-    private constructor() {}
-
-    public static getInstance(): ShikiService {
-      if (!ShikiService.instance) {
-        ShikiService.instance = new ShikiService()
-      }
-      return ShikiService.instance
-    }
-
-    public async getHighlighter(): Promise<Highlighter> {
-      if (this.highlighter) {
-        return this.highlighter
-      }
-
-      if (this.initPromise) {
-        return this.initPromise
-      }
-
-      this.initPromise = this.initializeHighlighter()
-      this.highlighter = await this.initPromise
-      return this.highlighter
-    }
-
-    private async initializeHighlighter(): Promise<Highlighter> {
-      return await createHighlighterCore({
-        themes: [themeGithubDark, themeGithubLight],
-        langs: [
-          C,
-          Csharp,
-          Dart,
-          Go,
-          Java,
-          Javascript,
-          Kotlin,
-          Php,
-          Python,
-          R,
-          Ruby,
-          Rust,
-          Shell,
-          Swift,
-          Typescript,
-          Json
-        ],
-        langAlias: {
-          ts: 'typescript',
-          node: 'javascript',
-          nodejs: 'javascript'
-        },
-        engine: createJavaScriptRegexEngine()
-      })
-    }
-
-    public dispose(): void {
-      if (this.highlighter) {
-        this.highlighter.dispose()
-        this.highlighter = null
-      }
-      this.initPromise = null
-    }
+  // Language name mapping from internal names to highlight.js names
+  const languageMap: Record<string, string> = {
+    shellscript: 'bash',
+    shell: 'bash',
+    ts: 'typescript',
+    node: 'javascript',
+    nodejs: 'javascript'
   }
 
   import { getLogo } from '../logos/index'
@@ -124,7 +86,8 @@
       },
       theme: {
         type: String as PropType<'light' | 'dark'>,
-        required: false
+        required: false,
+        default: 'dark'
       }
     },
     data() {
@@ -143,7 +106,6 @@
       const initialTheme = this.theme ? this.theme : prefersDark ? 'dark' : 'light'
 
       return {
-        highlighter: null as any,
         clientsList: Clients(),
         showCopied: false,
         openModal: false,
@@ -156,10 +118,7 @@
         checkInterval: null as number | null
       }
     },
-    async created() {
-      const shikiService = ShikiService.getInstance()
-      this.highlighter = await shikiService.getHighlighter()
-
+    created() {
       this.code()
 
       if (typeof window !== 'undefined') {
@@ -215,8 +174,8 @@
           .filter((client) => client.language === this.internalLanguage)
           .map((client) => client.client)
       },
-      shikiTheme(): string {
-        return this.themeMode === 'dark' ? 'github-dark' : 'github-light'
+      highlightTheme(): string {
+        return this.themeMode === 'dark' ? 'github-dark' : 'github'
       }
     },
     methods: {
@@ -238,10 +197,6 @@
         this.$emit('update:client', this.internalClient)
       },
       code() {
-        if (!this.highlighter) {
-          return
-        }
-
         try {
           const { code, language, client, error } = Generate({
             language: this.internalLanguage,
@@ -258,13 +213,23 @@
           this.setClient(client!)
 
           this.codeStr = code!
-          this.output = this.highlighter.codeToHtml(this.codeStr, {
-            lang: this.internalLanguage,
-            theme: this.shikiTheme
+
+          // Map language name to highlight.js language
+          const hljsLang = languageMap[this.internalLanguage] || this.internalLanguage
+
+          // Highlight the code
+          const highlighted = hljs.highlight(this.codeStr, {
+            language: hljsLang,
+            ignoreIllegals: true
           })
+
+          // Wrap in pre and code tags with appropriate classes
+          this.output = `<pre class="hljs"><code class="language-${hljsLang}">${highlighted.value}</code></pre>`
         } catch (error) {
           console.error('Error in code highlighting:', error)
-          this.output = this.codeStr
+          // Fallback: escape HTML and wrap in pre/code tags
+          const escaped = this.codeStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          this.output = `<pre class="hljs"><code>${escaped}</code></pre>`
         }
       },
 
@@ -317,7 +282,7 @@
         this.code()
       },
       checkLocalStorage() {
-        if (!this.highlighter || typeof window === 'undefined') {
+        if (typeof window === 'undefined') {
           return
         }
         const storedLanguage = localStorage.getItem('gimmeLang')
@@ -342,6 +307,9 @@
 </script>
 
 <style lang="scss">
+  // Highlight.js themes are imported in the script section
+  // We'll use CSS to override colors based on theme
+
   :root {
     // colors
     --gh-text-color: #3d2c2c;
@@ -363,6 +331,75 @@
     --gh-options-height: 40px;
     --gh-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     --gh-timing: 0.3s;
+  }
+
+  // Theme switching for highlight.js
+  // Override highlight.js theme colors based on data-theme attribute
+  .gimmehttp[data-theme='light'] {
+    pre.hljs {
+      // Light theme colors (github theme)
+      background: #ffffff !important;
+      color: #24292e !important;
+    }
+  }
+
+  .gimmehttp[data-theme='dark'] {
+    pre.hljs {
+      // Dark theme colors (github-dark theme)
+      background: #0d1117 !important;
+      color: #c9d1d9 !important;
+
+      // Override common syntax highlighting colors for dark theme
+      .hljs-keyword,
+      .hljs-selector-tag,
+      .hljs-literal,
+      .hljs-title,
+      .hljs-section,
+      .hljs-doctag,
+      .hljs-type,
+      .hljs-name,
+      .hljs-strong {
+        color: #ff7b72 !important;
+      }
+
+      .hljs-string,
+      .hljs-title,
+      .hljs-section,
+      .hljs-built_in,
+      .hljs-builtin-name,
+      .hljs-selector-id,
+      .hljs-selector-attr,
+      .hljs-selector-pseudo,
+      .hljs-addition,
+      .hljs-variable,
+      .hljs-template-variable,
+      .hljs-attribute {
+        color: #a5d6ff !important;
+      }
+
+      .hljs-comment,
+      .hljs-quote,
+      .hljs-deletion,
+      .hljs-meta {
+        color: #8b949e !important;
+      }
+
+      .hljs-number,
+      .hljs-regexp,
+      .hljs-symbol,
+      .hljs-variable,
+      .hljs-template-variable,
+      .hljs-link,
+      .hljs-selector-attr,
+      .hljs-selector-pseudo {
+        color: #79c0ff !important;
+      }
+
+      .hljs-function,
+      .hljs-title.function_ {
+        color: #d2a8ff !important;
+      }
+    }
   }
 
   .gimmehttp {
@@ -523,12 +560,12 @@
       overflow: auto;
 
       &.gh-modalOpen {
-        pre.shiki {
+        pre.hljs {
           min-height: 300px !important;
         }
       }
 
-      pre.shiki {
+      pre.hljs {
         width: 100%;
         height: auto;
         min-height: 50px;
@@ -723,7 +760,7 @@
 </style>
 
 <template>
-  <div class="gimmehttp">
+  <div class="gimmehttp" :data-theme="themeMode">
     <div class="gh-options">
       <div :class="['gh-copy', { 'gh-show-copied': showCopied }]" @click="clickCopy()">
         <svg v-if="!showCopied" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">

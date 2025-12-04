@@ -1,12 +1,12 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
   import { GimmeHttp } from '@/gimmehttp/vue'
-  import ShikiStyle from '@/docs/components/shiki_style.vue'
+  import HighlightStyle from '@/docs/components/highlight_style.vue'
   import type { Http } from '@/gimmehttp'
 
   export default defineComponent({
     name: 'VueUsagePage',
-    components: { GimmeHttp, ShikiStyle },
+    components: { GimmeHttp, HighlightStyle },
     data() {
       const demoHttp: Http = {
         method: 'GET',
@@ -42,13 +42,13 @@
     <header>
       <h2>Use as a Vue Component</h2>
       <p>
-        You can consume GimmeHTTP as a Vue component and let it handle Shiki and rendering for you. Install the package,
-        then either register it globally as a plugin or import the component locally.
+        You can consume GimmeHTTP as a Vue component and let it handle syntax highlighting and rendering for you.
+        Install the package, then either register it globally as a plugin or import the component locally.
       </p>
     </header>
 
     <h3>Global registration (plugin)</h3>
-    <ShikiStyle language="typescript">
+    <HighlightStyle language="typescript">
       <pre>
         import { createApp } from 'vue'
         import App from './App.vue'
@@ -58,10 +58,10 @@
           .use(GimmeHttpVue)
           .mount('#app')
       </pre>
-    </ShikiStyle>
+    </HighlightStyle>
 
     <h3>Local registration (single file component)</h3>
-    <ShikiStyle language="vue">
+    <HighlightStyle language="vue">
       <pre>
         &lt;script setup lang="ts"&gt;
           import { GimmeHttp } from 'gimmehttp/vue'
@@ -93,10 +93,10 @@
           /&gt;
         &lt;/template&gt;
       </pre>
-    </ShikiStyle>
+    </HighlightStyle>
 
     <h3>Theme</h3>
-    <ShikiStyle language="vue">
+    <HighlightStyle language="vue">
       <pre>
         &lt;script lang="ts"&gt;
           import { GimmeHttp } from 'gimmehttp/vue'
@@ -112,7 +112,7 @@
           /&gt;
         &lt;/template&gt;
       </pre>
-    </ShikiStyle>
+    </HighlightStyle>
     <button @click="toggleTheme()">Toggle Theme ({{ theme }})</button>
     <GimmeHttp :http="demoHttp" :theme="theme" />
   </div>

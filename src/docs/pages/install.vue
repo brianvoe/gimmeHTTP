@@ -1,10 +1,10 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
-  import ShikiStyle from '@/docs/components/shiki_style.vue'
+  import HighlightStyle from '@/docs/components/highlight_style.vue'
 
   export default defineComponent({
     components: {
-      ShikiStyle
+      HighlightStyle
     },
     name: 'Install'
   })
@@ -26,10 +26,10 @@
       component, so you can plug it into your build steps or your docs with a single dependency.
     </p>
 
-    <ShikiStyle language="shell">
+    <HighlightStyle language="shell">
       <pre>
         npm install gimmehttp
       </pre>
-    </ShikiStyle>
+    </HighlightStyle>
   </div>
 </template>
