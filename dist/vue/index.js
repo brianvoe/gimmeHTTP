@@ -19907,7 +19907,6 @@ function pu() {
   if (Ps) return va;
   Ps = 1;
   function n(e) {
-    const t = "\\[", a = "\\]";
     return {
       name: "Inform 7",
       aliases: ["i7"],
@@ -19928,8 +19927,8 @@ function pu() {
           contains: [
             {
               className: "subst",
-              begin: t,
-              end: a
+              begin: "\\[",
+              end: "\\]"
             }
           ]
         },
@@ -19953,8 +19952,8 @@ function pu() {
         },
         {
           className: "comment",
-          begin: t,
-          end: a,
+          begin: "\\[",
+          end: "\\]",
           contains: ["self"]
         }
       ]
