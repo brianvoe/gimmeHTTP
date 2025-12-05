@@ -1,7 +1,7 @@
 <script lang="ts">
+  import type { PropType } from 'vue'
   import { defineComponent } from 'vue'
   import hljs from 'highlight.js'
-  import 'highlight.js/styles/github-dark.css'
 
   // Register languages
   import c from 'highlight.js/lib/languages/c'
@@ -46,11 +46,20 @@
       language: {
         type: String,
         default: 'javascript'
+      },
+      theme: {
+        type: String as PropType<'light' | 'dark'>,
+        required: false
       }
     },
     data() {
+      const isBrowser = typeof window !== 'undefined'
+      const prefersDark = isBrowser && window.matchMedia('(prefers-color-scheme: dark)').matches
+      const initialTheme = this.theme ? this.theme : prefersDark ? 'dark' : 'light'
+
       return {
-        highlightedCode: ''
+        highlightedCode: '',
+        themeMode: initialTheme
       }
     },
     created() {
@@ -68,6 +77,15 @@
     watch: {
       language() {
         this.highlightCode()
+      },
+      theme(newTheme) {
+        const isBrowser = typeof window !== 'undefined'
+        if (newTheme === 'light' || newTheme === 'dark') {
+          this.themeMode = newTheme
+        } else {
+          const prefersDark = isBrowser && window.matchMedia('(prefers-color-scheme: dark)').matches
+          this.themeMode = prefersDark ? 'dark' : 'light'
+        }
       }
     },
     methods: {
@@ -106,6 +124,48 @@
     display: flex;
     width: 100%;
 
+    // GitHub Dark Theme Colors (default)
+    --gh-hljs-bg-color: #282c34;
+    --gh-hljs-color: #c9d1d9;
+    --gh-hljs-keyword: #ff7b72;
+    --gh-hljs-entity: #d2a8ff;
+    --gh-hljs-constant: #79c0ff;
+    --gh-hljs-string: #a5d6ff;
+    --gh-hljs-variable: #ffa657;
+    --gh-hljs-comment: #8b949e;
+    --gh-hljs-tag: #7ee787;
+    --gh-hljs-subst: #c9d1d9;
+    --gh-hljs-section: #1f6feb;
+    --gh-hljs-bullet: #f2cc60;
+    --gh-hljs-emphasis: #c9d1d9;
+    --gh-hljs-strong: #c9d1d9;
+    --gh-hljs-addition-color: #aff5b4;
+    --gh-hljs-addition-bg: #033a16;
+    --gh-hljs-deletion-color: #ffdcd7;
+    --gh-hljs-deletion-bg: #67060c;
+
+    &.light {
+      // GitHub Light Theme Colors
+      --gh-hljs-bg-color: #fafafa;
+      --gh-hljs-color: #24292e;
+      --gh-hljs-keyword: #d73a49;
+      --gh-hljs-entity: #6f42c1;
+      --gh-hljs-constant: #005cc5;
+      --gh-hljs-string: #032f62;
+      --gh-hljs-variable: #e36209;
+      --gh-hljs-comment: #6a737d;
+      --gh-hljs-tag: #22863a;
+      --gh-hljs-subst: #24292e;
+      --gh-hljs-section: #005cc5;
+      --gh-hljs-bullet: #735c0f;
+      --gh-hljs-emphasis: #24292e;
+      --gh-hljs-strong: #24292e;
+      --gh-hljs-addition-color: #22863a;
+      --gh-hljs-addition-bg: #f0fff4;
+      --gh-hljs-deletion-color: #b31d28;
+      --gh-hljs-deletion-bg: #ffeef0;
+    }
+
     pre.hljs {
       min-width: 0;
       width: 100%;
@@ -114,10 +174,114 @@
       border-radius: var(--border-radius);
       overflow-x: auto;
       overflow-y: hidden;
+      background-color: var(--gh-hljs-bg-color);
+    }
+
+    // Highlight.js syntax highlighting styles
+    .hljs {
+      color: var(--gh-hljs-color);
+      background: var(--gh-hljs-bg-color);
+    }
+
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em;
+    }
+
+    code.hljs {
+      padding: 3px 5px;
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: var(--gh-hljs-keyword);
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: var(--gh-hljs-entity);
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: var(--gh-hljs-constant);
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: var(--gh-hljs-string);
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: var(--gh-hljs-variable);
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: var(--gh-hljs-comment);
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: var(--gh-hljs-tag);
+    }
+
+    .hljs-subst {
+      color: var(--gh-hljs-subst);
+    }
+
+    .hljs-section {
+      color: var(--gh-hljs-section);
+      font-weight: bold;
+    }
+
+    .hljs-bullet {
+      color: var(--gh-hljs-bullet);
+    }
+
+    .hljs-emphasis {
+      color: var(--gh-hljs-emphasis);
+      font-style: italic;
+    }
+
+    .hljs-strong {
+      color: var(--gh-hljs-strong);
+      font-weight: bold;
+    }
+
+    .hljs-addition {
+      color: var(--gh-hljs-addition-color);
+      background-color: var(--gh-hljs-addition-bg);
+    }
+
+    .hljs-deletion {
+      color: var(--gh-hljs-deletion-color);
+      background-color: var(--gh-hljs-deletion-bg);
     }
   }
 </style>
 
 <template>
-  <div class="highlight-style" v-html="highlightedCode"></div>
+  <div class="highlight-style" :class="{ light: themeMode === 'light' }" v-html="highlightedCode"></div>
 </template>

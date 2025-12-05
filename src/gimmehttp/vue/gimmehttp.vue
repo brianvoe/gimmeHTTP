@@ -4,9 +4,6 @@
   import type { Config, Http } from '@/gimmehttp/utils/generate'
   import { Generate, Clients, Search } from '@/gimmehttp/index'
   import hljs from 'highlight.js'
-  // Import both themes - we'll use CSS to switch between them
-  import 'highlight.js/styles/github-dark.css'
-  import 'highlight.js/styles/github.css'
 
   // Register languages
   import c from 'highlight.js/lib/languages/c'
@@ -173,9 +170,6 @@
         return this.clientsList
           .filter((client) => client.language === this.internalLanguage)
           .map((client) => client.client)
-      },
-      highlightTheme(): string {
-        return this.themeMode === 'dark' ? 'github-dark' : 'github'
       }
     },
     methods: {
@@ -307,8 +301,7 @@
 </script>
 
 <style lang="scss">
-  // Highlight.js themes are imported in the script section
-  // We'll use CSS to override colors based on theme
+  // Highlight.js themes are dynamically loaded via link tags in the document head
 
   :root {
     // colors
@@ -333,75 +326,6 @@
     --gh-timing: 0.3s;
   }
 
-  // Theme switching for highlight.js
-  // Override highlight.js theme colors based on data-theme attribute
-  .gimmehttp[data-theme='light'] {
-    pre.hljs {
-      // Light theme colors (github theme)
-      background: #ffffff !important;
-      color: #24292e !important;
-    }
-  }
-
-  .gimmehttp[data-theme='dark'] {
-    pre.hljs {
-      // Dark theme colors (github-dark theme)
-      background: #0d1117 !important;
-      color: #c9d1d9 !important;
-
-      // Override common syntax highlighting colors for dark theme
-      .hljs-keyword,
-      .hljs-selector-tag,
-      .hljs-literal,
-      .hljs-title,
-      .hljs-section,
-      .hljs-doctag,
-      .hljs-type,
-      .hljs-name,
-      .hljs-strong {
-        color: #ff7b72 !important;
-      }
-
-      .hljs-string,
-      .hljs-title,
-      .hljs-section,
-      .hljs-built_in,
-      .hljs-builtin-name,
-      .hljs-selector-id,
-      .hljs-selector-attr,
-      .hljs-selector-pseudo,
-      .hljs-addition,
-      .hljs-variable,
-      .hljs-template-variable,
-      .hljs-attribute {
-        color: #a5d6ff !important;
-      }
-
-      .hljs-comment,
-      .hljs-quote,
-      .hljs-deletion,
-      .hljs-meta {
-        color: #8b949e !important;
-      }
-
-      .hljs-number,
-      .hljs-regexp,
-      .hljs-symbol,
-      .hljs-variable,
-      .hljs-template-variable,
-      .hljs-link,
-      .hljs-selector-attr,
-      .hljs-selector-pseudo {
-        color: #79c0ff !important;
-      }
-
-      .hljs-function,
-      .hljs-title.function_ {
-        color: #d2a8ff !important;
-      }
-    }
-  }
-
   .gimmehttp {
     display: flex;
     flex-direction: column;
@@ -413,6 +337,48 @@
     min-height: 0;
     overflow: auto;
     box-shadow: var(--gh-box-shadow);
+
+    // GitHub Dark Theme Colors (default)
+    --gh-hljs-bg-color: #282c34;
+    --gh-hljs-color: #c9d1d9;
+    --gh-hljs-keyword: #ff7b72;
+    --gh-hljs-entity: #d2a8ff;
+    --gh-hljs-constant: #79c0ff;
+    --gh-hljs-string: #a5d6ff;
+    --gh-hljs-variable: #ffa657;
+    --gh-hljs-comment: #8b949e;
+    --gh-hljs-tag: #7ee787;
+    --gh-hljs-subst: #c9d1d9;
+    --gh-hljs-section: #1f6feb;
+    --gh-hljs-bullet: #f2cc60;
+    --gh-hljs-emphasis: #c9d1d9;
+    --gh-hljs-strong: #c9d1d9;
+    --gh-hljs-addition-color: #aff5b4;
+    --gh-hljs-addition-bg: #033a16;
+    --gh-hljs-deletion-color: #ffdcd7;
+    --gh-hljs-deletion-bg: #67060c;
+
+    &.light {
+      // GitHub Light Theme Colors
+      --gh-hljs-bg-color: #fafafa;
+      --gh-hljs-color: #24292e;
+      --gh-hljs-keyword: #d73a49;
+      --gh-hljs-entity: #6f42c1;
+      --gh-hljs-constant: #005cc5;
+      --gh-hljs-string: #032f62;
+      --gh-hljs-variable: #e36209;
+      --gh-hljs-comment: #6a737d;
+      --gh-hljs-tag: #22863a;
+      --gh-hljs-subst: #24292e;
+      --gh-hljs-section: #005cc5;
+      --gh-hljs-bullet: #735c0f;
+      --gh-hljs-emphasis: #24292e;
+      --gh-hljs-strong: #24292e;
+      --gh-hljs-addition-color: #22863a;
+      --gh-hljs-addition-bg: #f0fff4;
+      --gh-hljs-deletion-color: #b31d28;
+      --gh-hljs-deletion-bg: #ffeef0;
+    }
 
     .gh-options {
       display: flex;
@@ -574,6 +540,7 @@
         border-radius: var(--gh-border-radius);
         overflow-x: auto;
         overflow-y: auto;
+        background-color: var(--gh-hljs-bg-color);
         transition: min-height var(--gh-timing) ease-in-out;
 
         &::-webkit-scrollbar {
@@ -595,6 +562,109 @@
           padding: 0;
           margin: 0;
         }
+      }
+
+      // Highlight.js syntax highlighting styles
+      .hljs {
+        color: var(--gh-hljs-color);
+        background: var(--gh-hljs-bg-color);
+      }
+
+      pre code.hljs {
+        display: block;
+        overflow-x: auto;
+        padding: 1em;
+      }
+
+      code.hljs {
+        padding: 3px 5px;
+      }
+
+      .hljs-doctag,
+      .hljs-keyword,
+      .hljs-meta .hljs-keyword,
+      .hljs-template-tag,
+      .hljs-template-variable,
+      .hljs-type,
+      .hljs-variable.language_ {
+        color: var(--gh-hljs-keyword);
+      }
+
+      .hljs-title,
+      .hljs-title.class_,
+      .hljs-title.class_.inherited__,
+      .hljs-title.function_ {
+        color: var(--gh-hljs-entity);
+      }
+
+      .hljs-attr,
+      .hljs-attribute,
+      .hljs-literal,
+      .hljs-meta,
+      .hljs-number,
+      .hljs-operator,
+      .hljs-variable,
+      .hljs-selector-attr,
+      .hljs-selector-class,
+      .hljs-selector-id {
+        color: var(--gh-hljs-constant);
+      }
+
+      .hljs-regexp,
+      .hljs-string,
+      .hljs-meta .hljs-string {
+        color: var(--gh-hljs-string);
+      }
+
+      .hljs-built_in,
+      .hljs-symbol {
+        color: var(--gh-hljs-variable);
+      }
+
+      .hljs-comment,
+      .hljs-code,
+      .hljs-formula {
+        color: var(--gh-hljs-comment);
+      }
+
+      .hljs-name,
+      .hljs-quote,
+      .hljs-selector-tag,
+      .hljs-selector-pseudo {
+        color: var(--gh-hljs-tag);
+      }
+
+      .hljs-subst {
+        color: var(--gh-hljs-subst);
+      }
+
+      .hljs-section {
+        color: var(--gh-hljs-section);
+        font-weight: bold;
+      }
+
+      .hljs-bullet {
+        color: var(--gh-hljs-bullet);
+      }
+
+      .hljs-emphasis {
+        color: var(--gh-hljs-emphasis);
+        font-style: italic;
+      }
+
+      .hljs-strong {
+        color: var(--gh-hljs-strong);
+        font-weight: bold;
+      }
+
+      .hljs-addition {
+        color: var(--gh-hljs-addition-color);
+        background-color: var(--gh-hljs-addition-bg);
+      }
+
+      .hljs-deletion {
+        color: var(--gh-hljs-deletion-color);
+        background-color: var(--gh-hljs-deletion-bg);
       }
     }
 
@@ -760,7 +830,7 @@
 </style>
 
 <template>
-  <div class="gimmehttp" :data-theme="themeMode">
+  <div class="gimmehttp" :class="{ light: themeMode === 'light' }">
     <div class="gh-options">
       <div :class="['gh-copy', { 'gh-show-copied': showCopied }]" @click="clickCopy()">
         <svg v-if="!showCopied" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
