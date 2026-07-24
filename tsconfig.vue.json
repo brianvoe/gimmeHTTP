@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src/gimmehttp",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false
+  },
+  "include": [
+    "src/gimmehttp/vue/**/*.ts",
+    "src/gimmehttp/vue/**/*.vue",
+    "src/gimmehttp/vue/env.d.ts",
+    "src/gimmehttp/utils/**/*.ts",
+    "src/gimmehttp/clients/**/*.ts",
+    "src/gimmehttp/index.ts"
+  ],
+  "exclude": ["src/gimmehttp/**/*.test.ts", "src/gimmehttp/index.umd.ts", "dist", "node_modules"]
+}

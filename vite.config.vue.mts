@@ -3,29 +3,14 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import path from 'path'
 
-// Generate external array for shiki modules
-const shikiModules = [
-  'shiki/core',
-  'shiki/engine/javascript',
-  'shiki/langs/c.mjs',
-  'shiki/langs/csharp.mjs',
-  'shiki/langs/dart.mjs',
-  'shiki/langs/go.mjs',
-  'shiki/langs/java.mjs',
-  'shiki/langs/javascript.mjs',
-  'shiki/langs/kotlin.mjs',
-  'shiki/langs/php.mjs',
-  'shiki/langs/python.mjs',
-  'shiki/langs/r.mjs',
-  'shiki/langs/ruby.mjs',
-  'shiki/langs/rust.mjs',
-  'shiki/langs/shellscript.mjs',
-  'shiki/langs/swift.mjs',
-  'shiki/langs/typescript.mjs',
-  'shiki/langs/json.mjs',
-  'shiki/themes/github-dark.mjs',
-  'shiki/themes/github-light.mjs'
-]
+function highlightGlobal(id: string): string {
+  if (id === 'vue') return 'Vue'
+  if (id === 'highlight.js') return 'hljs'
+  if (id.startsWith('highlight.js/')) {
+    return id.replace(/[/.]/g, '_')
+  }
+  return id
+}
 
 export default defineConfig({
   publicDir: false,
@@ -44,32 +29,24 @@ export default defineConfig({
     },
     outDir: path.resolve(__dirname, 'dist/vue'),
     rollupOptions: {
-      external: ['vue', 'shiki', ...shikiModules],
+      external: ['vue', 'highlight.js', /^highlight\.js\//],
       output: {
         exports: 'named',
-        globals: {
-          vue: 'Vue',
-          'shiki/core': 'shikiCore',
-          'shiki/engine/javascript': 'shikiEngineJavascript',
-          ...shikiModules.reduce(
-            (acc, module) => {
-              acc[module] = module
-              return acc
-            },
-            {} as Record<string, string>
-          )
-        }
+        globals: highlightGlobal
       }
     }
   },
   plugins: [
     vue(),
     dts({
-      entryRoot: 'src/gimmehttp/vue',
-      outDir: 'dist/vue',
+      tsconfigPath: path.resolve(__dirname, 'tsconfig.vue.json'),
+      cleanVueFileName: true,
+      entryRoot: path.resolve(__dirname, 'src/gimmehttp/vue'),
+      outDir: path.resolve(__dirname, 'dist/vue'),
       insertTypesEntry: true,
-      include: ['src/gimmehttp/vue/**/*.ts'],
-      exclude: ['**/*.test.ts']
+      include: ['src/gimmehttp/vue/**/*'],
+      exclude: ['**/*.test.ts'],
+      strictOutput: true
     })
   ]
 })

@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { PropType } from 'vue'
   import { defineComponent } from 'vue'
-  import type { Config, Http } from '@/gimmehttp/utils/generate'
-  import { Generate, Clients, Search } from '@/gimmehttp/index'
+  import type { Config, Http } from '../utils/generate'
+  import { Generate, Clients, Search } from '../index'
   import hljs from 'highlight.js'
 
   // Register languages

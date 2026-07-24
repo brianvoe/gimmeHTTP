@@ -8,6 +8,8 @@ HTTP request code snippet generator
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/brianvoe/gimmehttp/vitest.yml?logo=vitest&label=unit%20tests)
 [![gimmehttp](https://snyk.io/advisor/npm-package/gimmehttp/badge.svg)](https://snyk.io/advisor/npm-package/gimmehttp)
 
+See the [changelog](./CHANGELOG.md) for version history.
+
 GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration.
 Quickly output API requests.
 
@@ -18,7 +20,7 @@ Using Vue 3? See the [Vue (v3) Usage](#vue-v3-usage) section.
 - Generate HTTP request code snippets in various languages
 - Dead simple configuration(help me keep it that way)
 - Add Custom Languages and Clients
-- Zero dependencies (Vue component requires shiki as peer dependency)
+- Zero dependencies (Vue component requires highlight.js as peer dependency)
 
 ## Supported Languages and Clients
 
@@ -269,11 +271,11 @@ Feel free to contribute to the project, suggest improvements, or report issues o
 
 Use the built-in Vue component to render an interactive generator.
 
-**Note:** The Vue component requires `shiki` as a peer dependency for syntax highlighting. Install it alongside
+**Note:** The Vue component requires `highlight.js` as a peer dependency for syntax highlighting. Install it alongside
 gimmehttp:
 
 ```sh
-npm install gimmehttp shiki
+npm install gimmehttp highlight.js
 ```
 
 ### Install styles

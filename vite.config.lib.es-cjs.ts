@@ -30,10 +30,11 @@ export default defineConfig({
   },
   plugins: [
     dts({
-      rollupTypes: true,
+      tsconfigPath: path.resolve(__dirname, 'tsconfig.lib.json'),
       outDir: path.resolve(__dirname, 'dist'),
       entryRoot: path.resolve(__dirname, 'src/gimmehttp'),
-      exclude: [path.resolve(__dirname, 'src/gimmehttp/vue'), path.resolve(__dirname, 'src/gimmehttp/**/*.test.ts')]
+      include: ['src/gimmehttp/**/*.ts'],
+      exclude: ['src/gimmehttp/vue/**', 'src/gimmehttp/**/*.test.ts', 'src/gimmehttp/index.umd.ts']
     })
   ]
 })

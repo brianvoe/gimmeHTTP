@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "rootDir": "src",
     "outDir": "dist",
     "declaration": true,
@@ -17,9 +16,10 @@
     "importHelpers": true,
     "lib": ["esnext", "dom"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
   "exclude": ["dist", "node_modules"]
 }
+
