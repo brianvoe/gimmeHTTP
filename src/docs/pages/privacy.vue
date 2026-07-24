@@ -17,12 +17,12 @@
     flex-direction: column;
     gap: var(--spacing);
 
-    .section {
+    .block {
       margin-bottom: var(--spacing);
     }
 
     .contact-info {
-      background-color: var(--color-quaternary);
+      background-color: var(--color-surface-raised);
       padding: var(--spacing);
       border-radius: var(--border-radius);
       border-left: 4px solid var(--color-primary);
@@ -36,7 +36,7 @@
 
     <p><strong>Last updated:</strong> {{ lastUpdated }}</p>
 
-    <div class="section">
+    <div class="block">
       <h2>Introduction</h2>
       <p>
         This Privacy Policy describes how GimmeHTTP ("we", "our", or "us") collects, uses, and shares information when
@@ -44,7 +44,7 @@
       </p>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>Information We Collect</h2>
 
       <h3>Information You Provide</h3>
@@ -64,7 +64,7 @@
       </ul>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>Cookies and Tracking Technologies</h2>
 
       <h3>Google AdSense</h3>
@@ -87,7 +87,7 @@
       </p>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>How We Use Information</h2>
       <p>We use the information we collect to:</p>
       <ul>
@@ -100,7 +100,7 @@
       </ul>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>Information Sharing</h2>
       <p>We do not sell, trade, or otherwise transfer your personal information to third parties except:</p>
       <ul>
@@ -111,7 +111,7 @@
       </ul>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>Data Security</h2>
       <p>
         We implement appropriate security measures to protect your personal information. However, no method of
@@ -119,7 +119,7 @@
       </p>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>Your Rights</h2>
       <p>Depending on your location, you may have certain rights regarding your personal information, including:</p>
       <ul>
@@ -131,7 +131,7 @@
       </ul>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>Third-Party Links</h2>
       <p>
         Our Site may contain links to third-party websites. We are not responsible for the privacy practices of these
@@ -139,7 +139,7 @@
       </p>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>Children's Privacy</h2>
       <p>
         Our Site is not intended for children under 13 years of age. We do not knowingly collect personal information
@@ -147,7 +147,7 @@
       </p>
     </div>
 
-    <div class="section">
+    <div class="block">
       <h2>Changes to This Privacy Policy</h2>
       <p>
         We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new

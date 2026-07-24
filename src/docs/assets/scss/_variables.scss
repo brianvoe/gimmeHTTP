@@ -8,19 +8,29 @@
 }
 
 :root {
-  // colors
-  --color-primary: #f1602c;
-  --color-secondary: #b2e4e1;
-  --color-tertiary: #58adaf;
-  --color-quaternary: #fbd0a6;
-  --color-quinary: #947661;
+  // Professional dark theme, warm charcoal with orange accent
+  // (structure mirrors a slate/blue system, translated to orange)
+  --color-bg-0: #171310;
+  --color-bg-1: #221c16;
+  --color-bg-2: #46230d;
+  --color-surface: #251f19;
+  --color-surface-raised: #2f2822;
+  --color-border: #3a322a;
+  --color-border-strong: #4d4238;
 
-  --color-section-bg: #d4d4d4;
-  --color-text: #3d2c2c;
+  --color-primary: #fb7a3c;
+  --color-primary-bright: #ffa06c;
+  --color-primary-deep: #d9581c;
+  --color-primary-glow: rgba(251, 122, 60, 0.35);
+
+  --color-heading: #f7f3ee;
+  --color-text: #ede7df;
+  --color-text-muted: #a89e93;
   --color-link: var(--color-primary);
 
   // fonts
-  --font-primary: 'Roboto', sans-serif;
+  --font-primary: 'Montserrat', 'Helvetica Neue', sans-serif;
+  --font-mono: 'neon-monospace-semi-bold', 'Courier New', monospace;
   --font-size: 16px;
 
   // spacings
@@ -29,14 +39,22 @@
   --spacing-quarter: 4px;
 
   // header
-  --header-height: 65px;
+  --header-height: 60px;
 
   // Content
-  --content-width: 800px;
+  --content-width: 960px;
 
   // Misc
   --border-radius: 8px;
-  --border-color: #535353;
-  --animation-timing: 0.3s;
-  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --border-radius-large: 12px;
+  --animation-timing: 0.25s;
+  --box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  --glow-primary: 0 0 0 3px rgba(251, 122, 60, 0.25);
+}
+
+// header wraps to two rows on small screens
+@media screen and (max-width: 700px) {
+  :root {
+    --header-height: 96px;
+  }
 }

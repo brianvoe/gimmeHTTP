@@ -1,23 +1,19 @@
 .alert {
   padding: var(--spacing);
-  border: 1px solid transparent;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid transparent;
   border-radius: var(--border-radius);
+  background-color: var(--color-surface-raised);
 
   &.info {
-    color: #0c5460;
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
+    border-left-color: var(--color-primary);
   }
 
   &.warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #ffeeba;
+    border-left-color: #d9a13f;
   }
 
   &.error {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
+    border-left-color: #cf4a2e;
   }
 }

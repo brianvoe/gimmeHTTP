@@ -53,9 +53,8 @@
       }
     },
     data() {
-      const isBrowser = typeof window !== 'undefined'
-      const prefersDark = isBrowser && window.matchMedia('(prefers-color-scheme: dark)').matches
-      const initialTheme = this.theme ? this.theme : prefersDark ? 'dark' : 'light'
+      // Docs site is dark-only, default to dark unless explicitly overridden
+      const initialTheme = this.theme ? this.theme : 'dark'
 
       return {
         highlightedCode: '',
@@ -79,13 +78,7 @@
         this.highlightCode()
       },
       theme(newTheme) {
-        const isBrowser = typeof window !== 'undefined'
-        if (newTheme === 'light' || newTheme === 'dark') {
-          this.themeMode = newTheme
-        } else {
-          const prefersDark = isBrowser && window.matchMedia('(prefers-color-scheme: dark)').matches
-          this.themeMode = prefersDark ? 'dark' : 'light'
-        }
+        this.themeMode = newTheme === 'light' ? 'light' : 'dark'
       }
     },
     methods: {
@@ -124,25 +117,25 @@
     display: flex;
     width: 100%;
 
-    // GitHub Dark Theme Colors (default)
-    --gh-hljs-bg-color: #282c34;
-    --gh-hljs-color: #c9d1d9;
-    --gh-hljs-keyword: #ff7b72;
-    --gh-hljs-entity: #d2a8ff;
-    --gh-hljs-constant: #79c0ff;
-    --gh-hljs-string: #a5d6ff;
-    --gh-hljs-variable: #ffa657;
-    --gh-hljs-comment: #8b949e;
-    --gh-hljs-tag: #7ee787;
-    --gh-hljs-subst: #c9d1d9;
-    --gh-hljs-section: #1f6feb;
-    --gh-hljs-bullet: #f2cc60;
-    --gh-hljs-emphasis: #c9d1d9;
-    --gh-hljs-strong: #c9d1d9;
-    --gh-hljs-addition-color: #aff5b4;
-    --gh-hljs-addition-bg: #033a16;
-    --gh-hljs-deletion-color: #ffdcd7;
-    --gh-hljs-deletion-bg: #67060c;
+    // Warm retro dark code theme (default), gruvbox-inspired
+    --gh-hljs-bg-color: #191512;
+    --gh-hljs-color: #e0d4bc;
+    --gh-hljs-keyword: #f0603f;
+    --gh-hljs-entity: #f5c14e;
+    --gh-hljs-constant: #d3869b;
+    --gh-hljs-string: #b8b344;
+    --gh-hljs-variable: #fe8019;
+    --gh-hljs-comment: #8f7f6a;
+    --gh-hljs-tag: #a9b665;
+    --gh-hljs-subst: #e0d4bc;
+    --gh-hljs-section: #f28534;
+    --gh-hljs-bullet: #f5c14e;
+    --gh-hljs-emphasis: #e0d4bc;
+    --gh-hljs-strong: #f1e5cd;
+    --gh-hljs-addition-color: #a9b665;
+    --gh-hljs-addition-bg: #2a2d1e;
+    --gh-hljs-deletion-color: #f0603f;
+    --gh-hljs-deletion-bg: #3a1f18;
 
     &.light {
       // GitHub Light Theme Colors
@@ -171,10 +164,12 @@
       width: 100%;
       padding: var(--spacing);
       margin: 0;
+      border: 1px solid var(--color-border);
       border-radius: var(--border-radius);
       overflow-x: auto;
       overflow-y: hidden;
       background-color: var(--gh-hljs-bg-color);
+      box-sizing: border-box;
     }
 
     // Highlight.js syntax highlighting styles

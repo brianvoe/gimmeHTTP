@@ -1,7 +1,123 @@
+p {
+  margin: 0 0 8px 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-heading);
+}
+
+h1 {
+  font-size: 36px;
+}
+
+h2 {
+  font-size: 30px;
+  margin-top: var(--spacing);
+  padding-bottom: var(--spacing-half);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+h3 {
+  font-size: 18px;
+  margin-top: calc(var(--spacing) * 1.5);
+  color: var(--color-primary-bright);
+}
+h4 {
+  font-size: 14px;
+}
+h5 {
+  font-size: 13px;
+}
+h6 {
+  font-size: 8px;
+}
+
+small {
+  font-size: 80%;
+  color: var(--color-text-muted);
+}
+strong {
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--animation-timing);
+
+  &:hover {
+    color: var(--color-primary-bright);
+  }
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: var(--spacing);
+
+  ::marker {
+    color: var(--color-primary);
+  }
+}
+
+li {
+  margin-bottom: var(--spacing-quarter);
+}
+
+pre,
+code {
+  font-family: var(--font-mono);
+}
+
+// small uppercase section label, used above form groups and demo sections
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
 .separator {
   height: 1px;
   width: 80%;
   background-color: var(--color-border);
   margin: var(--spacing-quarter) auto;
-  opacity: 0.5;
+  opacity: 0.7;
+}
+
+// Docs-level overrides for the GimmeHttp library component so its
+// code blocks match the theme (library itself is untouched)
+#app .gimmehttp {
+  border: 1px solid var(--color-border);
+
+  --gh-border-color: var(--color-border-strong);
+  --gh-accent-color: var(--color-primary-bright);
+  --gh-modal-content-color: var(--color-surface-raised);
+}
+
+// keep the light-theme demo on the Vue page working by only theming dark mode
+#app .gimmehttp:not(.light) {
+  --gh-hljs-bg-color: #191512;
+  --gh-hljs-color: #e0d4bc;
+  --gh-hljs-keyword: #f0603f;
+  --gh-hljs-entity: #f5c14e;
+  --gh-hljs-constant: #d3869b;
+  --gh-hljs-string: #b8b344;
+  --gh-hljs-variable: #fe8019;
+  --gh-hljs-comment: #8f7f6a;
+  --gh-hljs-tag: #a9b665;
+  --gh-hljs-subst: #e0d4bc;
+  --gh-hljs-section: #f28534;
+  --gh-hljs-bullet: #f5c14e;
+  --gh-hljs-emphasis: #e0d4bc;
+  --gh-hljs-strong: #f1e5cd;
 }

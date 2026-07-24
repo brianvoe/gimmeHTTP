@@ -16,6 +16,10 @@
     padding: var(--spacing-half) !important;
     font-size: smaller;
     text-align: center;
+    color: var(--color-text-muted);
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 </style>
 

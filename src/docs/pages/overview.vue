@@ -152,23 +152,69 @@
 </script>
 
 <style lang="scss">
-  .intro {
+  .overview {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing);
+    gap: calc(var(--spacing) * 1.5);
 
-    .available_languages {
+    .hero {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      gap: var(--spacing-half);
+      text-align: center;
+      padding: calc(var(--spacing) * 3) var(--spacing) var(--spacing) var(--spacing);
+      gap: var(--spacing);
 
-      .text {
+      .hero_title {
+        font-size: clamp(52px, 9vw, 88px);
+        font-weight: 300;
+        line-height: 1;
+        letter-spacing: -2px;
+        color: var(--color-heading);
+
+        .accent {
+          font-weight: 700;
+          background: linear-gradient(120deg, var(--color-primary-bright) 0%, var(--color-primary-deep) 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+        }
+      }
+
+      .hero_tagline {
+        margin: 0;
+        font-size: clamp(20px, 3.5vw, 28px);
+        font-weight: 700;
+        color: var(--color-heading);
+      }
+
+      .hero_sub {
+        margin: 0;
+        max-width: 660px;
+        font-size: 17px;
+        color: var(--color-text-muted);
+
+        code {
+          padding: 1px 6px;
+          font-size: 15px;
+          border-radius: 4px;
+          background-color: rgba(0, 0, 0, 0.3);
+          color: var(--color-primary-bright);
+        }
+      }
+    }
+
+    .demo {
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--spacing) * 1.5);
+
+      .group {
         display: flex;
         flex-direction: column;
         align-items: center;
-        font-weight: bold;
+        gap: var(--spacing-half);
       }
 
       .langs {
@@ -184,14 +230,18 @@
           justify-content: center;
           align-items: center;
           padding: var(--spacing-quarter) var(--spacing-half);
-          border: solid 1px var(--border-color);
+          border: solid 1px var(--color-border-strong);
           border-radius: var(--border-radius);
+          background-color: var(--color-bg-0);
           cursor: pointer;
-          transition: background-color var(--animation-timing);
+          transition:
+            background-color var(--animation-timing),
+            border-color var(--animation-timing);
 
           &.selected,
           &:hover {
-            background-color: var(--color-quaternary);
+            background-color: var(--color-surface-raised);
+            border-color: var(--color-primary);
           }
 
           svg {
@@ -208,158 +258,199 @@
           }
         }
       }
-    }
 
-    .clients {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      gap: var(--spacing-half);
+      .clients {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-half);
 
-      .client {
-        min-width: 75px;
-        padding: var(--spacing-half) var(--spacing);
-        border: solid 1px var(--border-color);
-        border-radius: var(--border-radius);
-        text-align: center;
-        cursor: pointer;
-        transition: background-color var(--animation-timing);
-        user-select: none;
+        .client {
+          min-width: 75px;
+          padding: var(--spacing-half) var(--spacing);
+          border: solid 1px var(--color-border-strong);
+          border-radius: var(--border-radius);
+          background-color: var(--color-bg-0);
+          text-align: center;
+          font-weight: 600;
+          font-size: 15px;
+          cursor: pointer;
+          transition:
+            background-color var(--animation-timing),
+            border-color var(--animation-timing),
+            color var(--animation-timing);
+          user-select: none;
 
-        &.selected,
-        &:hover {
-          background-color: var(--color-quaternary);
+          &.selected,
+          &:hover {
+            background-color: var(--color-surface-raised);
+            border-color: var(--color-primary);
+            color: var(--color-primary-bright);
+          }
         }
       }
-    }
 
-    .select_example {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      gap: var(--spacing-half);
-
-      button {
-        &.selected,
-        &:hover {
-          background-color: var(--color-quaternary);
-          border: solid 1px var(--border-color);
-        }
+      .select_example {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-half);
       }
-    }
 
-    .custom_request {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing);
-      padding: var(--spacing);
-      border: solid 1px var(--border-color);
-      border-radius: var(--border-radius);
-
-      .form_row {
+      .custom_request {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-quarter);
-      }
-
-      .form_grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
         gap: var(--spacing);
+        padding: var(--spacing);
+        border: solid 1px var(--color-border);
+        border-radius: var(--border-radius);
+        background-color: rgba(0, 0, 0, 0.2);
 
-        @media (max-width: 768px) {
-          grid-template-columns: 1fr;
+        .form_row {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-quarter);
+        }
+
+        .form_grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--spacing);
+
+          @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+          }
         }
       }
+    }
+
+    .cta_row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: var(--spacing);
+      padding-bottom: var(--spacing);
     }
   }
 </style>
 
 <template>
-  <div class="section intro">
-    <p>Easily output http request in many languages</p>
-    <div class="available_languages">
-      <div class="text">Available Languages: <small>click to see</small></div>
-      <div class="langs">
-        <div
-          :class="{ lang: true, selected: lang === selectedLanguage }"
-          v-for="lang in languages"
-          :key="lang"
-          @click="setLanguage(lang)"
-        >
-          <span v-if="logoSvg(lang)" v-html="logoSvg(lang)"></span>
-          <span v-else class="lang-name">{{ lang }}</span>
+  <div class="overview">
+    <section class="hero">
+      <div class="hero_title">gimme<span class="accent">HTTP</span></div>
+      <p class="hero_tagline">HTTP request code, in every language.</p>
+      <p class="hero_sub">
+        Describe a request once and get a copy-paste-ready snippet — <code>fetch</code>, <code>curl</code>, Go, Python,
+        Ruby and a dozen more. Zero dependencies.
+      </p>
+    </section>
+
+    <div class="section demo">
+      <div class="group">
+        <div class="eyebrow">Pick a language</div>
+        <div class="langs">
+          <div
+            :class="{ lang: true, selected: lang === selectedLanguage }"
+            v-for="lang in languages"
+            :key="lang"
+            @click="setLanguage(lang)"
+          >
+            <span v-if="logoSvg(lang)" v-html="logoSvg(lang)"></span>
+            <span v-else class="lang-name">{{ lang }}</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="clients">
-      <div
-        :class="{ client: true, selected: client.client === selectedClient }"
-        v-for="client in clients"
-        :key="client.client"
-        @click="setClient(client.client)"
-      >
-        {{ client.client }}
-      </div>
-    </div>
-    <div class="select_example">
-      <button
-        v-for="(http, example) in https"
-        :key="example"
-        :class="{ selected: example === selectedHttp && !useCustom }"
-        @click="setExample(example)"
-      >
-        {{ example }}
-      </button>
-    </div>
 
-    <div class="custom_request">
-      <div class="form_row">
-        <label for="method">HTTP Method</label>
-        <select id="method" v-model="customMethod" @change="onInputChange">
-          <option value="GET">GET</option>
-          <option value="POST">POST</option>
-          <option value="PUT">PUT</option>
-          <option value="PATCH">PATCH</option>
-          <option value="DELETE">DELETE</option>
-        </select>
+      <div class="group" v-if="clients.length">
+        <div class="eyebrow">Client</div>
+        <div class="clients">
+          <div
+            :class="{ client: true, selected: client.client === selectedClient }"
+            v-for="client in clients"
+            :key="client.client"
+            @click="setClient(client.client)"
+          >
+            {{ client.client }}
+          </div>
+        </div>
       </div>
 
-      <div class="form_row">
-        <label for="url">URL</label>
-        <input id="url" type="text" v-model="customUrl" @input="onInputChange" placeholder="https://example.com/api" />
+      <div class="group">
+        <div class="eyebrow">Examples</div>
+        <div class="select_example">
+          <button
+            v-for="(http, example) in https"
+            :key="example"
+            :class="{ selected: example === selectedHttp && !useCustom }"
+            @click="setExample(example)"
+          >
+            {{ example }}
+          </button>
+        </div>
       </div>
 
-      <div class="form_grid">
+      <div class="custom_request">
+        <div class="eyebrow">Custom request</div>
         <div class="form_row">
-          <label for="headers">Headers (JSON)</label>
-          <textarea
-            id="headers"
-            v-model="customHeaders"
-            @input="onInputChange"
-            placeholder='{"Content-Type": "application/json"}'
-          ></textarea>
+          <label for="method">HTTP Method</label>
+          <select id="method" v-model="customMethod" @change="onInputChange">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+          </select>
         </div>
 
         <div class="form_row">
-          <label for="cookies">Cookies (JSON)</label>
-          <textarea
-            id="cookies"
-            v-model="customCookies"
+          <label for="url">URL</label>
+          <input
+            id="url"
+            type="text"
+            v-model="customUrl"
             @input="onInputChange"
-            placeholder='{"session": "abc123"}'
-          ></textarea>
+            placeholder="https://example.com/api"
+          />
+        </div>
+
+        <div class="form_grid">
+          <div class="form_row">
+            <label for="headers">Headers (JSON)</label>
+            <textarea
+              id="headers"
+              v-model="customHeaders"
+              @input="onInputChange"
+              placeholder='{"Content-Type": "application/json"}'
+            ></textarea>
+          </div>
+
+          <div class="form_row">
+            <label for="cookies">Cookies (JSON)</label>
+            <textarea
+              id="cookies"
+              v-model="customCookies"
+              @input="onInputChange"
+              placeholder='{"session": "abc123"}'
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form_row">
+          <label for="body">Body (JSON or text)</label>
+          <textarea id="body" v-model="customBody" @input="onInputChange" placeholder='{"key": "value"}'></textarea>
         </div>
       </div>
 
-      <div class="form_row">
-        <label for="body">Body (JSON or text)</label>
-        <textarea id="body" v-model="customBody" @input="onInputChange" placeholder='{"key": "value"}'></textarea>
-      </div>
+      <GimmeHttp v-model:language="selectedLanguage" v-model:client="selectedClient" :http="http" />
     </div>
 
-    <GimmeHttp v-model:language="selectedLanguage" v-model:client="selectedClient" :http="http" />
+    <div class="cta_row">
+      <router-link to="/install" class="btn primary">Get started</router-link>
+      <a href="https://github.com/brianvoe/gimmehttp" target="_blank" class="btn secondary">View on GitHub</a>
+    </div>
   </div>
 </template>

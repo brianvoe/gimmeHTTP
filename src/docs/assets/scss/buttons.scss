@@ -1,16 +1,72 @@
 button {
   padding: var(--spacing-half) var(--spacing);
   color: var(--color-text);
-  font-weight: bold;
-  font-size: var(--font-size);
-  background-color: var(--color-tertiary);
-  border: 0px solid var(--border-color);
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 15px;
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: all 0.3s;
+  transition:
+    background-color var(--animation-timing),
+    border-color var(--animation-timing),
+    color var(--animation-timing);
 
   &:hover {
-    background-color: var(--color-quaternary);
+    color: var(--color-heading);
+    border-color: var(--color-primary);
+  }
+
+  &.selected,
+  &.active {
+    color: #1c1610;
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+}
+
+// CTA buttons (anchors or buttons)
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition:
+    background-color var(--animation-timing),
+    border-color var(--animation-timing),
+    color var(--animation-timing),
+    transform var(--animation-timing);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &.primary {
+    color: #1c1610;
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+
+    &:hover {
+      color: #1c1610;
+      background-color: var(--color-primary-bright);
+      border-color: var(--color-primary-bright);
+    }
+  }
+
+  &.secondary {
     color: var(--color-text);
+    background-color: transparent;
+    border: 1px solid var(--color-border-strong);
+
+    &:hover {
+      color: var(--color-heading);
+      border-color: var(--color-primary);
+    }
   }
 }

@@ -3,28 +3,42 @@
 input,
 select,
 textarea {
-  padding: var(--spacing-half);
-  border: solid 1px var(--border-color);
+  padding: 10px var(--spacing-half);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--border-radius);
-  font-family: 'Monaspace Neon', monospace;
+  font-family: var(--font-mono);
   font-size: 0.9rem;
-  background-color: var(--color-secondary);
-  color: var(--text-color);
+  background-color: var(--color-bg-0);
+  color: var(--color-text);
+  transition:
+    border-color var(--animation-timing),
+    box-shadow var(--animation-timing);
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.6;
+  }
 
   &:focus {
     outline: none;
-    border-color: var(--color-accent);
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-primary);
   }
+}
+
+select {
+  font-family: var(--font-primary);
 }
 
 textarea {
   min-height: 100px;
   resize: vertical;
-  font-family: 'Monaspace Neon', monospace;
 }
 
 label {
-  font-weight: bold;
-  font-size: 0.9rem;
-  color: var(--text-color);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-primary);
 }
