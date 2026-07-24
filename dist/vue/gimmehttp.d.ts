@@ -1,6 +1,8 @@
 import { PropType } from 'vue';
 import { Config, Http } from '../utils/generate';
-declare const _default: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
+declare const _default: typeof __VLS_export;
+export default _default;
+declare const __VLS_export: import('vue').DefineComponent<import('vue').ExtractPropTypes<{
     http: {
         type: PropType<Http>;
         required: true;
@@ -81,4 +83,3 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     client: string;
     theme: "light" | "dark";
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
-export default _default;

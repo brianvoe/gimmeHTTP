@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Upgraded TypeScript to 7 (with `@typescript/typescript6` for tooling that still needs the JS Compiler API)
+- Upgraded vue-router to 5
+- Upgraded vite-plugin-dts to 5
 - Refreshed development toolchain (Vite 8, Vitest 4.1, jsdom 29, Vue tooling)
 - Node engine/CI pin raised to Node 24 LTS (`>=24.18.0`)
 - Library TypeScript declarations now emit as a mirrored `dist/` tree (`dist/index.d.ts`) instead of a single rolled-up

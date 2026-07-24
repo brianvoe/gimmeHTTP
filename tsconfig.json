@@ -15,6 +15,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "lib": ["esnext", "dom"],
+    "types": ["node"],
     "paths": {
       "@/*": ["./src/*"]
     }

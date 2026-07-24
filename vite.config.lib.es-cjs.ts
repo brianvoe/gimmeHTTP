@@ -31,7 +31,7 @@ export default defineConfig({
   plugins: [
     dts({
       tsconfigPath: path.resolve(__dirname, 'tsconfig.lib.json'),
-      outDir: path.resolve(__dirname, 'dist'),
+      outDirs: path.resolve(__dirname, 'dist'),
       entryRoot: path.resolve(__dirname, 'src/gimmehttp'),
       include: ['src/gimmehttp/**/*.ts'],
       exclude: ['src/gimmehttp/vue/**', 'src/gimmehttp/**/*.test.ts', 'src/gimmehttp/index.umd.ts']

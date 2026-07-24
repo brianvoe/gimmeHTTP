@@ -40,9 +40,10 @@ export default defineConfig({
     vue(),
     dts({
       tsconfigPath: path.resolve(__dirname, 'tsconfig.vue.json'),
+      processor: 'vue',
       cleanVueFileName: true,
       entryRoot: path.resolve(__dirname, 'src/gimmehttp/vue'),
-      outDir: path.resolve(__dirname, 'dist/vue'),
+      outDirs: path.resolve(__dirname, 'dist/vue'),
       insertTypesEntry: true,
       include: ['src/gimmehttp/vue/**/*'],
       exclude: ['**/*.test.ts'],
