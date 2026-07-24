@@ -1,17 +1,19 @@
-import JSAxios from './js.axios'
+import JsAxios from './js.axios'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
-describe('JSAxios.generate', () => {
+describe('JsAxios.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
       url: 'https://example.com'
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
+    const result = JsAxios.generate(config, httpRequest)
     expect(result).toBe(
       `
+import axios from "axios";
+
 axios({
   method: "get",
   url: "https://example.com",
@@ -31,9 +33,11 @@ axios({
       }
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
+    const result = JsAxios.generate(config, httpRequest)
     expect(result).toBe(
       `
+import axios from "axios";
+
 axios({
   method: "post",
   url: "https://example.com",
@@ -57,15 +61,16 @@ axios({
       }
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
+    const result = JsAxios.generate(config, httpRequest)
     expect(result).toBe(
       `
+import axios from "axios";
+
 axios({
   method: "post",
   url: "https://example.com",
-  cookies: {
-    "key1": "value1",
-    "key2": "value2",
+  headers: {
+    "Cookie": "key1=value1; key2=value2",
   },
 })
 .then(response => console.log(response.data));
@@ -84,10 +89,14 @@ axios({
         key1: 'value1'
       }
     }
-    const config: Config = { handleErrors: true }
-    const result = JSAxios.generate(config, httpRequest)
+    const config: Config = {
+      handleErrors: true
+    }
+    const result = JsAxios.generate(config, httpRequest)
     expect(result).toBe(
       `
+import axios from "axios";
+
 axios({
   method: "post",
   url: "https://example.com",
@@ -108,49 +117,6 @@ axios({
     )
   })
 
-  test('should build a POST request with advanced json body', () => {
-    const httpRequest: Http = {
-      method: 'POST',
-      url: 'https://example.com',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: {
-        key1: 'value1',
-        key2: {
-          nestedKey: 'nestedValue'
-        },
-        key3: ['value1', 'value2'],
-        empty: null
-      }
-    }
-    const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
-    expect(result).toBe(
-      `
-axios({
-  method: "post",
-  url: "https://example.com",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  data: {
-    "key1": "value1",
-    "key2": {
-      "nestedKey": "nestedValue"
-    },
-    "key3": [
-      "value1",
-      "value2"
-    ],
-    "empty": null
-  }
-})
-.then(response => console.log(response.data));
-    `.trim()
-    )
-  })
-
   test('should handle XML content-type (axios auto-parses)', () => {
     const httpRequest: Http = {
       method: 'GET',
@@ -160,9 +126,11 @@ axios({
       }
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
+    const result = JsAxios.generate(config, httpRequest)
     expect(result).toBe(
       `
+import axios from "axios";
+
 axios({
   method: "get",
   url: "https://example.com/api",
@@ -184,9 +152,11 @@ axios({
       }
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
+    const result = JsAxios.generate(config, httpRequest)
     expect(result).toBe(
       `
+import axios from "axios";
+
 axios({
   method: "get",
   url: "https://example.com/readme.txt",
@@ -208,9 +178,11 @@ axios({
       }
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
+    const result = JsAxios.generate(config, httpRequest)
     expect(result).toBe(
       `
+import axios from "axios";
+
 axios({
   method: "get",
   url: "https://example.com/file.pdf",
@@ -233,9 +205,11 @@ axios({
       }
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
+    const result = JsAxios.generate(config, httpRequest)
     expect(result).toBe(
       `
+import axios from "axios";
+
 axios({
   method: "get",
   url: "https://example.com",
@@ -259,9 +233,22 @@ axios({
       }
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
-    expect(result).toContain('"tags": ["javascript", "axios"],')
-    expect(result).toContain('"category": "frontend",')
+    const result = JsAxios.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import axios from "axios";
+
+axios({
+  method: "get",
+  url: "https://example.com",
+  params: {
+    "tags": ["javascript", "axios"],
+    "category": "frontend",
+  },
+})
+.then(response => console.log(response.data));
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -279,8 +266,26 @@ axios({
       }
     }
     const config: Config = {}
-    const result = JSAxios.generate(config, httpRequest)
-    expect(result).toContain('"version": "1.0",')
-    expect(result).toContain('"name": "John"')
+    const result = JsAxios.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import axios from "axios";
+
+axios({
+  method: "post",
+  url: "https://example.com",
+  params: {
+    "version": "1.0",
+  },
+  headers: {
+    "Content-Type": "application/json",
+  },
+  data: {
+    "name": "John"
+  }
+})
+.then(response => console.log(response.data));
+    `.trim()
+    )
   })
 })

@@ -25,7 +25,7 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://example.com");
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -70,7 +70,7 @@ namespace HttpClientExample
         query.Add("address.zip", "66031");
         query.Add("address.country", "Wallis");
         uriBuilder.Query = query.ToString();
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, uriBuilder.ToString());
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uriBuilder.ToString());
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -116,7 +116,7 @@ namespace HttpClientExample
         query.Add("tags", "typescript");
         query.Add("category", "programming");
         uriBuilder.Query = query.ToString();
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, uriBuilder.ToString());
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uriBuilder.ToString());
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -161,7 +161,7 @@ namespace HttpClientExample
         query.Add("search", "hello world");
         query.Add("filter", "test&value");
         uriBuilder.Query = query.ToString();
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, uriBuilder.ToString());
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uriBuilder.ToString());
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -201,7 +201,7 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://example.com");
 
         request.Headers.Add("Content-Type", "application/json");
         request.Headers.Add("Authorization", "Bearer token");
@@ -244,7 +244,7 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.GET, "https://example.com");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://example.com");
 
         request.Headers.Add("Cookie", "session=abc123; user=testuser");
 
@@ -285,11 +285,10 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://example.com");
 
-        request.Content = new StringContent({
-          "key1": "value1"
-        }, System.Text.Encoding.UTF8, "application/json");
+        string json = "{\\"key1\\":\\"value1\\"}";
+        request.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -299,11 +298,11 @@ namespace HttpClientExample
     }
   }
 }
-      `.trim()
+    `.trim()
     )
   })
 
-  test('should build a POST with advanced request json body', () => {
+  test('should build a POST request with advanced json body', () => {
     const httpRequest: Http = {
       method: 'POST',
       url: 'https://example.com',
@@ -312,7 +311,9 @@ namespace HttpClientExample
         key2: 123,
         key3: true,
         key4: ['value1', 'value2'],
-        key5: { nestedKey: 'nestedValue' }
+        key5: {
+          nestedKey: 'nestedValue'
+        }
       }
     }
     const config: Config = {}
@@ -332,20 +333,10 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://example.com");
 
-        request.Content = new StringContent({
-          "key1": "value1",
-          "key2": 123,
-          "key3": true,
-          "key4": [
-            "value1",
-            "value2"
-          ],
-          "key5": {
-            "nestedKey": "nestedValue"
-          }
-        }, System.Text.Encoding.UTF8, "application/json");
+        string json = "{\\"key1\\":\\"value1\\",\\"key2\\":123,\\"key3\\":true,\\"key4\\":[\\"value1\\",\\"value2\\"],\\"key5\\":{\\"nestedKey\\":\\"nestedValue\\"}}";
+        request.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -355,7 +346,7 @@ namespace HttpClientExample
     }
   }
 }
-      `.trim()
+    `.trim()
     )
   })
 
@@ -371,7 +362,7 @@ namespace HttpClientExample
         password: 'testpass'
       }
     }
-    const config = {}
+    const config: Config = {}
     const result = CSharpHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -379,6 +370,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using System.Collections.Generic;
 
 namespace HttpClientExample
 {
@@ -388,9 +380,7 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
-
-        request.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://example.com");
 
         var formContent = new FormUrlEncodedContent(new Dictionary<string, string>
         {
@@ -407,7 +397,7 @@ namespace HttpClientExample
     }
   }
 }
-      `.trim()
+    `.trim()
     )
   })
 
@@ -437,11 +427,9 @@ namespace HttpClientExample
     {
       using (HttpClient client = new HttpClient())
       {
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.POST, "https://example.com");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://example.com");
 
-        request.Headers.Add("Content-Type", "application/xml");
-
-        request.Content = new StringContent("<root><value>test</value></root>", System.Text.Encoding.UTF8, "application/json");
+        request.Content = new StringContent("<root><value>test</value></root>", System.Text.Encoding.UTF8, "application/xml");
 
         HttpResponseMessage response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -451,7 +439,7 @@ namespace HttpClientExample
     }
   }
 }
-      `.trim()
+    `.trim()
     )
   })
 })

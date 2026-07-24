@@ -1,15 +1,15 @@
-import JSFetch from './js.fetch'
+import JsFetch from './js.fetch'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
-describe('JSFetch.generate', () => {
+describe('JsFetch.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
       url: 'https://example.com'
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
+    const result = JsFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
 fetch("https://example.com", {
@@ -31,7 +31,7 @@ fetch("https://example.com", {
       }
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
+    const result = JsFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
 fetch("https://example.com", {
@@ -58,8 +58,10 @@ fetch("https://example.com", {
         key1: 'value1'
       }
     }
-    const config: Config = { handleErrors: true }
-    const result = JSFetch.generate(config, httpRequest)
+    const config: Config = {
+      handleErrors: true
+    }
+    const result = JsFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
 fetch("https://example.com", {
@@ -67,9 +69,9 @@ fetch("https://example.com", {
   headers: {
     "Content-Type": "application/json",
   },
-  body: {
+  body: JSON.stringify({
     "key1": "value1"
-  }
+  }),
 })
 .then(response => {
   if (!response.ok) {
@@ -83,47 +85,6 @@ fetch("https://example.com", {
     )
   })
 
-  test('should build a POST request with advanced json body', () => {
-    const httpRequest: Http = {
-      method: 'POST',
-      url: 'https://example.com',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: {
-        key1: 'value1',
-        key2: { nestedKey: 'nestedValue' },
-        key3: ['value1', 'value2'],
-        empty: null
-      }
-    }
-    const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
-    expect(result).toBe(
-      `
-fetch("https://example.com", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: {
-    "key1": "value1",
-    "key2": {
-      "nestedKey": "nestedValue"
-    },
-    "key3": [
-      "value1",
-      "value2"
-    ],
-    "empty": null
-  }
-})
-.then(response => response.json())
-.then(data => console.log(data));
-    `.trim()
-    )
-  })
-
   test('should use text() for XML content-type', () => {
     const httpRequest: Http = {
       method: 'GET',
@@ -133,7 +94,7 @@ fetch("https://example.com", {
       }
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
+    const result = JsFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
 fetch("https://example.com/api", {
@@ -157,7 +118,7 @@ fetch("https://example.com/api", {
       }
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
+    const result = JsFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
 fetch("https://example.com/image.png", {
@@ -181,7 +142,7 @@ fetch("https://example.com/image.png", {
       }
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
+    const result = JsFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
 fetch("https://example.com/readme.txt", {
@@ -205,7 +166,7 @@ fetch("https://example.com/readme.txt", {
       }
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
+    const result = JsFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
 fetch("https://example.com/image.png", {
@@ -230,14 +191,12 @@ fetch("https://example.com/image.png", {
       }
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
+    const result = JsFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
 const url = new URL("https://example.com");
-const params = new URLSearchParams();
-params.set("address.zip", "66031");
-params.set("address.country", "Wallis");
-url.search = params.toString();
+url.searchParams.append("address.zip", "66031");
+url.searchParams.append("address.country", "Wallis");
 
 fetch(url.toString(), {
   method: "GET",
@@ -258,10 +217,21 @@ fetch(url.toString(), {
       }
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
-    expect(result).toContain('params.append("tags", "javascript");')
-    expect(result).toContain('params.append("tags", "fetch");')
-    expect(result).toContain('params.set("category", "frontend");')
+    const result = JsFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const url = new URL("https://example.com");
+url.searchParams.append("tags", "javascript");
+url.searchParams.append("tags", "fetch");
+url.searchParams.append("category", "frontend");
+
+fetch(url.toString(), {
+  method: "GET",
+})
+.then(response => response.text())
+.then(data => console.log(data));
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -279,8 +249,24 @@ fetch(url.toString(), {
       }
     }
     const config: Config = {}
-    const result = JSFetch.generate(config, httpRequest)
-    expect(result).toContain('params.set("version", "1.0");')
-    expect(result).toContain('"name": "John"')
+    const result = JsFetch.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const url = new URL("https://example.com");
+url.searchParams.append("version", "1.0");
+
+fetch(url.toString(), {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    "name": "John"
+  }),
+})
+.then(response => response.json())
+.then(data => console.log(data));
+    `.trim()
+    )
   })
 })

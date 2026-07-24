@@ -25,7 +25,7 @@ describe('Index', () => {
       expect(error).toBeUndefined()
     }
 
-    expect(code).toEqual(`curl -X GET "https://example.com"`)
+    expect(code).toEqual(`curl "https://example.com"`)
   })
 
   test('should run simple post example', () => {
@@ -54,12 +54,12 @@ describe('Index', () => {
 
     expect(code).toEqual(
       `
-curl -X POST "https://example.com" \\
+curl "https://example.com" \\
   -H "Content-Type: application/json" \\
-  -d $'{ \\
-    "key1": "value1", \\
-    "key2": 8675309 \\
-  }'
+  -d '{
+  "key1": "value1",
+  "key2": 8675309
+}'
     `.trim()
     )
   })

@@ -1,7 +1,14 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
+import {
+  ContentTypeIncludes,
+  EscapeDoubleQuoted,
+  GetContentType,
+  HasBody,
+  IsObjectBody,
+  IsStringBody
+} from '../utils/utils'
 
 export default {
   default: true,
@@ -10,11 +17,17 @@ export default {
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',
-      join: config.join || '\n'
+      join: config.join || '\n',
+      json: { nullLiteral: 'nil', escapeString: EscapeDoubleQuoted }
     })
+    const rubyString = EscapeDoubleQuoted
+    const contentType = GetContentType(http.headers)
+    const needsJson =
+      HasBody(http.body) && (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body)))
 
     builder.line('require "net/http"')
     builder.line('require "uri"')
+    if (needsJson) builder.line('require "json"')
     builder.line()
 
     if (config.handleErrors) {
@@ -24,21 +37,21 @@ export default {
 
     // Build URI with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line('uri = URI.parse("' + http.url + '")')
+      builder.line(`uri = URI.parse("${rubyString(http.url)}")`)
       builder.line('params = {')
       builder.indent()
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
-          builder.line(`"${key}" => [${value.map((v) => `"${v}"`).join(', ')}],`)
+          builder.line(`"${rubyString(key)}" => [${value.map((v) => `"${rubyString(v)}"`).join(', ')}],`)
         } else {
-          builder.line(`"${key}" => "${value}",`)
+          builder.line(`"${rubyString(key)}" => "${rubyString(value)}",`)
         }
       }
       builder.outdent()
       builder.line('}')
       builder.line('uri.query = URI.encode_www_form(params)')
     } else {
-      builder.line('uri = URI.parse("' + http.url + '")')
+      builder.line(`uri = URI.parse("${rubyString(http.url)}")`)
     }
 
     if (http.method.toUpperCase() === 'GET') {
@@ -49,16 +62,20 @@ export default {
       builder.line('request = Net::HTTP::Put.new(uri)')
     } else if (http.method.toUpperCase() === 'DELETE') {
       builder.line('request = Net::HTTP::Delete.new(uri)')
+    } else if (http.method.toUpperCase() === 'PATCH') {
+      builder.line('request = Net::HTTP::Patch.new(uri)')
     } else {
-      builder.line('request = Net::HTTP::GenericRequest.new("' + http.method.toUpperCase() + '", uri.path, nil, nil)')
+      builder.line(
+        `request = Net::HTTP::GenericRequest.new("${rubyString(http.method.toUpperCase())}", ${HasBody(http.body)}, true, uri.request_uri)`
+      )
     }
 
     if (http.headers && Object.keys(http.headers).length > 0) {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`request["${key}"] = "${val}"`))
+          value.forEach((val) => builder.line(`request.add_field("${rubyString(key)}", "${rubyString(val)}")`))
         } else {
-          builder.line(`request["${key}"] = "${value}"`)
+          builder.line(`request["${rubyString(key)}"] = "${rubyString(value)}"`)
         }
       }
     }
@@ -67,23 +84,22 @@ export default {
       const cookieString = Object.entries(http.cookies)
         .map(([key, value]) => `${key}=${value}`)
         .join('; ')
-      builder.line(`request["Cookie"] = "${cookieString}"`)
+      builder.line(`request["Cookie"] = "${rubyString(cookieString)}"`)
     }
 
-    if (http.body) {
-      const contentType = GetContentType(http.headers)
-
-      if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
+    if (HasBody(http.body)) {
+      if (needsJson) {
         builder.line('request.body = ')
         builder.json(http.body)
         builder.append('.to_json')
+      } else if (ContentTypeIncludes(contentType, 'form')) {
+        builder.line('request.body = URI.encode_www_form(')
+        builder.json(http.body)
+        builder.append(')')
       } else if (IsStringBody(http.body)) {
-        builder.line(`request.body = "${http.body.replace(/"/g, '\\"')}"`)
+        builder.line(`request.body = "${rubyString(http.body)}"`)
       } else {
-        // For form data or other objects, convert to JSON string
-        builder.line('request.body = ')
-        builder.json(http.body)
-        builder.append('.to_json')
+        builder.line(`request.body = "${rubyString(JSON.stringify(http.body))}"`)
       }
     }
 

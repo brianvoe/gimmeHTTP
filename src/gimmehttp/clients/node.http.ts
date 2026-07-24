@@ -1,7 +1,15 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { ParseUrl } from '../utils/utils'
+import {
+  ParseUrl,
+  GetContentType,
+  ContentTypeIncludes,
+  IsObjectBody,
+  IsStringBody,
+  FormatCookieHeader,
+  EscapeDoubleQuoted
+} from '../utils/utils'
 
 export default {
   language: 'node',
@@ -12,13 +20,12 @@ export default {
       join: config.join || '\n'
     })
 
-    builder.line('const http = require("http");')
+    const { hostname, path, port, protocol, params: existingParams } = ParseUrl(http.url)
+    builder.line(`const transport = require("${protocol === 'https:' ? 'https' : 'http'}");`)
     builder.line()
 
-    const { hostname, path, port, protocol } = ParseUrl(http.url)
-
     // Build path with parameters
-    let finalPath = path
+    let finalPath = path + existingParams
     if (http.params && Object.keys(http.params).length > 0) {
       const params = new URLSearchParams()
       for (const [key, value] of Object.entries(http.params)) {
@@ -32,18 +39,41 @@ export default {
       }
       const paramString = params.toString()
       if (paramString) {
-        const separator = path.includes('?') ? '&' : '?'
-        finalPath = `${path}${separator}${paramString}`
+        const separator = finalPath.includes('?') ? '&' : '?'
+        finalPath = `${finalPath}${separator}${paramString}`
       }
+    }
+
+    const contentType = GetContentType(http.headers)
+    const hasBody = http.body !== undefined && http.body !== null
+    const isJsonBody = hasBody && IsObjectBody(http.body) && !ContentTypeIncludes(contentType, 'form')
+    if (hasBody) {
+      if (isJsonBody) {
+        builder.line('const payload = JSON.stringify(')
+        builder.json(http.body)
+        builder.append(');')
+      } else if (IsObjectBody(http.body)) {
+        builder.line('const payload = new URLSearchParams(')
+        builder.json(http.body)
+        builder.append(').toString();')
+      } else if (IsStringBody(http.body)) {
+        builder.line(`const payload = "${EscapeDoubleQuoted(http.body)}";`)
+      } else {
+        builder.line('const payload = ')
+        builder.json(http.body)
+        builder.append(';')
+      }
+      builder.line()
     }
 
     builder.line('const options = {')
     builder.indent()
     builder.line(`method: "${http.method.toUpperCase()}",`)
     builder.line(`hostname: "${hostname}",`)
+    builder.line(`port: ${port},`)
     builder.line(`path: "${finalPath}",`)
 
-    if (http.headers || http.cookies) {
+    if (http.headers || http.cookies || hasBody) {
       builder.line('headers: {')
       builder.indent()
 
@@ -56,14 +86,14 @@ export default {
           }
         }
       }
-
-      if (http.cookies) {
-        const cookieString = Object.entries(http.cookies)
-          .map(([key, value]) => `${key}=${value}`)
-          .join('; ')
-        builder.line(`"Cookie": "${cookieString}",`)
+      if (isJsonBody && !Object.keys(http.headers || {}).some((key) => key.toLowerCase() === 'content-type')) {
+        builder.line('"Content-Type": "application/json",')
       }
 
+      if (http.cookies) {
+        builder.line(`"Cookie": "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}",`)
+      }
+      if (hasBody) builder.line('"Content-Length": Buffer.byteLength(payload),')
       builder.outdent()
       builder.line('},')
     }
@@ -71,7 +101,7 @@ export default {
     builder.line('};')
     builder.line()
 
-    builder.line('const req = http.request(options, (res) => {')
+    builder.line('const req = transport.request(options, (res) => {')
     builder.indent()
     builder.line('let data = "";')
     builder.line()
@@ -100,11 +130,7 @@ export default {
 
     builder.line()
 
-    if (http.body) {
-      builder.line('req.write(')
-      builder.json(http.body)
-      builder.append(');')
-    }
+    if (hasBody) builder.line('req.write(payload);')
     builder.line('req.end();')
 
     return builder.output()

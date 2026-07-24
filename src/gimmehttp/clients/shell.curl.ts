@@ -1,35 +1,43 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, HasBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
+import {
+  BuildUrlWithParams,
+  ContentTypeIncludes,
+  EscapeDoubleQuoted,
+  FormatCookieHeader,
+  GetContentType,
+  HasBody,
+  IsObjectBody
+} from '../utils/utils'
+
+function escapeSingleQuoted(value: string): string {
+  return value.replace(/'/g, "'\\''")
+}
 
 export default {
   default: true,
   language: 'shell',
   client: 'curl',
   generate(config: Config, http: Http): string {
+    const indent = config.indent || '  '
     const builder = new Builder({
-      indent: config.indent || '  ',
+      indent,
       join: config.join || ' \\\n'
     })
 
-    // Start curl command with method and URL
-    builder.line(`curl -X ${http.method} "${http.url}"`)
+    const hasContent = HasBody(http.body)
+    const method = http.method.toUpperCase()
+    const url = BuildUrlWithParams(http.url, http.params)
+
+    // curl defaults to GET, and defaults to POST when -d is present.
+    builder.line(`curl "${EscapeDoubleQuoted(url)}"`)
 
     // Everything is indented
     builder.indent()
 
-    // Add URL parameters using -G flag
-    if (http.params) {
-      for (const [key, value] of Object.entries(http.params)) {
-        if (Array.isArray(value)) {
-          for (const val of value) {
-            builder.line(`-G -d "${key}=${val.replace(/"/g, '\\"')}"`)
-          }
-        } else {
-          builder.line(`-G -d "${key}=${value.replace(/"/g, '\\"')}"`)
-        }
-      }
+    if ((hasContent && method !== 'POST') || (!hasContent && method !== 'GET')) {
+      builder.line(`--request ${method}`)
     }
 
     // Add headers
@@ -37,40 +45,36 @@ export default {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`-H "${key}: ${val.replace(/"/g, '\\"')}"`)
+            builder.line(`-H "${EscapeDoubleQuoted(`${key}: ${val}`)}"`)
           }
         } else {
-          builder.line(`-H "${key}: ${value.replace(/"/g, '\\"')}"`)
+          builder.line(`-H "${EscapeDoubleQuoted(`${key}: ${value}`)}"`)
         }
       }
     }
 
     // Add cookies
     if (http.cookies) {
-      const cookieString = Object.entries(http.cookies)
-        .flatMap(([key, value]) => (Array.isArray(value) ? value.map((val) => `${key}=${val}`) : `${key}=${value}`))
-        .join('; ')
-      builder.line(`-b "${cookieString}"`)
+      builder.line(`-b "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}"`)
     }
 
     // Add body
-    const hasContent = HasBody(http.body)
-
     if (hasContent) {
       const contentType = GetContentType(http.headers)
 
       if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
-        // Pretty print JSON
-        builder.line("-d $'")
-        // builder.indent()
-        builder.json(http.body)
-        builder.append("'")
-      } else if (ContentTypeIncludes(contentType, 'form')) {
-        const formData = new URLSearchParams(http.body).toString().replace(/'/g, "'\\''")
-        builder.line(`-d '${formData}'`)
+        // Pretty-print JSON inside a multi-line single-quoted string for readability.
+        // Embedded newlines stay in one builder line so curl line-continuations aren't injected into the JSON.
+        const pretty = JSON.stringify(http.body, null, indent)
+        builder.line(`-d '${escapeSingleQuoted(pretty)}'`)
+      } else if (ContentTypeIncludes(contentType, 'form') && IsObjectBody(http.body)) {
+        // One -d per field keeps form payloads easy to scan
+        for (const [key, value] of Object.entries(http.body)) {
+          const encoded = `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
+          builder.line(`-d '${escapeSingleQuoted(encoded)}'`)
+        }
       } else if (typeof http.body === 'string') {
-        const escapedBody = http.body.replace(/'/g, "'\\''")
-        builder.line(`-d '${escapedBody}'`)
+        builder.line(`-d '${escapeSingleQuoted(http.body)}'`)
       }
     }
 

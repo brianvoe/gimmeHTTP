@@ -1,7 +1,14 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
+import {
+  ContentTypeIncludes,
+  EscapeDoubleQuoted,
+  FormatCookieHeader,
+  GetContentType,
+  IsObjectBody,
+  IsStringBody
+} from '../utils/utils'
 
 export default {
   language: 'rust',
@@ -19,7 +26,13 @@ export default {
     builder.indent()
     builder.line('let client = Client::new();')
     builder.line()
-    builder.line('let res = client.request(reqwest::Method::' + http.method.toUpperCase() + ', "' + http.url + '")')
+    builder.line(
+      'let res = client.request(reqwest::Method::' +
+        http.method.toUpperCase() +
+        ', "' +
+        EscapeDoubleQuoted(http.url) +
+        '")'
+    )
     builder.indent()
 
     // URL Parameters
@@ -29,10 +42,10 @@ export default {
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`("${key}", "${val}"),`)
+            builder.line(`("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}"),`)
           }
         } else {
-          builder.line(`("${key}", "${value}"),`)
+          builder.line(`("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}"),`)
         }
       }
       builder.outdent()
@@ -42,56 +55,43 @@ export default {
     if (http.headers) {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`.header("${key}", "${val}")`))
+          value.forEach((val) => builder.line(`.header("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`))
         } else {
-          builder.line(`.header("${key}", "${value}")`)
+          builder.line(`.header("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
         }
       }
     }
 
-    if (http.cookies) {
-      for (const [key, value] of Object.entries(http.cookies)) {
-        if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`.cookie("${key}", "${val}")`))
-        } else {
-          builder.line(`.cookie("${key}", "${value}")`)
-        }
-      }
+    if (http.cookies && Object.keys(http.cookies).length > 0) {
+      builder.line(`.header("Cookie", "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}")`)
     }
 
+    const hasExplicitContentType = Object.keys(http.headers || {}).some((key) => key.toLowerCase() === 'content-type')
     if (http.body) {
       const contentType = GetContentType(http.headers)
 
       if (ContentTypeIncludes(contentType, 'form')) {
-        builder.line('.form(&')
-        builder.json(http.body)
-        builder.append(')')
+        const pairs = Object.entries(http.body)
+          .map(([key, value]) => `("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(String(value))}")`)
+          .join(', ')
+        builder.line(`.form(&[${pairs}])`)
       } else if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
-        builder.line('.json(&')
-        builder.json(http.body)
+        if (!hasExplicitContentType) {
+          builder.line('.header("Content-Type", "application/json")')
+        }
+        builder.line('.body(')
+        builder.jsonStringLiteral(http.body)
         builder.append(')')
       } else if (IsStringBody(http.body)) {
-        builder.line(`.body("${http.body.replace(/"/g, '\\"')}")`)
+        builder.line(`.body("${EscapeDoubleQuoted(http.body)}")`)
       }
     }
 
-    builder.line('.send()?;')
+    builder.line(config.handleErrors ? '.send()?.error_for_status()?;' : '.send()?;')
     builder.outdent()
 
     builder.line()
-    if (config.handleErrors) {
-      builder.line('if res.status().is_success() {')
-      builder.indent()
-      builder.line('println!("{}", res.text()?);')
-      builder.outdent()
-      builder.line('} else {')
-      builder.indent()
-      builder.line('eprintln!("Request failed with status: {}", res.status());')
-      builder.outdent()
-      builder.line('}')
-    } else {
-      builder.line('println!("{}", res.text()?);')
-    }
+    builder.line('println!("{}", res.text()?);')
 
     builder.line('Ok(())')
     builder.outdent()

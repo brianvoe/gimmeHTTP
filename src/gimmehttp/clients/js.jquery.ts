@@ -1,6 +1,14 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import {
+  BuildUrlWithParams,
+  ContentTypeIncludes,
+  GetContentType,
+  IsObjectBody,
+  IsStringBody,
+  EscapeDoubleQuoted
+} from '../utils/utils'
 
 export default {
   language: 'javascript',
@@ -13,23 +21,8 @@ export default {
 
     builder.line('$.ajax({')
     builder.indent()
-    builder.line(`url: "${http.url}",`)
+    builder.line(`url: "${EscapeDoubleQuoted(BuildUrlWithParams(http.url, http.params))}",`)
     builder.line(`type: "${http.method.toUpperCase()}",`)
-
-    // URL Parameters
-    if (http.params && Object.keys(http.params).length > 0) {
-      builder.line('data: {')
-      builder.indent()
-      for (const [key, value] of Object.entries(http.params)) {
-        if (Array.isArray(value)) {
-          builder.line(`"${key}": [${value.map((v) => `"${v}"`).join(', ')}],`)
-        } else {
-          builder.line(`"${key}": "${value}",`)
-        }
-      }
-      builder.outdent()
-      builder.line('},')
-    }
 
     if (http.headers) {
       builder.line('headers: {')
@@ -45,14 +38,27 @@ export default {
       builder.line('},')
     }
 
-    if (http.body) {
-      builder.line('data: ')
-      builder.json(http.body)
-      builder.append(',')
-      builder.line('contentType: "application/json",')
+    if (http.body !== undefined && http.body !== null) {
+      const contentType = GetContentType(http.headers)
+      if (IsObjectBody(http.body) && ContentTypeIncludes(contentType, 'json')) {
+        builder.line('data: JSON.stringify(')
+        builder.json(http.body)
+        builder.append('),')
+        builder.line('contentType: "application/json",')
+        builder.line('processData: false,')
+      } else if (IsStringBody(http.body)) {
+        builder.line(`data: "${EscapeDoubleQuoted(http.body)}",`)
+        if (contentType) builder.line(`contentType: "${EscapeDoubleQuoted(contentType)}",`)
+      } else {
+        builder.line('data: ')
+        builder.json(http.body)
+        builder.append(',')
+      }
     }
 
-    // Note: Cookies are not supported in jQuery
+    if (http.cookies && Object.keys(http.cookies).length > 0) {
+      builder.line('// Same-origin cookies are sent automatically by the browser.')
+    }
 
     builder.line('success: function(data) {')
     builder.indent()

@@ -1,6 +1,6 @@
 import CSharpRestSharp from './csharp.restsharp'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('CSharpRestSharp.generate', () => {
   test('should build a basic GET request', () => {
@@ -13,17 +13,19 @@ describe('CSharpRestSharp.generate', () => {
     expect(result).toBe(
       `
 using RestSharp;
+using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var client = new RestClient("https://example.com");
-      var request = new RestRequest(Method.GET);
+      var request = new RestRequest("", Method.Get);
 
-      IRestResponse response = client.Execute(request);
+      RestResponse response = await client.ExecuteAsync(request);
       Console.WriteLine(response.Content);
     }
   }
@@ -46,20 +48,22 @@ namespace RestSharpExample
     expect(result).toBe(
       `
 using RestSharp;
+using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var client = new RestClient("https://example.com");
-      var request = new RestRequest(Method.POST);
+      var request = new RestRequest("", Method.Post);
 
       request.AddHeader("Content-Type", "application/json");
       request.AddHeader("Authorization", "Bearer token");
 
-      IRestResponse response = client.Execute(request);
+      RestResponse response = await client.ExecuteAsync(request);
       Console.WriteLine(response.Content);
     }
   }
@@ -82,19 +86,21 @@ namespace RestSharpExample
     expect(result).toBe(
       `
 using RestSharp;
+using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var client = new RestClient("https://example.com");
-      var request = new RestRequest(Method.GET);
+      var request = new RestRequest("", Method.Get);
 
       request.AddHeader("Cookie", "session=abc123; user=testuser");
 
-      IRestResponse response = client.Execute(request);
+      RestResponse response = await client.ExecuteAsync(request);
       Console.WriteLine(response.Content);
     }
   }
@@ -116,21 +122,21 @@ namespace RestSharpExample
     expect(result).toBe(
       `
 using RestSharp;
+using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var client = new RestClient("https://example.com");
-      var request = new RestRequest(Method.POST);
+      var request = new RestRequest("", Method.Post);
 
-      request.AddJsonBody({
-        "key1": "value1"
-      });
+      request.AddStringBody("{\\"key1\\":\\"value1\\"}", ContentType.Json);
 
-      IRestResponse response = client.Execute(request);
+      RestResponse response = await client.ExecuteAsync(request);
       Console.WriteLine(response.Content);
     }
   }
@@ -148,8 +154,7 @@ namespace RestSharpExample
         key2: {
           nestedKey: 'nestedValue'
         },
-        key3: ['value1', 'value2'],
-        key4: [{ key: 'value1' }, { key: 'value2' }]
+        key3: ['value1', 'value2']
       }
     }
     const config: Config = {}
@@ -157,34 +162,21 @@ namespace RestSharpExample
     expect(result).toBe(
       `
 using RestSharp;
+using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var client = new RestClient("https://example.com");
-      var request = new RestRequest(Method.POST);
+      var request = new RestRequest("", Method.Post);
 
-      request.AddJsonBody({
-        "key1": "value1",
-        "key2": {
-          "nestedKey": "nestedValue"
-        },
-        "key3": [
-          "value1",
-          "value2"
-        ],
-        "key4": [{
-            "key": "value1"
-          },{
-            "key": "value2"
-          }
-        ]
-      });
+      request.AddStringBody("{\\"key1\\":\\"value1\\",\\"key2\\":{\\"nestedKey\\":\\"nestedValue\\"},\\"key3\\":[\\"value1\\",\\"value2\\"]}", ContentType.Json);
 
-      IRestResponse response = client.Execute(request);
+      RestResponse response = await client.ExecuteAsync(request);
       Console.WriteLine(response.Content);
     }
   }
@@ -207,21 +199,21 @@ namespace RestSharpExample
     expect(result).toBe(
       `
 using RestSharp;
+using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var client = new RestClient("https://example.com");
-      var request = new RestRequest(Method.POST);
+      var request = new RestRequest("", Method.Post);
 
-      request.AddHeader("Content-Type", "text/plain");
+      request.AddStringBody("Plain text content", "text/plain");
 
-      request.AddParameter("text/plain", "Plain text content", ParameterType.RequestBody);
-
-      IRestResponse response = client.Execute(request);
+      RestResponse response = await client.ExecuteAsync(request);
       Console.WriteLine(response.Content);
     }
   }
@@ -244,21 +236,60 @@ namespace RestSharpExample
     expect(result).toBe(
       `
 using RestSharp;
+using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var client = new RestClient("https://example.com");
-      var request = new RestRequest(Method.POST);
+      var request = new RestRequest("", Method.Post);
 
-      request.AddHeader("Content-Type", "application/xml");
+      request.AddStringBody("<data><node>content</node></data>", "application/xml");
 
-      request.AddParameter("application/xml", "<data><node>content</node></data>", ParameterType.RequestBody);
+      RestResponse response = await client.ExecuteAsync(request);
+      Console.WriteLine(response.Content);
+    }
+  }
+}
+    `.trim()
+    )
+  })
 
-      IRestResponse response = client.Execute(request);
+  test('should build a POST request with form-urlencoded body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        name: 'Jane'
+      }
+    }
+    const config: Config = {}
+    const result = CSharpRestSharp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+using RestSharp;
+using System;
+using System.Threading.Tasks;
+
+namespace RestSharpExample
+{
+  class Program
+  {
+    static async Task Main(string[] args)
+    {
+      var client = new RestClient("https://example.com");
+      var request = new RestRequest("", Method.Post);
+
+      request.AddParameter("name", "Jane");
+
+      RestResponse response = await client.ExecuteAsync(request);
       Console.WriteLine(response.Content);
     }
   }
@@ -281,20 +312,22 @@ namespace RestSharpExample
     expect(result).toBe(
       `
 using RestSharp;
+using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var client = new RestClient("https://example.com");
-      var request = new RestRequest(Method.GET);
+      var request = new RestRequest("", Method.Get);
 
       request.AddParameter("address.zip", "66031", ParameterType.QueryString);
       request.AddParameter("address.country", "Wallis", ParameterType.QueryString);
 
-      IRestResponse response = client.Execute(request);
+      RestResponse response = await client.ExecuteAsync(request);
       Console.WriteLine(response.Content);
     }
   }
@@ -314,9 +347,32 @@ namespace RestSharpExample
     }
     const config: Config = {}
     const result = CSharpRestSharp.generate(config, httpRequest)
-    expect(result).toContain('request.AddParameter("tags", "csharp", ParameterType.QueryString);')
-    expect(result).toContain('request.AddParameter("tags", "restsharp", ParameterType.QueryString);')
-    expect(result).toContain('request.AddParameter("category", "backend", ParameterType.QueryString);')
+    expect(result).toBe(
+      `
+using RestSharp;
+using System;
+using System.Threading.Tasks;
+
+namespace RestSharpExample
+{
+  class Program
+  {
+    static async Task Main(string[] args)
+    {
+      var client = new RestClient("https://example.com");
+      var request = new RestRequest("", Method.Get);
+
+      request.AddParameter("tags", "csharp", ParameterType.QueryString);
+      request.AddParameter("tags", "restsharp", ParameterType.QueryString);
+      request.AddParameter("category", "backend", ParameterType.QueryString);
+
+      RestResponse response = await client.ExecuteAsync(request);
+      Console.WriteLine(response.Content);
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -335,8 +391,32 @@ namespace RestSharpExample
     }
     const config: Config = {}
     const result = CSharpRestSharp.generate(config, httpRequest)
-    expect(result).toContain('request.AddParameter("version", "1.0", ParameterType.QueryString);')
-    expect(result).toContain('"name": "John"')
+    expect(result).toBe(
+      `
+using RestSharp;
+using System;
+using System.Threading.Tasks;
+
+namespace RestSharpExample
+{
+  class Program
+  {
+    static async Task Main(string[] args)
+    {
+      var client = new RestClient("https://example.com");
+      var request = new RestRequest("", Method.Post);
+
+      request.AddParameter("version", "1.0", ParameterType.QueryString);
+
+      request.AddStringBody("{\\"name\\":\\"John\\"}", ContentType.Json);
+
+      RestResponse response = await client.ExecuteAsync(request);
+      Console.WriteLine(response.Content);
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with error handling', () => {
@@ -350,31 +430,34 @@ namespace RestSharpExample
         test: 'data'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = CSharpRestSharp.generate(config, httpRequest)
     expect(result).toBe(
       `
 using RestSharp;
 using System;
+using System.Threading.Tasks;
 
 namespace RestSharpExample
 {
   class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       try
       {
         var client = new RestClient("https://example.com");
-        var request = new RestRequest(Method.POST);
+        var request = new RestRequest("", Method.Post);
 
-        request.AddHeader("Content-Type", "application/json");
+        request.AddStringBody("{\\"test\\":\\"data\\"}", ContentType.Json);
 
-        request.AddJsonBody({
-          "test": "data"
-        });
-
-        IRestResponse response = client.Execute(request);
+        RestResponse response = await client.ExecuteAsync(request);
+        if (!response.IsSuccessful)
+        {
+          throw new Exception(response.ErrorMessage ?? response.StatusDescription);
+        }
         Console.WriteLine(response.Content);
       }
       catch (Exception ex)

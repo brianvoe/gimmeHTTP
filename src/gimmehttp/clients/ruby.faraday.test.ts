@@ -18,8 +18,7 @@ conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.get do |req|
-  req.url "https://example.com"
+response = conn.run_request(:get, "https://example.com", nil) do |req|
 end
 
 puts response.body
@@ -46,8 +45,7 @@ conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.post do |req|
-  req.url "https://example.com"
+response = conn.run_request(:post, "https://example.com", nil) do |req|
 
   req.headers["Content-Type"] = "application/json"
   req.headers["Authorization"] = "Bearer token"
@@ -76,8 +74,7 @@ conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.post do |req|
-  req.url "https://example.com"
+response = conn.run_request(:post, "https://example.com", nil) do |req|
 
   req.headers["Cookie"] = "key1=value1"
 end
@@ -100,13 +97,13 @@ puts response.body
     expect(result).toBe(
       `
 require "faraday"
+require "json"
 
 conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.post do |req|
-  req.url "https://example.com"
+response = conn.run_request(:post, "https://example.com", nil) do |req|
 
   req.body = {
     "key1": "value1"
@@ -137,13 +134,13 @@ puts response.body
     expect(result).toBe(
       `
 require "faraday"
+require "json"
 
 conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.post do |req|
-  req.url "https://example.com"
+response = conn.run_request(:post, "https://example.com", nil) do |req|
 
   req.body = {
     "key1": "value1",
@@ -155,7 +152,7 @@ response = conn.post do |req|
       "value4",
       "value5"
     ],
-    "empty": null
+    "empty": nil
   }.to_json
 end
 
@@ -183,8 +180,7 @@ conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.post do |req|
-  req.url "https://example.com"
+response = conn.run_request(:post, "https://example.com", nil) do |req|
 
   req.headers["Content-Type"] = "text/plain"
 
@@ -215,8 +211,7 @@ conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.post do |req|
-  req.url "https://example.com"
+response = conn.run_request(:post, "https://example.com", nil) do |req|
 
   req.headers["Content-Type"] = "application/xml"
 
@@ -246,11 +241,10 @@ conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.get do |req|
-  req.url "https://example.com"
+response = conn.run_request(:get, "https://example.com", nil) do |req|
 
-  req.headers["Accept"] = "application/json"
-  req.headers["Accept"] = "application/xml"
+  req.headers.add("Accept", "application/json")
+  req.headers.add("Accept", "application/xml")
 end
 
 puts response.body
@@ -269,19 +263,22 @@ puts response.body
         name: 'test'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = RubyFaraday.generate(config, httpRequest)
     expect(result).toBe(
       `
 require "faraday"
+require "json"
 
 begin
   conn = Faraday.new(url: "https://example.com") do |f|
+    f.response :raise_error
     f.adapter Faraday.default_adapter
   end
 
-  response = conn.post do |req|
-    req.url "https://example.com"
+  response = conn.run_request(:post, "https://example.com", nil) do |req|
 
     req.headers["Content-Type"] = "application/json"
 
@@ -317,8 +314,7 @@ conn = Faraday.new(url: "https://example.com") do |f|
   f.adapter Faraday.default_adapter
 end
 
-response = conn.get do |req|
-  req.url "https://example.com"
+response = conn.run_request(:get, "https://example.com", nil) do |req|
 
   req.params["address.zip"] = "66031"
   req.params["address.country"] = "Wallis"
@@ -340,9 +336,23 @@ puts response.body
     }
     const config: Config = {}
     const result = RubyFaraday.generate(config, httpRequest)
-    expect(result).toContain('req.params["tags"] = "ruby"')
-    expect(result).toContain('req.params["tags"] = "faraday"')
-    expect(result).toContain('req.params["category"] = "backend"')
+    expect(result).toBe(
+      `
+require "faraday"
+
+conn = Faraday.new(url: "https://example.com") do |f|
+  f.adapter Faraday.default_adapter
+end
+
+response = conn.run_request(:get, "https://example.com", nil) do |req|
+
+  req.params["tags"] = ["ruby", "faraday"]
+  req.params["category"] = "backend"
+end
+
+puts response.body
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -361,7 +371,28 @@ puts response.body
     }
     const config: Config = {}
     const result = RubyFaraday.generate(config, httpRequest)
-    expect(result).toContain('req.params["version"] = "1.0"')
-    expect(result).toContain('"name": "John"')
+    expect(result).toBe(
+      `
+require "faraday"
+require "json"
+
+conn = Faraday.new(url: "https://example.com") do |f|
+  f.adapter Faraday.default_adapter
+end
+
+response = conn.run_request(:post, "https://example.com", nil) do |req|
+
+  req.params["version"] = "1.0"
+
+  req.headers["Content-Type"] = "application/json"
+
+  req.body = {
+    "name": "John"
+  }.to_json
+end
+
+puts response.body
+    `.trim()
+    )
   })
 })

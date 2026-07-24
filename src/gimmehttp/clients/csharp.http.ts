@@ -1,7 +1,23 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, ContentTypeIncludes } from '../utils/utils'
+import {
+  GetContentType,
+  ContentTypeIncludes,
+  EscapeDoubleQuoted,
+  FormatCookieHeader,
+  HasBody,
+  IsObjectBody,
+  PascalCaseMethod
+} from '../utils/utils'
+
+// HttpMethod exposes a static property for the standard verbs, anything else needs the constructor
+const httpMethodProperties = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH', 'TRACE']
+
+function httpMethod(method: string): string {
+  const upper = method.toUpperCase()
+  return httpMethodProperties.includes(upper) ? `HttpMethod.${PascalCaseMethod(upper)}` : `new HttpMethod("${upper}")`
+}
 
 export default {
   default: true,
@@ -17,6 +33,9 @@ export default {
     builder.line('using System.Net.Http;')
     builder.line('using System.Threading.Tasks;')
     builder.line('using System.Web;')
+    if (HasBody(http.body) && ContentTypeIncludes(GetContentType(http.headers), 'form')) {
+      builder.line('using System.Collections.Generic;')
+    }
     builder.line()
     builder.line('namespace HttpClientExample')
     builder.line('{')
@@ -33,49 +52,52 @@ export default {
 
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line('var uriBuilder = new UriBuilder("' + http.url + '");')
+      builder.line('var uriBuilder = new UriBuilder("' + EscapeDoubleQuoted(http.url) + '");')
       builder.line('var query = HttpUtility.ParseQueryString(uriBuilder.Query);')
 
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`query.Add("${key}", "${val}");`)
+            builder.line(`query.Add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}");`)
           }
         } else {
-          builder.line(`query.Add("${key}", "${value}");`)
+          builder.line(`query.Add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}");`)
         }
       }
 
       builder.line('uriBuilder.Query = query.ToString();')
       builder.line(
-        `HttpRequestMessage request = new HttpRequestMessage(HttpMethod.${http.method.toUpperCase()}, uriBuilder.ToString());`
+        `HttpRequestMessage request = new HttpRequestMessage(${httpMethod(http.method)}, uriBuilder.ToString());`
       )
     } else {
       builder.line(
-        `HttpRequestMessage request = new HttpRequestMessage(HttpMethod.${http.method.toUpperCase()}, "${http.url}");`
+        `HttpRequestMessage request = new HttpRequestMessage(${httpMethod(http.method)}, "${EscapeDoubleQuoted(http.url)}");`
       )
     }
 
-    if (http.headers && Object.keys(http.headers).length > 0) {
+    // Content-Type is set by the request content, not as a request header
+    const headers = Object.entries(http.headers || {}).filter(
+      ([key]) => !(HasBody(http.body) && key.toLowerCase() === 'content-type')
+    )
+    if (headers.length > 0) {
       builder.line()
-      for (const [key, value] of Object.entries(http.headers)) {
+      for (const [key, value] of headers) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`request.Headers.Add("${key}", "${val}");`))
+          value.forEach((val) =>
+            builder.line(`request.Headers.Add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}");`)
+          )
         } else {
-          builder.line(`request.Headers.Add("${key}", "${value}");`)
+          builder.line(`request.Headers.Add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}");`)
         }
       }
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
       builder.line()
-      const cookies = Object.entries(http.cookies)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('; ')
-      builder.line(`request.Headers.Add("Cookie", "${cookies}");`)
+      builder.line(`request.Headers.Add("Cookie", "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}");`)
     }
 
-    if (http.body) {
+    if (HasBody(http.body)) {
       builder.line()
       const contentType = GetContentType(http.headers)
 
@@ -84,16 +106,20 @@ export default {
         builder.line('{')
         builder.indent()
         for (const [key, value] of Object.entries(http.body)) {
-          builder.line(`{ "${key}", "${value}" },`)
+          builder.line(`{ "${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(String(value))}" },`)
         }
         builder.outdent()
         builder.line('});')
         builder.line('request.Content = formContent;')
+      } else if (IsObjectBody(http.body)) {
+        builder.line('string json = ')
+        builder.jsonStringLiteral(http.body)
+        builder.append(';')
+        builder.line('request.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");')
       } else {
-        // Default to JSON (if content-type is json or not specified)
-        builder.line('request.Content = new StringContent(')
-        builder.json(http.body)
-        builder.append(', System.Text.Encoding.UTF8, "application/json");')
+        builder.line(
+          `request.Content = new StringContent("${EscapeDoubleQuoted(http.body)}", System.Text.Encoding.UTF8, "${EscapeDoubleQuoted(contentType || 'text/plain')}");`
+        )
       }
     }
 

@@ -1,7 +1,14 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
+import {
+  ContentTypeIncludes,
+  EscapeDoubleQuoted,
+  GetContentType,
+  HasBody,
+  IsObjectBody,
+  IsStringBody
+} from '../utils/utils'
 
 export default {
   default: true,
@@ -10,8 +17,21 @@ export default {
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',
-      join: config.join || '\n'
+      join: config.join || '\n',
+      json: {
+        objOpen: '[',
+        objClose: ']',
+        arrOpen: '[',
+        arrClose: ']',
+        separator: ' => ',
+        endComma: true,
+        nullLiteral: 'null',
+        escapeString: EscapeDoubleQuoted
+      }
     })
+    const phpString = (value: string) => EscapeDoubleQuoted(value).replace(/\$/g, '\\$')
+    const contentType = GetContentType(http.headers)
+    const needsJsonContentType = HasBody(http.body) && IsObjectBody(http.body) && !contentType
 
     // Start our PHP file
     builder.line('<?php')
@@ -23,37 +43,38 @@ export default {
 
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line('$url = "' + http.url + '";')
+      builder.line(`$url = "${phpString(http.url)}";`)
       builder.line('$params = [];')
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`$params[] = "${key}=" . urlencode("${val}");`)
+            builder.line(`$params[] = "${phpString(key)}=" . urlencode("${phpString(val)}");`)
           }
         } else {
-          builder.line(`$params[] = "${key}=" . urlencode("${value}");`)
+          builder.line(`$params[] = "${phpString(key)}=" . urlencode("${phpString(value)}");`)
         }
       }
       builder.line('$url .= (strpos($url, "?") !== false ? "&" : "?") . implode("&", $params);')
       builder.line()
       builder.line('curl_setopt($ch, CURLOPT_URL, $url);')
     } else {
-      builder.line(`curl_setopt($ch, CURLOPT_URL, "${http.url}");`)
+      builder.line(`curl_setopt($ch, CURLOPT_URL, "${phpString(http.url)}");`)
     }
     builder.line('curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);')
-    builder.line(`curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "${http.method.toUpperCase()}");`)
+    builder.line(`curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "${phpString(http.method.toUpperCase())}");`)
 
     // Headers
-    if (http.headers) {
+    if (http.headers || needsJsonContentType) {
       builder.line()
       builder.line('$headers = [];')
-      for (const [key, value] of Object.entries(http.headers)) {
+      for (const [key, value] of Object.entries(http.headers || {})) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`$headers[] = "${key}: ${val}";`))
+          value.forEach((val) => builder.line(`$headers[] = "${phpString(key)}: ${phpString(val)}";`))
         } else {
-          builder.line(`$headers[] = "${key}: ${value}";`)
+          builder.line(`$headers[] = "${phpString(key)}: ${phpString(value)}";`)
         }
       }
+      if (needsJsonContentType) builder.line('$headers[] = "Content-Type: application/json";')
       builder.line('curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);')
     }
 
@@ -62,15 +83,14 @@ export default {
       builder.line()
       builder.line('$cookies = [];')
       for (const [key, value] of Object.entries(http.cookies)) {
-        builder.line(`$cookies[] = "${key}=${value}";`)
+        builder.line(`$cookies[] = "${phpString(key)}=${phpString(value)}";`)
       }
       builder.line('curl_setopt($ch, CURLOPT_COOKIE, implode("; ", $cookies));')
     }
 
     // Body
-    if (http.body) {
+    if (HasBody(http.body)) {
       builder.line()
-      const contentType = GetContentType(http.headers)
 
       if (ContentTypeIncludes(contentType, 'form')) {
         builder.line('$postData = ')
@@ -78,15 +98,10 @@ export default {
         builder.append(';')
         builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));')
       } else if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
-        builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS,')
-        builder.line('<<<JSON')
-        builder.line()
-        builder.json(http.body)
-        builder.line('JSON')
-        builder.line(');')
+        builder.line(`$body = "${phpString(JSON.stringify(http.body))}";`)
+        builder.line('curl_setopt($ch, CURLOPT_POSTFIELDS, $body);')
       } else if (IsStringBody(http.body)) {
-        const escapedBody = http.body.replace(/'/g, "\\'")
-        builder.line(`curl_setopt($ch, CURLOPT_POSTFIELDS, '${escapedBody}');`)
+        builder.line(`curl_setopt($ch, CURLOPT_POSTFIELDS, "${phpString(http.body)}");`)
       }
     }
 

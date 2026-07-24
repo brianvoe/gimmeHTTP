@@ -1,6 +1,6 @@
 import PhpCurl from './php.curl'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('PhpCurl.generate', () => {
   test('should build a basic GET request', () => {
@@ -105,7 +105,9 @@ echo $response;
         key1: 'value1'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = PhpCurl.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -121,13 +123,8 @@ $headers = [];
 $headers[] = "Content-Type: application/json";
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-curl_setopt($ch, CURLOPT_POSTFIELDS,
-<<<JSON
-{
-  "key1": "value1"
-}
-JSON
-);
+$body = "{\\"key1\\":\\"value1\\"}";
+curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
 
 $response = curl_exec($ch);
 if (curl_errno($ch)) {
@@ -165,21 +162,12 @@ curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
-curl_setopt($ch, CURLOPT_POSTFIELDS,
-<<<JSON
-{
-  "key1": "value1",
-  "key2": {
-    "nestedKey": "nestedValue"
-  },
-  "key3": [
-    "value1",
-    "value2"
-  ],
-  "empty": null
-}
-JSON
-);
+$headers = [];
+$headers[] = "Content-Type: application/json";
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+$body = "{\\"key1\\":\\"value1\\",\\"key2\\":{\\"nestedKey\\":\\"nestedValue\\"},\\"key3\\":[\\"value1\\",\\"value2\\"],\\"empty\\":null}";
+curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
 
 $response = curl_exec($ch);
 curl_close($ch);
@@ -190,8 +178,7 @@ echo $response;
   })
 
   test('should build a POST request with form-urlencoded body', () => {
-    const config = {}
-    const http: Http = {
+    const httpRequest: Http = {
       method: 'POST',
       url: 'https://example.com',
       headers: {
@@ -202,8 +189,8 @@ echo $response;
         password: 'testpass'
       }
     }
-
-    const result = PhpCurl.generate(config, http)
+    const config: Config = {}
+    const result = PhpCurl.generate(config, httpRequest)
     expect(result).toBe(
       `
 <?php
@@ -218,10 +205,10 @@ $headers = [];
 $headers[] = "Content-Type: application/x-www-form-urlencoded";
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-$postData = {
-  "username": "testuser",
-  "password": "testpass"
-};
+$postData = [
+  "username" => "testuser",
+  "password" => "testpass",
+];
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
 
 $response = curl_exec($ch);
@@ -233,8 +220,7 @@ echo $response;
   })
 
   test('should build a POST request with XML body', () => {
-    const config = {}
-    const http: Http = {
+    const httpRequest: Http = {
       method: 'POST',
       url: 'https://example.com',
       headers: {
@@ -242,8 +228,8 @@ echo $response;
       },
       body: '<request><action>submit</action></request>'
     }
-
-    const result = PhpCurl.generate(config, http)
+    const config: Config = {}
+    const result = PhpCurl.generate(config, httpRequest)
     expect(result).toBe(
       `
 <?php
@@ -258,7 +244,7 @@ $headers = [];
 $headers[] = "Content-Type: application/xml";
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-curl_setopt($ch, CURLOPT_POSTFIELDS, '<request><action>submit</action></request>');
+curl_setopt($ch, CURLOPT_POSTFIELDS, "<request><action>submit</action></request>");
 
 $response = curl_exec($ch);
 curl_close($ch);
@@ -314,9 +300,29 @@ echo $response;
     }
     const config: Config = {}
     const result = PhpCurl.generate(config, httpRequest)
-    expect(result).toContain('$params[] = "tags=" . urlencode("php");')
-    expect(result).toContain('$params[] = "tags=" . urlencode("curl");')
-    expect(result).toContain('$params[] = "category=" . urlencode("backend");')
+    expect(result).toBe(
+      `
+<?php
+
+$ch = curl_init();
+
+$url = "https://example.com";
+$params = [];
+$params[] = "tags=" . urlencode("php");
+$params[] = "tags=" . urlencode("curl");
+$params[] = "category=" . urlencode("backend");
+$url .= (strpos($url, "?") !== false ? "&" : "?") . implode("&", $params);
+
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+echo $response;
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -335,7 +341,33 @@ echo $response;
     }
     const config: Config = {}
     const result = PhpCurl.generate(config, httpRequest)
-    expect(result).toContain('$params[] = "version=" . urlencode("1.0");')
-    expect(result).toContain('"name": "John"')
+    expect(result).toBe(
+      `
+<?php
+
+$ch = curl_init();
+
+$url = "https://example.com";
+$params = [];
+$params[] = "version=" . urlencode("1.0");
+$url .= (strpos($url, "?") !== false ? "&" : "?") . implode("&", $params);
+
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+$headers = [];
+$headers[] = "Content-Type: application/json";
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+$body = "{\\"name\\":\\"John\\"}";
+curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+echo $response;
+    `.trim()
+    )
   })
 })

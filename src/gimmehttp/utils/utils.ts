@@ -94,9 +94,10 @@ export function ContentTypeIncludes(contentType: string, type: 'json' | 'xml' | 
 
   switch (type) {
     case 'json':
-      return lower.includes('application/json')
+      // Match application/json and structured suffixes like application/problem+json
+      return /(^|[/+])json(;|$)/.test(lower) || lower.includes('application/json')
     case 'xml':
-      return lower.includes('application/xml') || lower.includes('text/xml')
+      return lower.includes('application/xml') || lower.includes('text/xml') || /[/+]xml(;|$)/.test(lower)
     case 'form':
       return lower.includes('application/x-www-form-urlencoded')
     case 'text':
@@ -147,4 +148,43 @@ export function GetEffectiveContentType(
   // No explicit Content-Type, infer from body
   const inferred = InferContentType(body)
   return { contentType: inferred, wasInferred: true }
+}
+
+export function EscapeDoubleQuoted(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')
+}
+
+/** GET -> Get, patch -> Patch. Used by languages whose method enums are PascalCase. */
+export function PascalCaseMethod(method: string): string {
+  return method.charAt(0).toUpperCase() + method.slice(1).toLowerCase()
+}
+
+export function FormatCookieHeader(cookies: { [key: string]: string }): string {
+  return Object.entries(cookies)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('; ')
+}
+
+/** Merge query params into a URL, preserving any existing query string. */
+export function BuildUrlWithParams(url: string, params?: { [key: string]: string | string[] }): string {
+  if (!params || Object.keys(params).length === 0) {
+    return url
+  }
+
+  const parsed = new URL(url)
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      for (const val of value) {
+        parsed.searchParams.append(key, val)
+      }
+    } else {
+      parsed.searchParams.append(key, value)
+    }
+  }
+  return parsed.toString()
 }

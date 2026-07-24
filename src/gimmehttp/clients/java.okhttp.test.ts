@@ -1,6 +1,6 @@
 import JavaOkHttp from './java.okhttp'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('JavaOkHttp.generate', () => {
   test('should build a basic GET request', () => {
@@ -15,21 +15,20 @@ describe('JavaOkHttp.generate', () => {
 import okhttp3.*;
 
 public class HttpExample {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     OkHttpClient client = new OkHttpClient();
 
-    Request.Builder requestBuilder = new Request.Builder()
+    Request request = new Request.Builder()
       .url("https://example.com/api")
       .method("GET", null)
       .build();
 
-    Request request = requestBuilder;
-    Response response = client.newCall(request).execute();
-
-    System.out.println(response.body().string());
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
   }
 }
-      `.trim()
+    `.trim()
     )
   })
 
@@ -47,11 +46,70 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaOkHttp.generate(config, httpRequest)
-    expect(result).toContain('import org.json.JSONObject;')
-    expect(result).toContain('JSONObject jsonBody = new JSONObject();')
-    expect(result).toContain('jsonBody.put("name", "John");')
-    expect(result).toContain('jsonBody.put("active", true);')
-    expect(result).toContain('MediaType.parse("application/json; charset=utf-8")')
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    OkHttpClient client = new OkHttpClient();
+
+    RequestBody body = RequestBody.create("{\\"name\\":\\"John\\",\\"active\\":true}",
+      MediaType.parse("application/json; charset=utf-8")
+    );
+
+    Request request = new Request.Builder()
+      .url("https://example.com")
+      .method("POST", body)
+      .addHeader("Content-Type", "application/json")
+      .build();
+
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
+  }
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with nested JSON body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      body: {
+        item: {
+          name: 'test'
+        },
+        tags: ['one', 'two']
+      }
+    }
+    const config: Config = {}
+    const result = JavaOkHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    OkHttpClient client = new OkHttpClient();
+
+    RequestBody body = RequestBody.create("{\\"item\\":{\\"name\\":\\"test\\"},\\"tags\\":[\\"one\\",\\"two\\"]}",
+      MediaType.parse("application/json; charset=utf-8")
+    );
+
+    Request request = new Request.Builder()
+      .url("https://example.com")
+      .method("POST", body)
+      .build();
+
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with form body', () => {
@@ -68,9 +126,32 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaOkHttp.generate(config, httpRequest)
-    expect(result).toContain('FormBody.Builder formBuilder = new FormBody.Builder();')
-    expect(result).toContain('formBuilder.add("username", "test");')
-    expect(result).toContain('formBuilder.add("password", "pass123");')
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    OkHttpClient client = new OkHttpClient();
+
+    FormBody.Builder formBuilder = new FormBody.Builder();
+    formBuilder.add("username", "test");
+    formBuilder.add("password", "pass123");
+    RequestBody body = formBuilder.build();
+
+    Request request = new Request.Builder()
+      .url("https://example.com")
+      .method("POST", body)
+      .addHeader("Content-Type", "application/x-www-form-urlencoded")
+      .build();
+
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with text body', () => {
@@ -84,9 +165,32 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaOkHttp.generate(config, httpRequest)
-    expect(result).toContain('RequestBody body = RequestBody.create(')
-    expect(result).toContain('"Plain text content"')
-    expect(result).toContain('MediaType.parse("text/plain; charset=utf-8")')
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    OkHttpClient client = new OkHttpClient();
+
+    RequestBody body = RequestBody.create(
+      "Plain text content",
+      MediaType.parse("text/plain; charset=utf-8")
+    );
+
+    Request request = new Request.Builder()
+      .url("https://example.com")
+      .method("POST", body)
+      .addHeader("Content-Type", "text/plain")
+      .build();
+
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with error handling', () => {
@@ -97,11 +201,38 @@ public class HttpExample {
         test: 'data'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = JavaOkHttp.generate(config, httpRequest)
-    expect(result).toContain('try {')
-    expect(result).toContain('} catch (Exception e) {')
-    expect(result).toContain('e.printStackTrace();')
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) {
+    try {
+      OkHttpClient client = new OkHttpClient();
+
+      RequestBody body = RequestBody.create("{\\"test\\":\\"data\\"}",
+        MediaType.parse("application/json; charset=utf-8")
+      );
+
+      Request request = new Request.Builder()
+        .url("https://example.com")
+        .method("POST", body)
+        .build();
+
+      try (Response response = client.newCall(request).execute()) {
+        System.out.println(response.body().string());
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should handle array header values', () => {
@@ -114,8 +245,28 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaOkHttp.generate(config, httpRequest)
-    expect(result).toContain('.addHeader("Accept", "application/json")')
-    expect(result).toContain('.addHeader("Accept", "application/xml")')
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    OkHttpClient client = new OkHttpClient();
+
+    Request request = new Request.Builder()
+      .url("https://example.com")
+      .method("GET", null)
+      .addHeader("Accept", "application/json")
+      .addHeader("Accept", "application/xml")
+      .build();
+
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a PUT request', () => {
@@ -128,7 +279,30 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaOkHttp.generate(config, httpRequest)
-    expect(result).toContain('.method("PUT", body)')
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    OkHttpClient client = new OkHttpClient();
+
+    RequestBody body = RequestBody.create("{\\"status\\":\\"updated\\"}",
+      MediaType.parse("application/json; charset=utf-8")
+    );
+
+    Request request = new Request.Builder()
+      .url("https://example.com/resource/123")
+      .method("PUT", body)
+      .build();
+
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a GET request with URL parameters', () => {
@@ -147,7 +321,7 @@ public class HttpExample {
 import okhttp3.*;
 
 public class HttpExample {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     OkHttpClient client = new OkHttpClient();
 
     HttpUrl.Builder urlBuilder = HttpUrl.parse("https://example.com").newBuilder();
@@ -155,15 +329,14 @@ public class HttpExample {
     urlBuilder.addQueryParameter("address.country", "Wallis");
     HttpUrl url = urlBuilder.build();
 
-    Request.Builder requestBuilder = new Request.Builder()
+    Request request = new Request.Builder()
       .url(url)
       .method("GET", null)
       .build();
 
-    Request request = requestBuilder;
-    Response response = client.newCall(request).execute();
-
-    System.out.println(response.body().string());
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
   }
 }
     `.trim()
@@ -181,9 +354,32 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaOkHttp.generate(config, httpRequest)
-    expect(result).toContain('urlBuilder.addQueryParameter("tags", "java");')
-    expect(result).toContain('urlBuilder.addQueryParameter("tags", "okhttp");')
-    expect(result).toContain('urlBuilder.addQueryParameter("category", "backend");')
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    OkHttpClient client = new OkHttpClient();
+
+    HttpUrl.Builder urlBuilder = HttpUrl.parse("https://example.com").newBuilder();
+    urlBuilder.addQueryParameter("tags", "java");
+    urlBuilder.addQueryParameter("tags", "okhttp");
+    urlBuilder.addQueryParameter("category", "backend");
+    HttpUrl url = urlBuilder.build();
+
+    Request request = new Request.Builder()
+      .url(url)
+      .method("GET", null)
+      .build();
+
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -202,7 +398,34 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaOkHttp.generate(config, httpRequest)
-    expect(result).toContain('urlBuilder.addQueryParameter("version", "1.0");')
-    expect(result).toContain('jsonBody.put("name", "John");')
+    expect(result).toBe(
+      `
+import okhttp3.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    OkHttpClient client = new OkHttpClient();
+
+    RequestBody body = RequestBody.create("{\\"name\\":\\"John\\"}",
+      MediaType.parse("application/json; charset=utf-8")
+    );
+
+    HttpUrl.Builder urlBuilder = HttpUrl.parse("https://example.com").newBuilder();
+    urlBuilder.addQueryParameter("version", "1.0");
+    HttpUrl url = urlBuilder.build();
+
+    Request request = new Request.Builder()
+      .url(url)
+      .method("POST", body)
+      .addHeader("Content-Type", "application/json")
+      .build();
+
+    try (Response response = client.newCall(request).execute()) {
+      System.out.println(response.body().string());
+    }
+  }
+}
+    `.trim()
+    )
   })
 })

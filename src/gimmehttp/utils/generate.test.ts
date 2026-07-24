@@ -30,7 +30,7 @@ describe('Generate', () => {
     expect(language).toEqual(settings.language)
     expect(client).toEqual(settings.client)
 
-    expect(code).toEqual(`curl -X GET "https://example.com"`)
+    expect(code).toEqual(`curl "https://example.com"`)
   })
 
   test('should run simple post example', () => {
@@ -63,13 +63,13 @@ describe('Generate', () => {
 
     expect(code).toEqual(
       `
-curl -X POST "https://example.com" \\
+curl "https://example.com" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer token" \\
-  -d $'{ \\
-    "key1": "value1", \\
-    "key2": "value2" \\
-  }'
+  -d '{
+  "key1": "value1",
+  "key2": "value2"
+}'
     `.trim()
     )
   })

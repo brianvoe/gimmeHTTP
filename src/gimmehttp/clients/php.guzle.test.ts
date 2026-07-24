@@ -1,6 +1,6 @@
 import PhpGuzzle from './php.guzzle'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('PhpGuzzle.generate', () => {
   test('should build a basic GET request', () => {
@@ -94,8 +94,8 @@ $response = $client->request(
   "POST",
   "https://example.com",
   [
-    "cookies" => [
-      "key1" => "value1",
+    "headers" => [
+      "Cookie" => "key1=value1",
     ],
   ],
 );
@@ -165,7 +165,7 @@ $response = $client->request(
 );
 
 echo $response->getBody();
-      `.trim()
+    `.trim()
     )
   })
 
@@ -181,7 +181,7 @@ echo $response->getBody();
         action: 'login'
       }
     }
-    const config = {}
+    const config: Config = {}
     const result = PhpGuzzle.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -207,13 +207,12 @@ $response = $client->request(
 );
 
 echo $response->getBody();
-      `.trim()
+    `.trim()
     )
   })
 
   test('should build a POST request with text/plain body', () => {
-    const config = {}
-    const http: Http = {
+    const httpRequest: Http = {
       method: 'POST',
       url: 'https://example.com',
       headers: {
@@ -221,8 +220,8 @@ echo $response->getBody();
       },
       body: 'Plain text data for request'
     }
-
-    const result = PhpGuzzle.generate(config, http)
+    const config: Config = {}
+    const result = PhpGuzzle.generate(config, httpRequest)
     expect(result).toBe(
       `
 <?php
@@ -239,18 +238,17 @@ $response = $client->request(
     "headers" => [
       "Content-Type" => "text/plain",
     ],
-    "json" => "Plain text data for request",
+    "body" => "Plain text data for request",
   ],
 );
 
 echo $response->getBody();
-      `.trim()
+    `.trim()
     )
   })
 
   test('should build a POST request with error handling', () => {
-    const config = { handleErrors: true }
-    const http: Http = {
+    const httpRequest: Http = {
       method: 'POST',
       url: 'https://example.com',
       headers: {
@@ -260,8 +258,10 @@ echo $response->getBody();
         name: 'test'
       }
     }
-
-    const result = PhpGuzzle.generate(config, http)
+    const config: Config = {
+      handleErrors: true
+    }
+    const result = PhpGuzzle.generate(config, httpRequest)
     expect(result).toBe(
       `
 <?php
@@ -269,7 +269,7 @@ echo $response->getBody();
 require 'vendor/autoload.php';
 
 use GuzzleHttp\\Client;
-use GuzzleHttp\\Exception\\RequestException;
+use GuzzleHttp\\Exception\\GuzzleException;
 
 try {
   $client = new Client();
@@ -287,7 +287,7 @@ try {
   );
 
   echo $response->getBody();
-} catch (RequestException $e) {
+} catch (GuzzleException $e) {
   echo "Error: " . $e->getMessage();
 }
     `.trim()
@@ -341,9 +341,29 @@ echo $response->getBody();
     }
     const config: Config = {}
     const result = PhpGuzzle.generate(config, httpRequest)
-    expect(result).toContain('"tags" => "php",')
-    expect(result).toContain('"tags" => "guzzle",')
-    expect(result).toContain('"category" => "backend",')
+    expect(result).toBe(
+      `
+<?php
+
+require 'vendor/autoload.php';
+
+use GuzzleHttp\\Client;
+
+$client = new Client();
+$response = $client->request(
+  "GET",
+  "https://example.com",
+  [
+    "query" => [
+      "tags" => ["php", "guzzle"],
+      "category" => "backend",
+    ],
+  ],
+);
+
+echo $response->getBody();
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -362,7 +382,33 @@ echo $response->getBody();
     }
     const config: Config = {}
     const result = PhpGuzzle.generate(config, httpRequest)
-    expect(result).toContain('"version" => "1.0",')
-    expect(result).toContain('"name" => "John"')
+    expect(result).toBe(
+      `
+<?php
+
+require 'vendor/autoload.php';
+
+use GuzzleHttp\\Client;
+
+$client = new Client();
+$response = $client->request(
+  "POST",
+  "https://example.com",
+  [
+    "query" => [
+      "version" => "1.0",
+    ],
+    "headers" => [
+      "Content-Type" => "application/json",
+    ],
+    "json" => [
+      "name" => "John",
+    ],
+  ],
+);
+
+echo $response->getBody();
+    `.trim()
+    )
   })
 })

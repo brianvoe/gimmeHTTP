@@ -1,6 +1,6 @@
 import SwiftNSURLSession from './swift.nsurlsession'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('SwiftNSURLSession.generate', () => {
   test('should build a basic GET request', () => {
@@ -18,24 +18,24 @@ let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "GET"
 
-let task = URLSession.shared.dataTask(with: request) { data, response, error in
-  if let error = error {
-    print("Error: \\(error)")
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
     return
   }
 
-  if let httpResponse = response as? HTTPURLResponse {
-    if httpResponse.statusCode == 200, let data = data {
-      let responseString = String(data: data, encoding: .utf8)
-      print(responseString ?? "No response data")
-    } else {
-      print("Request failed with status code: \\(httpResponse.statusCode)")
-    }
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
   }
-}
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
 
-task.resume()
-      `.trim()
+  print("Error: \\(error)")
+}
+    `.trim()
     )
   })
 
@@ -61,24 +61,24 @@ request.httpMethod = "POST"
 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 request.addValue("Bearer token", forHTTPHeaderField: "Authorization")
 
-let task = URLSession.shared.dataTask(with: request) { data, response, error in
-  if let error = error {
-    print("Error: \\(error)")
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
     return
   }
 
-  if let httpResponse = response as? HTTPURLResponse {
-    if httpResponse.statusCode == 200, let data = data {
-      let responseString = String(data: data, encoding: .utf8)
-      print(responseString ?? "No response data")
-    } else {
-      print("Request failed with status code: \\(httpResponse.statusCode)")
-    }
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
   }
-}
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
 
-task.resume()
-      `.trim()
+  print("Error: \\(error)")
+}
+    `.trim()
     )
   })
 
@@ -101,27 +101,26 @@ let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "POST"
 
-request.addValue("key1=value1", forHTTPHeaderField: "Cookie")
-request.addValue("key2=value2", forHTTPHeaderField: "Cookie")
+request.addValue("key1=value1; key2=value2", forHTTPHeaderField: "Cookie")
 
-let task = URLSession.shared.dataTask(with: request) { data, response, error in
-  if let error = error {
-    print("Error: \\(error)")
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
     return
   }
 
-  if let httpResponse = response as? HTTPURLResponse {
-    if httpResponse.statusCode == 200, let data = data {
-      let responseString = String(data: data, encoding: .utf8)
-      print(responseString ?? "No response data")
-    } else {
-      print("Request failed with status code: \\(httpResponse.statusCode)")
-    }
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
   }
-}
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
 
-task.resume()
-      `.trim()
+  print("Error: \\(error)")
+}
+    `.trim()
     )
   })
 
@@ -143,29 +142,27 @@ let url = URL(string: "https://example.com")!
 var request = URLRequest(url: url)
 request.httpMethod = "POST"
 
-let bodyDict: [String: Any] = {
-  "key1": "value1"
-}
-request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)
+let json = "{\\"key1\\":\\"value1\\"}"
+request.httpBody = json.data(using: .utf8)
 
-let task = URLSession.shared.dataTask(with: request) { data, response, error in
-  if let error = error {
-    print("Error: \\(error)")
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
     return
   }
 
-  if let httpResponse = response as? HTTPURLResponse {
-    if httpResponse.statusCode == 200, let data = data {
-      let responseString = String(data: data, encoding: .utf8)
-      print(responseString ?? "No response data")
-    } else {
-      print("Request failed with status code: \\(httpResponse.statusCode)")
-    }
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
   }
-}
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
 
-task.resume()
-      `.trim()
+  print("Error: \\(error)")
+}
+    `.trim()
     )
   })
 
@@ -182,7 +179,9 @@ task.resume()
         key2: 4235,
         key3: true,
         key4: [1, 2, 3],
-        key5: { subkey: 'subvalue' }
+        key5: {
+          subkey: 'subvalue'
+        }
       }
     }
     const config: Config = {}
@@ -198,39 +197,27 @@ request.httpMethod = "POST"
 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
 request.addValue("Bearer token", forHTTPHeaderField: "Authorization")
 
-let bodyDict: [String: Any] = {
-  "key1": "value1",
-  "key2": 4235,
-  "key3": true,
-  "key4": [
-    1,
-    2,
-    3
-  ],
-  "key5": {
-    "subkey": "subvalue"
-  }
-}
-request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)
+let json = "{\\"key1\\":\\"value1\\",\\"key2\\":4235,\\"key3\\":true,\\"key4\\":[1,2,3],\\"key5\\":{\\"subkey\\":\\"subvalue\\"}}"
+request.httpBody = json.data(using: .utf8)
 
-let task = URLSession.shared.dataTask(with: request) { data, response, error in
-  if let error = error {
-    print("Error: \\(error)")
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
     return
   }
 
-  if let httpResponse = response as? HTTPURLResponse {
-    if httpResponse.statusCode == 200, let data = data {
-      let responseString = String(data: data, encoding: .utf8)
-      print(responseString ?? "No response data")
-    } else {
-      print("Request failed with status code: \\(httpResponse.statusCode)")
-    }
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
   }
-}
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
 
-task.resume()
-      `.trim()
+  print("Error: \\(error)")
+}
+    `.trim()
     )
   })
 
@@ -258,24 +245,24 @@ request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
 let bodyString = "Plain text message"
 request.httpBody = bodyString.data(using: .utf8)
 
-let task = URLSession.shared.dataTask(with: request) { data, response, error in
-  if let error = error {
-    print("Error: \\(error)")
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
     return
   }
 
-  if let httpResponse = response as? HTTPURLResponse {
-    if httpResponse.statusCode == 200, let data = data {
-      let responseString = String(data: data, encoding: .utf8)
-      print(responseString ?? "No response data")
-    } else {
-      print("Request failed with status code: \\(httpResponse.statusCode)")
-    }
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
   }
-}
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
 
-task.resume()
-      `.trim()
+  print("Error: \\(error)")
+}
+    `.trim()
     )
   })
 
@@ -303,23 +290,23 @@ request.addValue("application/xml", forHTTPHeaderField: "Content-Type")
 let bodyString = "<data><item>value</item></data>"
 request.httpBody = bodyString.data(using: .utf8)
 
-let task = URLSession.shared.dataTask(with: request) { data, response, error in
-  if let error = error {
-    print("Error: \\(error)")
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
     return
   }
 
-  if let httpResponse = response as? HTTPURLResponse {
-    if httpResponse.statusCode == 200, let data = data {
-      let responseString = String(data: data, encoding: .utf8)
-      print(responseString ?? "No response data")
-    } else {
-      print("Request failed with status code: \\(httpResponse.statusCode)")
-    }
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
   }
-}
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
 
-task.resume()
+  print("Error: \\(error)")
+}
     `.trim()
     )
   })
@@ -348,23 +335,23 @@ let url = urlComponents.url!
 var request = URLRequest(url: url)
 request.httpMethod = "GET"
 
-let task = URLSession.shared.dataTask(with: request) { data, response, error in
-  if let error = error {
-    print("Error: \\(error)")
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
     return
   }
 
-  if let httpResponse = response as? HTTPURLResponse {
-    if httpResponse.statusCode == 200, let data = data {
-      let responseString = String(data: data, encoding: .utf8)
-      print(responseString ?? "No response data")
-    } else {
-      print("Request failed with status code: \\(httpResponse.statusCode)")
-    }
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
   }
-}
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
 
-task.resume()
+  print("Error: \\(error)")
+}
     `.trim()
     )
   })
@@ -380,9 +367,39 @@ task.resume()
     }
     const config: Config = {}
     const result = SwiftNSURLSession.generate(config, httpRequest)
-    expect(result).toContain('queryItems.append(URLQueryItem(name: "tags", value: "swift"))')
-    expect(result).toContain('queryItems.append(URLQueryItem(name: "tags", value: "urlsession"))')
-    expect(result).toContain('queryItems.append(URLQueryItem(name: "category", value: "backend"))')
+    expect(result).toBe(
+      `
+import Foundation
+
+var urlComponents = URLComponents(string: "https://example.com")!
+var queryItems: [URLQueryItem] = []
+queryItems.append(URLQueryItem(name: "tags", value: "swift"))
+queryItems.append(URLQueryItem(name: "tags", value: "urlsession"))
+queryItems.append(URLQueryItem(name: "category", value: "backend"))
+urlComponents.queryItems = queryItems
+let url = urlComponents.url!
+var request = URLRequest(url: url)
+request.httpMethod = "GET"
+
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
+    return
+  }
+
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
+  }
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
+
+  print("Error: \\(error)")
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -401,7 +418,305 @@ task.resume()
     }
     const config: Config = {}
     const result = SwiftNSURLSession.generate(config, httpRequest)
-    expect(result).toContain('queryItems.append(URLQueryItem(name: "version", value: "1.0"))')
-    expect(result).toContain('"name": "John"')
+    expect(result).toBe(
+      `
+import Foundation
+
+var urlComponents = URLComponents(string: "https://example.com")!
+var queryItems: [URLQueryItem] = []
+queryItems.append(URLQueryItem(name: "version", value: "1.0"))
+urlComponents.queryItems = queryItems
+let url = urlComponents.url!
+var request = URLRequest(url: url)
+request.httpMethod = "POST"
+
+request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+let json = "{\\"name\\":\\"John\\"}"
+request.httpBody = json.data(using: .utf8)
+
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
+    return
+  }
+
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
+  }
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
+
+  print("Error: \\(error)")
+}
+    `.trim()
+    )
+  })
+
+  test('uses async URLSession and accepts all successful responses', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com'
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+let url = URL(string: "https://example.com")!
+var request = URLRequest(url: url)
+request.httpMethod = "GET"
+
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
+    return
+  }
+
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
+  }
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
+
+  print("Error: \\(error)")
+}
+    `.trim()
+    )
+  })
+
+  test('creates a single escaped Cookie header', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      cookies: {
+        session: 'abc',
+        user: 'jane'
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+let url = URL(string: "https://example.com")!
+var request = URLRequest(url: url)
+request.httpMethod = "POST"
+
+request.addValue("session=abc; user=jane", forHTTPHeaderField: "Cookie")
+
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
+    return
+  }
+
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
+  }
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
+
+  print("Error: \\(error)")
+}
+    `.trim()
+    )
+  })
+
+  test('serializes JSON safely as UTF-8 data', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      body: {
+        nested: {
+          quote: 'a"b'
+        },
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+let url = URL(string: "https://example.com")!
+var request = URLRequest(url: url)
+request.httpMethod = "POST"
+
+let json = "{\\"nested\\":{\\"quote\\":\\"a\\\\\\"b\\"},\\"empty\\":null}"
+request.httpBody = json.data(using: .utf8)
+
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
+    return
+  }
+
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
+  }
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
+
+  print("Error: \\(error)")
+}
+    `.trim()
+    )
+  })
+
+  test('escapes URL, query parameters, and header values', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/"quoted"',
+      params: {
+        search: 'a"b'
+      },
+      headers: {
+        'X-Name': 'a"b'
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+var urlComponents = URLComponents(string: "https://example.com/\\"quoted\\"")!
+var queryItems: [URLQueryItem] = []
+queryItems.append(URLQueryItem(name: "search", value: "a\\"b"))
+urlComponents.queryItems = queryItems
+let url = urlComponents.url!
+var request = URLRequest(url: url)
+request.httpMethod = "GET"
+
+request.addValue("a\\"b", forHTTPHeaderField: "X-Name")
+
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
+    return
+  }
+
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
+  }
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
+
+  print("Error: \\(error)")
+}
+    `.trim()
+    )
+  })
+
+  test('should escape URL, query parameters, and header values', () => {
+    const httpRequest: Http = {
+      method: 'GET',
+      url: 'https://example.com/"quoted"',
+      params: {
+        search: 'a"b'
+      },
+      headers: {
+        'X-Name': 'a"b'
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+var urlComponents = URLComponents(string: "https://example.com/\\"quoted\\"")!
+var queryItems: [URLQueryItem] = []
+queryItems.append(URLQueryItem(name: "search", value: "a\\"b"))
+urlComponents.queryItems = queryItems
+let url = urlComponents.url!
+var request = URLRequest(url: url)
+request.httpMethod = "GET"
+
+request.addValue("a\\"b", forHTTPHeaderField: "X-Name")
+
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
+    return
+  }
+
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
+  }
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
+
+  print("Error: \\(error)")
+}
+    `.trim()
+    )
+  })
+
+  test('should serialize JSON safely as UTF-8 data', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      body: {
+        nested: {
+          quote: 'a"b'
+        },
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = SwiftNSURLSession.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import Foundation
+
+let url = URL(string: "https://example.com")!
+var request = URLRequest(url: url)
+request.httpMethod = "POST"
+
+let json = "{\\"nested\\":{\\"quote\\":\\"a\\\\\\"b\\"},\\"empty\\":null}"
+request.httpBody = json.data(using: .utf8)
+
+do {
+  let (data, response) = try await URLSession.shared.data(for: request)
+  guard let httpResponse = response as? HTTPURLResponse else {
+    print("Invalid response")
+    return
+  }
+
+  guard (200..<300).contains(httpResponse.statusCode) else {
+    print("Request failed with status code: \\(httpResponse.statusCode)")
+    return
+  }
+  let responseString = String(data: data, encoding: .utf8)
+  print(responseString ?? "No response data")
+} catch {
+
+  print("Error: \\(error)")
+}
+    `.trim()
+    )
   })
 })

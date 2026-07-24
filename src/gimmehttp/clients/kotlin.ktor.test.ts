@@ -1,6 +1,6 @@
 import KotlinKtor from './kotlin.ktor'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('KotlinKtor.generate', () => {
   test('should build a basic GET request', () => {
@@ -16,18 +16,19 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 
 suspend fun main() {
-  val client = HttpClient(CIO)
+  HttpClient(CIO).use { client ->
+    val response: HttpResponse = client.request {
+      method = HttpMethod.parse("GET")
+      url("https://example.com/api")
+    }
 
-  val response: HttpResponse = client.get {
-    url("https://example.com/api")
+    println(response.bodyAsText())
   }
-
-  println(response.bodyAsText())
-  client.close()
 }
-      `.trim()
+    `.trim()
     )
   })
 
@@ -45,11 +46,29 @@ suspend fun main() {
     }
     const config: Config = {}
     const result = KotlinKtor.generate(config, httpRequest)
-    expect(result).toContain('import kotlinx.serialization.json.*')
-    expect(result).toContain('contentType(ContentType.Application.Json)')
-    expect(result).toContain('buildJsonObject {')
-    expect(result).toContain('put("name", "John")')
-    expect(result).toContain('put("age", 30)')
+    expect(result).toBe(
+      `
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+
+suspend fun main() {
+  HttpClient(CIO).use { client ->
+    val response: HttpResponse = client.request {
+      method = HttpMethod.parse("POST")
+      url("https://example.com")
+      header("Content-Type", "application/json")
+      contentType(ContentType.Application.Json)
+      setBody("""{"name":"John","age":30}""")
+    }
+
+    println(response.bodyAsText())
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with form body', () => {
@@ -66,9 +85,33 @@ suspend fun main() {
     }
     const config: Config = {}
     const result = KotlinKtor.generate(config, httpRequest)
-    expect(result).toContain('FormDataContent(Parameters.build {')
-    expect(result).toContain('append("username", "user")')
-    expect(result).toContain('append("password", "pass")')
+    expect(result).toBe(
+      `
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+
+suspend fun main() {
+  HttpClient(CIO).use { client ->
+    val response: HttpResponse = client.request {
+      method = HttpMethod.parse("POST")
+      url("https://example.com")
+      header("Content-Type", "application/x-www-form-urlencoded")
+      setBody(
+        FormDataContent(Parameters.build {
+          append("username", "user")
+          append("password", "pass")
+        })
+      )
+    }
+
+    println(response.bodyAsText())
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with text body', () => {
@@ -82,7 +125,28 @@ suspend fun main() {
     }
     const config: Config = {}
     const result = KotlinKtor.generate(config, httpRequest)
-    expect(result).toContain('setBody("Simple text")')
+    expect(result).toBe(
+      `
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+
+suspend fun main() {
+  HttpClient(CIO).use { client ->
+    val response: HttpResponse = client.request {
+      method = HttpMethod.parse("POST")
+      url("https://example.com")
+      header("Content-Type", "text/plain")
+      setBody("Simple text")
+    }
+
+    println(response.bodyAsText())
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a request with headers', () => {
@@ -95,7 +159,27 @@ suspend fun main() {
     }
     const config: Config = {}
     const result = KotlinKtor.generate(config, httpRequest)
-    expect(result).toContain('header("Authorization", "Bearer token123")')
+    expect(result).toBe(
+      `
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+
+suspend fun main() {
+  HttpClient(CIO).use { client ->
+    val response: HttpResponse = client.request {
+      method = HttpMethod.parse("GET")
+      url("https://example.com")
+      header("Authorization", "Bearer token123")
+    }
+
+    println(response.bodyAsText())
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with error handling', () => {
@@ -106,11 +190,36 @@ suspend fun main() {
         test: 'data'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = KotlinKtor.generate(config, httpRequest)
-    expect(result).toContain('try {')
-    expect(result).toContain('} catch (e: Exception) {')
-    expect(result).toContain('println("Error: ${e.message}")')
+    expect(result).toBe(
+      `
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+
+suspend fun main() {
+  try {
+    HttpClient(CIO) { expectSuccess = true }.use { client ->
+      val response: HttpResponse = client.request {
+        method = HttpMethod.parse("POST")
+        url("https://example.com")
+        contentType(ContentType.Application.Json)
+        setBody("""{"test":"data"}""")
+      }
+
+      println(response.bodyAsText())
+    }
+  } catch (e: Exception) {
+    println("Error: \${e.message}")
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a GET request with URL parameters', () => {
@@ -130,20 +239,21 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 
 suspend fun main() {
-  val client = HttpClient(CIO)
+  HttpClient(CIO).use { client ->
+    val response: HttpResponse = client.request {
+      method = HttpMethod.parse("GET")
+      url("https://example.com")
+      parameter("address.zip", "66031")
+      parameter("address.country", "Wallis")
+    }
 
-  val response: HttpResponse = client.get {
-    url("https://example.com")
-    parameter("address.zip", "66031")
-    parameter("address.country", "Wallis")
+    println(response.bodyAsText())
   }
-
-  println(response.bodyAsText())
-  client.close()
 }
-      `.trim()
+    `.trim()
     )
   })
 
@@ -158,9 +268,29 @@ suspend fun main() {
     }
     const config: Config = {}
     const result = KotlinKtor.generate(config, httpRequest)
-    expect(result).toContain('parameter("tags", "kotlin")')
-    expect(result).toContain('parameter("tags", "ktor")')
-    expect(result).toContain('parameter("category", "backend")')
+    expect(result).toBe(
+      `
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+
+suspend fun main() {
+  HttpClient(CIO).use { client ->
+    val response: HttpResponse = client.request {
+      method = HttpMethod.parse("GET")
+      url("https://example.com")
+      parameter("tags", "kotlin")
+      parameter("tags", "ktor")
+      parameter("category", "backend")
+    }
+
+    println(response.bodyAsText())
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -179,7 +309,29 @@ suspend fun main() {
     }
     const config: Config = {}
     const result = KotlinKtor.generate(config, httpRequest)
-    expect(result).toContain('parameter("version", "1.0")')
-    expect(result).toContain('put("name", "John")')
+    expect(result).toBe(
+      `
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+
+suspend fun main() {
+  HttpClient(CIO).use { client ->
+    val response: HttpResponse = client.request {
+      method = HttpMethod.parse("POST")
+      url("https://example.com")
+      parameter("version", "1.0")
+      header("Content-Type", "application/json")
+      contentType(ContentType.Application.Json)
+      setBody("""{"name":"John"}""")
+    }
+
+    println(response.bodyAsText())
+  }
+}
+    `.trim()
+    )
   })
 })

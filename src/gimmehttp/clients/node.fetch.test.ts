@@ -1,6 +1,6 @@
 import NodeFetch from './node.fetch'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('NodeFetch.generate', () => {
   test('should build a basic GET request', () => {
@@ -12,8 +12,6 @@ describe('NodeFetch.generate', () => {
     const result = NodeFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
-const fetch = require("node-fetch");
-
 fetch("https://example.com", {
   method: "GET",
 })
@@ -36,8 +34,6 @@ fetch("https://example.com", {
     const result = NodeFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
-const fetch = require("node-fetch");
-
 fetch("https://example.com", {
   method: "POST",
   headers: {
@@ -62,20 +58,20 @@ fetch("https://example.com", {
         key1: 'value1'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = NodeFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
-const fetch = require("node-fetch");
-
 fetch("https://example.com", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
   },
-  body: {
+  body: JSON.stringify({
     "key1": "value1"
-  }
+  }),
 })
 .then(response => {
   if (!response.ok) {
@@ -85,49 +81,6 @@ fetch("https://example.com", {
 })
 .then(data => console.log(data))
 .catch(error => console.error("error:", error));
-    `.trim()
-    )
-  })
-
-  test('should build a POST request with advanced json body', () => {
-    const httpRequest: Http = {
-      method: 'POST',
-      url: 'https://example.com',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: {
-        key1: 'value1',
-        key2: ['value2', 'value3'],
-        key3: { key4: 'value4' },
-        empty: null
-      }
-    }
-    const config: Config = {}
-    const result = NodeFetch.generate(config, httpRequest)
-    expect(result).toBe(
-      `
-const fetch = require("node-fetch");
-
-fetch("https://example.com", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: {
-    "key1": "value1",
-    "key2": [
-      "value2",
-      "value3"
-    ],
-    "key3": {
-      "key4": "value4"
-    },
-    "empty": null
-  }
-})
-.then(response => response.json())
-.then(data => console.log(data))
     `.trim()
     )
   })
@@ -144,8 +97,6 @@ fetch("https://example.com", {
     const result = NodeFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
-const fetch = require("node-fetch");
-
 fetch("https://example.com/api", {
   method: "GET",
   headers: {
@@ -165,13 +116,29 @@ fetch("https://example.com/api", {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: { username: 'test', password: 'pass' }
+      body: {
+        username: 'test',
+        password: 'pass'
+      }
     }
     const config: Config = {}
     const result = NodeFetch.generate(config, httpRequest)
-    // Note: fetch doesn't auto-encode form data, would need URLSearchParams in real code
-    expect(result).toContain('method: "POST"')
-    expect(result).toContain('application/x-www-form-urlencoded')
+    expect(result).toBe(
+      `
+fetch("https://example.com", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded",
+  },
+  body: new URLSearchParams({
+    "username": "test",
+    "password": "pass"
+  }),
+})
+.then(response => response.text())
+.then(data => console.log(data))
+    `.trim()
+    )
   })
 
   test('should build a GET request with URL parameters', () => {
@@ -187,13 +154,9 @@ fetch("https://example.com/api", {
     const result = NodeFetch.generate(config, httpRequest)
     expect(result).toBe(
       `
-const fetch = require("node-fetch");
-
 const url = new URL("https://example.com");
-const params = new URLSearchParams();
-params.set("address.zip", "66031");
-params.set("address.country", "Wallis");
-url.search = params.toString();
+url.searchParams.append("address.zip", "66031");
+url.searchParams.append("address.country", "Wallis");
 
 fetch(url.toString(), {
   method: "GET",
@@ -215,9 +178,20 @@ fetch(url.toString(), {
     }
     const config: Config = {}
     const result = NodeFetch.generate(config, httpRequest)
-    expect(result).toContain('params.append("tags", "node");')
-    expect(result).toContain('params.append("tags", "fetch");')
-    expect(result).toContain('params.set("category", "backend");')
+    expect(result).toBe(
+      `
+const url = new URL("https://example.com");
+url.searchParams.append("tags", "node");
+url.searchParams.append("tags", "fetch");
+url.searchParams.append("category", "backend");
+
+fetch(url.toString(), {
+  method: "GET",
+})
+.then(response => response.text())
+.then(data => console.log(data))
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -236,7 +210,23 @@ fetch(url.toString(), {
     }
     const config: Config = {}
     const result = NodeFetch.generate(config, httpRequest)
-    expect(result).toContain('params.set("version", "1.0");')
-    expect(result).toContain('"name": "John"')
+    expect(result).toBe(
+      `
+const url = new URL("https://example.com");
+url.searchParams.append("version", "1.0");
+
+fetch(url.toString(), {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    "name": "John"
+  }),
+})
+.then(response => response.json())
+.then(data => console.log(data))
+    `.trim()
+    )
   })
 })

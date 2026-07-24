@@ -1,6 +1,6 @@
 import JavaHttpURLConnection from './java.httpurlconnection'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('JavaHttpURLConnection.generate', () => {
   test('should build a basic GET request', () => {
@@ -16,13 +16,14 @@ import java.io.*;
 import java.net.*;
 
 public class HttpExample {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     URL url = new URL("https://example.com");
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setRequestMethod("GET");
 
     int responseCode = conn.getResponseCode();
-    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
     String inputLine;
     StringBuilder response = new StringBuilder();
 
@@ -34,7 +35,7 @@ public class HttpExample {
     System.out.println(response.toString());
   }
 }
-      `.trim()
+    `.trim()
     )
   })
 
@@ -49,8 +50,36 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaHttpURLConnection.generate(config, httpRequest)
-    expect(result).toContain('conn.setRequestProperty("Content-Type", "application/json");')
-    expect(result).toContain('conn.setRequestProperty("Authorization", "Bearer token123");')
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    URL url = new URL("https://example.com");
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("POST");
+
+    conn.setRequestProperty("Content-Type", "application/json");
+    conn.setRequestProperty("Authorization", "Bearer token123");
+
+    int responseCode = conn.getResponseCode();
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with cookies', () => {
@@ -64,7 +93,35 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaHttpURLConnection.generate(config, httpRequest)
-    expect(result).toContain('conn.setRequestProperty("Cookie", "session=abc123; user=john");')
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    URL url = new URL("https://example.com");
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("POST");
+
+    conn.setRequestProperty("Cookie", "session=abc123; user=john");
+
+    int responseCode = conn.getResponseCode();
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with JSON body', () => {
@@ -81,11 +138,90 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaHttpURLConnection.generate(config, httpRequest)
-    expect(result).toContain('import org.json.JSONObject;')
-    expect(result).toContain('conn.setDoOutput(true);')
-    expect(result).toContain('JSONObject jsonBody = new JSONObject();')
-    expect(result).toContain('jsonBody.put("name", "John");')
-    expect(result).toContain('jsonBody.put("age", 30);')
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    URL url = new URL("https://example.com");
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("POST");
+
+    conn.setRequestProperty("Content-Type", "application/json");
+
+    conn.setDoOutput(true);
+
+    try (OutputStream os = conn.getOutputStream()) {
+      byte[] input = "{\\"name\\":\\"John\\",\\"age\\":30}".getBytes("utf-8");
+      os.write(input, 0, input.length);
+    }
+
+    int responseCode = conn.getResponseCode();
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
+  })
+
+  test('should build a POST request with nested JSON body', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      body: {
+        item: {
+          name: 'test'
+        }
+      }
+    }
+    const config: Config = {}
+    const result = JavaHttpURLConnection.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    URL url = new URL("https://example.com");
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("POST");
+
+    conn.setDoOutput(true);
+
+    try (OutputStream os = conn.getOutputStream()) {
+      byte[] input = "{\\"item\\":{\\"name\\":\\"test\\"}}".getBytes("utf-8");
+      os.write(input, 0, input.length);
+    }
+
+    int responseCode = conn.getResponseCode();
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with text body', () => {
@@ -99,8 +235,42 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaHttpURLConnection.generate(config, httpRequest)
-    expect(result).toContain('conn.setDoOutput(true);')
-    expect(result).toContain('byte[] input = "Plain text message".getBytes("utf-8");')
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    URL url = new URL("https://example.com");
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("POST");
+
+    conn.setRequestProperty("Content-Type", "text/plain");
+
+    conn.setDoOutput(true);
+
+    try (OutputStream os = conn.getOutputStream()) {
+      byte[] input = "Plain text message".getBytes("utf-8");
+      os.write(input, 0, input.length);
+    }
+
+    int responseCode = conn.getResponseCode();
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with error handling', () => {
@@ -111,11 +281,48 @@ public class HttpExample {
         test: 'data'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = JavaHttpURLConnection.generate(config, httpRequest)
-    expect(result).toContain('try {')
-    expect(result).toContain('} catch (Exception e) {')
-    expect(result).toContain('e.printStackTrace();')
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+
+public class HttpExample {
+  public static void main(String[] args) {
+    try {
+      URL url = new URL("https://example.com");
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("POST");
+
+      conn.setDoOutput(true);
+
+      try (OutputStream os = conn.getOutputStream()) {
+        byte[] input = "{\\"test\\":\\"data\\"}".getBytes("utf-8");
+        os.write(input, 0, input.length);
+      }
+
+      int responseCode = conn.getResponseCode();
+      InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+      BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+      String inputLine;
+      StringBuilder response = new StringBuilder();
+
+      while ((inputLine = in.readLine()) != null) {
+        response.append(inputLine);
+      }
+      in.close();
+
+      System.out.println(response.toString());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+}
+    `.trim()
+    )
   })
 
   test('should handle array header values', () => {
@@ -128,8 +335,36 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaHttpURLConnection.generate(config, httpRequest)
-    expect(result).toContain('conn.setRequestProperty("Accept", "application/json");')
-    expect(result).toContain('conn.setRequestProperty("Accept", "text/plain");')
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    URL url = new URL("https://example.com");
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("GET");
+
+    conn.addRequestProperty("Accept", "application/json");
+    conn.addRequestProperty("Accept", "text/plain");
+
+    int responseCode = conn.getResponseCode();
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a GET request with URL parameters', () => {
@@ -150,7 +385,7 @@ import java.net.*;
 import java.net.URLEncoder;
 
 public class HttpExample {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     String baseUrl = "https://example.com";
     StringBuilder urlBuilder = new StringBuilder(baseUrl);
     urlBuilder.append(baseUrl.contains("?") ? "&" : "?");
@@ -170,7 +405,8 @@ public class HttpExample {
     conn.setRequestMethod("GET");
 
     int responseCode = conn.getResponseCode();
-    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
     String inputLine;
     StringBuilder response = new StringBuilder();
 
@@ -197,9 +433,49 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaHttpURLConnection.generate(config, httpRequest)
-    expect(result).toContain('"tags=" + URLEncoder.encode("java", "UTF-8")')
-    expect(result).toContain('"tags=" + URLEncoder.encode("http", "UTF-8")')
-    expect(result).toContain('"category=" + URLEncoder.encode("backend", "UTF-8")')
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+import java.net.URLEncoder;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    String baseUrl = "https://example.com";
+    StringBuilder urlBuilder = new StringBuilder(baseUrl);
+    urlBuilder.append(baseUrl.contains("?") ? "&" : "?");
+
+    String[] paramPairs = {
+      "tags=" + URLEncoder.encode("java", "UTF-8"),
+      "tags=" + URLEncoder.encode("http", "UTF-8"),
+      "category=" + URLEncoder.encode("backend", "UTF-8")
+    };
+
+    for (int i = 0; i < paramPairs.length; i++) {
+      if (i > 0) urlBuilder.append("&");
+      urlBuilder.append(paramPairs[i]);
+    }
+
+    URL url = new URL(urlBuilder.toString());
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("GET");
+
+    int responseCode = conn.getResponseCode();
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -218,7 +494,55 @@ public class HttpExample {
     }
     const config: Config = {}
     const result = JavaHttpURLConnection.generate(config, httpRequest)
-    expect(result).toContain('"version=" + URLEncoder.encode("1.0", "UTF-8")')
-    expect(result).toContain('jsonBody.put("name", "John");')
+    expect(result).toBe(
+      `
+import java.io.*;
+import java.net.*;
+import java.net.URLEncoder;
+
+public class HttpExample {
+  public static void main(String[] args) throws Exception {
+    String baseUrl = "https://example.com";
+    StringBuilder urlBuilder = new StringBuilder(baseUrl);
+    urlBuilder.append(baseUrl.contains("?") ? "&" : "?");
+
+    String[] paramPairs = {
+      "version=" + URLEncoder.encode("1.0", "UTF-8")
+    };
+
+    for (int i = 0; i < paramPairs.length; i++) {
+      if (i > 0) urlBuilder.append("&");
+      urlBuilder.append(paramPairs[i]);
+    }
+
+    URL url = new URL(urlBuilder.toString());
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("POST");
+
+    conn.setRequestProperty("Content-Type", "application/json");
+
+    conn.setDoOutput(true);
+
+    try (OutputStream os = conn.getOutputStream()) {
+      byte[] input = "{\\"name\\":\\"John\\"}".getBytes("utf-8");
+      os.write(input, 0, input.length);
+    }
+
+    int responseCode = conn.getResponseCode();
+    InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+    BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+    String inputLine;
+    StringBuilder response = new StringBuilder();
+
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+
+    System.out.println(response.toString());
+  }
+}
+    `.trim()
+    )
   })
 })

@@ -1,6 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
+import { EscapeDoubleQuoted, FormatCookieHeader } from '../utils/utils'
 
 export default {
   language: 'javascript',
@@ -11,6 +12,8 @@ export default {
       join: config.join || '\n'
     })
 
+    builder.line('import axios from "axios";')
+    builder.line()
     builder.line('axios({')
     builder.indent()
     builder.line(`method: "${http.method.toLowerCase()}",`)
@@ -32,26 +35,20 @@ export default {
     }
 
     // Headers
-    if (http.headers) {
+    if (http.headers || (http.cookies && Object.keys(http.cookies).length > 0)) {
       builder.line('headers: {')
       builder.indent()
-      for (const [key, value] of Object.entries(http.headers)) {
-        if (Array.isArray(value)) {
-          builder.line(`"${key}": "${value.join(', ')}",`)
-        } else {
-          builder.line(`"${key}": "${value}",`)
+      if (http.headers) {
+        for (const [key, value] of Object.entries(http.headers)) {
+          if (Array.isArray(value)) {
+            builder.line(`"${EscapeDoubleQuoted(key)}": "${EscapeDoubleQuoted(value.join(', '))}",`)
+          } else {
+            builder.line(`"${EscapeDoubleQuoted(key)}": "${EscapeDoubleQuoted(value)}",`)
+          }
         }
       }
-      builder.outdent()
-      builder.line('},')
-    }
-
-    // Cookies
-    if (http.cookies) {
-      builder.line('cookies: {')
-      builder.indent()
-      for (const [key, value] of Object.entries(http.cookies)) {
-        builder.line(`"${key}": "${value}",`)
+      if (http.cookies && Object.keys(http.cookies).length > 0) {
+        builder.line(`"Cookie": "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}",`)
       }
       builder.outdent()
       builder.line('},')

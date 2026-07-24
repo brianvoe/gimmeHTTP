@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, ContentTypeIncludes } from '../utils/utils'
+import { GetContentType, ContentTypeIncludes, IsObjectBody, IsStringBody, EscapeDoubleQuoted } from '../utils/utils'
 
 export default {
   language: 'python',
@@ -9,11 +9,12 @@ export default {
   generate(config: Config, http: Http): string {
     const builder = new Builder({
       indent: config.indent || '  ',
-      join: config.join || '\n'
+      join: config.join || '\n',
+      json: { nullLiteral: 'None' }
     })
 
     const method = http.method.toUpperCase()
-    const hasPayload = method !== 'GET' && http.body
+    const hasPayload = method !== 'GET' && http.body !== undefined && http.body !== null
     const hasHeaders = http.headers && Object.keys(http.headers).length > 0
     const hasCookies = http.cookies && Object.keys(http.cookies).length > 0
     let params: string[] = []
@@ -82,17 +83,25 @@ export default {
     }
 
     if (hasPayload) {
-      builder.line()
       const contentType = GetContentType(http.headers)
 
-      if (ContentTypeIncludes(contentType, 'form')) {
-        params.push('data=form_data')
-        builder.line('form_data = ')
-        builder.json(http.body)
+      // String bodies are passed inline, everything else gets its own variable
+      if (IsStringBody(http.body)) {
+        params.push(`data="${EscapeDoubleQuoted(http.body)}"`)
       } else {
-        // Default to JSON (if content-type is json or not specified with object body)
-        params.push('json=json_data')
-        builder.line('json_data = ')
+        builder.line()
+
+        if (ContentTypeIncludes(contentType, 'form')) {
+          params.push('data=form_data')
+          builder.line('form_data = ')
+        } else if (IsObjectBody(http.body) && (ContentTypeIncludes(contentType, 'json') || !contentType)) {
+          params.push('json=json_data')
+          builder.line('json_data = ')
+        } else {
+          params.push('data=payload')
+          builder.line('payload = ')
+        }
+
         builder.json(http.body)
       }
     }
@@ -105,6 +114,7 @@ export default {
         (params.length > 0 ? `, ${params.join(', ')}` : '') +
         ')'
     )
+    if (config.handleErrors) builder.line('response.raise_for_status()')
     builder.line('print(response.text)')
 
     if (config.handleErrors) {

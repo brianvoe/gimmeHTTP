@@ -1,7 +1,14 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetEffectiveContentType, ContentTypeIncludes } from '../utils/utils'
+import {
+  GetEffectiveContentType,
+  ContentTypeIncludes,
+  GetContentType,
+  IsObjectBody,
+  IsStringBody,
+  EscapeDoubleQuoted
+} from '../utils/utils'
 
 export default {
   default: true,
@@ -16,17 +23,15 @@ export default {
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
       builder.line('const url = new URL("' + http.url + '");')
-      builder.line('const params = new URLSearchParams();')
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`params.append("${key}", "${val}");`)
+            builder.line(`url.searchParams.append("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}");`)
           }
         } else {
-          builder.line(`params.set("${key}", "${value}");`)
+          builder.line(`url.searchParams.append("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}");`)
         }
       }
-      builder.line('url.search = params.toString();')
       builder.line()
       builder.line('fetch(url.toString(), {')
     } else {
@@ -50,14 +55,27 @@ export default {
       builder.line('},')
     }
 
-    // Note: Cookies are not supported in the fetch API
-    // Cookies
-    // if (http.cookies) {
-    // }
+    if (http.cookies && Object.keys(http.cookies).length > 0) {
+      builder.line('// Same-origin cookies are sent automatically by the browser.')
+    }
 
-    if (http.body) {
-      builder.line('body: ')
-      builder.json(http.body)
+    if (http.body !== undefined && http.body !== null) {
+      const contentType = GetContentType(http.headers)
+      if (IsObjectBody(http.body) && ContentTypeIncludes(contentType, 'form')) {
+        builder.line('body: new URLSearchParams(')
+        builder.json(http.body)
+        builder.append('),')
+      } else if (IsObjectBody(http.body)) {
+        builder.line('body: JSON.stringify(')
+        builder.json(http.body)
+        builder.append('),')
+      } else if (IsStringBody(http.body)) {
+        builder.line(`body: "${EscapeDoubleQuoted(http.body)}",`)
+      } else {
+        builder.line('body: ')
+        builder.json(http.body)
+        builder.append(',')
+      }
     }
 
     builder.outdent()

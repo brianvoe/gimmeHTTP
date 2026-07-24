@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, ContentTypeIncludes } from '../utils/utils'
+import { ContentTypeIncludes, EscapeDoubleQuoted, GetContentType, HasBody, IsObjectBody } from '../utils/utils'
 
 export default {
   language: 'php',
@@ -16,9 +16,12 @@ export default {
         arrOpen: '[',
         arrClose: ']',
         separator: ' => ',
-        endComma: true
+        endComma: true,
+        nullLiteral: 'null',
+        escapeString: EscapeDoubleQuoted
       }
     })
+    const phpString = (value: string) => EscapeDoubleQuoted(value).replace(/\$/g, '\\$')
 
     builder.line('<?php')
     builder.line()
@@ -26,7 +29,7 @@ export default {
     builder.line()
     builder.line('use GuzzleHttp\\Client;')
     if (config.handleErrors) {
-      builder.line('use GuzzleHttp\\Exception\\RequestException;')
+      builder.line('use GuzzleHttp\\Exception\\GuzzleException;')
     }
     builder.line()
 
@@ -38,11 +41,11 @@ export default {
     builder.line('$client = new Client();')
     builder.line('$response = $client->request(')
     builder.indent()
-    builder.line('"' + http.method.toUpperCase() + '",')
-    builder.line('"' + http.url + '",')
+    builder.line(`"${phpString(http.method.toUpperCase())}",`)
+    builder.line(`"${phpString(http.url)}",`)
 
     // Headers, query params, and body
-    if (http.headers || http.cookies || http.body || http.params) {
+    if (http.headers || http.cookies || HasBody(http.body) || http.params) {
       builder.line('[')
 
       // Query parameters
@@ -52,11 +55,9 @@ export default {
         builder.indent()
         for (const [key, value] of Object.entries(http.params)) {
           if (Array.isArray(value)) {
-            for (const val of value) {
-              builder.line(`"${key}" => "${val}",`)
-            }
+            builder.line(`"${phpString(key)}" => [${value.map((val) => `"${phpString(val)}"`).join(', ')}],`)
           } else {
-            builder.line(`"${key}" => "${value}",`)
+            builder.line(`"${phpString(key)}" => "${phpString(value)}",`)
           }
         }
         builder.outdent()
@@ -64,31 +65,23 @@ export default {
         builder.outdent()
       }
 
-      if (http.headers) {
+      if (http.headers || http.cookies) {
         builder.indent()
         builder.line('"headers" => [')
         builder.indent()
 
-        for (const [key, value] of Object.entries(http.headers)) {
+        for (const [key, value] of Object.entries(http.headers || {})) {
           if (Array.isArray(value)) {
-            value.forEach((val) => builder.line(`"${key}" => "${val}",`))
+            builder.line(`"${phpString(key)}" => [${value.map((val) => `"${phpString(val)}"`).join(', ')}],`)
           } else {
-            builder.line(`"${key}" => "${value}",`)
+            builder.line(`"${phpString(key)}" => "${phpString(value)}",`)
           }
         }
-
-        builder.outdent()
-        builder.line('],')
-        builder.outdent()
-      }
-
-      if (http.cookies) {
-        builder.indent()
-        builder.line('"cookies" => [')
-        builder.indent()
-
-        for (const [key, value] of Object.entries(http.cookies)) {
-          builder.line(`"${key}" => "${value}",`)
+        if (http.cookies) {
+          const cookieHeader = Object.entries(http.cookies)
+            .map(([key, value]) => `${key}=${value}`)
+            .join('; ')
+          builder.line(`"Cookie" => "${phpString(cookieHeader)}",`)
         }
 
         builder.outdent()
@@ -96,7 +89,7 @@ export default {
         builder.outdent()
       }
 
-      if (http.body) {
+      if (HasBody(http.body)) {
         builder.indent()
         const contentType = GetContentType(http.headers)
 
@@ -104,11 +97,14 @@ export default {
           builder.line('"form_params" => ')
           builder.json(http.body)
           builder.append(',')
-        } else {
-          // Default to JSON (if content-type is json or not specified)
+        } else if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
           builder.line('"json" => ')
           builder.json(http.body)
           builder.append(',')
+        } else {
+          builder.line(
+            `"body" => "${phpString(typeof http.body === 'string' ? http.body : JSON.stringify(http.body))}",`
+          )
         }
         builder.outdent()
       }
@@ -126,7 +122,7 @@ export default {
 
     if (config.handleErrors) {
       builder.outdent()
-      builder.line('} catch (RequestException $e) {')
+      builder.line('} catch (GuzzleException $e) {')
       builder.indent()
       builder.line('echo "Error: " . $e->getMessage();')
       builder.outdent()

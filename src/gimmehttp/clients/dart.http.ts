@@ -1,7 +1,14 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, HasBody, IsStringBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
+import {
+  ContentTypeIncludes,
+  EscapeDoubleQuoted,
+  GetContentType,
+  HasBody,
+  IsObjectBody,
+  IsStringBody
+} from '../utils/utils'
 
 export default {
   default: true,
@@ -17,6 +24,8 @@ export default {
     const contentType = GetContentType(http.headers)
     const needsJsonEncode =
       hasBody && (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body)))
+    const dartString = (value: string) => EscapeDoubleQuoted(value).replace(/\$/g, '\\$')
+    const hasExplicitContentType = Object.keys(http.headers || {}).some((key) => key.toLowerCase() === 'content-type')
 
     builder.line("import 'package:http/http.dart' as http;")
     if (needsJsonEncode) {
@@ -34,32 +43,37 @@ export default {
 
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line("var url = Uri.parse('" + http.url + "').replace(queryParameters: {")
+      builder.line(`var url = Uri.parse("${dartString(http.url)}");`)
+      builder.line('url = url.replace(queryParameters: {')
       builder.indent()
+      builder.line('...url.queryParametersAll,')
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
-          builder.line(`'${key}': [${value.map((v) => `'${v}'`).join(', ')}],`)
+          builder.line(`"${dartString(key)}": [${value.map((v) => `"${dartString(v)}"`).join(', ')}],`)
         } else {
-          builder.line(`'${key}': '${value}',`)
+          builder.line(`"${dartString(key)}": "${dartString(value)}",`)
         }
       }
       builder.outdent()
       builder.line('});')
     } else {
-      builder.line(`var url = Uri.parse('${http.url}');`)
+      builder.line(`var url = Uri.parse("${dartString(http.url)}");`)
     }
     builder.line()
 
     // Build headers map
-    if (http.headers && Object.keys(http.headers).length > 0) {
+    if ((http.headers && Object.keys(http.headers).length > 0) || (needsJsonEncode && !hasExplicitContentType)) {
       builder.line('var headers = {')
       builder.indent()
-      for (const [key, value] of Object.entries(http.headers)) {
+      for (const [key, value] of Object.entries(http.headers || {})) {
         if (Array.isArray(value)) {
-          builder.line(`'${key}': '${value.join(', ')}',`)
+          builder.line(`"${dartString(key)}": "${dartString(value.join(', '))}",`)
         } else {
-          builder.line(`'${key}': '${value}',`)
+          builder.line(`"${dartString(key)}": "${dartString(value)}",`)
         }
+      }
+      if (needsJsonEncode && !hasExplicitContentType) {
+        builder.line('"Content-Type": "application/json",')
       }
       builder.outdent()
       builder.line('};')
@@ -76,7 +90,7 @@ export default {
         bodyVar = 'body'
         builder.line()
       } else if (IsStringBody(http.body)) {
-        builder.line(`var body = '${http.body.replace(/'/g, "\\'")}';`)
+        builder.line(`var body = "${dartString(http.body)}";`)
         bodyVar = 'body'
         builder.line()
       }
@@ -84,7 +98,8 @@ export default {
 
     // Make request
     const method = http.method.toLowerCase()
-    const hasHeaders = http.headers && Object.keys(http.headers).length > 0
+    const hasHeaders =
+      (http.headers && Object.keys(http.headers).length > 0) || (needsJsonEncode && !hasExplicitContentType)
 
     if (method === 'get') {
       builder.line(`var response = await http.get(url${hasHeaders ? ', headers: headers' : ''});`)
@@ -104,9 +119,23 @@ export default {
       builder.line(
         `var response = await http.patch(url${hasHeaders ? ', headers: headers' : ''}${bodyVar !== 'null' ? ', body: ' + bodyVar : ''});`
       )
+    } else {
+      builder.line(`var request = http.Request("${dartString(http.method.toUpperCase())}", url);`)
+      if (hasHeaders) builder.line('request.headers.addAll(headers);')
+      if (bodyVar !== 'null') builder.line('request.body = body;')
+      builder.line('var streamedResponse = await request.send();')
+      builder.line('var response = await http.Response.fromStream(streamedResponse);')
     }
 
     builder.line()
+    if (config.handleErrors) {
+      builder.line('if (response.statusCode < 200 || response.statusCode >= 300) {')
+      builder.indent()
+      builder.line('throw http.ClientException("HTTP ${response.statusCode}", url);')
+      builder.outdent()
+      builder.line('}')
+      builder.line()
+    }
     builder.line('print(response.body);')
 
     if (config.handleErrors) {

@@ -1,6 +1,6 @@
 import PythonRequests from './python.requests'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('PythonRequests.generate', () => {
   test('should build a basic GET request', () => {
@@ -139,7 +139,7 @@ json_data = {
     "value4",
     "value5"
   ],
-  "empty": null
+  "empty": None
 }
 
 response = requests.post(url, json=json_data)
@@ -204,9 +204,7 @@ headers = {
   "Content-Type": "text/plain"
 }
 
-json_data = "Simple plain text message"
-
-response = requests.post(url, headers=headers, json=json_data)
+response = requests.post(url, headers=headers, data="Simple plain text message")
 print(response.text)
     `.trim()
     )
@@ -223,7 +221,9 @@ print(response.text)
         name: 'test'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = PythonRequests.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -241,6 +241,7 @@ try:
   }
 
   response = requests.post(url, headers=headers, json=json_data)
+  response.raise_for_status()
   print(response.text)
 except requests.exceptions.RequestException as e:
   print(f"Error: {e}")
@@ -287,8 +288,21 @@ print(response.text)
     }
     const config: Config = {}
     const result = PythonRequests.generate(config, httpRequest)
-    expect(result).toContain('"tags": ["python", "requests"]')
-    expect(result).toContain('"category": "backend"')
+    expect(result).toBe(
+      `
+import requests
+
+url = "https://example.com"
+
+url_params = {
+  "tags": ["python", "requests"],
+  "category": "backend"
+}
+
+response = requests.get(url, params=url_params)
+print(response.text)
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -307,7 +321,27 @@ print(response.text)
     }
     const config: Config = {}
     const result = PythonRequests.generate(config, httpRequest)
-    expect(result).toContain('"version": "1.0"')
-    expect(result).toContain('"name": "John"')
+    expect(result).toBe(
+      `
+import requests
+
+url = "https://example.com"
+
+url_params = {
+  "version": "1.0"
+}
+
+headers = {
+  "Content-Type": "application/json"
+}
+
+json_data = {
+  "name": "John"
+}
+
+response = requests.post(url, params=url_params, headers=headers, json=json_data)
+print(response.text)
+    `.trim()
+    )
   })
 })

@@ -24,6 +24,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - README peer dependency docs now correctly list `highlight.js` (not Shiki)
+- Corrected HTTP client generators across languages for valid, idiomatic request snippets:
+  - JSON/form/text body serialization and language-native null literals
+  - HTTPS vs HTTP selection (Node `http`/`https`, Python `http.client`)
+  - Cookie headers, query-param merging, and shell curl query/body interaction
+  - Compile-breaking output in Go, C#, Java OkHttp, Rust, Swift, C libcurl, PHP, and others
 
 ## [1.5.1] - 2025-12-05
 

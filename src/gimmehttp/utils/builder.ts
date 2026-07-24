@@ -2,8 +2,8 @@ export interface BuilderOptions {
   indent?: string
   join?: string
 
-  // JSON options
-  json?: JSON
+  // JSON / object literal options
+  json?: Partial<JSON>
 }
 
 export interface Line {
@@ -18,7 +18,20 @@ export interface JSON {
   arrClose: string
   separator: string
   endComma?: boolean // Add comma at end of object or array
+  quoteKeys: boolean // Whether object keys are wrapped in quotes
+
+  // Target languages use different keywords for JSON-like scalar values
+  // (for example, Python uses None/True/False).
+  nullLiteral: string
+  trueLiteral: string
+  falseLiteral: string
+
+  // Methods
+  escapeString?: (value: string) => string
 }
+
+const defaultEscape = (value: string): string =>
+  value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
 
 export class Builder {
   private code: Line[] = []
@@ -32,13 +45,24 @@ export class Builder {
     arrOpen: '[',
     arrClose: ']',
     separator: ': ',
-    endComma: false
+    endComma: false,
+    quoteKeys: true,
+
+    // Default to JSON/JavaScript literals; clients can override these per language.
+    nullLiteral: 'null',
+    trueLiteral: 'true',
+    falseLiteral: 'false',
+
+    // Methods
+    escapeString: defaultEscape
   }
 
   constructor(options: BuilderOptions = {}) {
     this.indentChar = options.indent || '  '
     this.lineJoin = options.join || '\n'
-    this.jsonConfig = options.json || this.jsonConfig
+    if (options.json) {
+      this.jsonConfig = { ...this.jsonConfig, ...options.json }
+    }
   }
 
   public getIndent(): string {
@@ -63,8 +87,8 @@ export class Builder {
   }
 
   public json(json: any, isSub: boolean = false): void {
-    if (!json) {
-      this.append('null')
+    if (json === null || json === undefined) {
+      this.writeScalar(this.jsonConfig.nullLiteral, isSub)
       return
     }
 
@@ -74,7 +98,7 @@ export class Builder {
           this.append(this.jsonConfig.arrOpen)
           this.indent()
           json.forEach((item, index) => {
-            this.json(item, typeof json === 'object' || Array.isArray(json))
+            this.json(item, true)
 
             // Add comma if not last item
             if (index < json.length - 1 || this.jsonConfig.endComma) {
@@ -88,9 +112,13 @@ export class Builder {
           this.indent()
           const keys = Object.keys(json)
           keys.forEach((key, index) => {
-            // Set key
-            this.line(`"${key}"` + this.jsonConfig.separator)
-            this.json(json[key], typeof key === 'object' || Array.isArray(key))
+            const escape = this.jsonConfig.escapeString || defaultEscape
+            const keyText = this.jsonConfig.quoteKeys ? `"${escape(key)}"` : key
+            this.line(keyText + this.jsonConfig.separator)
+            const value = json[key]
+            // Scalars stay on the key line; nested objects/arrays continue on that line then expand
+            const complex = value !== null && typeof value === 'object'
+            this.json(value, complex)
 
             // Add comma if not last key
             if (index < keys.length - 1 || this.jsonConfig.endComma) {
@@ -101,22 +129,25 @@ export class Builder {
           this.line(this.jsonConfig.objClose)
         }
         break
-      case 'string':
-        // Wrap string in double quotes
-        if (isSub) {
-          this.line(`"${json}"`)
-        } else {
-          this.append(`"${json}"`)
-        }
+      case 'string': {
+        const escape = this.jsonConfig.escapeString || defaultEscape
+        this.writeScalar(`"${escape(json)}"`, isSub)
+        break
+      }
+      case 'boolean':
+        this.writeScalar(json ? this.jsonConfig.trueLiteral : this.jsonConfig.falseLiteral, isSub)
         break
       default:
-        if (isSub) {
-          this.line(String(json))
-        } else {
-          this.append(String(json))
-        }
+        this.writeScalar(String(json), isSub)
         break
     }
+  }
+
+  /** Emit a JSON payload as a single escaped string literal (safest across languages). */
+  public jsonStringLiteral(value: any, quote: '"' | "'" = '"'): void {
+    const encoded = JSON.stringify(value ?? null)
+    const escape = quote === "'" ? (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") : defaultEscape
+    this.append(`${quote}${escape(encoded)}${quote}`)
   }
 
   public indent(): void {
@@ -134,5 +165,13 @@ export class Builder {
       .map(({ depth, line }) => `${this.indentChar.repeat(depth)}${line}`)
       .join(this.lineJoin)
       .trimEnd()
+  }
+
+  private writeScalar(value: string, isSub: boolean): void {
+    if (isSub) {
+      this.line(value)
+    } else {
+      this.append(value)
+    }
   }
 }

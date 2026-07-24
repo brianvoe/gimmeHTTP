@@ -1,6 +1,6 @@
 import RubyNetHttp from './ruby.nethttp'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 describe('RubyNetHttp.generate', () => {
   test('should build a basic GET request', () => {
@@ -99,6 +99,7 @@ puts response.body
       `
 require "net/http"
 require "uri"
+require "json"
 
 uri = URI.parse("https://example.com")
 request = Net::HTTP::Post.new(uri)
@@ -125,7 +126,11 @@ puts response.body
           key3: 'value3'
         },
         key4: ['value4'],
-        key5: [{ key6: 'value6' }],
+        key5: [
+          {
+            key6: 'value6'
+          }
+        ],
         empty: null
       }
     }
@@ -135,6 +140,7 @@ puts response.body
       `
 require "net/http"
 require "uri"
+require "json"
 
 uri = URI.parse("https://example.com")
 request = Net::HTTP::Post.new(uri)
@@ -150,7 +156,7 @@ request.body = {
       "key6": "value6"
     }
   ],
-  "empty": null
+  "empty": nil
 }.to_json
 
 response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
@@ -239,6 +245,7 @@ puts response.body
       `
 require "net/http"
 require "uri"
+require "json"
 
 uri = URI.parse("https://example.com/resource/123")
 request = Net::HTTP::Put.new(uri)
@@ -294,9 +301,10 @@ puts response.body
       `
 require "net/http"
 require "uri"
+require "json"
 
 uri = URI.parse("https://example.com/resource/123")
-request = Net::HTTP::GenericRequest.new("PATCH", uri.path, nil, nil)
+request = Net::HTTP::Patch.new(uri)
 request.body = {
   "status": "active"
 }.to_json
@@ -327,8 +335,8 @@ require "uri"
 
 uri = URI.parse("https://example.com")
 request = Net::HTTP::Get.new(uri)
-request["Accept"] = "application/json"
-request["Accept"] = "text/plain"
+request.add_field("Accept", "application/json")
+request.add_field("Accept", "text/plain")
 
 response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
   http.request(request)
@@ -350,12 +358,15 @@ puts response.body
         test: 'data'
       }
     }
-    const config: Config = { handleErrors: true }
+    const config: Config = {
+      handleErrors: true
+    }
     const result = RubyNetHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 require "net/http"
 require "uri"
+require "json"
 
 begin
   uri = URI.parse("https://example.com")
@@ -421,8 +432,26 @@ puts response.body
     }
     const config: Config = {}
     const result = RubyNetHttp.generate(config, httpRequest)
-    expect(result).toContain('"tags" => ["ruby", "nethttp"],')
-    expect(result).toContain('"category" => "backend",')
+    expect(result).toBe(
+      `
+require "net/http"
+require "uri"
+
+uri = URI.parse("https://example.com")
+params = {
+  "tags" => ["ruby", "nethttp"],
+  "category" => "backend",
+}
+uri.query = URI.encode_www_form(params)
+request = Net::HTTP::Get.new(uri)
+
+response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
+  http.request(request)
+end
+
+puts response.body
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -441,7 +470,29 @@ puts response.body
     }
     const config: Config = {}
     const result = RubyNetHttp.generate(config, httpRequest)
-    expect(result).toContain('"version" => "1.0",')
-    expect(result).toContain('"name": "John"')
+    expect(result).toBe(
+      `
+require "net/http"
+require "uri"
+require "json"
+
+uri = URI.parse("https://example.com")
+params = {
+  "version" => "1.0",
+}
+uri.query = URI.encode_www_form(params)
+request = Net::HTTP::Post.new(uri)
+request["Content-Type"] = "application/json"
+request.body = {
+  "name": "John"
+}.to_json
+
+response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
+  http.request(request)
+end
+
+puts response.body
+    `.trim()
+    )
   })
 })

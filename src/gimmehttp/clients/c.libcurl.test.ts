@@ -62,7 +62,7 @@ int main(void) {
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL,
       "https://example.com"
-      "?address.zip=66031"
+      "\\?address.zip=66031"
       "&address.country=Wallis"
     );
 
@@ -104,7 +104,7 @@ int main(void) {
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL,
       "https://example.com"
-      "?tags=javascript"
+      "\\?tags=javascript"
       "&tags=typescript"
       "&category=programming"
     );
@@ -147,7 +147,7 @@ int main(void) {
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL,
       "https://example.com"
-      "?search=hello+world"
+      "\\?search=hello+world"
       "&filter=test%26value"
     );
 
@@ -257,7 +257,9 @@ int main(void) {
         key1: 'value1'
       }
     }
-    const config: Config = { indent: '  ' }
+    const config: Config = {
+      indent: '  '
+    }
     const result = CLibCurl.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -274,13 +276,17 @@ int main(void) {
     curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
 
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"({
-      "key1": "value1"
-    })");
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "{\\"key1\\":\\"value1\\"}");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 17L);
 
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
       fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
   }
 
@@ -306,7 +312,9 @@ int main(void) {
         key6: null
       }
     }
-    const config: Config = { indent: '  ' }
+    const config: Config = {
+      indent: '  '
+    }
     const result = CLibCurl.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -323,24 +331,17 @@ int main(void) {
     curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
     curl_easy_setopt(curl, CURLOPT_POST, 1L);
 
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"({
-      "key1": "value1",
-      "key2": 123,
-      "key3": true,
-      "key4": [
-        1,
-        2,
-        3
-      ],
-      "key5": {
-        "nested": "value"
-      },
-      "key6": null
-    })");
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "{\\"key1\\":\\"value1\\",\\"key2\\":123,\\"key3\\":true,\\"key4\\":[1,2,3],\\"key5\\":{\\"nested\\":\\"value\\"},\\"key6\\":null}");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 93L);
 
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
       fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
   }
 
@@ -360,7 +361,9 @@ int main(void) {
       },
       body: 'Plain text content'
     }
-    const config: Config = { indent: '  ' }
+    const config: Config = {
+      indent: '  '
+    }
     const result = CLibCurl.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -382,6 +385,7 @@ int main(void) {
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "Plain text content");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 18L);
 
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
@@ -406,7 +410,9 @@ int main(void) {
       },
       body: '<root><item>value</item></root>'
     }
-    const config: Config = { indent: '  ' }
+    const config: Config = {
+      indent: '  '
+    }
     const result = CLibCurl.generate(config, httpRequest)
     expect(result).toBe(
       `
@@ -428,6 +434,258 @@ int main(void) {
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "<root><item>value</item></root>");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 31L);
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
+  test('uses C string literals and sets JSON content length', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      body: {
+        message: 'a"b',
+        empty: null
+      }
+    }
+    const config: Config = {}
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "{\\"message\\":\\"a\\\\\\"b\\",\\"empty\\":null}");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 31L);
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
+  test('url-encodes form bodies instead of serializing JSON', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        name: 'Jane Doe',
+        role: 'admin'
+      }
+    }
+    const config: Config = {}
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "name=Jane+Doe&role=admin");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 24L);
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
+  test('escapes C URL, headers, cookies, and string bodies', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com/"quoted"',
+      headers: {
+        'X-Name': 'a"b'
+      },
+      cookies: {
+        session: 'a"b'
+      },
+      body: 'a"b'
+    }
+    const config: Config = {}
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com/\\"quoted\\"");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "X-Name: a\\"b");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_COOKIE, "session=a\\"b");
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "a\\"b");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 3L);
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
+  test('should escape C URL, headers, cookies, and string bodies', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com/"quoted"',
+      headers: {
+        'X-Name': 'a"b'
+      },
+      cookies: {
+        session: 'a"b'
+      },
+      body: 'a"b'
+    }
+    const config: Config = {}
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com/\\"quoted\\"");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "X-Name: a\\"b");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_COOKIE, "session=a\\"b");
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "a\\"b");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 3L);
+
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+      fprintf(stderr, "failed: %s", curl_easy_strerror(res));
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  return 0;
+}
+    `.trim()
+    )
+  })
+
+  test('should url-encode form bodies', () => {
+    const httpRequest: Http = {
+      method: 'POST',
+      url: 'https://example.com',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        name: 'Jane Doe',
+        role: 'admin'
+      }
+    }
+    const config: Config = {}
+    const result = CLibCurl.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+#include <stdio.h>
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl;
+  CURLcode res;
+
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+  if(curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "name=Jane+Doe&role=admin");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 24L);
 
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)

@@ -1,15 +1,15 @@
-import PythonHttpClient from './python.http'
+import PythonHttp from './python.http'
 import { Config, Http } from '../utils/generate'
 import { describe, expect, test } from 'vitest'
 
-describe('PythonHttpClient.generate', () => {
+describe('PythonHttp.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
       url: 'https://example.com'
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
@@ -36,7 +36,7 @@ print(data.decode("utf-8"))
       }
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
@@ -49,7 +49,7 @@ headers = {
   "Authorization": "Bearer token",
 }
 
-conn.request("POST", "/", headers)
+conn.request("POST", "/", headers=headers)
 res = conn.getresponse()
 data = res.read()
 
@@ -67,7 +67,7 @@ print(data.decode("utf-8"))
       }
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
@@ -75,12 +75,16 @@ import json
 
 conn = http.client.HTTPSConnection("example.com", 443)
 
+headers = {
+  "Content-Type": "application/json",
+}
+
 payload_dict = {
   "key1": "value1"
 }
 payload = json.dumps(payload_dict)
 
-conn.request("POST", "/", payload)
+conn.request("POST", "/", body=payload, headers=headers)
 res = conn.getresponse()
 data = res.read()
 
@@ -102,7 +106,7 @@ print(data.decode("utf-8"))
       }
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
@@ -113,13 +117,10 @@ conn = http.client.HTTPSConnection("example.com", 443)
 headers = {
   "Content-Type": "application/json",
   "Authorization": "Bearer token",
+  "Cookie": "session=1234",
 }
 
-cookies = {
-  "session": "1234",
-}
-
-conn.request("POST", "/", headers, cookies)
+conn.request("POST", "/", headers=headers)
 res = conn.getresponse()
 data = res.read()
 
@@ -142,13 +143,17 @@ print(data.decode("utf-8"))
       }
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
 import json
 
 conn = http.client.HTTPSConnection("example.com", 443)
+
+headers = {
+  "Content-Type": "application/json",
+}
 
 payload_dict = {
   "key1": "value1",
@@ -159,11 +164,11 @@ payload_dict = {
     "value4",
     "value5"
   ],
-  "empty": null
+  "empty": None
 }
 payload = json.dumps(payload_dict)
 
-conn.request("POST", "/", payload)
+conn.request("POST", "/", body=payload, headers=headers)
 res = conn.getresponse()
 data = res.read()
 
@@ -185,7 +190,7 @@ print(data.decode("utf-8"))
       }
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
@@ -204,7 +209,7 @@ payload_dict = {
 }
 payload = urlencode(payload_dict)
 
-conn.request("POST", "/", payload, headers)
+conn.request("POST", "/", body=payload, headers=headers)
 res = conn.getresponse()
 data = res.read()
 
@@ -223,7 +228,7 @@ print(data.decode("utf-8"))
       body: '<root><node>value</node></root>'
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
@@ -237,7 +242,7 @@ headers = {
 
 payload = "<root><node>value</node></root>"
 
-conn.request("POST", "/", payload, headers)
+conn.request("POST", "/", body=payload, headers=headers)
 res = conn.getresponse()
 data = res.read()
 
@@ -257,8 +262,10 @@ print(data.decode("utf-8"))
         test: 'data'
       }
     }
-    const config: Config = { handleErrors: true }
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const config: Config = {
+      handleErrors: true
+    }
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
@@ -276,7 +283,7 @@ try:
   }
   payload = json.dumps(payload_dict)
 
-  conn.request("POST", "/", payload, headers)
+  conn.request("POST", "/", body=payload, headers=headers)
   res = conn.getresponse()
   data = res.read()
 
@@ -297,7 +304,7 @@ except Exception as e:
       }
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
+    const result = PythonHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
 import http.client
@@ -331,9 +338,28 @@ print(data.decode("utf-8"))
       }
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
-    expect(result).toContain('"tags": ["python", "http"],')
-    expect(result).toContain('"category": "backend",')
+    const result = PythonHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import http.client
+import json
+
+from urllib.parse import urlencode
+params = {
+  "tags": ["python", "http"],
+  "category": "backend",
+}
+query_string = urlencode(params, doseq=True)
+final_path = f"/?{query_string}"
+conn = http.client.HTTPSConnection("example.com", 443)
+
+conn.request("GET", final_path)
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -351,8 +377,35 @@ print(data.decode("utf-8"))
       }
     }
     const config: Config = {}
-    const result = PythonHttpClient.generate(config, httpRequest)
-    expect(result).toContain('"version": "1.0",')
-    expect(result).toContain('"name": "John"')
+    const result = PythonHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+import http.client
+import json
+
+from urllib.parse import urlencode
+params = {
+  "version": "1.0",
+}
+query_string = urlencode(params, doseq=True)
+final_path = f"/?{query_string}"
+conn = http.client.HTTPSConnection("example.com", 443)
+
+headers = {
+  "Content-Type": "application/json",
+}
+
+payload_dict = {
+  "name": "John"
+}
+payload = json.dumps(payload_dict)
+
+conn.request("POST", final_path, body=payload, headers=headers)
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
+    `.trim()
+    )
   })
 })

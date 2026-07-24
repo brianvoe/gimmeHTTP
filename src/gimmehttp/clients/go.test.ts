@@ -325,6 +325,7 @@ import (
   "fmt"
   "net/http"
   "io"
+  "bytes"
 )
 
 func main() {
@@ -400,9 +401,38 @@ func main() {
     }
     const config: Config = {}
     const result = Go.generate(config, httpRequest)
-    expect(result).toContain('q.Add("tags", "go")')
-    expect(result).toContain('q.Add("tags", "http")')
-    expect(result).toContain('q.Set("category", "backend")')
+    expect(result).toBe(
+      `
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io"
+  "net/url"
+)
+
+func main() {
+  baseURL := "https://example.com"
+  u, err := url.Parse(baseURL)
+  q := u.Query()
+  q.Add("tags", "go")
+  q.Add("tags", "http")
+  q.Set("category", "backend")
+  u.RawQuery = q.Encode()
+  url := u.String()
+
+  req, _ := http.NewRequest("GET", url, nil)
+
+  resp, _ := http.DefaultClient.Do(req)
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+
+  fmt.Println(string(body))
+}
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -421,7 +451,44 @@ func main() {
     }
     const config: Config = {}
     const result = Go.generate(config, httpRequest)
-    expect(result).toContain('q.Set("version", "1.0")')
-    expect(result).toContain('"name": "John"')
+    expect(result).toBe(
+      `
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "io"
+  "bytes"
+  "encoding/json"
+  "net/url"
+)
+
+func main() {
+  baseURL := "https://example.com"
+  u, err := url.Parse(baseURL)
+  q := u.Query()
+  q.Set("version", "1.0")
+  u.RawQuery = q.Encode()
+  url := u.String()
+
+  jsonBodyMap := map[string]any{
+    "name": "John"
+  }
+  jsonBodyBytes, _ := json.Marshal(jsonBodyMap)
+
+  req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBodyBytes))
+
+  req.Header.Set("Content-Type", "application/json")
+
+  resp, _ := http.DefaultClient.Do(req)
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+
+  fmt.Println(string(body))
+}
+    `.trim()
+    )
   })
 })

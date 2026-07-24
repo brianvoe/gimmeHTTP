@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, HasBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
+import { GetContentType, HasBody, IsObjectBody, ContentTypeIncludes, EscapeDoubleQuoted } from '../utils/utils'
 
 export default {
   default: true,
@@ -27,7 +27,7 @@ export default {
     const isJsonBody =
       hasBody && (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body)))
     const isFormBody = hasBody && ContentTypeIncludes(contentType, 'form')
-    const needsBytes = isJsonBody || isFormBody
+    const needsBytes = isJsonBody || isFormBody || (hasBody && typeof http.body === 'string')
 
     builder.line('package main')
     builder.line()
@@ -56,7 +56,7 @@ export default {
 
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line(`baseURL := "${http.url}"`)
+      builder.line(`baseURL := "${EscapeDoubleQuoted(http.url)}"`)
       builder.line('u, err := url.Parse(baseURL)')
       if (config.handleErrors) {
         builder.line('if err != nil {')
@@ -69,16 +69,16 @@ export default {
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`q.Add("${key}", "${val}")`)
+            builder.line(`q.Add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`)
           }
         } else {
-          builder.line(`q.Set("${key}", "${value}")`)
+          builder.line(`q.Set("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
         }
       }
       builder.line('u.RawQuery = q.Encode()')
       builder.line('url := u.String()')
     } else {
-      builder.line(`url := "${http.url}"`)
+      builder.line(`url := "${EscapeDoubleQuoted(http.url)}"`)
     }
     builder.line()
 
@@ -102,13 +102,13 @@ export default {
     } else if (isFormBody) {
       builder.line('formData := url.Values{}')
       for (const [key, value] of Object.entries(http.body)) {
-        builder.line(`formData.Set("${key}", "${value}")`)
+        builder.line(`formData.Set("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(String(value))}")`)
       }
       builder.line('formBody := formData.Encode()')
       bodyVar = 'bytes.NewBufferString(formBody)'
       builder.line()
     } else if (hasBody && typeof http.body === 'string') {
-      bodyVar = `bytes.NewBufferString("${http.body.replace(/"/g, '\\"')}")`
+      bodyVar = `bytes.NewBufferString("${EscapeDoubleQuoted(http.body)}")`
     }
 
     if (config.handleErrors) {
@@ -128,13 +128,17 @@ export default {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`req.Header.Add("${key}", "${val}")`)
+            builder.line(`req.Header.Add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`)
           }
         } else {
-          builder.line(`req.Header.Set("${key}", "${value}")`)
+          builder.line(`req.Header.Set("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
         }
       }
 
+      builder.line()
+    }
+    if (isJsonBody && !contentType) {
+      builder.line('req.Header.Set("Content-Type", "application/json")')
       builder.line()
     }
 
@@ -142,10 +146,14 @@ export default {
       for (const [key, value] of Object.entries(http.cookies)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`req.AddCookie(&http.Cookie{Name: "${key}", Value: "${val}"})`)
+            builder.line(
+              `req.AddCookie(&http.Cookie{Name: "${EscapeDoubleQuoted(key)}", Value: "${EscapeDoubleQuoted(val)}"})`
+            )
           }
         } else {
-          builder.line(`req.AddCookie(&http.Cookie{Name: "${key}", Value: "${value}"})`)
+          builder.line(
+            `req.AddCookie(&http.Cookie{Name: "${EscapeDoubleQuoted(key)}", Value: "${EscapeDoubleQuoted(value)}"})`
+          )
         }
       }
 

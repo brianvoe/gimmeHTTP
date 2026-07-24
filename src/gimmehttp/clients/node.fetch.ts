@@ -1,7 +1,14 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, ContentTypeIncludes } from '../utils/utils'
+import {
+  GetContentType,
+  ContentTypeIncludes,
+  FormatCookieHeader,
+  IsObjectBody,
+  IsStringBody,
+  EscapeDoubleQuoted
+} from '../utils/utils'
 
 export default {
   language: 'node',
@@ -12,23 +19,18 @@ export default {
       join: config.join || '\n'
     })
 
-    builder.line('const fetch = require("node-fetch");')
-    builder.line()
-
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
       builder.line('const url = new URL("' + http.url + '");')
-      builder.line('const params = new URLSearchParams();')
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`params.append("${key}", "${val}");`)
+            builder.line(`url.searchParams.append("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}");`)
           }
         } else {
-          builder.line(`params.set("${key}", "${value}");`)
+          builder.line(`url.searchParams.append("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}");`)
         }
       }
-      builder.line('url.search = params.toString();')
       builder.line()
       builder.line('fetch(url.toString(), {')
     } else {
@@ -37,23 +39,42 @@ export default {
     builder.indent()
     builder.line('method: "' + http.method.toUpperCase() + '",')
 
-    if (http.headers) {
+    if (http.headers || (http.cookies && Object.keys(http.cookies).length > 0)) {
       builder.line('headers: {')
       builder.indent()
-      for (const [key, value] of Object.entries(http.headers)) {
-        if (Array.isArray(value)) {
-          builder.line(`"${key}": "${value.join(', ')}",`)
-        } else {
-          builder.line(`"${key}": "${value}",`)
+      if (http.headers) {
+        for (const [key, value] of Object.entries(http.headers)) {
+          if (Array.isArray(value)) {
+            builder.line(`"${key}": "${value.join(', ')}",`)
+          } else {
+            builder.line(`"${key}": "${value}",`)
+          }
         }
+      }
+      if (http.cookies && Object.keys(http.cookies).length > 0) {
+        builder.line(`"Cookie": "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}",`)
       }
       builder.outdent()
       builder.line('},')
     }
 
-    if (http.body) {
-      builder.line('body: ')
-      builder.json(http.body)
+    if (http.body !== undefined && http.body !== null) {
+      const contentType = GetContentType(http.headers)
+      if (IsObjectBody(http.body) && ContentTypeIncludes(contentType, 'form')) {
+        builder.line('body: new URLSearchParams(')
+        builder.json(http.body)
+        builder.append('),')
+      } else if (IsObjectBody(http.body)) {
+        builder.line('body: JSON.stringify(')
+        builder.json(http.body)
+        builder.append('),')
+      } else if (IsStringBody(http.body)) {
+        builder.line(`body: "${EscapeDoubleQuoted(http.body)}",`)
+      } else {
+        builder.line('body: ')
+        builder.json(http.body)
+        builder.append(',')
+      }
     }
 
     builder.outdent()

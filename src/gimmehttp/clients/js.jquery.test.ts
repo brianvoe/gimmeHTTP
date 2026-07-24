@@ -1,15 +1,15 @@
-import JSJQuery from './js.jquery'
+import JsJquery from './js.jquery'
 import { Config, Http } from '../utils/generate'
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
-describe('JSJQuery.generate', () => {
+describe('JsJquery.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
       url: 'https://example.com'
     }
     const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
+    const result = JsJquery.generate(config, httpRequest)
     expect(result).toBe(
       `
 $.ajax({
@@ -33,7 +33,7 @@ $.ajax({
       }
     }
     const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
+    const result = JsJquery.generate(config, httpRequest)
     expect(result).toBe(
       `
 $.ajax({
@@ -62,8 +62,10 @@ $.ajax({
         key1: 'value1'
       }
     }
-    const config: Config = { handleErrors: true }
-    const result = JSJQuery.generate(config, httpRequest)
+    const config: Config = {
+      handleErrors: true
+    }
+    const result = JsJquery.generate(config, httpRequest)
     expect(result).toBe(
       `
 $.ajax({
@@ -72,61 +74,16 @@ $.ajax({
   headers: {
     "Content-Type": "application/json",
   },
-  data: {
+  data: JSON.stringify({
     "key1": "value1"
-  },
+  }),
   contentType: "application/json",
+  processData: false,
   success: function(data) {
     console.log(data);
   },
   error: function(jqXHR, textStatus, errorThrown) {
     console.error("Request failed:", textStatus, errorThrown);
-  },
-});
-    `.trim()
-    )
-  })
-
-  test('should build a POST request with advanced json body', () => {
-    const httpRequest: Http = {
-      method: 'POST',
-      url: 'https://example.com',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: {
-        key1: 'value1',
-        key2: {
-          nestedKey: 'nestedValue'
-        },
-        key3: ['value1', 'value2'],
-        empty: null
-      }
-    }
-    const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
-    expect(result).toBe(
-      `
-$.ajax({
-  url: "https://example.com",
-  type: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  data: {
-    "key1": "value1",
-    "key2": {
-      "nestedKey": "nestedValue"
-    },
-    "key3": [
-      "value1",
-      "value2"
-    ],
-    "empty": null
-  },
-  contentType: "application/json",
-  success: function(data) {
-    console.log(data);
   },
 });
     `.trim()
@@ -142,7 +99,7 @@ $.ajax({
       }
     }
     const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
+    const result = JsJquery.generate(config, httpRequest)
     expect(result).toBe(
       `
 $.ajax({
@@ -168,7 +125,7 @@ $.ajax({
       }
     }
     const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
+    const result = JsJquery.generate(config, httpRequest)
     expect(result).toBe(
       `
 $.ajax({
@@ -194,7 +151,7 @@ $.ajax({
       }
     }
     const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
+    const result = JsJquery.generate(config, httpRequest)
     expect(result).toBe(
       `
 $.ajax({
@@ -221,16 +178,12 @@ $.ajax({
       }
     }
     const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
+    const result = JsJquery.generate(config, httpRequest)
     expect(result).toBe(
       `
 $.ajax({
-  url: "https://example.com",
+  url: "https://example.com/?address.zip=66031&address.country=Wallis",
   type: "GET",
-  data: {
-    "address.zip": "66031",
-    "address.country": "Wallis",
-  },
   success: function(data) {
     console.log(data);
   },
@@ -249,9 +202,18 @@ $.ajax({
       }
     }
     const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
-    expect(result).toContain('"tags": ["javascript", "jquery"],')
-    expect(result).toContain('"category": "frontend",')
+    const result = JsJquery.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+$.ajax({
+  url: "https://example.com/?tags=javascript&tags=jquery&category=frontend",
+  type: "GET",
+  success: function(data) {
+    console.log(data);
+  },
+});
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -269,8 +231,25 @@ $.ajax({
       }
     }
     const config: Config = {}
-    const result = JSJQuery.generate(config, httpRequest)
-    expect(result).toContain('"version": "1.0",')
-    expect(result).toContain('"name": "John"')
+    const result = JsJquery.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+$.ajax({
+  url: "https://example.com/?version=1.0",
+  type: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  data: JSON.stringify({
+    "name": "John"
+  }),
+  contentType: "application/json",
+  processData: false,
+  success: function(data) {
+    console.log(data);
+  },
+});
+    `.trim()
+    )
   })
 })

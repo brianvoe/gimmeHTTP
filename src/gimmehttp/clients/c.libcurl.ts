@@ -1,7 +1,16 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, IsStringBody } from '../utils/utils'
+import {
+  ContentTypeIncludes,
+  EscapeDoubleQuoted,
+  FormatCookieHeader,
+  GetContentType,
+  IsObjectBody,
+  IsStringBody
+} from '../utils/utils'
+
+const EscapeCString = (value: string): string => EscapeDoubleQuoted(value).replace(/\?/g, '\\?')
 
 export default {
   default: true,
@@ -45,58 +54,70 @@ export default {
 
         builder.line('curl_easy_setopt(curl, CURLOPT_URL,')
         builder.indent()
-        builder.line(`"${http.url}"`)
-        builder.line(`"${separator}${paramParts[0]}"`)
+        builder.line(`"${EscapeCString(http.url)}"`)
+        builder.line(`"${EscapeCString(separator + paramParts[0])}"`)
         for (let i = 1; i < paramParts.length; i++) {
-          builder.line(`"&${paramParts[i]}"`)
+          builder.line(`"&${EscapeCString(paramParts[i])}"`)
         }
         builder.outdent()
         builder.line(');')
       } else {
-        builder.line(`curl_easy_setopt(curl, CURLOPT_URL, "${http.url}");`)
+        builder.line(`curl_easy_setopt(curl, CURLOPT_URL, "${EscapeCString(http.url)}");`)
       }
     } else {
-      builder.line(`curl_easy_setopt(curl, CURLOPT_URL, "${http.url}");`)
+      builder.line(`curl_easy_setopt(curl, CURLOPT_URL, "${EscapeCString(http.url)}");`)
     }
 
     if (http.method.toUpperCase() === 'POST') {
       builder.line('curl_easy_setopt(curl, CURLOPT_POST, 1L);')
     } else if (http.method.toUpperCase() !== 'GET') {
-      builder.line(`curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "${http.method.toUpperCase()}");`)
+      builder.line(`curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "${EscapeCString(http.method.toUpperCase())}");`)
     }
 
-    if (http.headers && Object.keys(http.headers).length > 0) {
+    const contentType = GetContentType(http.headers)
+    const hasExplicitContentType = Object.keys(http.headers || {}).some((key) => key.toLowerCase() === 'content-type')
+    const inferJsonContentType =
+      IsObjectBody(http.body) && !hasExplicitContentType && !ContentTypeIncludes(contentType, 'form')
+    const hasHeaders = (http.headers && Object.keys(http.headers).length > 0) || inferJsonContentType
+    if (hasHeaders) {
       builder.line()
       builder.line('struct curl_slist *headers = NULL;')
-      for (const [key, value] of Object.entries(http.headers)) {
+      for (const [key, value] of Object.entries(http.headers || {})) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`headers = curl_slist_append(headers, "${key}: ${val}");`))
+          value.forEach((val) =>
+            builder.line(`headers = curl_slist_append(headers, "${EscapeCString(`${key}: ${val}`)}");`)
+          )
         } else {
-          builder.line(`headers = curl_slist_append(headers, "${key}: ${value}");`)
+          builder.line(`headers = curl_slist_append(headers, "${EscapeCString(`${key}: ${value}`)}");`)
         }
+      }
+      if (inferJsonContentType) {
+        builder.line('headers = curl_slist_append(headers, "Content-Type: application/json");')
       }
       builder.line('curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);')
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
       builder.line()
-      const cookies = Object.entries(http.cookies)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('; ')
-      builder.line(`curl_easy_setopt(curl, CURLOPT_COOKIE, "${cookies}");`)
+      builder.line(`curl_easy_setopt(curl, CURLOPT_COOKIE, "${EscapeCString(FormatCookieHeader(http.cookies))}");`)
     }
 
     if (http.body) {
       builder.line()
-      const contentType = GetContentType(http.headers)
-
       if (IsStringBody(http.body)) {
-        builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${http.body.replace(/"/g, '\\"')}");`)
-      } else {
-        // For objects (JSON or form data), stringify as JSON
-        builder.line('curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R"(')
-        builder.json(http.body)
-        builder.append(')");')
+        const body = http.body
+        builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${EscapeCString(body)}");`)
+        builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, ${new TextEncoder().encode(body).length}L);`)
+      } else if (ContentTypeIncludes(contentType, 'form')) {
+        const body = new URLSearchParams(
+          Object.entries(http.body).map(([key, value]) => [key, String(value)])
+        ).toString()
+        builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${EscapeCString(body)}");`)
+        builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, ${new TextEncoder().encode(body).length}L);`)
+      } else if (IsObjectBody(http.body)) {
+        const body = JSON.stringify(http.body)
+        builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${EscapeCString(body)}");`)
+        builder.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, ${new TextEncoder().encode(body).length}L);`)
       }
     }
 
@@ -107,7 +128,7 @@ export default {
     builder.line('fprintf(stderr, "failed: %s", curl_easy_strerror(res));')
     builder.outdent()
 
-    if (http.headers && Object.keys(http.headers).length > 0) {
+    if (hasHeaders) {
       builder.line('curl_slist_free_all(headers);')
     }
     builder.line('curl_easy_cleanup(curl);')

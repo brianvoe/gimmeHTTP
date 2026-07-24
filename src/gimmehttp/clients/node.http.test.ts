@@ -1,26 +1,27 @@
-import Node from './node.http'
+import NodeHttp from './node.http'
 import { Config, Http } from '../utils/generate'
-import { test, describe, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
-describe('Node.generate', () => {
+describe('NodeHttp.generate', () => {
   test('should build a basic GET request', () => {
     const httpRequest: Http = {
       method: 'GET',
       url: 'https://example.com'
     }
     const config: Config = {}
-    const result = Node.generate(config, httpRequest)
+    const result = NodeHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
-const http = require("http");
+const transport = require("https");
 
 const options = {
   method: "GET",
   hostname: "example.com",
+  port: 443,
   path: "/",
 };
 
-const req = http.request(options, (res) => {
+const req = transport.request(options, (res) => {
   let data = "";
 
   res.on("data", (chunk) => {
@@ -47,14 +48,15 @@ req.end();
       }
     }
     const config: Config = {}
-    const result = Node.generate(config, httpRequest)
+    const result = NodeHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
-const http = require("http");
+const transport = require("https");
 
 const options = {
   method: "POST",
   hostname: "example.com",
+  port: 443,
   path: "/",
   headers: {
     "Content-Type": "application/json",
@@ -62,7 +64,7 @@ const options = {
   },
 };
 
-const req = http.request(options, (res) => {
+const req = transport.request(options, (res) => {
   let data = "";
 
   res.on("data", (chunk) => {
@@ -90,22 +92,30 @@ req.end();
         key1: 'value1'
       }
     }
-    const config: Config = { handleErrors: true }
-    const result = Node.generate(config, httpRequest)
+    const config: Config = {
+      handleErrors: true
+    }
+    const result = NodeHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
-const http = require("http");
+const transport = require("https");
+
+const payload = JSON.stringify({
+  "key1": "value1"
+});
 
 const options = {
   method: "POST",
   hostname: "example.com",
+  port: 443,
   path: "/",
   headers: {
     "Content-Type": "application/json",
+    "Content-Length": Buffer.byteLength(payload),
   },
 };
 
-const req = http.request(options, (res) => {
+const req = transport.request(options, (res) => {
   let data = "";
 
   res.on("data", (chunk) => {
@@ -121,9 +131,7 @@ req.on("error", (error) => {
   console.error(error);
 });
 
-req.write({
-  "key1": "value1"
-});
+req.write(payload);
 req.end();
     `.trim()
     )
@@ -146,21 +154,35 @@ req.end();
       }
     }
     const config: Config = {}
-    const result = Node.generate(config, httpRequest)
+    const result = NodeHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
-const http = require("http");
+const transport = require("https");
+
+const payload = JSON.stringify({
+  "key1": "value1",
+  "key2": {
+    "nestedKey": "nestedValue"
+  },
+  "key3": [
+    "value1",
+    "value2"
+  ],
+  "empty": null
+});
 
 const options = {
   method: "POST",
   hostname: "example.com",
+  port: 443,
   path: "/",
   headers: {
     "Content-Type": "application/json",
+    "Content-Length": Buffer.byteLength(payload),
   },
 };
 
-const req = http.request(options, (res) => {
+const req = transport.request(options, (res) => {
   let data = "";
 
   res.on("data", (chunk) => {
@@ -172,17 +194,7 @@ const req = http.request(options, (res) => {
   });
 });
 
-req.write({
-  "key1": "value1",
-  "key2": {
-    "nestedKey": "nestedValue"
-  },
-  "key3": [
-    "value1",
-    "value2"
-  ],
-  "empty": null
-});
+req.write(payload);
 req.end();
     `.trim()
     )
@@ -198,21 +210,25 @@ req.end();
       body: 'Log message content'
     }
     const config: Config = {}
-    const result = Node.generate(config, httpRequest)
+    const result = NodeHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
-const http = require("http");
+const transport = require("https");
+
+const payload = "Log message content";
 
 const options = {
   method: "POST",
   hostname: "example.com",
+  port: 443,
   path: "/log",
   headers: {
     "Content-Type": "text/plain",
+    "Content-Length": Buffer.byteLength(payload),
   },
 };
 
-const req = http.request(options, (res) => {
+const req = transport.request(options, (res) => {
   let data = "";
 
   res.on("data", (chunk) => {
@@ -224,7 +240,7 @@ const req = http.request(options, (res) => {
   });
 });
 
-req.write("Log message content");
+req.write(payload);
 req.end();
     `.trim()
     )
@@ -240,21 +256,25 @@ req.end();
       body: '<record><item>value</item></record>'
     }
     const config: Config = {}
-    const result = Node.generate(config, httpRequest)
+    const result = NodeHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
-const http = require("http");
+const transport = require("https");
+
+const payload = "<record><item>value</item></record>";
 
 const options = {
   method: "POST",
   hostname: "example.com",
+  port: 443,
   path: "/",
   headers: {
     "Content-Type": "application/xml",
+    "Content-Length": Buffer.byteLength(payload),
   },
 };
 
-const req = http.request(options, (res) => {
+const req = transport.request(options, (res) => {
   let data = "";
 
   res.on("data", (chunk) => {
@@ -266,7 +286,7 @@ const req = http.request(options, (res) => {
   });
 });
 
-req.write("<record><item>value</item></record>");
+req.write(payload);
 req.end();
     `.trim()
     )
@@ -282,18 +302,19 @@ req.end();
       }
     }
     const config: Config = {}
-    const result = Node.generate(config, httpRequest)
+    const result = NodeHttp.generate(config, httpRequest)
     expect(result).toBe(
       `
-const http = require("http");
+const transport = require("https");
 
 const options = {
   method: "GET",
   hostname: "example.com",
+  port: 443,
   path: "/?address.zip=66031&address.country=Wallis",
 };
 
-const req = http.request(options, (res) => {
+const req = transport.request(options, (res) => {
   let data = "";
 
   res.on("data", (chunk) => {
@@ -320,8 +341,33 @@ req.end();
       }
     }
     const config: Config = {}
-    const result = Node.generate(config, httpRequest)
-    expect(result).toContain('path: "/?tags=node&tags=http&category=backend",')
+    const result = NodeHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const transport = require("https");
+
+const options = {
+  method: "GET",
+  hostname: "example.com",
+  port: 443,
+  path: "/?tags=node&tags=http&category=backend",
+};
+
+const req = transport.request(options, (res) => {
+  let data = "";
+
+  res.on("data", (chunk) => {
+    data += chunk;
+  });
+
+  res.on("end", () => {
+    console.log(data);
+  });
+});
+
+req.end();
+    `.trim()
+    )
   })
 
   test('should build a POST request with URL parameters and body', () => {
@@ -339,8 +385,41 @@ req.end();
       }
     }
     const config: Config = {}
-    const result = Node.generate(config, httpRequest)
-    expect(result).toContain('path: "/?version=1.0",')
-    expect(result).toContain('"name": "John"')
+    const result = NodeHttp.generate(config, httpRequest)
+    expect(result).toBe(
+      `
+const transport = require("https");
+
+const payload = JSON.stringify({
+  "name": "John"
+});
+
+const options = {
+  method: "POST",
+  hostname: "example.com",
+  port: 443,
+  path: "/?version=1.0",
+  headers: {
+    "Content-Type": "application/json",
+    "Content-Length": Buffer.byteLength(payload),
+  },
+};
+
+const req = transport.request(options, (res) => {
+  let data = "";
+
+  res.on("data", (chunk) => {
+    data += chunk;
+  });
+
+  res.on("end", () => {
+    console.log(data);
+  });
+});
+
+req.write(payload);
+req.end();
+    `.trim()
+    )
   })
 })
