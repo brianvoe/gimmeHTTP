@@ -64,6 +64,84 @@ function askQuestion(question) {
   })
 }
 
+function askYesNo(question) {
+  return askQuestion(question).then((answer) => {
+    const normalized = answer.trim().toLowerCase()
+    return normalized === 'y' || normalized === 'yes'
+  })
+}
+
+function execOutput(command) {
+  return execSync(command, { cwd: rootDir, encoding: 'utf8' }).trim()
+}
+
+function tagExists(tag) {
+  try {
+    execSync(`git rev-parse -q --verify "refs/tags/${tag}"`, {
+      cwd: rootDir,
+      stdio: 'pipe'
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
+const RELEASE_PATHS = [
+  'package.json',
+  'package-lock.json',
+  'dist',
+  'docs',
+  'public',
+  'CHANGELOG.md'
+]
+
+function commitReleaseChanges() {
+  const changes = execOutput(`git status --porcelain ${RELEASE_PATHS.join(' ')}`)
+
+  if (!changes) {
+    log('ℹ️  No release files to commit.', 'cyan')
+    return true
+  }
+
+  log(`   Staging: ${RELEASE_PATHS.join(', ')}`, 'cyan')
+  if (!exec(`git add ${RELEASE_PATHS.join(' ')}`)) return false
+  if (!exec('git commit -m "output - dist/docs update"')) return false
+  log('✅ Release changes committed!', 'green')
+
+  const otherChanges = execOutput('git status --porcelain')
+  if (otherChanges) {
+    log('⚠️  Other uncommitted changes were not included in the release commit.', 'yellow')
+  }
+
+  return true
+}
+
+async function createAndPushTag(version) {
+  const tag = `v${version}`
+
+  if (tagExists(tag)) {
+    log(`❌ Tag ${tag} already exists locally.`, 'red')
+    return false
+  }
+
+  const status = execOutput('git status --porcelain')
+  if (status) {
+    log('⚠️  Uncommitted changes remain. The tag will point at the last commit only.', 'yellow')
+  }
+
+  log(`\n🏷️  Creating tag ${tag}...`, 'yellow')
+  if (!exec(`git tag -a ${tag} -m "Release ${tag}"`)) return false
+  log(`✅ Tag ${tag} created!`, 'green')
+
+  log('\n📤 Pushing commits and tag to remote...', 'yellow')
+  if (!exec('git push')) return false
+  if (!exec(`git push origin ${tag}`)) return false
+  log(`✅ Tag ${tag} pushed to remote!`, 'green')
+
+  return true
+}
+
 function validateVersion(currentVersion, newVersion) {
   // Check if version format is valid (x.y.z)
   const versionRegex = /^\d+\.\d+\.\d+$/
@@ -97,17 +175,8 @@ async function main() {
   }
   log('✅ Tests passed!', 'green')
 
-  // Step 2: Build the project
+  // Step 2: Build the project (includes typecheck via npm run build)
   log('\n🔨 Step 2: Building project...', 'yellow')
-
-  // First run type check to catch TypeScript errors
-  log('Running type check...', 'cyan')
-  if (!exec('npx tsc --noEmit')) {
-    log('❌ Type check failed. Aborting release.', 'red')
-    process.exit(1)
-  }
-
-  // Then build
   if (!exec('npm run build')) {
     log('❌ Build failed. Aborting release.', 'red')
     process.exit(1)
@@ -120,8 +189,7 @@ async function main() {
 
   let docConfirmed = false
   do {
-    const docAnswer = await askQuestion('Have you updated the documentation? (y/n): ')
-    docConfirmed = docAnswer.toLowerCase() === 'y' || docAnswer.toLowerCase() === 'yes'
+    docConfirmed = await askYesNo('Have you updated the documentation? (y/n): ')
 
     if (!docConfirmed) {
       log('❌ Please update the documentation before continuing with the release.', 'red')
@@ -161,25 +229,81 @@ async function main() {
   }
   log('✅ Package-lock.json updated!', 'green')
 
-  // Step 5: NPM login
-  log('\n🔐 Step 5: NPM login...', 'yellow')
-  if (!exec('npm login')) {
-    log('❌ NPM login failed. Aborting release.', 'red')
-    process.exit(1)
+  // Step 5: Ensure NPM authentication
+  log('\n🔐 Step 5: Checking NPM authentication...', 'yellow')
+  let npmUser = ''
+  try {
+    npmUser = execSync('npm whoami', { cwd: rootDir, stdio: 'pipe' }).toString().trim()
+  } catch {
+    npmUser = ''
   }
-  log('✅ NPM login successful!', 'green')
+
+  if (npmUser) {
+    log(`✅ Already logged in to NPM as ${npmUser}`, 'green')
+  } else {
+    log('❌ Not logged in to NPM.', 'red')
+    log(
+      '   npm publish does not always prompt for login and may fail with a misleading 404.',
+      'yellow'
+    )
+
+    const shouldLogin = await askYesNo('Would you like to run npm login now? (y/n): ')
+    if (!shouldLogin) {
+      log('❌ NPM login is required to publish. Aborting release.', 'red')
+      process.exit(1)
+    }
+
+    if (!exec('npm login')) {
+      log('❌ NPM login failed. Aborting release.', 'red')
+      process.exit(1)
+    }
+
+    try {
+      npmUser = execSync('npm whoami', { cwd: rootDir, stdio: 'pipe' }).toString().trim()
+    } catch {
+      log('❌ Still not authenticated after login. Aborting release.', 'red')
+      process.exit(1)
+    }
+
+    log(`✅ Logged in to NPM as ${npmUser}`, 'green')
+  }
 
   // Step 6: NPM publish
   log('\n📤 Step 6: Publishing to NPM...', 'yellow')
   if (!exec('npm publish')) {
     log('❌ NPM publish failed. Aborting release.', 'red')
+    log(
+      '   A 404 usually means you are not logged in or lack publish access to this package.',
+      'yellow'
+    )
+    log('   Verify with `npm whoami` and try `npm login` if needed.', 'cyan')
     process.exit(1)
   }
   log('✅ Package published to NPM!', 'green')
 
+  // Step 7: Commit version bump and build outputs
+  log('\n📝 Step 7: Committing release changes to git...', 'yellow')
+  if (!commitReleaseChanges()) {
+    log('❌ Failed to commit release changes.', 'red')
+    process.exit(1)
+  }
+
   log('\n🎉 Release completed successfully!', 'bright')
   log(`📦 Version ${newVersion} is now published on NPM`, 'green')
   log(`🔗 Package: https://www.npmjs.com/package/${packageJson.name}`, 'blue')
+
+  // Step 8: Optional git tag and push
+  log('\n🏷️  Step 8: Git tag (optional)...', 'yellow')
+  const shouldTag = await askYesNo(`Would you like to create and push git tag v${newVersion}? (y/n): `)
+
+  if (shouldTag) {
+    if (!(await createAndPushTag(newVersion))) {
+      log('❌ Git tag step failed. You can tag and push manually.', 'red')
+      process.exit(1)
+    }
+  } else {
+    log('ℹ️  Skipped git tag. You can tag and push manually when ready.', 'cyan')
+  }
 }
 
 // Handle errors
