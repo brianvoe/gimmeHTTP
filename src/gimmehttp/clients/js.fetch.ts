@@ -6,8 +6,7 @@ import {
   ContentTypeIncludes,
   GetContentType,
   IsObjectBody,
-  IsStringBody,
-  EscapeDoubleQuoted
+  IsStringBody
 } from '../utils/utils'
 
 export default {
@@ -22,23 +21,23 @@ export default {
 
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line('const url = new URL("' + http.url + '");')
+      builder.line('const url = new URL("%s");', http.url)
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`url.searchParams.append("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}");`)
+            builder.line('url.searchParams.append("%s", "%s");', key, val)
           }
         } else {
-          builder.line(`url.searchParams.append("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}");`)
+          builder.line('url.searchParams.append("%s", "%s");', key, value)
         }
       }
       builder.line()
       builder.line('fetch(url.toString(), {')
     } else {
-      builder.line('fetch("' + http.url + '", {')
+      builder.line('fetch("%s", {', http.url)
     }
     builder.indent()
-    builder.line(`method: "${http.method.toUpperCase()}",`)
+    builder.line('method: "%s",', http.method.toUpperCase())
 
     // Headers
     if (http.headers) {
@@ -46,9 +45,9 @@ export default {
       builder.indent()
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          builder.line(`"${key}": "${value.join(', ')}",`)
+          builder.line('"%s": "%s",', key, value.join(', '))
         } else {
-          builder.line(`"${key}": "${value}",`)
+          builder.line('"%s": "%s",', key, value)
         }
       }
       builder.outdent()
@@ -70,7 +69,7 @@ export default {
         builder.json(http.body)
         builder.append('),')
       } else if (IsStringBody(http.body)) {
-        builder.line(`body: "${EscapeDoubleQuoted(http.body)}",`)
+        builder.line('body: "%s",', http.body)
       } else {
         builder.line('body: ')
         builder.json(http.body)
@@ -101,7 +100,7 @@ export default {
 
     // Add comment if content-type was inferred for non-default responses
     if (wasInferred && parseMethod === 'json()') {
-      builder.line(`// Response Content-Type inferred as: ${responseType}`)
+      builder.line('// Response Content-Type inferred as: %r', responseType)
     }
 
     if (config.handleErrors) {
@@ -112,13 +111,13 @@ export default {
       builder.line('throw new Error("Network response was not ok");')
       builder.outdent()
       builder.line('}')
-      builder.line(`return response.${parseMethod};`)
+      builder.line('return response.%r;', parseMethod)
       builder.outdent()
       builder.line('})')
       builder.line('.then(data => console.log(data))')
       builder.line('.catch(error => console.error("There was a problem with the fetch operation:", error));')
     } else {
-      builder.line(`.then(response => response.${parseMethod})`)
+      builder.line('.then(response => response.%r)', parseMethod)
       builder.line('.then(data => console.log(data));')
     }
 

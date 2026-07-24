@@ -7,8 +7,7 @@ import {
   ContentTypeIncludes,
   IsObjectBody,
   IsStringBody,
-  FormatCookieHeader,
-  EscapeDoubleQuoted
+  FormatCookieHeader
 } from '../utils/utils'
 
 export default {
@@ -21,7 +20,7 @@ export default {
     })
 
     const { hostname, path, port, protocol, params: existingParams } = ParseUrl(http.url)
-    builder.line(`const transport = require("${protocol === 'https:' ? 'https' : 'http'}");`)
+    builder.line('const transport = require("%s");', protocol === 'https:' ? 'https' : 'http')
     builder.line()
 
     // Build path with parameters
@@ -57,7 +56,7 @@ export default {
         builder.json(http.body)
         builder.append(').toString();')
       } else if (IsStringBody(http.body)) {
-        builder.line(`const payload = "${EscapeDoubleQuoted(http.body)}";`)
+        builder.line('const payload = "%s";', http.body)
       } else {
         builder.line('const payload = ')
         builder.json(http.body)
@@ -68,10 +67,10 @@ export default {
 
     builder.line('const options = {')
     builder.indent()
-    builder.line(`method: "${http.method.toUpperCase()}",`)
-    builder.line(`hostname: "${hostname}",`)
-    builder.line(`port: ${port},`)
-    builder.line(`path: "${finalPath}",`)
+    builder.line('method: "%s",', http.method.toUpperCase())
+    builder.line('hostname: "%s",', hostname)
+    builder.line('port: %r,', port)
+    builder.line('path: "%s",', finalPath)
 
     if (http.headers || http.cookies || hasBody) {
       builder.line('headers: {')
@@ -80,9 +79,9 @@ export default {
       if (http.headers) {
         for (const [key, value] of Object.entries(http.headers)) {
           if (Array.isArray(value)) {
-            builder.line(`"${key}": "${value.join(', ')}",`)
+            builder.line('"%s": "%s",', key, value.join(', '))
           } else {
-            builder.line(`"${key}": "${value}",`)
+            builder.line('"%s": "%s",', key, value)
           }
         }
       }
@@ -91,7 +90,7 @@ export default {
       }
 
       if (http.cookies) {
-        builder.line(`"Cookie": "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}",`)
+        builder.line('"Cookie": "%s",', FormatCookieHeader(http.cookies))
       }
       if (hasBody) builder.line('"Content-Length": Buffer.byteLength(payload),')
       builder.outdent()

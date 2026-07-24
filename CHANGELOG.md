@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Removed unused deps/config (`vuex`, Prism stubs, orphan ESLint config)
 - Dropped deprecated TypeScript `baseUrl` from `tsconfig.json`
 - Added Google Analytics to the documentation site
+- Builder `line` / `append` / `format` now support printf-style `%s` (escaped), `%r` (raw), and `%%`; client generators use this instead of manual `EscapeDoubleQuoted` calls
 
 ### Fixed
 

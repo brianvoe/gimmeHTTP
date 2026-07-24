@@ -7,7 +7,6 @@ import {
   IsStringBody,
   IsObjectBody,
   ContentTypeIncludes,
-  EscapeDoubleQuoted,
   FormatCookieHeader
 } from '../utils/utils'
 
@@ -29,7 +28,7 @@ export default {
 
     builder.line('public class HttpExample {')
     builder.indent()
-    builder.line(`public static void main(String[] args)${config.handleErrors ? '' : ' throws Exception'} {`)
+    builder.line('public static void main(String[] args)%r {', config.handleErrors ? '' : ' throws Exception')
     builder.indent()
 
     if (config.handleErrors) {
@@ -45,7 +44,7 @@ export default {
       if (ContentTypeIncludes(contentType, 'form')) {
         builder.line('FormBody.Builder formBuilder = new FormBody.Builder();')
         for (const [key, value] of Object.entries(http.body)) {
-          builder.line(`formBuilder.add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(String(value))}");`)
+          builder.line('formBuilder.add("%s", "%s");', key, String(value))
         }
         builder.line('RequestBody body = formBuilder.build();')
       } else if (needsJson) {
@@ -59,8 +58,8 @@ export default {
       } else if (IsStringBody(http.body)) {
         builder.line('RequestBody body = RequestBody.create(')
         builder.indent()
-        builder.line(`"${EscapeDoubleQuoted(http.body)}",`)
-        builder.line(`MediaType.parse("${EscapeDoubleQuoted(contentType || 'text/plain')}; charset=utf-8")`)
+        builder.line('"%s",', http.body)
+        builder.line('MediaType.parse("%s; charset=utf-8")', contentType || 'text/plain')
         builder.outdent()
         builder.line(');')
       }
@@ -69,14 +68,14 @@ export default {
 
     // Build request
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line('HttpUrl.Builder urlBuilder = HttpUrl.parse("' + EscapeDoubleQuoted(http.url) + '").newBuilder();')
+      builder.line('HttpUrl.Builder urlBuilder = HttpUrl.parse("%s").newBuilder();', http.url)
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`urlBuilder.addQueryParameter("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}");`)
+            builder.line('urlBuilder.addQueryParameter("%s", "%s");', key, val)
           }
         } else {
-          builder.line(`urlBuilder.addQueryParameter("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}");`)
+          builder.line('urlBuilder.addQueryParameter("%s", "%s");', key, value)
         }
       }
       builder.line('HttpUrl url = urlBuilder.build();')
@@ -88,27 +87,27 @@ export default {
     if (http.params && Object.keys(http.params).length > 0) {
       builder.line('.url(url)')
     } else {
-      builder.line(`.url("${EscapeDoubleQuoted(http.url)}")`)
+      builder.line('.url("%s")', http.url)
     }
 
     if (hasBody) {
-      builder.line('.method("' + http.method.toUpperCase() + '", body)')
+      builder.line('.method("%s", body)', http.method.toUpperCase())
     } else {
-      builder.line('.method("' + http.method.toUpperCase() + '", null)')
+      builder.line('.method("%s", null)', http.method.toUpperCase())
     }
 
     if (http.headers && Object.keys(http.headers).length > 0) {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`.addHeader("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`))
+          value.forEach((val) => builder.line('.addHeader("%s", "%s")', key, val))
         } else {
-          builder.line(`.addHeader("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
+          builder.line('.addHeader("%s", "%s")', key, value)
         }
       }
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
-      builder.line(`.addHeader("Cookie", "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}")`)
+      builder.line('.addHeader("Cookie", "%s")', FormatCookieHeader(http.cookies))
     }
 
     builder.line('.build();')

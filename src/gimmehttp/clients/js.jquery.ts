@@ -6,8 +6,7 @@ import {
   ContentTypeIncludes,
   GetContentType,
   IsObjectBody,
-  IsStringBody,
-  EscapeDoubleQuoted
+  IsStringBody
 } from '../utils/utils'
 
 export default {
@@ -21,17 +20,17 @@ export default {
 
     builder.line('$.ajax({')
     builder.indent()
-    builder.line(`url: "${EscapeDoubleQuoted(BuildUrlWithParams(http.url, http.params))}",`)
-    builder.line(`type: "${http.method.toUpperCase()}",`)
+    builder.line('url: "%s",', BuildUrlWithParams(http.url, http.params))
+    builder.line('type: "%s",', http.method.toUpperCase())
 
     if (http.headers) {
       builder.line('headers: {')
       builder.indent()
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          builder.line(`"${key}": "${value.join(', ')}",`)
+          builder.line('"%s": "%s",', key, value.join(', '))
         } else {
-          builder.line(`"${key}": "${value}",`)
+          builder.line('"%s": "%s",', key, value)
         }
       }
       builder.outdent()
@@ -47,8 +46,8 @@ export default {
         builder.line('contentType: "application/json",')
         builder.line('processData: false,')
       } else if (IsStringBody(http.body)) {
-        builder.line(`data: "${EscapeDoubleQuoted(http.body)}",`)
-        if (contentType) builder.line(`contentType: "${EscapeDoubleQuoted(contentType)}",`)
+        builder.line('data: "%s",', http.body)
+        if (contentType) builder.line('contentType: "%s",', contentType)
       } else {
         builder.line('data: ')
         builder.json(http.body)

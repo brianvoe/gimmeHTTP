@@ -73,17 +73,53 @@ export class Builder {
     return this.lineJoin
   }
 
-  public line(line: string = ''): void {
+  /** Format a string with `%s` (escaped), `%r` (raw), and `%%` (literal %). */
+  public format(format: string, ...values: unknown[]): string {
+    return this.formatValues(format, values)
+  }
+
+  /**
+   * Append a new line. With no format args the string is used as-is.
+   * With args, printf-style placeholders are substituted:
+   * - `%s` escaped via json.escapeString (safe inside double-quoted literals)
+   * - `%r` raw / unescaped (methods, identifiers, preformatted code)
+   * - `%%` a literal `%`
+   *
+   * @example builder.line('req.Header.Set("%s", "%s")', key, value)
+   * @example builder.line('client.%r("%s")', method, url)
+   */
+  public line(format: string = '', ...values: unknown[]): void {
+    const line = values.length === 0 ? format : this.formatValues(format, values)
     // dont indent empty lines
     this.code.push({ depth: line === '' ? 0 : this.currentDepth, line })
   }
 
-  public append(line: string): void {
+  /** Append to the current line (same %s / %r / %% formatting as line). */
+  public append(format: string, ...values: unknown[]): void {
+    const text = values.length === 0 ? format : this.formatValues(format, values)
     if (this.code.length > 0) {
-      this.code[this.code.length - 1].line += line
+      this.code[this.code.length - 1].line += text
     } else {
-      this.line(line)
+      this.line(text)
     }
+  }
+
+  private formatValues(format: string, values: unknown[]): string {
+    const escape = this.jsonConfig.escapeString || defaultEscape
+    let argIndex = 0
+    const result = format.replace(/%([%sr])/g, (_match, kind: string) => {
+      if (kind === '%') return '%'
+      if (argIndex >= values.length) {
+        throw new Error(`Builder: missing argument for %${kind} (needed arg ${argIndex + 1})`)
+      }
+      const value = values[argIndex++]
+      const text = value == null ? '' : String(value)
+      return kind === 's' ? escape(text) : text
+    })
+    if (argIndex < values.length) {
+      throw new Error(`Builder: ${values.length - argIndex} unused format argument(s)`)
+    }
+    return result
   }
 
   public json(json: any, isSub: boolean = false): void {

@@ -65,6 +65,61 @@ describe('Builder', () => {
     expect(builder.output()).toBe('First line\n  Second line appended\n    Third line appended again and more')
   })
 
+  test('line %s escapes values for double-quoted literals', () => {
+    builder.line('url := "%s"', 'https://example.com/"quoted"')
+    expect(builder.output()).toBe('url := "https://example.com/\\"quoted\\""')
+  })
+
+  test('line %r inserts values without escaping', () => {
+    builder.line('client.%r("%s")', 'Get', 'a"b')
+    expect(builder.output()).toBe('client.Get("a\\"b")')
+  })
+
+  test('line %% emits a literal percent sign', () => {
+    builder.line('progress := "100%%"')
+    // no format args: pass-through keeps %% as written
+    expect(builder.output()).toBe('progress := "100%%"')
+
+    builder = new Builder()
+    builder.line('progress := "%s%%"', '100')
+    expect(builder.output()).toBe('progress := "100%"')
+  })
+
+  test('line with no format args is unchanged (backwards compatible)', () => {
+    builder.line('const headers = {};')
+    expect(builder.output()).toBe('const headers = {};')
+  })
+
+  test('line throws when a placeholder is missing an argument', () => {
+    expect(() => builder.line('"%s" = "%s"', 'only-one')).toThrow(/missing argument/)
+  })
+
+  test('line throws when there are unused format arguments', () => {
+    expect(() => builder.line('"%s"', 'a', 'b')).toThrow(/unused format argument/)
+  })
+
+  test('append supports the same %s / %r formatting', () => {
+    builder.line('req.Header.Set(')
+    builder.append('"%s", "%s"', 'X-Name', 'a"b')
+    builder.append(')')
+    expect(builder.output()).toBe('req.Header.Set("X-Name", "a\\"b")')
+  })
+
+  test('format returns a formatted string without writing a line', () => {
+    expect(builder.format('bytes.NewBufferString("%s")', 'a"b')).toBe('bytes.NewBufferString("a\\"b")')
+    expect(builder.output()).toBe('')
+  })
+
+  test('line uses a custom escapeString when configured', () => {
+    builder = new Builder({
+      json: {
+        escapeString: (value) => value.replace(/'/g, "\\'")
+      }
+    })
+    builder.line("msg = '%s'", "it's")
+    expect(builder.output()).toBe("msg = 'it\\'s'")
+  })
+
   // JSON
   test('should handle null JSON', () => {
     builder.json(null)

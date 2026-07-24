@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, HasBody, IsObjectBody, ContentTypeIncludes, EscapeDoubleQuoted } from '../utils/utils'
+import { GetContentType, HasBody, IsObjectBody, ContentTypeIncludes } from '../utils/utils'
 
 export default {
   default: true,
@@ -28,6 +28,7 @@ export default {
       hasBody && (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body)))
     const isFormBody = hasBody && ContentTypeIncludes(contentType, 'form')
     const needsBytes = isJsonBody || isFormBody || (hasBody && typeof http.body === 'string')
+    const method = http.method.toUpperCase()
 
     builder.line('package main')
     builder.line()
@@ -56,7 +57,7 @@ export default {
 
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line(`baseURL := "${EscapeDoubleQuoted(http.url)}"`)
+      builder.line('baseURL := "%s"', http.url)
       builder.line('u, err := url.Parse(baseURL)')
       if (config.handleErrors) {
         builder.line('if err != nil {')
@@ -69,16 +70,16 @@ export default {
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`q.Add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`)
+            builder.line('q.Add("%s", "%s")', key, val)
           }
         } else {
-          builder.line(`q.Set("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
+          builder.line('q.Set("%s", "%s")', key, value)
         }
       }
       builder.line('u.RawQuery = q.Encode()')
       builder.line('url := u.String()')
     } else {
-      builder.line(`url := "${EscapeDoubleQuoted(http.url)}"`)
+      builder.line('url := "%s"', http.url)
     }
     builder.line()
 
@@ -102,25 +103,25 @@ export default {
     } else if (isFormBody) {
       builder.line('formData := url.Values{}')
       for (const [key, value] of Object.entries(http.body)) {
-        builder.line(`formData.Set("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(String(value))}")`)
+        builder.line('formData.Set("%s", "%s")', key, String(value))
       }
       builder.line('formBody := formData.Encode()')
       bodyVar = 'bytes.NewBufferString(formBody)'
       builder.line()
     } else if (hasBody && typeof http.body === 'string') {
-      bodyVar = `bytes.NewBufferString("${EscapeDoubleQuoted(http.body)}")`
+      bodyVar = builder.format('bytes.NewBufferString("%s")', http.body)
     }
 
     if (config.handleErrors) {
-      builder.line(`req, err := http.NewRequest("${http.method.toUpperCase()}", url, ${bodyVar})`)
-      builder.line(`if err != nil {`)
+      builder.line('req, err := http.NewRequest("%s", url, %r)', method, bodyVar)
+      builder.line('if err != nil {')
       builder.indent()
       builder.line('log.Fatal(err)')
       builder.outdent()
       builder.line('}')
       builder.line()
     } else {
-      builder.line(`req, _ := http.NewRequest("${http.method.toUpperCase()}", url, ${bodyVar})`)
+      builder.line('req, _ := http.NewRequest("%s", url, %r)', method, bodyVar)
       builder.line()
     }
 
@@ -128,10 +129,10 @@ export default {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`req.Header.Add("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`)
+            builder.line('req.Header.Add("%s", "%s")', key, val)
           }
         } else {
-          builder.line(`req.Header.Set("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
+          builder.line('req.Header.Set("%s", "%s")', key, value)
         }
       }
 
@@ -146,14 +147,10 @@ export default {
       for (const [key, value] of Object.entries(http.cookies)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(
-              `req.AddCookie(&http.Cookie{Name: "${EscapeDoubleQuoted(key)}", Value: "${EscapeDoubleQuoted(val)}"})`
-            )
+            builder.line('req.AddCookie(&http.Cookie{Name: "%s", Value: "%s"})', key, val)
           }
         } else {
-          builder.line(
-            `req.AddCookie(&http.Cookie{Name: "${EscapeDoubleQuoted(key)}", Value: "${EscapeDoubleQuoted(value)}"})`
-          )
+          builder.line('req.AddCookie(&http.Cookie{Name: "%s", Value: "%s"})', key, value)
         }
       }
 
@@ -161,32 +158,32 @@ export default {
     }
 
     if (config.handleErrors) {
-      builder.line(`resp, err := http.DefaultClient.Do(req)`)
-      builder.line(`if err != nil {`)
+      builder.line('resp, err := http.DefaultClient.Do(req)')
+      builder.line('if err != nil {')
       builder.indent()
       builder.line('log.Fatal(err)')
       builder.outdent()
       builder.line('}')
     } else {
-      builder.line(`resp, _ := http.DefaultClient.Do(req)`)
+      builder.line('resp, _ := http.DefaultClient.Do(req)')
     }
 
-    builder.line(`defer resp.Body.Close()`)
+    builder.line('defer resp.Body.Close()')
     builder.line()
 
     if (config.handleErrors) {
-      builder.line(`body, err := io.ReadAll(resp.Body)`)
-      builder.line(`if err != nil {`)
+      builder.line('body, err := io.ReadAll(resp.Body)')
+      builder.line('if err != nil {')
       builder.indent()
       builder.line('log.Fatal(err)')
       builder.outdent()
       builder.line('}')
     } else {
-      builder.line(`body, _ := io.ReadAll(resp.Body)`)
+      builder.line('body, _ := io.ReadAll(resp.Body)')
     }
 
     builder.line()
-    builder.line(`fmt.Println(string(body))`)
+    builder.line('fmt.Println(string(body))')
     builder.outdent()
     builder.line('}')
 

@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { GetContentType, ContentTypeIncludes, IsObjectBody, IsStringBody, EscapeDoubleQuoted } from '../utils/utils'
+import { GetContentType, ContentTypeIncludes, IsObjectBody, IsStringBody } from '../utils/utils'
 
 export default {
   language: 'python',
@@ -27,7 +27,7 @@ export default {
       builder.indent()
     }
 
-    builder.line('url = "' + http.url + '"')
+    builder.line('url = "%s"', http.url)
 
     // URL Parameters
     if (http.params && Object.keys(http.params).length > 0) {
@@ -37,9 +37,9 @@ export default {
       builder.indent()
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
-          builder.line(`"${key}": [${value.map((v) => `"${v}"`).join(', ')}]`)
+          builder.line('"%s": [%r]', key, value.map((v) => builder.format('"%s"', v)).join(', '))
         } else {
-          builder.line(`"${key}": "${value}"`)
+          builder.line('"%s": "%s"', key, value)
         }
 
         if (Object.keys(http.params).indexOf(key) !== Object.keys(http.params).length - 1) {
@@ -56,7 +56,7 @@ export default {
       builder.line('headers = {')
       builder.indent()
       for (const [key, value] of Object.entries(http.headers!)) {
-        builder.line(`"${key}": "${value}"`)
+        builder.line('"%s": "%s"', key, value)
 
         if (Object.keys(http.headers!).indexOf(key) !== Object.keys(http.headers!).length - 1) {
           builder.append(',')
@@ -72,7 +72,7 @@ export default {
       builder.line('cookies = {')
       builder.indent()
       for (const [key, value] of Object.entries(http.cookies!)) {
-        builder.line(`"${key}": "${value}"`)
+        builder.line('"%s": "%s"', key, value)
 
         if (Object.keys(http.cookies!).indexOf(key) !== Object.keys(http.cookies!).length - 1) {
           builder.append(',')
@@ -87,7 +87,7 @@ export default {
 
       // String bodies are passed inline, everything else gets its own variable
       if (IsStringBody(http.body)) {
-        params.push(`data="${EscapeDoubleQuoted(http.body)}"`)
+        params.push(builder.format('data="%s"', http.body))
       } else {
         builder.line()
 
@@ -107,13 +107,7 @@ export default {
     }
 
     builder.line()
-    builder.line(
-      'response = requests.' +
-        http.method.toLowerCase() +
-        '(url' +
-        (params.length > 0 ? `, ${params.join(', ')}` : '') +
-        ')'
-    )
+    builder.line('response = requests.%r(url%r)', http.method.toLowerCase(), params.length > 0 ? `, ${params.join(', ')}` : '')
     if (config.handleErrors) builder.line('response.raise_for_status()')
     builder.line('print(response.text)')
 

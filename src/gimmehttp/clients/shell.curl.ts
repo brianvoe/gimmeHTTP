@@ -4,7 +4,6 @@ import { Client } from '../utils/registry'
 import {
   BuildUrlWithParams,
   ContentTypeIncludes,
-  EscapeDoubleQuoted,
   FormatCookieHeader,
   GetContentType,
   HasBody,
@@ -31,13 +30,13 @@ export default {
     const url = BuildUrlWithParams(http.url, http.params)
 
     // curl defaults to GET, and defaults to POST when -d is present.
-    builder.line(`curl "${EscapeDoubleQuoted(url)}"`)
+    builder.line('curl "%s"', url)
 
     // Everything is indented
     builder.indent()
 
     if ((hasContent && method !== 'POST') || (!hasContent && method !== 'GET')) {
-      builder.line(`--request ${method}`)
+      builder.line('--request %r', method)
     }
 
     // Add headers
@@ -45,17 +44,17 @@ export default {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`-H "${EscapeDoubleQuoted(`${key}: ${val}`)}"`)
+            builder.line('-H "%s"', `${key}: ${val}`)
           }
         } else {
-          builder.line(`-H "${EscapeDoubleQuoted(`${key}: ${value}`)}"`)
+          builder.line('-H "%s"', `${key}: ${value}`)
         }
       }
     }
 
     // Add cookies
     if (http.cookies) {
-      builder.line(`-b "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}"`)
+      builder.line('-b "%s"', FormatCookieHeader(http.cookies))
     }
 
     // Add body
@@ -66,15 +65,15 @@ export default {
         // Pretty-print JSON inside a multi-line single-quoted string for readability.
         // Embedded newlines stay in one builder line so curl line-continuations aren't injected into the JSON.
         const pretty = JSON.stringify(http.body, null, indent)
-        builder.line(`-d '${escapeSingleQuoted(pretty)}'`)
+        builder.line("-d '%r'", escapeSingleQuoted(pretty))
       } else if (ContentTypeIncludes(contentType, 'form') && IsObjectBody(http.body)) {
         // One -d per field keeps form payloads easy to scan
         for (const [key, value] of Object.entries(http.body)) {
           const encoded = `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
-          builder.line(`-d '${escapeSingleQuoted(encoded)}'`)
+          builder.line("-d '%r'", escapeSingleQuoted(encoded))
         }
       } else if (typeof http.body === 'string') {
-        builder.line(`-d '${escapeSingleQuoted(http.body)}'`)
+        builder.line("-d '%r'", escapeSingleQuoted(http.body))
       }
     }
 

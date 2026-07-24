@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { EscapeDoubleQuoted, FormatCookieHeader, IsObjectBody } from '../utils/utils'
+import { FormatCookieHeader, IsObjectBody } from '../utils/utils'
 
 export default {
   default: true,
@@ -18,57 +18,45 @@ export default {
 
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line('var urlComponents = URLComponents(string: "' + EscapeDoubleQuoted(http.url) + '")!')
+      builder.line('var urlComponents = URLComponents(string: "%s")!', http.url)
       builder.line('var queryItems: [URLQueryItem] = []')
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(
-              `queryItems.append(URLQueryItem(name: "${EscapeDoubleQuoted(key)}", value: "${EscapeDoubleQuoted(val)}"))`
-            )
+            builder.line('queryItems.append(URLQueryItem(name: "%s", value: "%s"))', key, val)
           }
         } else {
-          builder.line(
-            `queryItems.append(URLQueryItem(name: "${EscapeDoubleQuoted(key)}", value: "${EscapeDoubleQuoted(value)}"))`
-          )
+          builder.line('queryItems.append(URLQueryItem(name: "%s", value: "%s"))', key, value)
         }
       }
       builder.line('urlComponents.queryItems = queryItems')
       builder.line('let url = urlComponents.url!')
     } else {
-      builder.line('let url = URL(string: "' + EscapeDoubleQuoted(http.url) + '")!')
+      builder.line('let url = URL(string: "%s")!', http.url)
     }
     builder.line('var request = URLRequest(url: url)')
-    builder.line('request.httpMethod = "' + http.method.toUpperCase() + '"')
+    builder.line('request.httpMethod = "%s"', http.method.toUpperCase())
 
     if (http.headers && Object.keys(http.headers).length > 0) {
       builder.line()
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          value.forEach((val) =>
-            builder.line(
-              `request.addValue("${EscapeDoubleQuoted(val)}", forHTTPHeaderField: "${EscapeDoubleQuoted(key)}")`
-            )
-          )
+          value.forEach((val) => builder.line('request.addValue("%s", forHTTPHeaderField: "%s")', val, key))
         } else {
-          builder.line(
-            `request.addValue("${EscapeDoubleQuoted(value)}", forHTTPHeaderField: "${EscapeDoubleQuoted(key)}")`
-          )
+          builder.line('request.addValue("%s", forHTTPHeaderField: "%s")', value, key)
         }
       }
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
       builder.line()
-      builder.line(
-        `request.addValue("${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}", forHTTPHeaderField: "Cookie")`
-      )
+      builder.line('request.addValue("%s", forHTTPHeaderField: "Cookie")', FormatCookieHeader(http.cookies))
     }
 
     if (http.body) {
       builder.line()
       if (typeof http.body === 'string') {
-        builder.line(`let bodyString = "${EscapeDoubleQuoted(http.body)}"`)
+        builder.line('let bodyString = "%s"', http.body)
         builder.line('request.httpBody = bodyString.data(using: .utf8)')
       } else if (IsObjectBody(http.body)) {
         builder.line('let json = ')

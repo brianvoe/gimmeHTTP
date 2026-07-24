@@ -1,7 +1,16 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { ContentTypeIncludes, EscapeDoubleQuoted, GetContentType, HasBody, IsObjectBody } from '../utils/utils'
+import { ContentTypeIncludes, GetContentType, HasBody, IsObjectBody } from '../utils/utils'
+
+const EscapePhpString = (value: string): string =>
+  value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')
+    .replace(/\$/g, '\\$')
 
 export default {
   language: 'php',
@@ -18,10 +27,9 @@ export default {
         separator: ' => ',
         endComma: true,
         nullLiteral: 'null',
-        escapeString: EscapeDoubleQuoted
+        escapeString: EscapePhpString
       }
     })
-    const phpString = (value: string) => EscapeDoubleQuoted(value).replace(/\$/g, '\\$')
 
     builder.line('<?php')
     builder.line()
@@ -41,8 +49,8 @@ export default {
     builder.line('$client = new Client();')
     builder.line('$response = $client->request(')
     builder.indent()
-    builder.line(`"${phpString(http.method.toUpperCase())}",`)
-    builder.line(`"${phpString(http.url)}",`)
+    builder.line('"%s",', http.method.toUpperCase())
+    builder.line('"%s",', http.url)
 
     // Headers, query params, and body
     if (http.headers || http.cookies || HasBody(http.body) || http.params) {
@@ -55,9 +63,9 @@ export default {
         builder.indent()
         for (const [key, value] of Object.entries(http.params)) {
           if (Array.isArray(value)) {
-            builder.line(`"${phpString(key)}" => [${value.map((val) => `"${phpString(val)}"`).join(', ')}],`)
+            builder.line('"%s" => [%r],', key, value.map((val) => builder.format('"%s"', val)).join(', '))
           } else {
-            builder.line(`"${phpString(key)}" => "${phpString(value)}",`)
+            builder.line('"%s" => "%s",', key, value)
           }
         }
         builder.outdent()
@@ -72,16 +80,16 @@ export default {
 
         for (const [key, value] of Object.entries(http.headers || {})) {
           if (Array.isArray(value)) {
-            builder.line(`"${phpString(key)}" => [${value.map((val) => `"${phpString(val)}"`).join(', ')}],`)
+            builder.line('"%s" => [%r],', key, value.map((val) => builder.format('"%s"', val)).join(', '))
           } else {
-            builder.line(`"${phpString(key)}" => "${phpString(value)}",`)
+            builder.line('"%s" => "%s",', key, value)
           }
         }
         if (http.cookies) {
           const cookieHeader = Object.entries(http.cookies)
             .map(([key, value]) => `${key}=${value}`)
             .join('; ')
-          builder.line(`"Cookie" => "${phpString(cookieHeader)}",`)
+          builder.line('"Cookie" => "%s",', cookieHeader)
         }
 
         builder.outdent()
@@ -102,9 +110,7 @@ export default {
           builder.json(http.body)
           builder.append(',')
         } else {
-          builder.line(
-            `"body" => "${phpString(typeof http.body === 'string' ? http.body : JSON.stringify(http.body))}",`
-          )
+          builder.line('"body" => "%s",', typeof http.body === 'string' ? http.body : JSON.stringify(http.body))
         }
         builder.outdent()
       }

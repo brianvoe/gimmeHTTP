@@ -1,7 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import { EscapeDoubleQuoted, FormatCookieHeader } from '../utils/utils'
+import { FormatCookieHeader } from '../utils/utils'
 
 export default {
   language: 'javascript',
@@ -16,8 +16,8 @@ export default {
     builder.line()
     builder.line('axios({')
     builder.indent()
-    builder.line(`method: "${http.method.toLowerCase()}",`)
-    builder.line(`url: "${http.url}",`)
+    builder.line('method: "%s",', http.method.toLowerCase())
+    builder.line('url: "%s",', http.url)
 
     // URL Parameters
     if (http.params && Object.keys(http.params).length > 0) {
@@ -25,9 +25,10 @@ export default {
       builder.indent()
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
-          builder.line(`"${key}": [${value.map((v) => `"${v}"`).join(', ')}],`)
+          const values = value.map((v) => builder.format('"%s"', v)).join(', ')
+          builder.line('"%s": [%r],', key, values)
         } else {
-          builder.line(`"${key}": "${value}",`)
+          builder.line('"%s": "%s",', key, value)
         }
       }
       builder.outdent()
@@ -41,14 +42,14 @@ export default {
       if (http.headers) {
         for (const [key, value] of Object.entries(http.headers)) {
           if (Array.isArray(value)) {
-            builder.line(`"${EscapeDoubleQuoted(key)}": "${EscapeDoubleQuoted(value.join(', '))}",`)
+            builder.line('"%s": "%s",', key, value.join(', '))
           } else {
-            builder.line(`"${EscapeDoubleQuoted(key)}": "${EscapeDoubleQuoted(value)}",`)
+            builder.line('"%s": "%s",', key, value)
           }
         }
       }
       if (http.cookies && Object.keys(http.cookies).length > 0) {
-        builder.line(`"Cookie": "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}",`)
+        builder.line('"Cookie": "%s",', FormatCookieHeader(http.cookies))
       }
       builder.outdent()
       builder.line('},')

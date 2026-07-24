@@ -7,7 +7,6 @@ import {
   IsStringBody,
   IsObjectBody,
   ContentTypeIncludes,
-  EscapeDoubleQuoted,
   FormatCookieHeader
 } from '../utils/utils'
 
@@ -33,7 +32,7 @@ export default {
 
     builder.line('public class HttpExample {')
     builder.indent()
-    builder.line(`public static void main(String[] args)${config.handleErrors ? '' : ' throws Exception'} {`)
+    builder.line('public static void main(String[] args)%r {', config.handleErrors ? '' : ' throws Exception')
     builder.indent()
 
     if (config.handleErrors) {
@@ -43,7 +42,7 @@ export default {
 
     // Build URL with parameters
     if (http.params && Object.keys(http.params).length > 0) {
-      builder.line(`String baseUrl = "${EscapeDoubleQuoted(http.url)}";`)
+      builder.line('String baseUrl = "%s";', http.url)
       builder.line('StringBuilder urlBuilder = new StringBuilder(baseUrl);')
       builder.line('urlBuilder.append(baseUrl.contains("?") ? "&" : "?");')
       builder.line()
@@ -53,10 +52,10 @@ export default {
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            paramPairs.push(`"${EscapeDoubleQuoted(key)}=" + URLEncoder.encode("${EscapeDoubleQuoted(val)}", "UTF-8")`)
+            paramPairs.push(builder.format('"%s=" + URLEncoder.encode("%s", "UTF-8")', key, val))
           }
         } else {
-          paramPairs.push(`"${EscapeDoubleQuoted(key)}=" + URLEncoder.encode("${EscapeDoubleQuoted(value)}", "UTF-8")`)
+          paramPairs.push(builder.format('"%s=" + URLEncoder.encode("%s", "UTF-8")', key, value))
         }
       }
       for (let i = 0; i < paramPairs.length; i++) {
@@ -78,27 +77,27 @@ export default {
       builder.line()
       builder.line('URL url = new URL(urlBuilder.toString());')
     } else {
-      builder.line(`URL url = new URL("${EscapeDoubleQuoted(http.url)}");`)
+      builder.line('URL url = new URL("%s");', http.url)
     }
     builder.line('HttpURLConnection conn = (HttpURLConnection) url.openConnection();')
-    builder.line(`conn.setRequestMethod("${http.method.toUpperCase()}");`)
+    builder.line('conn.setRequestMethod("%s");', http.method.toUpperCase())
 
     if (http.headers && Object.keys(http.headers).length > 0) {
       builder.line()
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
           value.forEach((val) =>
-            builder.line(`conn.addRequestProperty("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}");`)
+            builder.line('conn.addRequestProperty("%s", "%s");', key, val)
           )
         } else {
-          builder.line(`conn.setRequestProperty("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}");`)
+          builder.line('conn.setRequestProperty("%s", "%s");', key, value)
         }
       }
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
       builder.line()
-      builder.line(`conn.setRequestProperty("Cookie", "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}");`)
+      builder.line('conn.setRequestProperty("Cookie", "%s");', FormatCookieHeader(http.cookies))
     }
 
     if (hasBody) {
@@ -118,7 +117,7 @@ export default {
       } else if (IsStringBody(http.body)) {
         builder.line('try (OutputStream os = conn.getOutputStream()) {')
         builder.indent()
-        builder.line(`byte[] input = "${EscapeDoubleQuoted(http.body)}".getBytes("utf-8");`)
+        builder.line('byte[] input = "%s".getBytes("utf-8");', http.body)
         builder.line('os.write(input, 0, input.length);')
         builder.outdent()
         builder.line('}')

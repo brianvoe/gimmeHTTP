@@ -7,8 +7,7 @@ import {
   IsStringBody,
   IsObjectBody,
   ContentTypeIncludes,
-  FormatCookieHeader,
-  EscapeDoubleQuoted
+  FormatCookieHeader
 } from '../utils/utils'
 
 export default {
@@ -39,27 +38,30 @@ export default {
     const { hostname, path, port, protocol, params: existingParams } = ParseUrl(http.url)
 
     // Build path with parameters
-    let finalPath = `"${path}"`
+    let finalPath = builder.format('"%s"', path)
     if (http.params && Object.keys(http.params).length > 0) {
       builder.line('from urllib.parse import urlencode')
       builder.line('params = {')
       builder.indent()
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
-          builder.line(`"${key}": [${value.map((v) => `"${v}"`).join(', ')}],`)
+          builder.line('"%s": [%r],', key, value.map((v) => builder.format('"%s"', v)).join(', '))
         } else {
-          builder.line(`"${key}": "${value}",`)
+          builder.line('"%s": "%s",', key, value)
         }
       }
       builder.outdent()
       builder.line('}')
       builder.line('query_string = urlencode(params, doseq=True)')
-      builder.line(`final_path = f"${path}${existingParams ? `${existingParams}&` : '?'}{query_string}"`)
+      builder.line('final_path = f"%s{query_string}"', `${path}${existingParams ? `${existingParams}&` : '?'}`)
       finalPath = 'final_path'
     }
 
     builder.line(
-      `conn = http.client.${protocol === 'https:' ? 'HTTPSConnection' : 'HTTPConnection'}("${EscapeDoubleQuoted(hostname)}", ${port})`
+      'conn = http.client.%r("%s", %r)',
+      protocol === 'https:' ? 'HTTPSConnection' : 'HTTPConnection',
+      hostname,
+      port
     )
 
     // Headers
@@ -75,9 +77,9 @@ export default {
       if (http.headers) {
         for (const [key, value] of Object.entries(http.headers)) {
           if (Array.isArray(value)) {
-            builder.line(`"${key}": "${value.join(', ')}",`)
+            builder.line('"%s": "%s",', key, value.join(', '))
           } else {
-            builder.line(`"${key}": "${value}",`)
+            builder.line('"%s": "%s",', key, value)
           }
         }
       }
@@ -89,7 +91,7 @@ export default {
       ) {
         builder.line('"Content-Type": "application/json",')
       }
-      if (hasCookies) builder.line(`"Cookie": "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies!))}",`)
+      if (hasCookies) builder.line('"Cookie": "%s",', FormatCookieHeader(http.cookies!))
       builder.outdent()
       builder.line('}')
     }
@@ -109,17 +111,20 @@ export default {
         builder.json(http.body)
         builder.line('payload = json.dumps(payload_dict)')
       } else if (IsStringBody(http.body)) {
-        builder.line(`payload = "${EscapeDoubleQuoted(http.body)}"`)
+        builder.line('payload = "%s"', http.body)
       }
     }
 
     builder.line()
     if (hasPayload) {
       builder.line(
-        `conn.request("${method}", ${finalPath}, body=payload${params.includes('headers') ? ', headers=headers' : ''})`
+        'conn.request("%s", %r, body=payload%r)',
+        method,
+        finalPath,
+        params.includes('headers') ? ', headers=headers' : ''
       )
     } else {
-      builder.line(`conn.request("${method}", ${finalPath}${params.includes('headers') ? ', headers=headers' : ''})`)
+      builder.line('conn.request("%s", %r%r)', method, finalPath, params.includes('headers') ? ', headers=headers' : '')
     }
     builder.line('res = conn.getresponse()')
     builder.line('data = res.read()')

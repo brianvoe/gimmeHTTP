@@ -1,14 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import {
-  ContentTypeIncludes,
-  EscapeDoubleQuoted,
-  GetContentType,
-  HasBody,
-  IsObjectBody,
-  IsStringBody
-} from '../utils/utils'
+import { ContentTypeIncludes, GetContentType, HasBody, IsObjectBody, IsStringBody } from '../utils/utils'
 
 export default {
   language: 'ruby',
@@ -17,9 +10,8 @@ export default {
     const builder = new Builder({
       indent: config.indent || '  ',
       join: config.join || '\n',
-      json: { nullLiteral: 'nil', escapeString: EscapeDoubleQuoted }
+      json: { nullLiteral: 'nil' }
     })
-    const rubyString = EscapeDoubleQuoted
     const contentType = GetContentType(http.headers)
     const needsJson =
       HasBody(http.body) && (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body)))
@@ -34,14 +26,14 @@ export default {
       builder.indent()
     }
 
-    builder.line(`conn = Faraday.new(url: "${rubyString(http.url)}") do |f|`)
+    builder.line('conn = Faraday.new(url: "%s") do |f|', http.url)
     builder.indent()
     if (config.handleErrors) builder.line('f.response :raise_error')
     builder.line('f.adapter Faraday.default_adapter')
     builder.outdent()
     builder.line('end')
     builder.line()
-    builder.line(`response = conn.run_request(:${http.method.toLowerCase()}, "${rubyString(http.url)}", nil) do |req|`)
+    builder.line('response = conn.run_request(:%r, "%s", nil) do |req|', http.method.toLowerCase(), http.url)
     builder.indent()
 
     // URL Parameters
@@ -49,9 +41,9 @@ export default {
       builder.line()
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
-          builder.line(`req.params["${rubyString(key)}"] = [${value.map((val) => `"${rubyString(val)}"`).join(', ')}]`)
+          builder.line('req.params["%s"] = [%r]', key, value.map((val) => builder.format('"%s"', val)).join(', '))
         } else {
-          builder.line(`req.params["${rubyString(key)}"] = "${rubyString(value)}"`)
+          builder.line('req.params["%s"] = "%s"', key, value)
         }
       }
     }
@@ -60,9 +52,9 @@ export default {
       builder.line()
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`req.headers.add("${rubyString(key)}", "${rubyString(val)}")`))
+          value.forEach((val) => builder.line('req.headers.add("%s", "%s")', key, val))
         } else {
-          builder.line(`req.headers["${rubyString(key)}"] = "${rubyString(value)}"`)
+          builder.line('req.headers["%s"] = "%s"', key, value)
         }
       }
     }
@@ -72,7 +64,7 @@ export default {
       const cookieString = Object.entries(http.cookies)
         .map(([key, value]) => `${key}=${value}`)
         .join('; ')
-      builder.line(`req.headers["Cookie"] = "${rubyString(cookieString)}"`)
+      builder.line('req.headers["Cookie"] = "%s"', cookieString)
     }
 
     if (HasBody(http.body)) {
@@ -87,9 +79,9 @@ export default {
         builder.json(http.body)
         builder.append(')')
       } else if (IsStringBody(http.body)) {
-        builder.line(`req.body = "${rubyString(http.body)}"`)
+        builder.line('req.body = "%s"', http.body)
       } else {
-        builder.line(`req.body = "${rubyString(JSON.stringify(http.body))}"`)
+        builder.line('req.body = "%s"', JSON.stringify(http.body))
       }
     }
 

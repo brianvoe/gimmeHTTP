@@ -5,7 +5,6 @@ import {
   GetContentType,
   ContentTypeIncludes,
   IsStringBody,
-  EscapeDoubleQuoted,
   FormatCookieHeader,
   HasBody,
   IsObjectBody,
@@ -41,8 +40,8 @@ export default {
       builder.indent()
     }
 
-    builder.line(`var client = new RestClient("${EscapeDoubleQuoted(http.url)}");`)
-    builder.line(`var request = new RestRequest("", Method.${PascalCaseMethod(http.method)});`)
+    builder.line('var client = new RestClient("%s");', http.url)
+    builder.line('var request = new RestRequest("", Method.%r);', PascalCaseMethod(http.method))
 
     // Add URL parameters
     if (http.params && Object.keys(http.params).length > 0) {
@@ -50,14 +49,10 @@ export default {
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(
-              `request.AddParameter("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}", ParameterType.QueryString);`
-            )
+            builder.line('request.AddParameter("%s", "%s", ParameterType.QueryString);', key, val)
           }
         } else {
-          builder.line(
-            `request.AddParameter("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}", ParameterType.QueryString);`
-          )
+          builder.line('request.AddParameter("%s", "%s", ParameterType.QueryString);', key, value)
         }
       }
     }
@@ -71,17 +66,17 @@ export default {
       for (const [key, value] of headers) {
         if (Array.isArray(value)) {
           value.forEach((val) =>
-            builder.line(`request.AddHeader("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}");`)
+            builder.line('request.AddHeader("%s", "%s");', key, val)
           )
         } else {
-          builder.line(`request.AddHeader("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}");`)
+          builder.line('request.AddHeader("%s", "%s");', key, value)
         }
       }
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
       builder.line()
-      builder.line(`request.AddHeader("Cookie", "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}");`)
+      builder.line('request.AddHeader("Cookie", "%s");', FormatCookieHeader(http.cookies))
     }
 
     if (HasBody(http.body)) {
@@ -90,12 +85,10 @@ export default {
 
       if (ContentTypeIncludes(contentType, 'form')) {
         for (const [key, value] of Object.entries(http.body)) {
-          builder.line(`request.AddParameter("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(String(value))}");`)
+          builder.line('request.AddParameter("%s", "%s");', key, String(value))
         }
       } else if (IsStringBody(http.body)) {
-        builder.line(
-          `request.AddStringBody("${EscapeDoubleQuoted(http.body)}", "${EscapeDoubleQuoted(contentType || 'text/plain')}");`
-        )
+        builder.line('request.AddStringBody("%s", "%s");', http.body, contentType || 'text/plain')
       } else if (IsObjectBody(http.body)) {
         builder.line('request.AddStringBody(')
         builder.jsonStringLiteral(http.body)

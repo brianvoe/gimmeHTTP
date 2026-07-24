@@ -3,7 +3,6 @@ import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
 import {
   ContentTypeIncludes,
-  EscapeDoubleQuoted,
   FormatCookieHeader,
   GetContentType,
   HasBody,
@@ -47,18 +46,18 @@ export default {
     builder.indent()
     builder.line('val response: HttpResponse = client.request {')
     builder.indent()
-    builder.line(`method = HttpMethod.parse("${EscapeDoubleQuoted(http.method.toUpperCase())}")`)
-    builder.line(`url("${EscapeDoubleQuoted(http.url)}")`)
+    builder.line('method = HttpMethod.parse("%s")', http.method.toUpperCase())
+    builder.line('url("%s")', http.url)
 
     // URL Parameters
     if (http.params && Object.keys(http.params).length > 0) {
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`parameter("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`)
+            builder.line('parameter("%s", "%s")', key, val)
           }
         } else {
-          builder.line(`parameter("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
+          builder.line('parameter("%s", "%s")', key, value)
         }
       }
     }
@@ -66,15 +65,15 @@ export default {
     if (http.headers && Object.keys(http.headers).length > 0) {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`header("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`))
+          value.forEach((val) => builder.line('header("%s", "%s")', key, val))
         } else {
-          builder.line(`header("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
+          builder.line('header("%s", "%s")', key, value)
         }
       }
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
-      builder.line(`header("Cookie", "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}")`)
+      builder.line('header("Cookie", "%s")', FormatCookieHeader(http.cookies))
     }
 
     if (hasBody) {
@@ -84,7 +83,7 @@ export default {
         builder.line('FormDataContent(Parameters.build {')
         builder.indent()
         for (const [key, value] of Object.entries(http.body)) {
-          builder.line(`append("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(String(value))}")`)
+          builder.line('append("%s", "%s")', key, String(value))
         }
         builder.outdent()
         builder.line('})')
@@ -93,9 +92,9 @@ export default {
       } else if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
         builder.line('contentType(ContentType.Application.Json)')
         const json = JSON.stringify(http.body).replace(/\$/g, '\\$').replace(/"""/g, '\\"\\"\\"')
-        builder.line(`setBody("""${json}""")`)
+        builder.line('setBody("""%r""")', json)
       } else if (IsStringBody(http.body)) {
-        builder.line(`setBody("${EscapeDoubleQuoted(http.body)}")`)
+        builder.line('setBody("%s")', http.body)
       }
     }
 

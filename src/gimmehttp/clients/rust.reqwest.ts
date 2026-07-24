@@ -1,14 +1,7 @@
 import { Builder } from '../utils/builder'
 import { Config, Http } from '../utils/generate'
 import { Client } from '../utils/registry'
-import {
-  ContentTypeIncludes,
-  EscapeDoubleQuoted,
-  FormatCookieHeader,
-  GetContentType,
-  IsObjectBody,
-  IsStringBody
-} from '../utils/utils'
+import { ContentTypeIncludes, FormatCookieHeader, GetContentType, IsObjectBody, IsStringBody } from '../utils/utils'
 
 export default {
   language: 'rust',
@@ -26,13 +19,7 @@ export default {
     builder.indent()
     builder.line('let client = Client::new();')
     builder.line()
-    builder.line(
-      'let res = client.request(reqwest::Method::' +
-        http.method.toUpperCase() +
-        ', "' +
-        EscapeDoubleQuoted(http.url) +
-        '")'
-    )
+    builder.line('let res = client.request(reqwest::Method::%r, "%s")', http.method.toUpperCase(), http.url)
     builder.indent()
 
     // URL Parameters
@@ -42,10 +29,10 @@ export default {
       for (const [key, value] of Object.entries(http.params)) {
         if (Array.isArray(value)) {
           for (const val of value) {
-            builder.line(`("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}"),`)
+            builder.line('("%s", "%s"),', key, val)
           }
         } else {
-          builder.line(`("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}"),`)
+          builder.line('("%s", "%s"),', key, value)
         }
       }
       builder.outdent()
@@ -55,15 +42,15 @@ export default {
     if (http.headers) {
       for (const [key, value] of Object.entries(http.headers)) {
         if (Array.isArray(value)) {
-          value.forEach((val) => builder.line(`.header("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(val)}")`))
+          value.forEach((val) => builder.line('.header("%s", "%s")', key, val))
         } else {
-          builder.line(`.header("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(value)}")`)
+          builder.line('.header("%s", "%s")', key, value)
         }
       }
     }
 
     if (http.cookies && Object.keys(http.cookies).length > 0) {
-      builder.line(`.header("Cookie", "${EscapeDoubleQuoted(FormatCookieHeader(http.cookies))}")`)
+      builder.line('.header("Cookie", "%s")', FormatCookieHeader(http.cookies))
     }
 
     const hasExplicitContentType = Object.keys(http.headers || {}).some((key) => key.toLowerCase() === 'content-type')
@@ -72,9 +59,9 @@ export default {
 
       if (ContentTypeIncludes(contentType, 'form')) {
         const pairs = Object.entries(http.body)
-          .map(([key, value]) => `("${EscapeDoubleQuoted(key)}", "${EscapeDoubleQuoted(String(value))}")`)
+          .map(([key, value]) => builder.format('("%s", "%s")', key, String(value)))
           .join(', ')
-        builder.line(`.form(&[${pairs}])`)
+        builder.line('.form(&[%r])', pairs)
       } else if (ContentTypeIncludes(contentType, 'json') || (!contentType && IsObjectBody(http.body))) {
         if (!hasExplicitContentType) {
           builder.line('.header("Content-Type", "application/json")')
@@ -83,7 +70,7 @@ export default {
         builder.jsonStringLiteral(http.body)
         builder.append(')')
       } else if (IsStringBody(http.body)) {
-        builder.line(`.body("${EscapeDoubleQuoted(http.body)}")`)
+        builder.line('.body("%s")', http.body)
       }
     }
 
