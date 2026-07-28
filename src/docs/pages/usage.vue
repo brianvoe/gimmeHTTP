@@ -119,7 +119,7 @@
             height: 22px;
             flex-shrink: 0;
 
-            :deep(svg) {
+            svg {
               width: 22px;
               height: 22px;
               display: block;
