@@ -106,7 +106,7 @@
       <h2>Usage</h2>
       <p>
         Install gimmehttp with npm, pnpm, or yarn. The package ships the styled UI component, the core code generation
-        engine, individual client generators, and a Vue wrapper — all from a single dependency.
+        engine, individual client generators, and Vue / React wrappers — all from a single dependency.
       </p>
 
       <HighlightStyle language="shell">

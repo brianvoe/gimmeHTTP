@@ -5,8 +5,12 @@
     { path: '/usage', label: 'Usage' },
     { path: '/settings', label: 'Settings' },
     { path: '/demo', label: 'Demo' },
-    { path: '/style', label: 'Style' },
-    { path: '/vue', label: 'Vue' }
+    { path: '/style', label: 'Style' }
+  ]
+
+  const frameworkLinks = [
+    { path: '/vue', label: 'Vue' },
+    { path: '/react', label: 'React' }
   ]
 
   export default defineComponent({
@@ -14,20 +18,43 @@
     data() {
       return {
         links,
-        menuOpen: false
+        frameworkLinks,
+        menuOpen: false,
+        frameworksOpen: false
+      }
+    },
+    computed: {
+      frameworksActive(): boolean {
+        return this.frameworkLinks.some((link) => this.$route.path === link.path)
       }
     },
     watch: {
       $route() {
         this.menuOpen = false
+        this.frameworksOpen = false
       }
     },
     methods: {
       toggleMenu() {
         this.menuOpen = !this.menuOpen
+        if (!this.menuOpen) {
+          this.frameworksOpen = false
+        }
       },
       closeMenu() {
         this.menuOpen = false
+        this.frameworksOpen = false
+      },
+      toggleFrameworks() {
+        this.frameworksOpen = !this.frameworksOpen
+      },
+      onFrameworksBlur(event: FocusEvent) {
+        const next = event.relatedTarget as Node | null
+        const root = this.$refs.frameworksDropdown as HTMLElement | undefined
+        if (root && next && root.contains(next)) {
+          return
+        }
+        this.frameworksOpen = false
       }
     }
   })
@@ -67,7 +94,8 @@
         align-items: center;
         gap: var(--spacing-quarter);
 
-        a {
+        a,
+        .nav_dropdown_toggle {
           padding: 6px 12px;
           font-size: 14px;
           font-weight: 600;
@@ -77,7 +105,9 @@
           transition:
             color var(--animation-timing),
             background-color var(--animation-timing);
+        }
 
+        a {
           &:hover {
             color: var(--color-heading);
           }
@@ -85,6 +115,67 @@
           &.active {
             color: var(--color-heading);
             background-color: var(--color-surface-raised);
+          }
+        }
+
+        .nav_dropdown {
+          position: relative;
+
+          .nav_dropdown_toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+            line-height: inherit;
+
+            .chevron {
+              display: inline-block;
+              font-size: 0.7rem;
+              transition: transform 0.15s ease;
+            }
+
+            &:hover,
+            &[aria-expanded='true'],
+            &.active {
+              color: var(--color-heading);
+            }
+
+            &.active {
+              background-color: var(--color-surface-raised);
+            }
+
+            &[aria-expanded='true'] .chevron {
+              transform: rotate(180deg);
+            }
+          }
+
+          .nav_dropdown_menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 120;
+            display: none;
+            flex-direction: column;
+            min-width: 9rem;
+            padding: 6px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            background-color: rgba(23, 19, 16, 0.98);
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(8px);
+
+            a {
+              padding: 8px 12px;
+              white-space: nowrap;
+            }
+          }
+
+          &.open .nav_dropdown_menu {
+            display: flex;
           }
         }
       }
@@ -176,9 +267,30 @@
             display: flex;
           }
 
-          a {
+          a,
+          .nav_dropdown_toggle {
             padding: 12px 14px;
             font-size: 15px;
+          }
+
+          .nav_dropdown {
+            width: 100%;
+
+            .nav_dropdown_toggle {
+              width: 100%;
+              justify-content: space-between;
+            }
+
+            .nav_dropdown_menu {
+              position: static;
+              top: auto;
+              left: auto;
+              min-width: 0;
+              margin-top: 4px;
+              box-shadow: none;
+              border-color: var(--color-border);
+              background-color: rgba(0, 0, 0, 0.25);
+            }
           }
         }
       }
@@ -203,10 +315,41 @@
     <div class="center">
       <router-link to="/" class="brand" @click="closeMenu">gimme<span class="accent">HTTP</span></router-link>
 
-      <nav id="site-nav" :class="{ open: menuOpen }" @click="closeMenu">
-        <router-link v-for="link in links" :key="link.path" :to="link.path">
+      <nav id="site-nav" :class="{ open: menuOpen }">
+        <router-link v-for="link in links" :key="link.path" :to="link.path" @click="closeMenu">
           {{ link.label }}
         </router-link>
+
+        <div
+          ref="frameworksDropdown"
+          class="nav_dropdown"
+          :class="{ open: frameworksOpen }"
+          @focusout="onFrameworksBlur"
+        >
+          <button
+            type="button"
+            class="nav_dropdown_toggle"
+            :class="{ active: frameworksActive }"
+            :aria-expanded="frameworksOpen ? 'true' : 'false'"
+            aria-haspopup="true"
+            aria-controls="frameworks-menu"
+            @click.stop="toggleFrameworks"
+          >
+            Frameworks
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div id="frameworks-menu" class="nav_dropdown_menu" role="menu">
+            <router-link
+              v-for="link in frameworkLinks"
+              :key="link.path"
+              :to="link.path"
+              role="menuitem"
+              @click="closeMenu"
+            >
+              {{ link.label }}
+            </router-link>
+          </div>
+        </div>
       </nav>
 
       <div class="header_actions">

@@ -14,6 +14,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "importHelpers": true,
+    "jsx": "react-jsx",
     "lib": ["esnext", "dom"],
     "types": ["node"],
     "paths": {

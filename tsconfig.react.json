@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src/gimmehttp",
+    "jsx": "react-jsx",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false
+  },
+  "include": [
+    "src/gimmehttp/react/**/*.ts",
+    "src/gimmehttp/react/**/*.tsx",
+    "src/gimmehttp/react/env.d.ts"
+  ],
+  "exclude": ["src/gimmehttp/**/*.test.ts", "src/gimmehttp/**/*.test.tsx", "dist", "node_modules"]
+}

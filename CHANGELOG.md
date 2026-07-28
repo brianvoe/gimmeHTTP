@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Style docs page showcasing CSS-variable theming with live examples
 - `setSettings()` on the UI class to merge partial `Settings` updates
 - Settings docs page covering core `Settings` (`gimmehttp/core`) and UI `Settings` (`gimmehttp`)
+- Official React wrapper (`gimmehttp/react`) with optional peer deps, CSS export, docs page, and Frameworks nav
+  dropdown (Vue / React)
 
 ### Changed
 

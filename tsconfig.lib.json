@@ -9,6 +9,7 @@
   "include": ["src/gimmehttp/**/*.ts"],
   "exclude": [
     "src/gimmehttp/vue",
+    "src/gimmehttp/react",
     "src/gimmehttp/**/*.test.ts",
     "src/gimmehttp/index.umd.ts",
     "dist",

@@ -43,6 +43,11 @@ const router = createRouter({
       component: () => import('./pages/vue.vue')
     },
     {
+      path: '/react',
+      name: 'react',
+      component: () => import('./pages/react.vue')
+    },
+    {
       path: '/privacy',
       name: 'privacy',
       component: () => import('./pages/privacy.vue')

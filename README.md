@@ -13,7 +13,7 @@ See the [changelog](./CHANGELOG.md) for version history.
 GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration.
 Quickly output API requests.
 
-Using Vue 3? See the [Vue (v3) Usage](#vue-v3-usage) section.
+Using Vue 3? See the [Vue (v3) Usage](#vue-v3-usage) section. Using React? See the [React Usage](#react-usage) section.
 
 ## Features
 
@@ -413,17 +413,25 @@ app.mount('#app')
 ### Local usage (component)
 
 ```vue
-<script setup lang="ts">
+<script lang="ts">
+  import { defineComponent } from 'vue'
   import { GimmeHttp } from 'gimmehttp/vue'
   import type { Settings } from 'gimmehttp'
 
-  const settings: Settings = {
-    theme: 'dark',
-    http: {
-      method: 'GET',
-      url: 'https://example.com'
+  export default defineComponent({
+    components: { GimmeHttp },
+    data() {
+      return {
+        settings: {
+          theme: 'dark',
+          http: {
+            method: 'GET',
+            url: 'https://example.com'
+          }
+        } as Settings
+      }
     }
-  }
+  })
 </script>
 
 <template>
@@ -435,6 +443,59 @@ Props overview:
 
 - `settings` (required): `Settings` — `language`, `client`, `theme`, `copy`, `picker`, `config`, `http`
 - Emits `update:language` and `update:client` when the selection changes
+
+---
+
+## React Usage
+
+The React component is a thin wrapper around the JavaScript UI component.
+
+### Install styles
+
+```ts
+import 'gimmehttp/react/css'
+```
+
+### Register clients at startup
+
+```ts
+import { Register } from 'gimmehttp/core'
+import { goHttp, jsFetch, shellCurl } from 'gimmehttp/clients'
+
+Register([goHttp, jsFetch, shellCurl])
+```
+
+### Component usage
+
+```tsx
+import { useState } from 'react'
+import { GimmeHttp } from 'gimmehttp/react'
+import type { Settings } from 'gimmehttp'
+
+export function Example() {
+  const [settings, setSettings] = useState<Settings>({
+    theme: 'dark',
+    http: {
+      method: 'GET',
+      url: 'https://example.com'
+    }
+  })
+
+  return (
+    <GimmeHttp
+      settings={settings}
+      onLanguageChange={(language) => setSettings((s) => ({ ...s, language }))}
+      onClientChange={(client) => setSettings((s) => ({ ...s, client }))}
+    />
+  )
+}
+```
+
+Props overview:
+
+- `settings` (required): `Settings` — `language`, `client`, `theme`, `copy`, `picker`, `config`, `http`
+- `onLanguageChange` / `onClientChange` — selection callbacks
+- `ref` — `GimmeHttpRef` with `gimmeHttp` for the underlying instance
 
 ---
 

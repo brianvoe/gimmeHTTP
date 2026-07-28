@@ -39,7 +39,7 @@ export default defineConfig({
       outDirs: path.resolve(__dirname, 'dist'),
       entryRoot: path.resolve(__dirname, 'src/gimmehttp'),
       include: ['src/gimmehttp/**/*.ts'],
-      exclude: ['src/gimmehttp/vue/**', 'src/gimmehttp/**/*.test.ts', 'src/gimmehttp/index.umd.ts']
+      exclude: ['src/gimmehttp/vue/**', 'src/gimmehttp/react/**', 'src/gimmehttp/**/*.test.ts', 'src/gimmehttp/index.umd.ts']
     })
   ]
 })

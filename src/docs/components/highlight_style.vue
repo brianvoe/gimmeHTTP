@@ -28,6 +28,7 @@
   hljs.registerLanguage('java', java)
   hljs.registerLanguage('javascript', javascript)
   hljs.registerLanguage('typescript', typescript)
+  hljs.registerLanguage('tsx', typescript)
   hljs.registerLanguage('vue', vue)
   hljs.registerLanguage('php', php)
   hljs.registerLanguage('python', python)
