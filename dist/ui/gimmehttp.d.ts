@@ -1,29 +1,31 @@
 import { Client, Config, Http } from '../core';
-export interface UISettings {
+/** Widget settings: selection → appearance → controls → config → http. */
+export interface Settings {
+    language?: string;
+    client?: string;
     theme?: 'dark' | 'light';
     copy?: boolean;
     picker?: boolean;
+    config?: Config;
+    http: Http;
 }
-export interface GimmeHTTPEvents {
+export interface Events {
     afterChange?: (language: string, client: string, code: string) => void;
 }
-export interface GimmeHTTPOptions {
+export interface Options {
     container: string | HTMLElement;
-    http: Http;
     clients?: Client[];
-    language?: string;
-    client?: string;
-    config?: Config;
-    settings?: UISettings;
-    events?: GimmeHTTPEvents;
+    settings: Settings;
+    events?: Events;
 }
 export declare class GimmeHTTP {
     private container;
     private root;
     private http;
     private config?;
-    private settings;
+    private controls;
     private events;
+    private scopedClients;
     private language;
     private client;
     private code;
@@ -31,7 +33,8 @@ export declare class GimmeHTTP {
     private clientMenuOpen;
     private copiedTimeout;
     private onDocClick;
-    constructor(options: GimmeHTTPOptions);
+    constructor(options: Options);
+    setSettings(partial: Partial<Settings>): void;
     setHttp(http: Http): void;
     setConfig(config: Config): void;
     setLanguage(language: string, client?: string): void;
@@ -43,6 +46,9 @@ export declare class GimmeHTTP {
     destroy(): void;
     private persist;
     private syncOthers;
+    private clientsPool;
+    private languages;
+    private findClient;
     private clientsForLanguage;
     private generate;
     private highlightedOutput;

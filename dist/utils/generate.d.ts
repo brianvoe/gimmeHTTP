@@ -7,8 +7,6 @@ export interface Settings {
 }
 export interface Outcome {
     error?: string;
-    language?: string;
-    client?: string;
     code?: string;
 }
 export interface Config {

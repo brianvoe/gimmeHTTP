@@ -37,13 +37,7 @@ function s(e) {
 	if (t) return { error: t.message };
 	e.config = l(e.config), e.language ||= "javascript";
 	let n = r(e.language, e.client);
-	if (!n) return { error: "Client not found" };
-	let i = n.generate(e.config, e.http);
-	return {
-		language: n.language,
-		client: n.client,
-		code: i
-	};
+	return n ? { code: n.generate(e.config, e.http) } : { error: "Client not found" };
 }
 function c(e) {
 	if (!e) return /* @__PURE__ */ Error("Request is required");
@@ -57,4 +51,4 @@ function l(e) {
 //#endregion
 export { a, n as i, o as n, r as o, t as r, i as s, s as t };
 
-//# sourceMappingURL=core-CWQ0ogX2.mjs.map
+//# sourceMappingURL=core-DdwoUZCL.mjs.map

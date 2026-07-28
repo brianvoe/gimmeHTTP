@@ -37,13 +37,7 @@ function g(e) {
 	if (t) return { error: t.message };
 	e.config = v(e.config), e.language ||= "javascript";
 	let n = m(e.language, e.client);
-	if (!n) return { error: "Client not found" };
-	let r = n.generate(e.config, e.http);
-	return {
-		language: n.language,
-		client: n.client,
-		code: r
-	};
+	return n ? { code: n.generate(e.config, e.http) } : { error: "Client not found" };
 }
 function _(e) {
 	if (!e) return /* @__PURE__ */ Error("Request is required");
@@ -65,9 +59,11 @@ var y = {
 	javascript: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 128 128\"><path fill=\"#F0DB4F\" d=\"M1.408 1.408h125.184v125.185H1.408z\"/><path fill=\"#323330\" d=\"M116.347 96.736c-.917-5.711-4.641-10.508-15.672-14.981-3.832-1.761-8.104-3.022-9.377-5.926-.452-1.69-.512-2.642-.226-3.665.821-3.32 4.784-4.355 7.925-3.403 2.023.678 3.938 2.237 5.093 4.724 5.402-3.498 5.391-3.475 9.163-5.879-1.381-2.141-2.118-3.129-3.022-4.045-3.249-3.629-7.676-5.498-14.756-5.355l-3.688.477c-3.534.893-6.902 2.748-8.877 5.235-5.926 6.724-4.236 18.492 2.975 23.335 7.104 5.332 17.54 6.545 18.873 11.531 1.297 6.104-4.486 8.08-10.234 7.378-4.236-.881-6.592-3.034-9.139-6.949-4.688 2.713-4.688 2.713-9.508 5.485 1.143 2.499 2.344 3.63 4.26 5.795 9.068 9.198 31.76 8.746 35.83-5.176.165-.478 1.261-3.666.38-8.581M69.462 58.943H57.753l-.048 30.272c0 6.438.333 12.34-.714 14.149-1.713 3.558-6.152 3.117-8.175 2.427-2.059-1.012-3.106-2.451-4.319-4.485-.333-.584-.583-1.036-.667-1.071l-9.52 5.83c1.583 3.249 3.915 6.069 6.902 7.901 4.462 2.678 10.459 3.499 16.731 2.059 4.082-1.189 7.604-3.652 9.448-7.401 2.666-4.915 2.094-10.864 2.07-17.444.06-10.735.001-21.468.001-32.237\"/></svg>",
 	kotlin: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 60 60\" fill=\"none\"><defs><linearGradient id=\"kotlin-a\" x1=\"0%\" x2=\"100%\" y1=\"100%\" y2=\"0%\"><stop offset=\"9.677%\" stop-color=\"#0095D5\"/><stop offset=\"30.07%\" stop-color=\"#238AD9\"/><stop offset=\"62.11%\" stop-color=\"#557BDE\"/><stop offset=\"86.43%\" stop-color=\"#7472E2\"/><stop offset=\"100%\" stop-color=\"#806EE3\"/></linearGradient><linearGradient id=\"kotlin-b\" x1=\"0%\" x2=\"100%\" y1=\"0%\" y2=\"100%\"><stop offset=\"11.83%\" stop-color=\"#0095D5\"/><stop offset=\"41.78%\" stop-color=\"#3C83DC\"/><stop offset=\"69.62%\" stop-color=\"#6D74E1\"/><stop offset=\"83.33%\" stop-color=\"#806EE3\"/></linearGradient><linearGradient id=\"kotlin-c\" x1=\"0%\" x2=\"100%\" y1=\"0%\" y2=\"100%\"><stop offset=\"10.75%\" stop-color=\"#C757BC\"/><stop offset=\"21.38%\" stop-color=\"#D0609A\"/><stop offset=\"42.54%\" stop-color=\"#E1725C\"/><stop offset=\"53.09%\" stop-color=\"#EE7E2F\"/><stop offset=\"91.17%\" stop-color=\"#F58613\"/></linearGradient></defs><path fill=\"url(#kotlin-a)\" d=\"M0 60L30.1 29.9L60 60z\"/><path fill=\"url(#kotlin-b)\" d=\"M0 0L30.1 0L0 32.5z\"/><path fill=\"url(#kotlin-c)\" d=\"M30.1 0L0 32.5L0 60L30.1 29.9L60 0z\"/></svg>",
 	node: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-3.8 -1.5 40.921 40.921\"><defs><linearGradient id=\"node-b\" x1=\"271.97\" x2=\"211.104\" y1=\"217.606\" y2=\"341.772\" gradientUnits=\"userSpaceOnUse\"><stop offset=\".3\" stop-color=\"#3e863d\"/><stop offset=\".5\" stop-color=\"#55934f\"/><stop offset=\".8\" stop-color=\"#5aad45\"/></linearGradient><linearGradient id=\"node-d\" x1=\"186.484\" x2=\"297.349\" y1=\"321.381\" y2=\"239.465\" gradientUnits=\"userSpaceOnUse\"><stop offset=\".57\" stop-color=\"#3e863d\"/><stop offset=\".72\" stop-color=\"#619857\"/><stop offset=\"1\" stop-color=\"#76ac64\"/></linearGradient><linearGradient id=\"node-f\" x1=\"197.051\" x2=\"288.72\" y1=\"279.652\" y2=\"279.652\" gradientUnits=\"userSpaceOnUse\"><stop offset=\".16\" stop-color=\"#6bbf47\"/><stop offset=\".38\" stop-color=\"#79b461\"/><stop offset=\".47\" stop-color=\"#75ac64\"/><stop offset=\".7\" stop-color=\"#659e5a\"/><stop offset=\".9\" stop-color=\"#3e863d\"/></linearGradient><clipPath id=\"node-a\"><path d=\"m239.03 226.605-42.13 24.317a5.09 5.09 0 0 0-2.546 4.406v48.668c0 1.817.968 3.496 2.546 4.406l42.133 24.336a5.1 5.1 0 0 0 5.09 0l42.126-24.336a5.1 5.1 0 0 0 2.54-4.406v-48.668c0-1.816-.97-3.496-2.55-4.406l-42.12-24.317a5.12 5.12 0 0 0-5.1 0\"/></clipPath><clipPath id=\"node-c\"><path d=\"M195.398 307.086c.403.523.907.976 1.5 1.316l36.14 20.875 6.02 3.46c.9.52 1.926.74 2.934.665q.506-.042 1-.183l44.434-81.36c-.34-.37-.738-.68-1.184-.94l-27.586-15.93-14.582-8.39a5.3 5.3 0 0 0-1.32-.53zm0 0\"/></clipPath><clipPath id=\"node-e\"><path d=\"M241.066 225.953a5.1 5.1 0 0 0-2.035.652l-42.01 24.247 45.3 82.51c.63-.09 1.25-.3 1.81-.624l42.13-24.336a5.1 5.1 0 0 0 2.46-3.476l-46.18-78.89a5.3 5.3 0 0 0-1.03-.102l-.42.02\"/></clipPath></defs><g clip-path=\"url(#node-a)\" transform=\"translate(-68.564 -79.701)scale(.35278)\"><path fill=\"url(#node-b)\" d=\"m331.363 246.793-118.715-58.19-60.87 124.174L270.49 370.97zm0 0\"/></g><g clip-path=\"url(#node-c)\" transform=\"translate(-68.564 -79.701)scale(.35278)\"><path fill=\"url(#node-d)\" d=\"m144.07 264.004 83.825 113.453 110.86-81.906-83.83-113.45zm0 0\"/></g><g clip-path=\"url(#node-e)\" transform=\"translate(-68.564 -79.701)scale(.35278)\"><path fill=\"url(#node-f)\" d=\"M197.02 225.934v107.43h91.683v-107.43zm0 0\"/></g></svg>",
+	objectivec: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 128 128\"><g fill=\"#0b5a9d\"><path d=\"M63.877 125.392c-32.671 0-60.37-27.594-60.627-60.469a59.94 59.94 0 0 1 17.506-42.759 60.94 60.94 0 0 1 43.279-18.36 60.08 60.08 0 0 1 42.647 17.71 60.15 60.15 0 0 1 18.157 42.522c.151 33.604-26.864 61.021-60.469 61.363h-.493zm.19-118.406a57.77 57.77 0 0 0-41.01 17.427 56.78 56.78 0 0 0-16.63 40.484c.236 31.159 26.495 57.286 57.43 57.286h.414c31.863-.29 57.504-26.266 57.385-58.128a56.97 56.97 0 0 0-17.217-40.273A56.7 56.7 0 0 0 64.068 6.986z\"/><path d=\"M16.89 82.383V46.865h8.64v3.183h-4.583v29.218h4.584v3.183zm29.323-18.111c0 6.478-3.933 10.167-9.26 10.167s-8.877-4.156-8.877-9.831c0-5.939 3.722-10.121 9.167-10.121s8.97 4.36 8.97 9.785m-14.415.29c0 3.932 1.973 7.05 5.36 7.05s5.333-3.183 5.333-7.195c0-3.643-1.796-7.083-5.334-7.083s-5.392 3.328-5.392 7.307zm17.407-9.404c1.69-.29 3.407-.434 5.123-.428a9.17 9.17 0 0 1 5.537 1.223 4.06 4.06 0 0 1 2.006 3.61 4.48 4.48 0 0 1-3.183 4.183c2.269.46 3.9 2.46 3.9 4.775a5.02 5.02 0 0 1-1.861 3.978c-1.368 1.21-3.643 1.796-7.162 1.796a34 34 0 0 1-4.327-.257zm3.499 7.622h1.795c2.433 0 3.801-1.145 3.801-2.782s-1.368-2.644-3.61-2.644a9.8 9.8 0 0 0-2.006.145zm0 8.878c.618.065 1.243.092 1.86.078 2.263 0 4.262-.861 4.262-3.182s-1.94-3.183-4.373-3.183h-1.75zM69.54 54.901h3.517v12.554c0 5.334-2.577 7.116-6.365 7.116a9.3 9.3 0 0 1-2.973-.507l.428-2.834c.703.224 1.44.335 2.183.349 2.006 0 3.183-.921 3.183-4.262l.026-12.416zm13.527 10.456v2.434h-7.32v-2.434zm17.091 8.273a12.3 12.3 0 0 1-4.978.862c-6.129 0-9.851-3.834-9.851-9.707-.283-5.353 3.827-9.923 9.18-10.206.375-.02.757-.02 1.131.006a11.1 11.1 0 0 1 4.775.862l-.783 2.801a9.5 9.5 0 0 0-3.788-.75c-3.932 0-6.76 2.467-6.76 7.116 0 4.235 2.499 6.971 6.734 6.971a9.8 9.8 0 0 0 3.834-.717zM111.2 46.766v35.61h-8.641v-3.182h4.583V49.949h-4.583v-3.183h8.64z\"/></g></svg>",
 	php: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 135\"><defs><radialGradient cx=\"30.02%\" cy=\"17.584%\" fx=\"30.02%\" fy=\"17.584%\" r=\"124.885%\" gradientTransform=\"matrix(.52578 0 0 1 .142 0)\" id=\"php-a\"><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#4C6B97\" offset=\"50%\"/><stop stop-color=\"#231F20\" offset=\"100%\"/></radialGradient></defs><g fill=\"none\" fill-rule=\"evenodd\"><ellipse fill=\"url(#php-a)\" cx=\"128\" cy=\"67.3\" rx=\"128\" ry=\"67.3\"/><ellipse fill=\"#6181B6\" cx=\"128\" cy=\"67.3\" rx=\"123\" ry=\"62.3\"/><path d=\"m152.9 87.5 6.1-31.4c1.4-7.1.2-12.4-3.4-15.7-3.5-3.2-9.5-4.8-18.3-4.8h-10.6l3-15.6c.1-.6 0-1.2-.4-1.7s-.9-.7-1.5-.7h-14.6c-1 0-1.8.7-2 1.6l-6.5 33.3c-.6-3.8-2-7-4.4-9.6-4.3-4.9-11-7.4-20.1-7.4H52.1c-1 0-1.8.7-2 1.6L37 104.7c-.1.6 0 1.2.4 1.7s.9.7 1.5.7h14.7c1 0 1.8-.7 2-1.6l3.2-16.3h10.9c5.7 0 10.6-.6 14.3-1.8q5.85-1.95 10.5-6.3c2.5-2.3 4.6-4.9 6.2-7.7l-2.6 13.5c-.1.6 0 1.2.4 1.7s.9.7 1.5.7h14.6c1 0 1.8-.7 2-1.6l7.2-37h10c4.3 0 5.5.8 5.9 1.2.3.3.9 1.5.2 5.2L134.1 87c-.1.6 0 1.2.4 1.7s.9.7 1.5.7h15c.9-.3 1.7-1 1.9-1.9m-67.6-26c-.9 4.7-2.6 8.1-5.1 10s-6.6 2.9-12 2.9h-6.5l4.7-24.2h8.4c6.2 0 8.7 1.3 9.7 2.4 1.3 1.6 1.6 4.7.8 8.9m130-18.6c-4.3-4.9-11-7.4-20.1-7.4h-28.3c-1 0-1.8.7-2 1.6l-13.1 67.5c-.1.6 0 1.2.4 1.7s.9.7 1.5.7h14.7c1 0 1.8-.7 2-1.6l3.2-16.3h10.9c5.7 0 10.6-.6 14.3-1.8q5.85-1.95 10.5-6.3c2.6-2.4 4.8-5.1 6.4-8s2.8-6.1 3.5-9.6c1.7-8.7.4-15.5-3.9-20.5M200 61.5c-.9 4.7-2.6 8.1-5.1 10s-6.6 2.9-12 2.9h-6.5l4.7-24.2h8.4c6.2 0 8.7 1.3 9.7 2.4 1.4 1.6 1.7 4.7.8 8.9\" fill=\"#FFF\" fill-rule=\"nonzero\"/><g fill=\"#000004\"><path d=\"M74.8 48.2c5.6 0 9.3 1 11.2 3.1s2.3 5.6 1.3 10.6c-1 5.2-3 9-5.9 11.2q-4.35 3.3-13.2 3.3h-8.9l5.5-28.2zM39 105h14.7l3.5-17.9h12.6c5.6 0 10.1-.6 13.7-1.8s6.8-3.1 9.8-5.9q3.75-3.45 6-7.5c1.5-2.7 2.6-5.7 3.2-9 1.6-8 .4-14.2-3.5-18.7s-10.1-6.7-18.6-6.7H52.1z\" fill-rule=\"nonzero\"/><path d=\"M113.3 19.6h14.6l-3.5 17.9h13c8.2 0 13.8 1.4 16.9 4.3s4 7.5 2.8 13.9L151 87.1h-14.8l5.8-29.9c.7-3.4.4-5.7-.7-6.9s-3.6-1.9-7.3-1.9h-11.7l-7.5 38.7h-14.6z\"/><path d=\"M189.5 48.2c5.6 0 9.3 1 11.2 3.1s2.3 5.6 1.3 10.6c-1 5.2-3 9-5.9 11.2q-4.35 3.3-13.2 3.3H174l5.5-28.2zM153.7 105h14.7l3.5-17.9h12.6c5.6 0 10.1-.6 13.7-1.8s6.8-3.1 9.8-5.9q3.75-3.45 6-7.5c1.5-2.7 2.6-5.7 3.2-9 1.6-8 .4-14.2-3.5-18.7s-10.1-6.7-18.6-6.7h-28.3z\" fill-rule=\"nonzero\"/></g></g></svg>",
+	powershell: "<svg xmlns=\"http://www.w3.org/2000/svg\" xml:space=\"preserve\" viewBox=\"0 0 204.691 154.521\"><path d=\"M120.14.032c23.011-.008 46.023-.078 69.034.019 13.68.056 17.537 4.627 14.588 18.137-8.636 39.566-17.466 79.092-26.415 118.589-2.83 12.484-9.332 17.598-22.465 17.637-46.023.137-92.046.152-138.068-.006-15.043-.053-19-5.148-15.759-19.404A39066 39066 0 0 1 27.602 18.892C30.997 4.148 36.099.1 51.104.057 74.116-.008 97.128.04 120.14.032\" style=\"fill-rule:evenodd;clip-rule:evenodd;fill:#e0eaf5\"/><path d=\"M85.365 149.813c-23.014-.008-46.029.098-69.042-.053-11.67-.076-13.792-2.83-11.165-14.244 8.906-38.71 18.099-77.355 26.807-116.109C34.3 9.013 39.337 4.419 50.473 4.522c46.024.427 92.056.137 138.083.184 11.543.011 13.481 2.48 10.89 14.187-8.413 38.007-16.879 76.003-25.494 113.965-3.224 14.207-6.938 16.918-21.885 16.951-22.234.047-44.469.012-66.702.004\" style=\"fill-rule:evenodd;clip-rule:evenodd;fill:#2671be\"/><path d=\"M104.948 73.951c-1.543-1.81-3.237-3.894-5.031-5.886-10.173-11.3-20.256-22.684-30.61-33.815-4.738-5.094-6.248-10.041-.558-15.069 5.623-4.97 11.148-4.53 16.306 1.188 14.365 15.919 28.713 31.856 43.316 47.556 5.452 5.864 4.182 9.851-1.823 14.196-23.049 16.683-45.968 33.547-68.862 50.443-5.146 3.799-10.052 4.75-14.209-.861-4.586-6.189-.343-9.871 4.414-13.335 17.013-12.392 33.993-24.83 50.9-37.366 2.355-1.746 5.736-2.764 6.157-7.051\" style=\"fill-rule:evenodd;clip-rule:evenodd;fill:#fdfdfe\"/><path d=\"M112.235 133.819c-6.196 0-12.401.213-18.583-.068-4.932-.223-7.9-2.979-7.838-8.174.06-4.912 2.536-8.605 7.463-8.738 13.542-.363 27.104-.285 40.651-.02 4.305.084 7.483 2.889 7.457 7.375-.031 5.146-2.739 9.133-8.25 9.465-6.944.42-13.931.104-20.899.104z\" style=\"fill-rule:evenodd;clip-rule:evenodd;fill:#fcfdfd\"/></svg>",
 	python: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 255\"><defs><linearGradient x1=\"12.959%\" y1=\"12.039%\" x2=\"79.639%\" y2=\"78.201%\" id=\"python-a\"><stop stop-color=\"#387EB8\" offset=\"0%\"/><stop stop-color=\"#366994\" offset=\"100%\"/></linearGradient><linearGradient x1=\"19.128%\" y1=\"20.579%\" x2=\"90.742%\" y2=\"88.429%\" id=\"python-b\"><stop stop-color=\"#FFE052\" offset=\"0%\"/><stop stop-color=\"#FFC331\" offset=\"100%\"/></linearGradient></defs><g fill=\"none\"><path d=\"M126.916.072c-64.832 0-60.784 28.115-60.784 28.115l.072 29.128h61.868v8.745H41.631S.145 61.355.145 126.77c0 65.417 36.21 63.097 36.21 63.097h21.61v-30.356s-1.165-36.21 35.632-36.21h61.362s34.475.557 34.475-33.319V33.97S194.67.072 126.916.072M92.802 19.66a11.12 11.12 0 0 1 11.13 11.13 11.12 11.12 0 0 1-11.13 11.13 11.12 11.12 0 0 1-11.13-11.13 11.12 11.12 0 0 1 11.13-11.13\" fill=\"url(#python-a)\"/><path d=\"M128.757 254.126c64.832 0 60.784-28.115 60.784-28.115l-.072-29.127H127.6v-8.745h86.441s41.486 4.705 41.486-60.712c0-65.416-36.21-63.096-36.21-63.096h-21.61v30.355s1.165 36.21-35.632 36.21h-61.362s-34.475-.557-34.475 33.32v56.013s-5.235 33.897 62.518 33.897m34.114-19.586a11.12 11.12 0 0 1-11.13-11.13 11.12 11.12 0 0 1 11.13-11.131 11.12 11.12 0 0 1 11.13 11.13 11.12 11.12 0 0 1-11.13 11.13\" fill=\"url(#python-b)\"/></g></svg>",
-	r: "<svg viewBox=\"0 0 256 193\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient x1=\"37.973%\" y1=\"16.999%\" x2=\"91.121%\" y2=\"76.326%\" id=\"r-a\"><stop stop-color=\"#C9CBCE\" offset=\"0%\"/><stop stop-color=\"#7B7A81\" offset=\"100%\"/></linearGradient></defs><path d=\"M149.333 149.333c-53.333 0-98.659-26.713-98.659-58.713S90.667 32 144 32c67.357 0 98.572 25.911 98.572 57.911s-34.407 59.422-93.239 59.422M128 0C58.667 0 0 37.333 0 85.333c0 45.334 58.312 82.969 127.646 82.969 69.333 0 128.354-34.969 128.354-82.969S197.333 0 128 0\" fill=\"url(#r-a)\"/><path d=\"M105.946 51.829v141.109h42.643v-54.875c10.661 0 17.011-2.328 23.986 10.452 10.661 18.292 23.987 44.423 23.987 44.423H247.2s-31.982-52.262-34.647-54.875c-4.915-5.227-10.661-5.227-18.656-7.84 15.991-2.613 30.899-9.248 36.082-23.464 4.531-13.065 3.998-29.685-5.714-40.83-8.411-8.819-17.042-14.1-38.364-14.1zm42.643 29.388h27.984c6.636 0 11.993 6.533 11.993 13.065 0 6.533-5.33 13.066-11.993 13.066h-27.984z\" fill=\"#2165B6\"/></svg>",
+	r: "<svg viewBox=\"0 0 256 193\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient x1=\"37.973%\" y1=\"16.999%\" x2=\"91.121%\" y2=\"76.326%\" id=\"a\"><stop stop-color=\"#C9CBCE\" offset=\"0%\" /><stop stop-color=\"#7B7A81\" offset=\"100%\" /></linearGradient></defs><path d=\"M149.333 149.333c-53.333 0-98.659-26.713-98.659-58.713S90.667 32 144 32c67.357 0 98.572 25.911 98.572 57.911s-34.407 59.422-93.239 59.422M128 0C58.667 0 0 37.333 0 85.333c0 45.334 58.312 82.969 127.646 82.969 69.333 0 128.354-34.969 128.354-82.969S197.333 0 128 0\" fill=\"url(#a)\" /><path d=\"M105.946 51.829v141.109h42.643v-54.875c10.661 0 17.011-2.328 23.986 10.452 10.661 18.292 23.987 44.423 23.987 44.423H247.2s-31.982-52.262-34.647-54.875c-4.915-5.227-10.661-5.227-18.656-7.84 15.991-2.613 30.899-9.248 36.082-23.464 4.531-13.065 3.998-29.685-5.714-40.83-8.411-8.819-17.042-14.1-38.364-14.1zm42.643 29.388h27.984c6.636 0 11.993 6.533 11.993 13.065 0 6.533-5.33 13.066-11.993 13.066h-27.984z\" fill=\"#2165B6\" /></svg>",
 	ruby: "<svg viewBox=\"0 0 256 256\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient x1=\"84.75%\" y1=\"111.399%\" x2=\"58.254%\" y2=\"64.584%\" id=\"ruby-a\"><stop stop-color=\"#FB7655\" offset=\"0%\"/><stop stop-color=\"#FB7655\" offset=\"0%\"/><stop stop-color=\"#E42B1E\" offset=\"41%\"/><stop stop-color=\"#900\" offset=\"99%\"/><stop stop-color=\"#900\" offset=\"100%\"/></linearGradient><linearGradient x1=\"116.651%\" y1=\"60.89%\" x2=\"1.746%\" y2=\"19.288%\" id=\"ruby-b\"><stop stop-color=\"#871101\" offset=\"0%\"/><stop stop-color=\"#871101\" offset=\"0%\"/><stop stop-color=\"#911209\" offset=\"99%\"/><stop stop-color=\"#911209\" offset=\"100%\"/></linearGradient><linearGradient x1=\"75.774%\" y1=\"219.327%\" x2=\"38.978%\" y2=\"7.829%\" id=\"ruby-c\"><stop stop-color=\"#871101\" offset=\"0%\"/><stop stop-color=\"#871101\" offset=\"0%\"/><stop stop-color=\"#911209\" offset=\"99%\"/><stop stop-color=\"#911209\" offset=\"100%\"/></linearGradient><linearGradient x1=\"50.012%\" y1=\"7.234%\" x2=\"66.483%\" y2=\"79.135%\" id=\"ruby-d\"><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#E57252\" offset=\"23%\"/><stop stop-color=\"#DE3B20\" offset=\"46%\"/><stop stop-color=\"#A60003\" offset=\"99%\"/><stop stop-color=\"#A60003\" offset=\"100%\"/></linearGradient><linearGradient x1=\"46.174%\" y1=\"16.348%\" x2=\"49.932%\" y2=\"83.047%\" id=\"ruby-e\"><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#E4714E\" offset=\"23%\"/><stop stop-color=\"#BE1A0D\" offset=\"56%\"/><stop stop-color=\"#A80D00\" offset=\"99%\"/><stop stop-color=\"#A80D00\" offset=\"100%\"/></linearGradient><linearGradient x1=\"36.965%\" y1=\"15.594%\" x2=\"49.528%\" y2=\"92.478%\" id=\"ruby-f\"><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#E46342\" offset=\"18%\"/><stop stop-color=\"#C82410\" offset=\"40%\"/><stop stop-color=\"#A80D00\" offset=\"99%\"/><stop stop-color=\"#A80D00\" offset=\"100%\"/></linearGradient><linearGradient x1=\"13.609%\" y1=\"58.346%\" x2=\"85.764%\" y2=\"-46.717%\" id=\"ruby-g\"><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#C81F11\" offset=\"54%\"/><stop stop-color=\"#BF0905\" offset=\"99%\"/><stop stop-color=\"#BF0905\" offset=\"100%\"/></linearGradient><linearGradient x1=\"27.624%\" y1=\"21.135%\" x2=\"50.745%\" y2=\"79.056%\" id=\"ruby-h\"><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#FFF\" offset=\"0%\"/><stop stop-color=\"#DE4024\" offset=\"31%\"/><stop stop-color=\"#BF190B\" offset=\"99%\"/><stop stop-color=\"#BF190B\" offset=\"100%\"/></linearGradient><linearGradient x1=\"-20.667%\" y1=\"122.282%\" x2=\"104.242%\" y2=\"-6.342%\" id=\"ruby-i\"><stop stop-color=\"#BD0012\" offset=\"0%\"/><stop stop-color=\"#BD0012\" offset=\"0%\"/><stop stop-color=\"#FFF\" offset=\"7%\"/><stop stop-color=\"#FFF\" offset=\"17%\"/><stop stop-color=\"#C82F1C\" offset=\"27%\"/><stop stop-color=\"#820C01\" offset=\"33%\"/><stop stop-color=\"#A31601\" offset=\"46%\"/><stop stop-color=\"#B31301\" offset=\"72%\"/><stop stop-color=\"#E82609\" offset=\"99%\"/><stop stop-color=\"#E82609\" offset=\"100%\"/></linearGradient><linearGradient x1=\"58.792%\" y1=\"65.205%\" x2=\"11.964%\" y2=\"50.128%\" id=\"ruby-j\"><stop stop-color=\"#8C0C01\" offset=\"0%\"/><stop stop-color=\"#8C0C01\" offset=\"0%\"/><stop stop-color=\"#990C00\" offset=\"54%\"/><stop stop-color=\"#A80D0E\" offset=\"99%\"/><stop stop-color=\"#A80D0E\" offset=\"100%\"/></linearGradient><linearGradient x1=\"79.319%\" y1=\"62.754%\" x2=\"23.088%\" y2=\"17.888%\" id=\"ruby-k\"><stop stop-color=\"#7E110B\" offset=\"0%\"/><stop stop-color=\"#7E110B\" offset=\"0%\"/><stop stop-color=\"#9E0C00\" offset=\"99%\"/><stop stop-color=\"#9E0C00\" offset=\"100%\"/></linearGradient><linearGradient x1=\"92.88%\" y1=\"74.122%\" x2=\"59.841%\" y2=\"39.704%\" id=\"ruby-l\"><stop stop-color=\"#79130D\" offset=\"0%\"/><stop stop-color=\"#79130D\" offset=\"0%\"/><stop stop-color=\"#9E120B\" offset=\"99%\"/><stop stop-color=\"#9E120B\" offset=\"100%\"/></linearGradient><linearGradient x1=\"56.57%\" y1=\"101.717%\" x2=\"3.105%\" y2=\"11.993%\" id=\"ruby-o\"><stop stop-color=\"#8B2114\" offset=\"0%\"/><stop stop-color=\"#8B2114\" offset=\"0%\"/><stop stop-color=\"#9E100A\" offset=\"43%\"/><stop stop-color=\"#B3100C\" offset=\"99%\"/><stop stop-color=\"#B3100C\" offset=\"100%\"/></linearGradient><linearGradient x1=\"30.87%\" y1=\"35.599%\" x2=\"92.471%\" y2=\"100.694%\" id=\"ruby-p\"><stop stop-color=\"#B31000\" offset=\"0%\"/><stop stop-color=\"#B31000\" offset=\"0%\"/><stop stop-color=\"#910F08\" offset=\"44%\"/><stop stop-color=\"#791C12\" offset=\"99%\"/><stop stop-color=\"#791C12\" offset=\"100%\"/></linearGradient><radialGradient cx=\"32.001%\" cy=\"40.21%\" fx=\"32.001%\" fy=\"40.21%\" r=\"133.144%\" gradientTransform=\"matrix(.52254 0 0 1 .153 0)\" id=\"ruby-m\"><stop stop-color=\"#A80D00\" offset=\"0%\"/><stop stop-color=\"#A80D00\" offset=\"0%\"/><stop stop-color=\"#7E0E08\" offset=\"99%\"/><stop stop-color=\"#7E0E08\" offset=\"100%\"/></radialGradient><radialGradient cx=\"13.549%\" cy=\"40.86%\" fx=\"13.549%\" fy=\"40.86%\" r=\"113.541%\" gradientTransform=\"matrix(.77845 0 0 1 .03 0)\" id=\"ruby-n\"><stop stop-color=\"#A30C00\" offset=\"0%\"/><stop stop-color=\"#A30C00\" offset=\"0%\"/><stop stop-color=\"#800E08\" offset=\"99%\"/><stop stop-color=\"#800E08\" offset=\"100%\"/></radialGradient></defs><g fill=\"none\" fill-rule=\"evenodd\"><path fill=\"url(#ruby-a)\" d=\"M198.242 168.422 52.15 255.17l189.161-12.836 14.57-190.74z\"/><path fill=\"url(#ruby-b)\" d=\"m241.621 242.204-16.258-112.217-44.286 58.478z\"/><path fill=\"url(#ruby-c)\" d=\"m241.84 242.204-119.11-9.35-69.947 22.072z\"/><path fill=\"url(#ruby-d)\" d=\"m52.95 254.95 29.756-97.48-65.478 14z\"/><path fill=\"url(#ruby-e)\" d=\"m181.065 188.788-27.38-107.244-78.353 73.446z\"/><path fill=\"url(#ruby-f)\" d=\"m249.668 83.055-74.066-60.493-20.625 66.68z\"/><path fill=\"url(#ruby-g)\" d=\"m215.03.994-43.56 24.074L143.986.672z\"/><path fill=\"url(#ruby-h)\" d=\"m0 204.17 18.249-33.282L3.487 131.24z\"/><path d=\"m2.505 129.987 14.852 42.128 64.536-14.479 73.678-68.474 20.793-66.045L143.624 0 87.96 20.832c-17.537 16.31-51.567 48.585-52.794 49.192-1.214.62-22.472 40.798-32.662 59.963\" fill=\"#FFF\"/><path d=\"M54.655 54.307c38.008-37.686 87.007-59.95 105.811-40.979 18.792 18.972-1.136 65.078-39.145 102.75s-86.4 61.164-105.19 42.193c-18.804-18.96.516-66.292 38.524-103.964\" fill=\"url(#ruby-i)\"/><path d=\"m52.95 254.912 29.524-97.79 98.049 31.498c-35.451 33.243-74.88 61.345-127.572 66.292\" fill=\"url(#ruby-j)\"/><path d=\"m155.7 88.97 25.171 99.702c29.614-31.138 56.193-64.613 69.21-106.017z\" fill=\"url(#ruby-k)\"/><path d=\"M249.823 83.158c10.074-30.401 12.398-74.014-35.103-82.112l-38.977 21.529z\" fill=\"url(#ruby-l)\"/><path d=\"M0 203.73c1.395 50.176 37.595 50.923 53.015 51.364l-35.619-83.185z\" fill=\"#9E1209\"/><path d=\"M155.841 89.125c22.756 13.987 68.618 42.076 69.548 42.593 1.445.813 19.772-30.905 23.93-48.831z\" fill=\"url(#ruby-m)\"/><path d=\"m82.435 157.121 39.468 76.146c23.337-12.657 41.61-28.077 58.348-44.595z\" fill=\"url(#ruby-n)\"/><path d=\"M17.241 172.012 11.65 238.6c10.551 14.413 25.068 15.666 40.294 14.542-11.016-27.418-33.023-82.24-34.702-81.13\" fill=\"url(#ruby-o)\"/><path d=\"m175.512 22.743 78.405 11.003C249.733 16.014 236.883 4.572 214.98.994z\" fill=\"url(#ruby-p)\"/></g></svg>",
 	rust: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><path d=\"M25.763 12.291a.546.546 0 1 1-.001.001zM15.342 3.906a.89.89 0 0 1 1.539.614.892.892 0 0 1-1.754.231l-.001-.006a.89.89 0 0 1 .216-.839m11.623 11.995q0 .41-.03.814H25.81c-.112 0-.158.073-.158.185v.516c0 1.216-.686 1.48-1.287 1.547-.572.065-1.206-.239-1.284-.589a3.87 3.87 0 0 0-1.772-2.994l-.015-.009a4.06 4.06 0 0 0 2.246-3.093l.002-.021a3.53 3.53 0 0 0-1.705-2.884l-.016-.009a4.8 4.8 0 0 0-2.339-.773l-.014-.001H7.838a10.95 10.95 0 0 1 6.063-3.45l.069-.011 1.371 1.438a.81.81 0 0 0 1.148.026l1.533-1.467a11 11 0 0 1 7.475 5.291l.028.053-1.05 2.372a.816.816 0 0 0 .408 1.071l.005.002 2.022.898q.053.538.053 1.089zm-13.443-1.857v-2.063h3.699c.191 0 1.349.221 1.349 1.087 0 .719-.888.977-1.618.977zm-8.416.679 1.918-.853a.814.814 0 0 0 .411-1.077l.002.005-.395-.893h1.554v7.001H5.462a10.7 10.7 0 0 1-.418-3q0-.626.069-1.234l-.005.05zm1.044-2.476a.534.534 0 1 0-1.068 0 .534.534 0 0 0 1.068 0m3.398 13.78a.892.892 0 1 1 .647-.593l.002-.006a.9.9 0 0 1-.643.599l-.006.001zm12.389-2.849a.81.81 0 0 0-.963.62l-.001.005-.447 2.085a10.8 10.8 0 0 1-4.523.974c-1.675 0-3.263-.375-4.684-1.046l.067.028-.447-2.085a.81.81 0 0 0-.969-.623l.005-.001-1.841.395a11 11 0 0 1-.931-1.093l-.021-.029h8.957c.101 0 .169-.018.169-.11v-3.169c0-.092-.067-.11-.169-.11h-2.62V17.01h2.834a1.78 1.78 0 0 1 1.741 1.5l.001.01c.113.441.359 1.88.529 2.34.168.516.854 1.547 1.585 1.547h4.463q.087-.002.168-.017l-.006.001c-.326.44-.658.828-1.016 1.192l.001-.001zm.428 2.892a2.047 2.047 0 1 0 .002-4.094 2.047 2.047 0 0 0-.004 4.094zm8.424-10.441-1.259-.779q-.016-.184-.035-.367l1.082-1.008a.437.437 0 0 0-.141-.722l-.003-.001-1.383-.517q-.051-.179-.109-.357l.863-1.198a.432.432 0 0 0-.279-.68h-.003l-1.458-.237q-.085-.165-.176-.328L28.5 8.09a.4.4 0 0 0 .039-.18.42.42 0 0 0-.075-.242l.001.001a.44.44 0 0 0-.362-.193h-.015.001l-1.48.052q-.114-.144-.234-.283l.34-1.441a.434.434 0 0 0-.525-.521l.003-.001-1.441.34q-.141-.119-.285-.234l.052-1.48v-.021a.43.43 0 0 0-.615-.388l.003-.001-1.345.614q-.163-.09-.328-.176l-.238-1.459a.436.436 0 0 0-.682-.281l.001-.001-1.199.863q-.177-.057-.357-.107l-.517-1.383a.436.436 0 0 0-.723-.144l-1.008 1.083q-.183-.021-.367-.035l-.779-1.259a.433.433 0 0 0-.735-.001l-.001.002-.779 1.259q-.184.016-.367.035l-1.01-1.083a.432.432 0 0 0-.722.141l-.001.003-.517 1.383q-.18.052-.357.107l-1.198-.863a.435.435 0 0 0-.681.28v.003l-.238 1.459q-.165.085-.328.176L8.086 3.5a.433.433 0 0 0-.613.394v.017-.001l.052 1.48q-.144.114-.285.234l-1.441-.341a.434.434 0 0 0-.521.525l-.001-.003.339 1.441-.233.283-1.48-.052h-.017a.433.433 0 0 0-.393.616l-.001-.003.614 1.345q-.091.162-.176.328L2.473 10a.435.435 0 0 0-.281.682l-.001-.001.863 1.198q-.056.178-.109.357l-1.383.517a.436.436 0 0 0-.145.723l1.082 1.008q-.021.183-.035.367l-1.259.779a.428.428 0 0 0-.002.735l.002.001 1.259.779q.016.184.035.367l-1.082 1.01a.432.432 0 0 0 .141.722l.003.001 1.383.517q.051.18.109.357l-.863 1.198a.432.432 0 0 0 .281.68h.002l1.457.237q.085.165.176.328l-.614 1.345a.433.433 0 0 0 .394.613h.017-.001l1.479-.052q.115.144.234.285l-.339 1.442a.433.433 0 0 0 .525.52l-.003.001 1.441-.339q.141.12.285.233l-.052 1.48v.019a.43.43 0 0 0 .615.388l-.003.001 1.345-.612q.163.091.328.176l.238 1.457a.436.436 0 0 0 .682.282l-.001.001 1.198-.863q.178.057.357.109l.517 1.383a.43.43 0 0 0 .722.144l1.01-1.082q.182.02.367.037l.779 1.259a.436.436 0 0 0 .735.001l.001-.002.779-1.259a15 15 0 0 0 .367-.037l1.008 1.082a.437.437 0 0 0 .722-.141l.001-.003.517-1.383q.179-.051.357-.109l1.198.863a.432.432 0 0 0 .68-.281v-.002l.238-1.457q.165-.086.328-.176l1.345.612a.434.434 0 0 0 .613-.396v-.014.001l-.052-1.48q.144-.113.283-.233l1.441.339q.046.01.098.011a.434.434 0 0 0 .422-.534l.001.003-.339-1.442q.118-.14.233-.285l1.48.052h.02a.43.43 0 0 0 .388-.615l.001.003-.612-1.345q.09-.163.176-.328l1.457-.237a.436.436 0 0 0 .281-.682l.001.001-.863-1.198.109-.357 1.383-.517a.434.434 0 0 0 .144-.723l-1.082-1.01q.02-.182.035-.367l1.259-.779a.43.43 0 0 0 .002-.735l-.002-.001z\"/></svg>",
 	shell: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><path d=\"M13.655 3.56 8.918.75a1.79 1.79 0 0 0-1.82 0L2.363 3.56a1.89 1.89 0 0 0-.921 1.628v5.624a1.89 1.89 0 0 0 .913 1.627l4.736 2.812a1.79 1.79 0 0 0 1.82 0l4.736-2.812a1.89 1.89 0 0 0 .913-1.627V5.188a1.89 1.89 0 0 0-.904-1.627zm-3.669 8.781v.404a.15.15 0 0 1-.07.124l-.239.137c-.038.02-.07 0-.07-.053v-.396a.78.78 0 0 1-.545.053.07.07 0 0 1-.027-.09l.086-.365a.15.15 0 0 1 .071-.096.05.05 0 0 1 .038 0 .66.66 0 0 0 .497-.063.66.66 0 0 0 .37-.567c0-.206-.112-.292-.384-.293-.344 0-.661-.066-.67-.574A1.47 1.47 0 0 1 9.6 9.437V9.03a.15.15 0 0 1 .07-.126l.231-.147c.038-.02.07 0 .07.054v.409a.75.75 0 0 1 .453-.055.073.073 0 0 1 .03.095l-.081.362a.16.16 0 0 1-.065.09.06.06 0 0 1-.035 0 .6.6 0 0 0-.436.072.55.55 0 0 0-.331.486c0 .185.098.242.425.248.438 0 .627.199.632.639a1.57 1.57 0 0 1-.576 1.185zm2.481-.68a.1.1 0 0 1-.036.092l-1.198.727a.034.034 0 0 1-.04.003.04.04 0 0 1-.016-.037v-.31a.09.09 0 0 1 .055-.076l1.179-.706a.035.035 0 0 1 .056.035v.273zm.827-6.914L8.812 7.515c-.559.331-.97.693-.97 1.367v5.52c0 .404.165.662.413.741a1.5 1.5 0 0 1-.248.025c-.264 0-.522-.072-.748-.207L2.522 12.15a1.56 1.56 0 0 1-.75-1.338V5.188a1.56 1.56 0 0 1 .75-1.34l4.738-2.81a1.46 1.46 0 0 1 1.489 0l4.736 2.812a1.55 1.55 0 0 1 .728 1.083c-.154-.334-.508-.427-.92-.185h.002z\"/></svg>",
@@ -419,37 +415,37 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 	}
 	var W = {}, G = (e) => {
 		console.error(e);
-	}, le = (e, ...t) => {
+	}, K = (e, ...t) => {
 		console.log(`WARN: ${e}`, ...t);
-	}, K = (e, t) => {
+	}, q = (e, t) => {
 		W[`${e}/${t}`] || (console.log(`Deprecated as of ${e}. ${t}`), W[`${e}/${t}`] = !0);
-	}, q = /* @__PURE__ */ Error();
-	function ue(e, t, { key: n }) {
+	}, J = /* @__PURE__ */ Error();
+	function Y(e, t, { key: n }) {
 		let r = 0, i = e[n], a = {}, o = {};
 		for (let e = 1; e <= t.length; e++) o[e + r] = i[e], a[e + r] = !0, r += b(t[e - 1]);
 		e[n] = o, e[n]._emit = a, e[n]._multi = !0;
 	}
-	function de(e) {
+	function le(e) {
 		if (Array.isArray(e.begin)) {
-			if (e.skip || e.excludeBegin || e.returnBegin) throw G("skip, excludeBegin, returnBegin not compatible with beginScope: {}"), q;
-			if (typeof e.beginScope != "object" || e.beginScope === null) throw G("beginScope must be object"), q;
-			ue(e, e.begin, { key: "beginScope" }), e.begin = C(e.begin, { joinWith: "" });
+			if (e.skip || e.excludeBegin || e.returnBegin) throw G("skip, excludeBegin, returnBegin not compatible with beginScope: {}"), J;
+			if (typeof e.beginScope != "object" || e.beginScope === null) throw G("beginScope must be object"), J;
+			Y(e, e.begin, { key: "beginScope" }), e.begin = C(e.begin, { joinWith: "" });
 		}
 	}
-	function fe(e) {
+	function ue(e) {
 		if (Array.isArray(e.end)) {
-			if (e.skip || e.excludeEnd || e.returnEnd) throw G("skip, excludeEnd, returnEnd not compatible with endScope: {}"), q;
-			if (typeof e.endScope != "object" || e.endScope === null) throw G("endScope must be object"), q;
-			ue(e, e.end, { key: "endScope" }), e.end = C(e.end, { joinWith: "" });
+			if (e.skip || e.excludeEnd || e.returnEnd) throw G("skip, excludeEnd, returnEnd not compatible with endScope: {}"), J;
+			if (typeof e.endScope != "object" || e.endScope === null) throw G("endScope must be object"), J;
+			Y(e, e.end, { key: "endScope" }), e.end = C(e.end, { joinWith: "" });
 		}
 	}
-	function pe(e) {
+	function de(e) {
 		e.scope && typeof e.scope == "object" && e.scope !== null && (e.beginScope = e.scope, delete e.scope);
 	}
-	function me(e) {
-		pe(e), typeof e.beginScope == "string" && (e.beginScope = { _wrap: e.beginScope }), typeof e.endScope == "string" && (e.endScope = { _wrap: e.endScope }), de(e), fe(e);
+	function fe(e) {
+		de(e), typeof e.beginScope == "string" && (e.beginScope = { _wrap: e.beginScope }), typeof e.endScope == "string" && (e.endScope = { _wrap: e.endScope }), le(e), ue(e);
 	}
-	function he(e) {
+	function pe(e) {
 		function t(t, n) {
 			return new RegExp(p(t), "m" + (e.case_insensitive ? "i" : "") + (e.unicodeRegex ? "u" : "") + (n ? "g" : ""));
 		}
@@ -515,7 +511,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			[
 				H,
 				te,
-				me,
+				fe,
 				re
 			].forEach((e) => e(n, r)), e.compilerExtensions.forEach((e) => e(n, r)), n.__beforeBegin = null, [
 				U,
@@ -524,7 +520,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			].forEach((e) => e(n, r)), n.isCompiled = !0;
 			let s = null;
 			return typeof n.keywords == "object" && n.keywords.$pattern && (n.keywords = Object.assign({}, n.keywords), s = n.keywords.$pattern, delete n.keywords.$pattern), s ||= /\w+/, n.keywords &&= oe(n.keywords, e.case_insensitive), a.keywordPatternRe = t(s, !0), r && (n.begin ||= /\B|\b/, a.beginRe = t(a.begin), !n.end && !n.endsWithParent && (n.end = /\B|\b/), n.end && (a.endRe = t(a.end)), a.terminatorEnd = p(a.end) || "", n.endsWithParent && r.terminatorEnd && (a.terminatorEnd += (n.end ? "|" : "") + r.terminatorEnd)), n.illegal && (a.illegalRe = t(n.illegal)), n.contains ||= [], n.contains = [].concat(...n.contains.map(function(e) {
-				return _e(e === "self" ? n : e);
+				return he(e === "self" ? n : e);
 			})), n.contains.forEach(function(e) {
 				o(e, a);
 			}), n.starts && o(n.starts, r), a.matcher = i(a), a;
@@ -532,19 +528,19 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 		if (e.compilerExtensions ||= [], e.contains && e.contains.includes("self")) throw Error("ERR: contains `self` is not supported at the top-level of a language.  See documentation.");
 		return e.classNameAliases = a(e.classNameAliases || {}), o(e);
 	}
-	function ge(e) {
-		return e ? e.endsWithParent || ge(e.starts) : !1;
+	function me(e) {
+		return e ? e.endsWithParent || me(e.starts) : !1;
 	}
-	function _e(e) {
+	function he(e) {
 		return e.variants && !e.cachedVariants && (e.cachedVariants = e.variants.map(function(t) {
 			return a(e, { variants: null }, t);
-		})), e.cachedVariants ? e.cachedVariants : ge(e) ? a(e, { starts: e.starts ? a(e.starts) : null }) : Object.isFrozen(e) ? a(e) : e;
+		})), e.cachedVariants ? e.cachedVariants : me(e) ? a(e, { starts: e.starts ? a(e.starts) : null }) : Object.isFrozen(e) ? a(e) : e;
 	}
-	var ve = "11.11.1", ye = class extends Error {
+	var ge = "11.11.1", _e = class extends Error {
 		constructor(e, t) {
 			super(e), this.name = "HTMLInjectionError", this.html = t;
 		}
-	}, J = i, be = a, Y = Symbol("nomatch"), X = 7, Z = function(e) {
+	}, X = i, ve = a, ye = Symbol("nomatch"), be = 7, Z = function(e) {
 		let t = Object.create(null), i = Object.create(null), a = [], o = !0, s = "Could not find the language '{}', did you forget to load/include a language module?", c = {
 			disableAutodetect: !0,
 			name: "Plain text",
@@ -568,13 +564,13 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			let n = l.languageDetectRe.exec(t);
 			if (n) {
 				let t = N(n[1]);
-				return t || (le(s.replace("{}", n[1])), le("Falling back to no-highlight mode for this block.", e)), t ? n[1] : "no-highlight";
+				return t || (K(s.replace("{}", n[1])), K("Falling back to no-highlight mode for this block.", e)), t ? n[1] : "no-highlight";
 			}
 			return t.split(/\s+/).find((e) => u(e) || N(e));
 		}
 		function p(e, t, n) {
 			let r = "", i = "";
-			typeof t == "object" ? (r = e, n = t.ignoreIllegals, i = t.language) : (K("10.7.0", "highlight(lang, code, ...args) has been deprecated."), K("10.7.0", "Please use highlight(code, options) instead.\nhttps://github.com/highlightjs/highlight.js/issues/2277"), i = e, r = t), n === void 0 && (n = !0);
+			typeof t == "object" ? (r = e, n = t.ignoreIllegals, i = t.language) : (q("10.7.0", "highlight(lang, code, ...args) has been deprecated."), q("10.7.0", "Please use highlight(code, options) instead.\nhttps://github.com/highlightjs/highlight.js/issues/2277"), i = e, r = t), n === void 0 && (n = !0);
 			let a = {
 				code: r,
 				language: i
@@ -601,7 +597,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 					let r = D.case_insensitive ? t[0].toLowerCase() : t[0], i = u(A, r);
 					if (i) {
 						let [e, a] = i;
-						if (M.addText(n), n = "", c[r] = (c[r] || 0) + 1, c[r] <= X && (F += a), e.startsWith("_")) n += t[0];
+						if (M.addText(n), n = "", c[r] = (c[r] || 0) + 1, c[r] <= be && (F += a), e.startsWith("_")) n += t[0];
 						else {
 							let n = D.classNameAliases[e] || e;
 							m(t[0], n);
@@ -667,7 +663,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			}
 			function C(e) {
 				let t = e[0], r = n.substring(e.index), i = _(A, e, r);
-				if (!i) return Y;
+				if (!i) return ye;
 				let a = A;
 				A.endScope && A.endScope._wrap ? (p(), m(t, A.endScope._wrap)) : A.endScope && A.endScope._multi ? (p(), h(A.endScope, e)) : a.skip ? P += t : (a.returnEnd || a.excludeEnd || (P += t), p(), a.excludeEnd && (P = t));
 				do
@@ -697,7 +693,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 					throw e.mode = A, e;
 				} else if (r.type === "end") {
 					let e = C(r);
-					if (e !== Y) return e;
+					if (e !== ye) return e;
 				}
 				if (r.type === "illegal" && a === "") return P += "\n", 1;
 				if (L > 1e5 && L > r.index * 3) throw /* @__PURE__ */ Error("potential infinite loop, way more iterations than matches");
@@ -705,7 +701,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			}
 			let D = N(e);
 			if (!D) throw G(s.replace("{}", e)), Error("Unknown language: \"" + e + "\"");
-			let O = he(D), k = "", A = a || O, j = {}, M = new l.__emitter(l);
+			let O = pe(D), k = "", A = a || O, j = {}, M = new l.__emitter(l);
 			w();
 			let P = "", F = 0, I = 0, L = 0, R = !1;
 			try {
@@ -731,7 +727,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			} catch (t) {
 				if (t.message && t.message.includes("Illegal")) return {
 					language: e,
-					value: J(n),
+					value: X(n),
 					illegal: !0,
 					relevance: 0,
 					_illegalBy: {
@@ -745,7 +741,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 				};
 				if (o) return {
 					language: e,
-					value: J(n),
+					value: X(n),
 					illegal: !1,
 					relevance: 0,
 					errorRaised: t,
@@ -757,7 +753,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 		}
 		function b(e) {
 			let t = {
-				value: J(e),
+				value: X(e),
 				illegal: !1,
 				relevance: 0,
 				_top: c,
@@ -793,7 +789,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 				console.log("Element previously highlighted. To highlight again, first unset `dataset.highlighted`.", e);
 				return;
 			}
-			if (e.children.length > 0 && (l.ignoreUnescapedHTML || (console.warn("One of your code blocks includes unescaped HTML. This is a potentially serious security risk."), console.warn("https://github.com/highlightjs/highlight.js/wiki/security"), console.warn("The element with unescaped HTML:"), console.warn(e)), l.throwUnescapedHTML)) throw new ye("One of your code blocks includes unescaped HTML.", e.innerHTML);
+			if (e.children.length > 0 && (l.ignoreUnescapedHTML || (console.warn("One of your code blocks includes unescaped HTML. This is a potentially serious security risk."), console.warn("https://github.com/highlightjs/highlight.js/wiki/security"), console.warn("The element with unescaped HTML:"), console.warn(e)), l.throwUnescapedHTML)) throw new _e("One of your code blocks includes unescaped HTML.", e.innerHTML);
 			t = e;
 			let r = t.textContent, i = n ? p(r, {
 				language: n,
@@ -813,13 +809,13 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			});
 		}
 		function T(e) {
-			l = be(l, e);
+			l = ve(l, e);
 		}
 		let E = () => {
-			k(), K("10.6.0", "initHighlighting() deprecated.  Use highlightAll() now.");
+			k(), q("10.6.0", "initHighlighting() deprecated.  Use highlightAll() now.");
 		};
 		function D() {
-			k(), K("10.6.0", "initHighlightingOnLoad() deprecated.  Use highlightAll() now.");
+			k(), q("10.6.0", "initHighlightingOnLoad() deprecated.  Use highlightAll() now.");
 		}
 		let O = !1;
 		function k() {
@@ -883,7 +879,7 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			});
 		}
 		function V(e) {
-			return K("10.7.0", "highlightBlock will be removed entirely in v12.0"), K("10.7.0", "Please use highlightElement now."), w(e);
+			return q("10.7.0", "highlightBlock will be removed entirely in v12.0"), q("10.7.0", "Please use highlightElement now."), w(e);
 		}
 		Object.assign(e, {
 			highlight: p,
@@ -900,14 +896,14 @@ var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
 			getLanguage: N,
 			registerAliases: P,
 			autoDetection: F,
-			inherit: be,
+			inherit: ve,
 			addPlugin: L,
 			removePlugin: R
 		}), e.debugMode = function() {
 			o = !1;
 		}, e.safeMode = function() {
 			o = !0;
-		}, e.versionString = ve, e.regex = {
+		}, e.versionString = ge, e.regex = {
 			concat: _,
 			lookahead: m,
 			either: y,
@@ -2422,8 +2418,124 @@ function te(e) {
 	};
 }
 //#endregion
-//#region node_modules/highlight.js/es/languages/php.js
+//#region node_modules/highlight.js/es/languages/objectivec.js
 function ne(e) {
+	let t = {
+		className: "built_in",
+		begin: "\\b(AV|CA|CF|CG|CI|CL|CM|CN|CT|MK|MP|MTK|MTL|NS|SCN|SK|UI|WK|XC)\\w+"
+	}, n = /[a-zA-Z@][a-zA-Z0-9_]*/, r = {
+		"variable.language": ["this", "super"],
+		$pattern: n,
+		keyword: /* @__PURE__ */ "while.export.sizeof.typedef.const.struct.for.union.volatile.static.mutable.if.do.return.goto.enum.else.break.extern.asm.case.default.register.explicit.typename.switch.continue.inline.readonly.assign.readwrite.self.@synchronized.id.typeof.nonatomic.IBOutlet.IBAction.strong.weak.copy.in.out.inout.bycopy.byref.oneway.__strong.__weak.__block.__autoreleasing.@private.@protected.@public.@try.@property.@end.@throw.@catch.@finally.@autoreleasepool.@synthesize.@dynamic.@selector.@optional.@required.@encode.@package.@import.@defs.@compatibility_alias.__bridge.__bridge_transfer.__bridge_retained.__bridge_retain.__covariant.__contravariant.__kindof._Nonnull._Nullable._Null_unspecified.__FUNCTION__.__PRETTY_FUNCTION__.__attribute__.getter.setter.retain.unsafe_unretained.nonnull.nullable.null_unspecified.null_resettable.class.instancetype.NS_DESIGNATED_INITIALIZER.NS_UNAVAILABLE.NS_REQUIRES_SUPER.NS_RETURNS_INNER_POINTER.NS_INLINE.NS_AVAILABLE.NS_DEPRECATED.NS_ENUM.NS_OPTIONS.NS_SWIFT_UNAVAILABLE.NS_ASSUME_NONNULL_BEGIN.NS_ASSUME_NONNULL_END.NS_REFINED_FOR_SWIFT.NS_SWIFT_NAME.NS_SWIFT_NOTHROW.NS_DURING.NS_HANDLER.NS_ENDHANDLER.NS_VALUERETURN.NS_VOIDRETURN".split("."),
+		literal: [
+			"false",
+			"true",
+			"FALSE",
+			"TRUE",
+			"nil",
+			"YES",
+			"NO",
+			"NULL"
+		],
+		built_in: [
+			"dispatch_once_t",
+			"dispatch_queue_t",
+			"dispatch_sync",
+			"dispatch_async",
+			"dispatch_once"
+		],
+		type: [
+			"int",
+			"float",
+			"char",
+			"unsigned",
+			"signed",
+			"short",
+			"long",
+			"double",
+			"wchar_t",
+			"unichar",
+			"void",
+			"bool",
+			"BOOL",
+			"id|0",
+			"_Bool"
+		]
+	}, i = {
+		$pattern: n,
+		keyword: [
+			"@interface",
+			"@class",
+			"@protocol",
+			"@implementation"
+		]
+	};
+	return {
+		name: "Objective-C",
+		aliases: [
+			"mm",
+			"objc",
+			"obj-c",
+			"obj-c++",
+			"objective-c++"
+		],
+		keywords: r,
+		illegal: "</",
+		contains: [
+			t,
+			e.C_LINE_COMMENT_MODE,
+			e.C_BLOCK_COMMENT_MODE,
+			e.C_NUMBER_MODE,
+			e.QUOTE_STRING_MODE,
+			e.APOS_STRING_MODE,
+			{
+				className: "string",
+				variants: [{
+					begin: "@\"",
+					end: "\"",
+					illegal: "\\n",
+					contains: [e.BACKSLASH_ESCAPE]
+				}]
+			},
+			{
+				className: "meta",
+				begin: /#\s*[a-z]+\b/,
+				end: /$/,
+				keywords: { keyword: "if else elif endif define undef warning error line pragma ifdef ifndef include" },
+				contains: [
+					{
+						begin: /\\\n/,
+						relevance: 0
+					},
+					e.inherit(e.QUOTE_STRING_MODE, { className: "string" }),
+					{
+						className: "string",
+						begin: /<.*?>/,
+						end: /$/,
+						illegal: "\\n"
+					},
+					e.C_LINE_COMMENT_MODE,
+					e.C_BLOCK_COMMENT_MODE
+				]
+			},
+			{
+				className: "class",
+				begin: "(" + i.keyword.join("|") + ")\\b",
+				end: /(\{|$)/,
+				excludeEnd: !0,
+				keywords: i,
+				contains: [e.UNDERSCORE_TITLE_MODE]
+			},
+			{
+				begin: "\\." + e.UNDERSCORE_IDENT_RE,
+				relevance: 0
+			}
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/php.js
+function re(e) {
 	let t = e.regex, n = /(?![A-Za-z0-9])(?![$])/, r = t.concat(/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/, n), i = t.concat(/(\\?[A-Z][a-z0-9_\x7f-\xff]+|\\?[A-Z]+(?=[A-Z][a-z0-9_\x7f-\xff])){1,}/, n), a = t.concat(/[A-Z]+/, n), o = {
 		scope: "variable",
 		match: "\\$+" + r
@@ -2715,8 +2827,195 @@ function ne(e) {
 	};
 }
 //#endregion
+//#region node_modules/highlight.js/es/languages/powershell.js
+function ie(e) {
+	let t = [
+		"string",
+		"char",
+		"byte",
+		"int",
+		"long",
+		"bool",
+		"decimal",
+		"single",
+		"double",
+		"DateTime",
+		"xml",
+		"array",
+		"hashtable",
+		"void"
+	], n = {
+		$pattern: /-?[A-z\.\-]+\b/,
+		keyword: "if else foreach return do while until elseif begin for trap data dynamicparam end break throw param continue finally in switch exit filter try process catch hidden static parameter",
+		built_in: "ac asnp cat cd CFS chdir clc clear clhy cli clp cls clv cnsn compare copy cp cpi cpp curl cvpa dbp del diff dir dnsn ebp echo|0 epal epcsv epsn erase etsn exsn fc fhx fl ft fw gal gbp gc gcb gci gcm gcs gdr gerr ghy gi gin gjb gl gm gmo gp gps gpv group gsn gsnp gsv gtz gu gv gwmi h history icm iex ihy ii ipal ipcsv ipmo ipsn irm ise iwmi iwr kill lp ls man md measure mi mount move mp mv nal ndr ni nmo npssc nsn nv ogv oh popd ps pushd pwd r rbp rcjb rcsn rd rdr ren ri rjb rm rmdir rmo rni rnp rp rsn rsnp rujb rv rvpa rwmi sajb sal saps sasv sbp sc scb select set shcm si sl sleep sls sort sp spjb spps spsv start stz sujb sv swmi tee trcm type wget where wjb write"
+	}, r = /\w[\w\d]*((-)[\w\d]+)*/, i = {
+		begin: "`[\\s\\S]",
+		relevance: 0
+	}, a = {
+		className: "variable",
+		variants: [
+			{ begin: /\$\B/ },
+			{
+				className: "keyword",
+				begin: /\$this/
+			},
+			{ begin: /\$[\w\d][\w\d_:]*/ }
+		]
+	}, o = {
+		className: "literal",
+		begin: /\$(null|true|false)\b/
+	}, s = {
+		className: "string",
+		variants: [{
+			begin: /"/,
+			end: /"/
+		}, {
+			begin: /@"/,
+			end: /^"@/
+		}],
+		contains: [
+			i,
+			a,
+			{
+				className: "variable",
+				begin: /\$[A-z]/,
+				end: /[^A-z]/
+			}
+		]
+	}, c = {
+		className: "string",
+		variants: [{
+			begin: /'/,
+			end: /'/
+		}, {
+			begin: /@'/,
+			end: /^'@/
+		}]
+	}, l = e.inherit(e.COMMENT(null, null), {
+		variants: [{
+			begin: /#/,
+			end: /$/
+		}, {
+			begin: /<#/,
+			end: /#>/
+		}],
+		contains: [{
+			className: "doctag",
+			variants: [{ begin: /\.(synopsis|description|example|inputs|outputs|notes|link|component|role|functionality)/ }, { begin: /\.(parameter|forwardhelptargetname|forwardhelpcategory|remotehelprunspace|externalhelp)\s+\S+/ }]
+		}]
+	}), u = {
+		className: "built_in",
+		variants: [{ begin: "(Add|Clear|Close|Copy|Enter|Exit|Find|Format|Get|Hide|Join|Lock|Move|New|Open|Optimize|Pop|Push|Redo|Remove|Rename|Reset|Resize|Search|Select|Set|Show|Skip|Split|Step|Switch|Undo|Unlock|Watch|Backup|Checkpoint|Compare|Compress|Convert|ConvertFrom|ConvertTo|Dismount|Edit|Expand|Export|Group|Import|Initialize|Limit|Merge|Mount|Out|Publish|Restore|Save|Sync|Unpublish|Update|Approve|Assert|Build|Complete|Confirm|Deny|Deploy|Disable|Enable|Install|Invoke|Register|Request|Restart|Resume|Start|Stop|Submit|Suspend|Uninstall|Unregister|Wait|Debug|Measure|Ping|Repair|Resolve|Test|Trace|Connect|Disconnect|Read|Receive|Send|Write|Block|Grant|Protect|Revoke|Unblock|Unprotect|Use|ForEach|Sort|Tee|Where)+(-)[\\w\\d]+" }]
+	}, d = {
+		className: "class",
+		beginKeywords: "class enum",
+		end: /\s*[{]/,
+		excludeEnd: !0,
+		relevance: 0,
+		contains: [e.TITLE_MODE]
+	}, f = {
+		className: "function",
+		begin: /function\s+/,
+		end: /\s*\{|$/,
+		excludeEnd: !0,
+		returnBegin: !0,
+		relevance: 0,
+		contains: [
+			{
+				begin: "function",
+				relevance: 0,
+				className: "keyword"
+			},
+			{
+				className: "title",
+				begin: r,
+				relevance: 0
+			},
+			{
+				begin: /\(/,
+				end: /\)/,
+				className: "params",
+				relevance: 0,
+				contains: [a]
+			}
+		]
+	}, p = {
+		begin: /using\s/,
+		end: /$/,
+		returnBegin: !0,
+		contains: [
+			s,
+			c,
+			{
+				className: "keyword",
+				begin: /(using|assembly|command|module|namespace|type)/
+			}
+		]
+	}, m = { variants: [{
+		className: "operator",
+		begin: "(-and|-as|-band|-bnot|-bor|-bxor|-casesensitive|-ccontains|-ceq|-cge|-cgt|-cle|-clike|-clt|-cmatch|-cne|-cnotcontains|-cnotlike|-cnotmatch|-contains|-creplace|-csplit|-eq|-exact|-f|-file|-ge|-gt|-icontains|-ieq|-ige|-igt|-ile|-ilike|-ilt|-imatch|-in|-ine|-inotcontains|-inotlike|-inotmatch|-ireplace|-is|-isnot|-isplit|-join|-le|-like|-lt|-match|-ne|-not|-notcontains|-notin|-notlike|-notmatch|-or|-regex|-replace|-shl|-shr|-split|-wildcard|-xor)\\b"
+	}, {
+		className: "literal",
+		begin: /(-){1,2}[\w\d-]+/,
+		relevance: 0
+	}] }, h = {
+		className: "selector-tag",
+		begin: /@\B/,
+		relevance: 0
+	}, g = {
+		className: "function",
+		begin: /\[.*\]\s*[\w]+[ ]??\(/,
+		end: /$/,
+		returnBegin: !0,
+		relevance: 0,
+		contains: [{
+			className: "keyword",
+			begin: `(${n.keyword.toString().replace(/\s/g, "|")})\\b`,
+			endsParent: !0,
+			relevance: 0
+		}, e.inherit(e.TITLE_MODE, { endsParent: !0 })]
+	}, _ = [
+		g,
+		l,
+		i,
+		e.NUMBER_MODE,
+		s,
+		c,
+		u,
+		a,
+		o,
+		h
+	], v = {
+		begin: /\[/,
+		end: /\]/,
+		excludeBegin: !0,
+		excludeEnd: !0,
+		relevance: 0,
+		contains: ["self"].concat(_, {
+			begin: "(" + t.join("|") + ")",
+			className: "built_in",
+			relevance: 0
+		}, {
+			className: "type",
+			begin: /[\.\w\d]+/,
+			relevance: 0
+		})
+	};
+	return g.contains.unshift(v), {
+		name: "PowerShell",
+		aliases: [
+			"pwsh",
+			"ps",
+			"ps1"
+		],
+		case_insensitive: !0,
+		keywords: n,
+		contains: _.concat(d, f, p, m, v)
+	};
+}
+//#endregion
 //#region node_modules/highlight.js/es/languages/python.js
-function re(e) {
+function ae(e) {
 	let t = e.regex, n = /[\p{XID_Start}_]\p{XID_Continue}*/u, r = /* @__PURE__ */ "and.as.assert.async.await.break.case.class.continue.def.del.elif.else.except.finally.for.from.global.if.import.in.is.lambda.match.nonlocal|10.not.or.pass.raise.return.try.while.with.yield".split("."), i = {
 		$pattern: /[A-Za-z]\w+|__\w+__/,
 		keyword: r,
@@ -2953,7 +3252,7 @@ function re(e) {
 }
 //#endregion
 //#region node_modules/highlight.js/es/languages/r.js
-function ie(e) {
+function oe(e) {
 	let t = e.regex, n = /(?:(?:[a-zA-Z]|\.[._a-zA-Z])[._a-zA-Z0-9]*)|\.(?!\d)/, r = t.either(/0[xX][0-9a-fA-F]+\.[0-9a-fA-F]*[pP][+-]?\d+i?/, /0[xX][0-9a-fA-F]+(?:[pP][+-]?\d+)?[Li]?/, /(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?[Li]?/), i = /[=!<>:]=|\|\||&&|:::?|<-|<<-|->>|->|\|>|[-+*\/?!$&|:<=>@^~]|\*\*/, a = t.either(/[()]/, /[{}]/, /\[\[/, /[[\]]/, /\\/, /,/);
 	return {
 		name: "R",
@@ -3092,7 +3391,7 @@ function ie(e) {
 }
 //#endregion
 //#region node_modules/highlight.js/es/languages/ruby.js
-function ae(e) {
+function se(e) {
 	let t = e.regex, n = "([a-zA-Z_]\\w*[!?=]?|[-+~]@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?)", r = t.either(/\b([A-Z]+[a-z0-9]+)+/, /\b([A-Z]+[a-z0-9]+)+[A-Z]+/), i = t.concat(r, /(::\w+)*/), a = {
 		"variable.constant": [
 			"__FILE__",
@@ -3353,7 +3652,7 @@ function ae(e) {
 }
 //#endregion
 //#region node_modules/highlight.js/es/languages/rust.js
-function oe(e) {
+function ce(e) {
 	let t = e.regex, n = /(r#)?/, r = t.concat(n, e.UNDERSCORE_IDENT_RE), i = t.concat(n, e.IDENT_RE), a = {
 		className: "title.function.invoke",
 		relevance: 0,
@@ -3521,7 +3820,7 @@ function oe(e) {
 }
 //#endregion
 //#region node_modules/highlight.js/es/languages/bash.js
-function se(e) {
+function W(e) {
 	let t = e.regex, n = {}, r = {
 		begin: /\$\{/,
 		end: /\}/,
@@ -3689,23 +3988,23 @@ function se(e) {
 }
 //#endregion
 //#region node_modules/highlight.js/es/languages/swift.js
-function ce(e) {
+function G(e) {
 	return e ? typeof e == "string" ? e : e.source : null;
 }
-function W(e) {
-	return G("(?=", e, ")");
+function K(e) {
+	return q("(?=", e, ")");
 }
-function G(...e) {
-	return e.map((e) => ce(e)).join("");
+function q(...e) {
+	return e.map((e) => G(e)).join("");
 }
-function le(e) {
+function J(e) {
 	let t = e[e.length - 1];
 	return typeof t == "object" && t.constructor === Object ? (e.splice(e.length - 1, 1), t) : {};
 }
-function K(...e) {
-	return "(" + (le(e).capture ? "" : "?:") + e.map((e) => ce(e)).join("|") + ")";
+function Y(...e) {
+	return "(" + (J(e).capture ? "" : "?:") + e.map((e) => G(e)).join("|") + ")";
 }
-var q = (e) => G(/\b/, e, /\w$/.test(e) ? /\b/ : /\B/), ue = ["Protocol", "Type"].map(q), de = ["init", "self"].map(q), fe = ["Any", "Self"], pe = [
+var le = (e) => q(/\b/, e, /\w$/.test(e) ? /\b/ : /\B/), ue = ["Protocol", "Type"].map(le), de = ["init", "self"].map(le), fe = ["Any", "Self"], pe = [
 	"actor",
 	"any",
 	"associatedtype",
@@ -3832,10 +4131,10 @@ var q = (e) => G(/\b/, e, /\w$/.test(e) ? /\b/ : /\B/), ue = ["Protocol", "Type"
 	"#selector",
 	"#sourceLocation",
 	"#warning"
-], _e = /* @__PURE__ */ "abs.all.any.assert.assertionFailure.debugPrint.dump.fatalError.getVaList.isKnownUniquelyReferenced.max.min.numericCast.pointwiseMax.pointwiseMin.precondition.preconditionFailure.print.readLine.repeatElement.sequence.stride.swap.swift_unboxFromSwiftValueWithType.transcode.type.unsafeBitCast.unsafeDowncast.withExtendedLifetime.withUnsafeMutablePointer.withUnsafePointer.withVaList.withoutActuallyEscaping.zip".split("."), ve = K(/[/=\-+!*%<>&|^~?]/, /[\u00A1-\u00A7]/, /[\u00A9\u00AB]/, /[\u00AC\u00AE]/, /[\u00B0\u00B1]/, /[\u00B6\u00BB\u00BF\u00D7\u00F7]/, /[\u2016-\u2017]/, /[\u2020-\u2027]/, /[\u2030-\u203E]/, /[\u2041-\u2053]/, /[\u2055-\u205E]/, /[\u2190-\u23FF]/, /[\u2500-\u2775]/, /[\u2794-\u2BFF]/, /[\u2E00-\u2E7F]/, /[\u3001-\u3003]/, /[\u3008-\u3020]/, /[\u3030]/), ye = K(ve, /[\u0300-\u036F]/, /[\u1DC0-\u1DFF]/, /[\u20D0-\u20FF]/, /[\uFE00-\uFE0F]/, /[\uFE20-\uFE2F]/), J = G(ve, ye, "*"), be = K(/[a-zA-Z_]/, /[\u00A8\u00AA\u00AD\u00AF\u00B2-\u00B5\u00B7-\u00BA]/, /[\u00BC-\u00BE\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]/, /[\u0100-\u02FF\u0370-\u167F\u1681-\u180D\u180F-\u1DBF]/, /[\u1E00-\u1FFF]/, /[\u200B-\u200D\u202A-\u202E\u203F-\u2040\u2054\u2060-\u206F]/, /[\u2070-\u20CF\u2100-\u218F\u2460-\u24FF\u2776-\u2793]/, /[\u2C00-\u2DFF\u2E80-\u2FFF]/, /[\u3004-\u3007\u3021-\u302F\u3031-\u303F\u3040-\uD7FF]/, /[\uF900-\uFD3D\uFD40-\uFDCF\uFDF0-\uFE1F\uFE30-\uFE44]/, /[\uFE47-\uFEFE\uFF00-\uFFFD]/), Y = K(be, /\d/, /[\u0300-\u036F\u1DC0-\u1DFF\u20D0-\u20FF\uFE20-\uFE2F]/), X = G(be, Y, "*"), Z = G(/[A-Z]/, Y, "*"), Q = [
+], _e = /* @__PURE__ */ "abs.all.any.assert.assertionFailure.debugPrint.dump.fatalError.getVaList.isKnownUniquelyReferenced.max.min.numericCast.pointwiseMax.pointwiseMin.precondition.preconditionFailure.print.readLine.repeatElement.sequence.stride.swap.swift_unboxFromSwiftValueWithType.transcode.type.unsafeBitCast.unsafeDowncast.withExtendedLifetime.withUnsafeMutablePointer.withUnsafePointer.withVaList.withoutActuallyEscaping.zip".split("."), X = Y(/[/=\-+!*%<>&|^~?]/, /[\u00A1-\u00A7]/, /[\u00A9\u00AB]/, /[\u00AC\u00AE]/, /[\u00B0\u00B1]/, /[\u00B6\u00BB\u00BF\u00D7\u00F7]/, /[\u2016-\u2017]/, /[\u2020-\u2027]/, /[\u2030-\u203E]/, /[\u2041-\u2053]/, /[\u2055-\u205E]/, /[\u2190-\u23FF]/, /[\u2500-\u2775]/, /[\u2794-\u2BFF]/, /[\u2E00-\u2E7F]/, /[\u3001-\u3003]/, /[\u3008-\u3020]/, /[\u3030]/), ve = Y(X, /[\u0300-\u036F]/, /[\u1DC0-\u1DFF]/, /[\u20D0-\u20FF]/, /[\uFE00-\uFE0F]/, /[\uFE20-\uFE2F]/), ye = q(X, ve, "*"), be = Y(/[a-zA-Z_]/, /[\u00A8\u00AA\u00AD\u00AF\u00B2-\u00B5\u00B7-\u00BA]/, /[\u00BC-\u00BE\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]/, /[\u0100-\u02FF\u0370-\u167F\u1681-\u180D\u180F-\u1DBF]/, /[\u1E00-\u1FFF]/, /[\u200B-\u200D\u202A-\u202E\u203F-\u2040\u2054\u2060-\u206F]/, /[\u2070-\u20CF\u2100-\u218F\u2460-\u24FF\u2776-\u2793]/, /[\u2C00-\u2DFF\u2E80-\u2FFF]/, /[\u3004-\u3007\u3021-\u302F\u3031-\u303F\u3040-\uD7FF]/, /[\uF900-\uFD3D\uFD40-\uFDCF\uFDF0-\uFE1F\uFE30-\uFE44]/, /[\uFE47-\uFEFE\uFF00-\uFFFD]/), Z = Y(be, /\d/, /[\u0300-\u036F\u1DC0-\u1DFF\u20D0-\u20FF\uFE20-\uFE2F]/), Q = q(be, Z, "*"), xe = q(/[A-Z]/, Z, "*"), Se = [
 	"attached",
 	"autoclosure",
-	G(/convention\(/, K("swift", "block", "c"), /\)/),
+	q(/convention\(/, Y("swift", "block", "c"), /\)/),
 	"discardableResult",
 	"dynamicCallable",
 	"dynamicMemberLookup",
@@ -3854,7 +4153,7 @@ var q = (e) => G(/\b/, e, /\w$/.test(e) ? /\b/ : /\B/), ue = ["Protocol", "Type"
 	"NSApplicationMain",
 	"NSCopying",
 	"NSManaged",
-	G(/objc\(/, X, /\)/),
+	q(/objc\(/, Q, /\)/),
 	"objc",
 	"objcMembers",
 	"propertyWrapper",
@@ -3867,7 +4166,7 @@ var q = (e) => G(/\b/, e, /\w$/.test(e) ? /\b/ : /\B/), ue = ["Protocol", "Type"
 	"unknown",
 	"usableFromInline",
 	"warn_unqualified_access"
-], xe = [
+], Ce = [
 	"iOS",
 	"iOSApplicationExtension",
 	"macOS",
@@ -3880,21 +4179,21 @@ var q = (e) => G(/\b/, e, /\w$/.test(e) ? /\b/ : /\B/), ue = ["Protocol", "Type"
 	"tvOSApplicationExtension",
 	"swift"
 ];
-function Se(e) {
+function we(e) {
 	let t = {
 		match: /\s+/,
 		relevance: 0
 	}, n = e.COMMENT("/\\*", "\\*/", { contains: ["self"] }), r = [e.C_LINE_COMMENT_MODE, n], i = {
-		match: [/\./, K(...ue, ...de)],
+		match: [/\./, Y(...ue, ...de)],
 		className: { 2: "keyword" }
 	}, a = {
-		match: G(/\./, K(...pe)),
+		match: q(/\./, Y(...pe)),
 		relevance: 0
 	}, o = pe.filter((e) => typeof e == "string").concat(["_|0"]), s = { variants: [{
 		className: "keyword",
-		match: K(...pe.filter((e) => typeof e != "string").concat(fe).map(q), ...de)
+		match: Y(...pe.filter((e) => typeof e != "string").concat(fe).map(le), ...de)
 	}] }, c = {
-		$pattern: K(/\b\w+/, /#\w+/),
+		$pattern: Y(/\b\w+/, /#\w+/),
 		keyword: o.concat(ge),
 		literal: me
 	}, l = [
@@ -3902,18 +4201,18 @@ function Se(e) {
 		a,
 		s
 	], u = [{
-		match: G(/\./, K(..._e)),
+		match: q(/\./, Y(..._e)),
 		relevance: 0
 	}, {
 		className: "built_in",
-		match: G(/\b/, K(..._e), /(?=\()/)
+		match: q(/\b/, Y(..._e), /(?=\()/)
 	}], d = {
 		match: /->/,
 		relevance: 0
 	}, f = [d, {
 		className: "operator",
 		relevance: 0,
-		variants: [{ match: J }, { match: `\\.(\\.|${ye})+` }]
+		variants: [{ match: ye }, { match: `\\.(\\.|${ve})+` }]
 	}], p = "([0-9]_*)+", m = "([0-9a-fA-F]_*)+", h = {
 		className: "number",
 		relevance: 0,
@@ -3925,26 +4224,26 @@ function Se(e) {
 		]
 	}, g = (e = "") => ({
 		className: "subst",
-		variants: [{ match: G(/\\/, e, /[0\\tnr"']/) }, { match: G(/\\/, e, /u\{[0-9a-fA-F]{1,8}\}/) }]
+		variants: [{ match: q(/\\/, e, /[0\\tnr"']/) }, { match: q(/\\/, e, /u\{[0-9a-fA-F]{1,8}\}/) }]
 	}), _ = (e = "") => ({
 		className: "subst",
-		match: G(/\\/, e, /[\t ]*(?:[\r\n]|\r\n)/)
+		match: q(/\\/, e, /[\t ]*(?:[\r\n]|\r\n)/)
 	}), v = (e = "") => ({
 		className: "subst",
 		label: "interpol",
-		begin: G(/\\/, e, /\(/),
+		begin: q(/\\/, e, /\(/),
 		end: /\)/
 	}), y = (e = "") => ({
-		begin: G(e, /"""/),
-		end: G(/"""/, e),
+		begin: q(e, /"""/),
+		end: q(/"""/, e),
 		contains: [
 			g(e),
 			_(e),
 			v(e)
 		]
 	}), b = (e = "") => ({
-		begin: G(e, /"/),
-		end: G(/"/, e),
+		begin: q(e, /"/),
+		end: q(/"/, e),
 		contains: [g(e), v(e)]
 	}), x = {
 		className: "string",
@@ -3968,7 +4267,7 @@ function Se(e) {
 		end: /\//,
 		contains: S
 	}, w = (e) => {
-		let t = G(e, /\//), n = G(/\//, e);
+		let t = q(e, /\//), n = q(/\//, e);
 		return {
 			begin: t,
 			end: n,
@@ -3986,7 +4285,7 @@ function Se(e) {
 			w("#"),
 			C
 		]
-	}, E = { match: G(/`/, X, /`/) }, D = [
+	}, E = { match: q(/`/, Q, /`/) }, D = [
 		E,
 		{
 			className: "variable",
@@ -3994,7 +4293,7 @@ function Se(e) {
 		},
 		{
 			className: "variable",
-			match: `\\$${Y}+`
+			match: `\\$${Z}+`
 		}
 	], O = [
 		{
@@ -4003,7 +4302,7 @@ function Se(e) {
 			starts: { contains: [{
 				begin: /\(/,
 				end: /\)/,
-				keywords: xe,
+				keywords: Ce,
 				contains: [
 					...f,
 					h,
@@ -4013,23 +4312,23 @@ function Se(e) {
 		},
 		{
 			scope: "keyword",
-			match: G(/@/, K(...Q), W(K(/\(/, /\s+/)))
+			match: q(/@/, Y(...Se), K(Y(/\(/, /\s+/)))
 		},
 		{
 			scope: "meta",
-			match: G(/@/, X)
+			match: q(/@/, Q)
 		}
 	], k = {
-		match: W(/\b[A-Z]/),
+		match: K(/\b[A-Z]/),
 		relevance: 0,
 		contains: [
 			{
 				className: "type",
-				match: G(/(AV|CA|CF|CG|CI|CL|CM|CN|CT|MK|MP|MTK|MTL|NS|SCN|SK|UI|WK|XC)/, Y, "+")
+				match: q(/(AV|CA|CF|CG|CI|CL|CM|CN|CT|MK|MP|MTK|MTL|NS|SCN|SK|UI|WK|XC)/, Z, "+")
 			},
 			{
 				className: "type",
-				match: Z,
+				match: xe,
 				relevance: 0
 			},
 			{
@@ -4041,7 +4340,7 @@ function Se(e) {
 				relevance: 0
 			},
 			{
-				match: G(/\s+&\s+/, W(Z)),
+				match: q(/\s+&\s+/, K(xe)),
 				relevance: 0
 			}
 		]
@@ -4066,7 +4365,7 @@ function Se(e) {
 		contains: [
 			"self",
 			{
-				match: G(X, /\s*:/),
+				match: q(Q, /\s*:/),
 				keywords: "_|0",
 				relevance: 0
 			},
@@ -4092,7 +4391,7 @@ function Se(e) {
 		keywords: c,
 		contains: [
 			{
-				begin: K(W(G(X, /\s*:/)), W(G(X, /\s+/, X, /\s*:/))),
+				begin: Y(K(q(Q, /\s*:/)), K(q(Q, /\s+/, Q, /\s*:/))),
 				end: /:/,
 				relevance: 0,
 				contains: [{
@@ -4100,7 +4399,7 @@ function Se(e) {
 					match: /\b_\b/
 				}, {
 					className: "params",
-					match: X
+					match: Q
 				}]
 			},
 			...r,
@@ -4118,7 +4417,7 @@ function Se(e) {
 		match: [
 			/(func|macro)/,
 			/\s+/,
-			K(E.match, X, J)
+			Y(E.match, Q, ye)
 		],
 		className: {
 			1: "keyword",
@@ -4143,7 +4442,7 @@ function Se(e) {
 		match: [
 			/operator/,
 			/\s+/,
-			J
+			ye
 		],
 		className: {
 			1: "keyword",
@@ -4153,7 +4452,7 @@ function Se(e) {
 		begin: [
 			/precedencegroup/,
 			/\s+/,
-			Z
+			xe
 		],
 		className: {
 			1: "keyword",
@@ -4189,7 +4488,7 @@ function Se(e) {
 		begin: [
 			/(struct|protocol|class|extension|enum|actor)/,
 			/\s+/,
-			X,
+			Q,
 			/\s*/
 		],
 		beginScope: {
@@ -4206,7 +4505,7 @@ function Se(e) {
 				keywords: c,
 				contains: [{
 					scope: "title.class.inherited",
-					match: Z
+					match: xe
 				}, ...l],
 				relevance: 0
 			}
@@ -4262,14 +4561,14 @@ function Se(e) {
 }
 //#endregion
 //#region node_modules/highlight.js/es/languages/typescript.js
-var Ce = "[A-Za-z$_][0-9A-Za-z$_]*", we = /* @__PURE__ */ "as.in.of.if.for.while.finally.var.new.function.do.return.void.else.break.catch.instanceof.with.throw.case.default.try.switch.continue.typeof.delete.let.yield.const.class.debugger.async.await.static.import.from.export.extends.using".split("."), Te = [
+var Te = "[A-Za-z$_][0-9A-Za-z$_]*", Ee = /* @__PURE__ */ "as.in.of.if.for.while.finally.var.new.function.do.return.void.else.break.catch.instanceof.with.throw.case.default.try.switch.continue.typeof.delete.let.yield.const.class.debugger.async.await.static.import.from.export.extends.using".split("."), De = [
 	"true",
 	"false",
 	"null",
 	"undefined",
 	"NaN",
 	"Infinity"
-], Ee = /* @__PURE__ */ "Object.Function.Boolean.Symbol.Math.Date.Number.BigInt.String.RegExp.Array.Float32Array.Float64Array.Int8Array.Uint8Array.Uint8ClampedArray.Int16Array.Int32Array.Uint16Array.Uint32Array.BigInt64Array.BigUint64Array.Set.Map.WeakSet.WeakMap.ArrayBuffer.SharedArrayBuffer.Atomics.DataView.JSON.Promise.Generator.GeneratorFunction.AsyncFunction.Reflect.Proxy.Intl.WebAssembly".split("."), De = [
+], Oe = /* @__PURE__ */ "Object.Function.Boolean.Symbol.Math.Date.Number.BigInt.String.RegExp.Array.Float32Array.Float64Array.Int8Array.Uint8Array.Uint8ClampedArray.Int16Array.Int32Array.Uint16Array.Uint32Array.BigInt64Array.BigUint64Array.Set.Map.WeakSet.WeakMap.ArrayBuffer.SharedArrayBuffer.Atomics.DataView.JSON.Promise.Generator.GeneratorFunction.AsyncFunction.Reflect.Proxy.Intl.WebAssembly".split("."), ke = [
 	"Error",
 	"EvalError",
 	"InternalError",
@@ -4278,7 +4577,7 @@ var Ce = "[A-Za-z$_][0-9A-Za-z$_]*", we = /* @__PURE__ */ "as.in.of.if.for.while
 	"SyntaxError",
 	"TypeError",
 	"URIError"
-], Oe = [
+], Ae = [
 	"setInterval",
 	"setTimeout",
 	"clearInterval",
@@ -4296,7 +4595,7 @@ var Ce = "[A-Za-z$_][0-9A-Za-z$_]*", we = /* @__PURE__ */ "as.in.of.if.for.while
 	"encodeURIComponent",
 	"escape",
 	"unescape"
-], ke = [
+], je = [
 	"arguments",
 	"this",
 	"super",
@@ -4307,12 +4606,12 @@ var Ce = "[A-Za-z$_][0-9A-Za-z$_]*", we = /* @__PURE__ */ "as.in.of.if.for.while
 	"sessionStorage",
 	"module",
 	"global"
-], Ae = [].concat(Oe, Ee, De);
-function je(e) {
+], Me = [].concat(Ae, Oe, ke);
+function Ne(e) {
 	let t = e.regex, n = (e, { after: t }) => {
 		let n = "</" + e[0].slice(1);
 		return e.input.indexOf(n, t) !== -1;
-	}, r = Ce, i = {
+	}, r = Te, i = {
 		begin: "<>",
 		end: "</>"
 	}, a = /<[A-Za-z0-9\\._:-]+\s*\/>/, o = {
@@ -4336,11 +4635,11 @@ function je(e) {
 			}
 		}
 	}, s = {
-		$pattern: Ce,
-		keyword: we,
-		literal: Te,
-		built_in: Ae,
-		"variable.language": ke
+		$pattern: Te,
+		keyword: Ee,
+		literal: De,
+		built_in: Me,
+		"variable.language": je
 	}, c = "[0-9](_?[0-9])*", l = `\\.(${c})`, u = "0|[1-9](_?[0-9])*|0[0-7]*[89][0-9]*", d = {
 		className: "number",
 		variants: [
@@ -4487,7 +4786,7 @@ function je(e) {
 		relevance: 0,
 		match: t.either(/\bJSON/, /\b[A-Z][a-z]+([A-Z][a-z]*|\d)*/, /\b[A-Z]{2,}([A-Z][a-z]+|\d)+([A-Z][a-z]*)*/, /\b[A-Z]{2,}[a-z]+([A-Z][a-z]+|\d)*([A-Z][a-z]*)*/),
 		className: "title.class",
-		keywords: { _: [...Ee, ...De] }
+		keywords: { _: [...Oe, ...ke] }
 	}, w = {
 		label: "use_strict",
 		className: "meta",
@@ -4517,7 +4816,7 @@ function je(e) {
 	}
 	let O = {
 		match: t.concat(/\b/, D([
-			...Oe,
+			...Ae,
 			"super",
 			"import"
 		].map((e) => `${e}\\s*\\(`)), r, t.lookahead(/\s*\(/)),
@@ -4695,8 +4994,8 @@ function je(e) {
 		]
 	};
 }
-function Me(e) {
-	let t = e.regex, n = je(e), r = Ce, i = [
+function Pe(e) {
+	let t = e.regex, n = Ne(e), r = Te, i = [
 		"any",
 		"void",
 		"number",
@@ -4731,8 +5030,8 @@ function Me(e) {
 		relevance: 10,
 		begin: /^\s*['"]use strict['"]/
 	}, c = {
-		$pattern: Ce,
-		keyword: we.concat([
+		$pattern: Te,
+		keyword: Ee.concat([
 			"type",
 			"interface",
 			"public",
@@ -4746,9 +5045,9 @@ function Me(e) {
 			"override",
 			"satisfies"
 		]),
-		literal: Te,
-		built_in: Ae.concat(i),
-		"variable.language": ke
+		literal: De,
+		built_in: Me.concat(i),
+		"variable.language": je
 	}, l = {
 		className: "meta",
 		begin: "@[A-Za-z$_][0-9A-Za-z$_]*"
@@ -4782,7 +5081,7 @@ function Me(e) {
 }
 //#endregion
 //#region node_modules/highlight.js/es/languages/json.js
-function Ne(e) {
+function Fe(e) {
 	let t = {
 		className: "attr",
 		begin: /"(\\.|[^\\"\r\n])*"(?=\s*:)/,
@@ -4815,16 +5114,17 @@ function Ne(e) {
 		illegal: "\\S"
 	};
 }
-x.registerLanguage("c", S), x.registerLanguage("csharp", C), x.registerLanguage("dart", w), x.registerLanguage("go", T), x.registerLanguage("java", j), x.registerLanguage("javascript", B), x.registerLanguage("kotlin", te), x.registerLanguage("php", ne), x.registerLanguage("python", re), x.registerLanguage("r", ie), x.registerLanguage("ruby", ae), x.registerLanguage("rust", oe), x.registerLanguage("bash", se), x.registerLanguage("shell", se), x.registerLanguage("shellscript", se), x.registerLanguage("swift", Se), x.registerLanguage("typescript", Me), x.registerLanguage("ts", Me), x.registerLanguage("json", Ne), x.registerLanguage("node", B), x.registerLanguage("nodejs", B);
-var Pe = {
+x.registerLanguage("c", S), x.registerLanguage("csharp", C), x.registerLanguage("dart", w), x.registerLanguage("go", T), x.registerLanguage("java", j), x.registerLanguage("javascript", B), x.registerLanguage("kotlin", te), x.registerLanguage("objectivec", ne), x.registerLanguage("objc", ne), x.registerLanguage("php", re), x.registerLanguage("powershell", ie), x.registerLanguage("python", ae), x.registerLanguage("r", oe), x.registerLanguage("ruby", se), x.registerLanguage("rust", ce), x.registerLanguage("bash", W), x.registerLanguage("shell", W), x.registerLanguage("shellscript", W), x.registerLanguage("swift", we), x.registerLanguage("typescript", Pe), x.registerLanguage("ts", Pe), x.registerLanguage("json", Fe), x.registerLanguage("node", B), x.registerLanguage("nodejs", B);
+var Ie = {
 	shellscript: "bash",
 	shell: "bash",
 	ts: "typescript",
 	node: "javascript",
-	nodejs: "javascript"
+	nodejs: "javascript",
+	objc: "objectivec"
 };
-function Fe(e, t) {
-	let n = Pe[t] || t;
+function Le(e, t) {
+	let n = Ie[t] || t;
 	try {
 		return x.highlight(e, {
 			language: n,
@@ -4834,22 +5134,23 @@ function Fe(e, t) {
 		return e.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	}
 }
-function Ie(e) {
-	return Pe[e] || e;
+function Re(e) {
+	return Ie[e] || e;
 }
 //#endregion
 //#region src/gimmehttp/ui/gimmehttp.ts
-var Le = "gimmeLang", Re = "gimmeClient", ze = /* @__PURE__ */ new Set(), Be = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><path d=\"M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z\"/><path d=\"M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z\"/></svg>", Ve = "<svg class=\"gh-arrows\" viewBox=\"0 0 640 640\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z\"/></svg>", He = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><circle cx=\"8\" cy=\"8\" r=\"2.6\"/><rect x=\"7.15\" y=\"0.75\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"7.15\" y=\"12.5\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"0.75\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><rect x=\"12.5\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><g transform=\"rotate(45 8 8)\"><rect x=\"7.15\" y=\"0.75\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"7.15\" y=\"12.5\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"0.75\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><rect x=\"12.5\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/></g></svg>", Ue = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><path d=\"M9.598 1.591a.75.75 0 0 1 .785-.175 7 7 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786Zm1.616 1.945a7 7 0 0 1-7.678 7.678 5.5 5.5 0 1 0 7.678-7.678Z\"/></svg>";
+var ze = "gimmeLang", Be = "gimmeClient", Ve = /* @__PURE__ */ new Set(), He = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><path d=\"M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z\"/><path d=\"M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z\"/></svg>", Ue = "<svg class=\"gh-arrows\" viewBox=\"0 0 640 640\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z\"/></svg>", We = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><circle cx=\"8\" cy=\"8\" r=\"2.6\"/><rect x=\"7.15\" y=\"0.75\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"7.15\" y=\"12.5\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"0.75\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><rect x=\"12.5\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><g transform=\"rotate(45 8 8)\"><rect x=\"7.15\" y=\"0.75\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"7.15\" y=\"12.5\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"0.75\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><rect x=\"12.5\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/></g></svg>", Ge = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><path d=\"M9.598 1.591a.75.75 0 0 1 .785-.175 7 7 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786Zm1.616 1.945a7 7 0 0 1-7.678 7.678 5.5 5.5 0 1 0 7.678-7.678Z\"/></svg>";
 function $(e) {
 	return e.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
-var We = class {
+var Ke = class {
 	container;
 	root = null;
 	http;
 	config;
-	settings;
+	controls;
 	events;
+	scopedClients = null;
 	language;
 	client;
 	code = "";
@@ -4859,19 +5160,27 @@ var We = class {
 	onDocClick = null;
 	constructor(e) {
 		if (!e || !e.container) throw Error("GimmeHTTP: container is required");
-		if (!e.http) throw Error("GimmeHTTP: http is required");
+		if (!e.settings?.http) throw Error("GimmeHTTP: settings.http is required");
 		let t = typeof e.container == "string" ? document.querySelector(e.container) : e.container;
 		if (!t) throw Error(`GimmeHTTP: container not found: ${e.container}`);
-		if (this.container = t, e.clients && e.clients.length > 0 && h(e.clients), p().length === 0) throw Error("GimmeHTTP: no clients registered. Import clients from gimmehttp/clients and pass them via the clients option or Register().");
-		this.http = e.http, this.config = e.config, this.events = e.events || {}, this.settings = {
-			theme: e.settings?.theme || "dark",
-			copy: e.settings?.copy !== !1,
-			picker: e.settings?.picker !== !1
+		if (this.container = t, e.clients && e.clients.length > 0 && (h(e.clients), this.scopedClients = e.clients), this.clientsPool().length === 0) throw Error("GimmeHTTP: no clients registered. Import clients from gimmehttp/clients and pass them via the clients option or Register().");
+		let n = e.settings;
+		this.http = n.http, this.config = n.config, this.events = e.events || {}, this.controls = {
+			theme: n.theme || "dark",
+			copy: n.copy !== !1,
+			picker: n.picker !== !1
 		};
-		let n = typeof window < "u", r = n ? localStorage.getItem(Le) : null, i = n ? localStorage.getItem(Re) : null;
-		this.language = e.language || r || p()[0].language, m(this.language) || (this.language = p()[0].language);
-		let a = m(this.language, e.client || i || void 0);
-		this.client = a ? a.client : "", ze.add(this), this.render();
+		let r = typeof window < "u", i = r ? localStorage.getItem(ze) : null, a = r ? localStorage.getItem(Be) : null, o = this.clientsPool();
+		this.language = n.language || i || o[0].language, this.findClient(this.language) || (this.language = o[0].language);
+		let s = this.findClient(this.language, n.client || a || void 0);
+		this.client = s ? s.client : "", Ve.add(this), this.render();
+	}
+	setSettings(e) {
+		if (e.http !== void 0 && (this.http = e.http), e.config !== void 0 && (this.config = e.config), e.theme !== void 0 && (this.controls.theme = e.theme), e.copy !== void 0 && (this.controls.copy = e.copy), e.picker !== void 0 && (this.controls.picker = e.picker), e.language !== void 0 || e.client !== void 0) {
+			let t = e.language ?? this.language, n = e.client ?? this.client, r = this.findClient(t, n);
+			r && (this.language = r.language, this.client = r.client, this.persist(), this.syncOthers());
+		}
+		this.render();
 	}
 	setHttp(e) {
 		this.http = e, this.render();
@@ -4880,15 +5189,15 @@ var We = class {
 		this.config = e, this.render();
 	}
 	setLanguage(e, t) {
-		let n = m(e, t);
+		let n = this.findClient(e, t);
 		n && (this.language = n.language, this.client = n.client, this.persist(), this.render(), this.syncOthers());
 	}
 	setClient(e) {
-		let t = m(this.language, e);
+		let t = this.findClient(this.language, e);
 		t && (this.client = t.client, this.persist(), this.render(), this.syncOthers());
 	}
 	setTheme(e) {
-		this.settings.theme = e, this.render();
+		this.controls.theme = e, this.render();
 	}
 	getLanguage() {
 		return this.language;
@@ -4900,50 +5209,63 @@ var We = class {
 		return this.code;
 	}
 	destroy() {
-		ze.delete(this), this.copiedTimeout && clearTimeout(this.copiedTimeout), this.unbindDocClick(), this.root && this.root.parentNode && this.root.parentNode.removeChild(this.root), this.root = null;
+		Ve.delete(this), this.copiedTimeout && clearTimeout(this.copiedTimeout), this.unbindDocClick(), this.root && this.root.parentNode && this.root.parentNode.removeChild(this.root), this.root = null;
 	}
 	persist() {
-		typeof window > "u" || (localStorage.setItem(Le, this.language), localStorage.setItem(Re, this.client));
+		typeof window > "u" || (localStorage.setItem(ze, this.language), localStorage.setItem(Be, this.client));
 	}
 	syncOthers() {
-		for (let e of ze) if (e !== this && (e.language !== this.language || e.client !== this.client)) {
-			let t = m(this.language, this.client);
+		for (let e of Ve) if (e !== this && (e.language !== this.language || e.client !== this.client)) {
+			let t = e.findClient(this.language, this.client);
 			if (!t) continue;
 			e.language = t.language, e.client = t.client, e.render();
 		}
 	}
+	clientsPool() {
+		return this.scopedClients ?? p();
+	}
+	languages() {
+		return this.clientsPool().map((e) => e.language).filter((e, t, n) => n.indexOf(e) === t);
+	}
+	findClient(e, t) {
+		if (!e) return null;
+		let n = this.clientsPool().filter((t) => t.language.toLowerCase() === e.toLowerCase());
+		if (n.length === 0) return null;
+		let r = n.find((e) => e.default) || n[0];
+		return t && n.find((e) => e.client.toLowerCase() === t.toLowerCase()) || r;
+	}
 	clientsForLanguage() {
-		return p().filter((e) => e.language === this.language).map((e) => e.client);
+		return this.clientsPool().filter((e) => e.language === this.language).map((e) => e.client);
 	}
 	generate() {
-		let { code: e, language: t, client: n, error: r } = g({
+		let { code: e, error: t } = g({
 			language: this.language,
 			client: this.client,
-			config: this.config,
-			http: this.http
+			http: this.http,
+			config: this.config
 		});
-		if (r) {
-			this.code = "", this.renderOutputHtml(`<pre class="hljs"><code>${$(r)}</code></pre>`);
+		if (t) {
+			this.code = "", this.renderOutputHtml(`<pre class="hljs"><code>${$(t)}</code></pre>`);
 			return;
 		}
-		this.language = t, this.client = n, this.code = e, this.renderOutputHtml(this.highlightedOutput()), this.events.afterChange?.(this.language, this.client, this.code);
+		this.code = e, this.renderOutputHtml(this.highlightedOutput()), this.events.afterChange?.(this.language, this.client, this.code);
 	}
 	highlightedOutput() {
-		return `<pre class="hljs"><code class="language-${Ie(this.language)}">${Fe(this.code, this.language)}</code></pre>`;
+		return `<pre class="hljs"><code class="language-${Re(this.language)}">${Le(this.code, this.language)}</code></pre>`;
 	}
 	renderOutputHtml(e) {
 		let t = this.root?.querySelector(".gh-output");
 		t && (t.innerHTML = e);
 	}
 	render() {
-		this.unbindDocClick(), this.modalOpen = !1, this.clientMenuOpen = !1, this.root || (this.root = document.createElement("div"), this.container.appendChild(this.root)), this.root.className = `gimmehttp${this.settings.theme === "light" ? " light" : ""}`, this.root.innerHTML = `
+		this.unbindDocClick(), this.modalOpen = !1, this.clientMenuOpen = !1, this.root || (this.root = document.createElement("div"), this.container.appendChild(this.root)), this.root.className = `gimmehttp${this.controls.theme === "light" ? " light" : ""}`, this.root.innerHTML = `
       <div class="gh-options">
         <div class="gh-options-left">
-          ${this.settings.picker ? this.langControl() : ""}
-          ${this.settings.picker ? this.clientControl() : ""}
+          ${this.controls.picker ? this.langControl() : ""}
+          ${this.controls.picker ? this.clientControl() : ""}
         </div>
         <div class="gh-options-right">
-          ${this.settings.copy ? this.copyControl() : ""}
+          ${this.controls.copy ? this.copyControl() : ""}
           ${this.themeControl()}
         </div>
       </div>
@@ -4956,7 +5278,7 @@ var We = class {
       <button type="button" class="gh-lang" aria-label="Select language">
         ${e ? `<span class="gh-lang-logo">${e}</span>` : `<span class="gh-lang-text">${$(this.language)}</span>`}
         <span class="gh-lang-name">${$(this.language)}</span>
-        ${Ve}
+        ${Ue}
       </button>
     `;
 	}
@@ -4966,7 +5288,7 @@ var We = class {
       <div class="gh-client-dd">
         <button type="button" class="gh-client-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Select client">
           <span class="gh-client-label">${$(this.client)}</span>
-          ${Ve}
+          ${Ue}
         </button>
         <div class="gh-client-menu" role="listbox" hidden>
           ${e.map((e) => `<button type="button" class="gh-client-option${e === this.client ? " gh-selected" : ""}" role="option" data-client="${$(e)}" aria-selected="${e === this.client}">${$(e)}</button>`).join("")}
@@ -4977,20 +5299,20 @@ var We = class {
 	copyControl() {
 		return `
       <button type="button" class="gh-copy" aria-label="Copy code">
-        ${Be}
+        ${He}
         <span class="gh-txt">Copy</span>
       </button>
     `;
 	}
 	themeControl() {
-		let e = this.settings.theme === "light";
-		return `<button type="button" class="gh-theme" aria-label="${e ? "Switch to dark theme" : "Switch to light theme"}">${e ? Ue : He}</button>`;
+		let e = this.controls.theme === "light";
+		return `<button type="button" class="gh-theme" aria-label="${e ? "Switch to dark theme" : "Switch to light theme"}">${e ? Ge : We}</button>`;
 	}
 	wireEvents() {
 		this.root?.querySelector(".gh-copy")?.addEventListener("click", () => this.copy()), this.root?.querySelector(".gh-lang")?.addEventListener("click", () => this.toggleModal()), this.root?.querySelector(".gh-client-trigger")?.addEventListener("click", (e) => {
 			e.stopPropagation(), this.toggleClientMenu();
 		}), this.root?.querySelector(".gh-theme")?.addEventListener("click", () => {
-			this.setTheme(this.settings.theme === "light" ? "dark" : "light");
+			this.setTheme(this.controls.theme === "light" ? "dark" : "light");
 		}), this.root?.querySelectorAll(".gh-client-option").forEach((e) => {
 			e.addEventListener("click", (t) => {
 				t.stopPropagation();
@@ -5012,7 +5334,7 @@ var We = class {
 		typeof navigator < "u" && navigator.clipboard && navigator.clipboard.writeText(this.code);
 		let e = this.root?.querySelector(".gh-copy");
 		e && (e.classList.add("gh-show-copied"), e.innerHTML = "<span class=\"gh-txt\">Copied!</span>", this.copiedTimeout && clearTimeout(this.copiedTimeout), this.copiedTimeout = window.setTimeout(() => {
-			e.classList.remove("gh-show-copied"), e.innerHTML = `${Be}<span class="gh-txt">Copy</span>`, this.copiedTimeout = null;
+			e.classList.remove("gh-show-copied"), e.innerHTML = `${He}<span class="gh-txt">Copy</span>`, this.copiedTimeout = null;
 		}, 2e3));
 	}
 	toggleClientMenu() {
@@ -5033,7 +5355,7 @@ var We = class {
 	openModal() {
 		if (!this.root || this.modalOpen) return;
 		this.modalOpen = !0;
-		let e = p().map((e) => e.language).filter((e, t, n) => n.indexOf(e) === t), t = document.createElement("div");
+		let e = this.languages(), t = document.createElement("div");
 		t.className = "gh-modal", t.innerHTML = `
       <div class="gh-content">
         <div class="gh-modal-title">Select language</div>
@@ -5059,59 +5381,20 @@ var We = class {
 		let e = this.root?.querySelector(".gh-modal");
 		e && (e.classList.remove("gh-open"), setTimeout(() => e.remove(), 250));
 	}
-}, Ge = t({
+}, qe = t({
 	name: "GimmeHttp",
 	emits: ["update:language", "update:client"],
-	props: {
-		http: {
-			type: Object,
-			required: !0
-		},
-		language: {
-			type: String,
-			required: !1,
-			default: ""
-		},
-		client: {
-			type: String,
-			required: !1,
-			default: ""
-		},
-		config: {
-			type: Object,
-			required: !1
-		},
-		theme: {
-			type: String,
-			required: !1,
-			default: "dark"
-		},
-		copy: {
-			type: Boolean,
-			required: !1,
-			default: !0
-		},
-		picker: {
-			type: Boolean,
-			required: !1,
-			default: !0
-		}
-	},
+	props: { settings: {
+		type: Object,
+		required: !0
+	} },
 	data() {
 		return { instance: null };
 	},
 	mounted() {
-		this.instance = new We({
+		this.instance = new Ke({
 			container: this.$el,
-			http: this.http,
-			language: this.language || void 0,
-			client: this.client || void 0,
-			config: this.config,
-			settings: {
-				theme: this.theme,
-				copy: this.copy,
-				picker: this.picker
-			},
+			settings: this.settings,
 			events: { afterChange: (e, t) => {
 				this.$emit("update:language", e), this.$emit("update:client", t);
 			} }
@@ -5120,39 +5403,22 @@ var We = class {
 	unmounted() {
 		this.instance?.destroy(), this.instance = null;
 	},
-	watch: {
-		http: {
-			handler(e) {
-				this.instance?.setHttp(e);
-			},
-			deep: !0
+	watch: { settings: {
+		handler(e) {
+			this.instance?.setSettings(e);
 		},
-		config: {
-			handler(e) {
-				this.instance?.setConfig(e);
-			},
-			deep: !0
-		},
-		language(e) {
-			e && this.instance?.setLanguage(e, this.client || void 0);
-		},
-		client(e) {
-			e && this.instance?.setClient(e);
-		},
-		theme(e) {
-			this.instance?.setTheme(e);
-		}
-	}
-}), Ke = (e, t) => {
+		deep: !0
+	} }
+}), Je = (e, t) => {
 	let n = e.__vccOpts || e;
 	for (let [e, r] of t) n[e] = r;
 	return n;
-}, qe = { class: "gimmehttp-wrap" };
-function Je(t, r, i, a, o, s) {
-	return n(), e("div", qe);
+}, Ye = { class: "gimmehttp-wrap" };
+function Xe(t, r, i, a, o, s) {
+	return n(), e("div", Ye);
 }
-var Ye = /*#__PURE__*/ Ke(Ge, [["render", Je]]), Xe = { install(e) {
-	e.component("GimmeHttp", Ye);
+var Ze = /*#__PURE__*/ Je(qe, [["render", Xe]]), Qe = { install(e) {
+	e.component("GimmeHttp", Ze);
 } };
 //#endregion
-export { Ye as GimmeHttp, Xe as default };
+export { Ze as GimmeHttp, Qe as default };
