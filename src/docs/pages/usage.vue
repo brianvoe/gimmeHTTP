@@ -3,6 +3,8 @@
   import HighlightStyle from '@/docs/components/highlight_style.vue'
   import { GimmeHTTP } from '@/gimmehttp'
   import type { Http } from '@/gimmehttp/core'
+  import { Clients, Languages } from '@/gimmehttp/core'
+  import { getLogo } from '@/gimmehttp/logos/index'
   import { shellCurl, goHttp, jsFetch } from '@/gimmehttp/clients'
 
   const sampleOutput = `curl "https://example.com" \\
@@ -37,6 +39,17 @@
         sampleOutput,
         demoHttp,
         instance: null as GimmeHTTP | null
+      }
+    },
+    computed: {
+      languageCatalog(): { language: string; clients: string[]; logo: string | null }[] {
+        return Languages().map((language) => ({
+          language,
+          clients: Clients()
+            .filter((c) => c.language === language)
+            .map((c) => c.client),
+          logo: getLogo(language)
+        }))
       }
     },
     mounted() {
@@ -78,6 +91,73 @@
     gap: calc(var(--spacing) * 1.5);
     width: 100%;
 
+    .language_catalog {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--spacing);
+      margin-top: var(--spacing);
+
+      .catalog_item {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-quarter);
+        padding: var(--spacing);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius);
+        background: rgba(0, 0, 0, 0.15);
+
+        .catalog_lang {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-half);
+
+          .catalog_logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+
+            :deep(svg) {
+              width: 22px;
+              height: 22px;
+              display: block;
+            }
+          }
+
+          code {
+            font-size: 14px;
+            font-weight: 600;
+          }
+        }
+
+        .catalog_clients {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+
+          li {
+            margin: 0;
+          }
+
+          code {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--color-text);
+            background: var(--color-surface-raised, rgba(255, 255, 255, 0.08));
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+          }
+        }
+      }
+    }
+
     .ui_demo {
       margin-top: var(--spacing);
     }
@@ -105,8 +185,38 @@
     <div class="section">
       <h2>Usage</h2>
       <p>
-        Install gimmehttp with npm, pnpm, or yarn. The package ships the styled UI component, the core code generation
-        engine, individual client generators, and Vue / React wrappers — all from a single dependency.
+        The package ships the styled UI component, the core code generation engine, individual client generators, and
+        Vue / React wrappers — all from a single dependency.
+      </p>
+    </div>
+
+    <div class="section">
+      <h3>Languages &amp; clients</h3>
+      <p>
+        These are the <code>settings.language</code> and <code>settings.client</code> values you can select in the UI
+        picker (or pass to <code>Generate</code>). Register the clients you want first — only registered ones appear.
+      </p>
+
+      <div class="language_catalog">
+        <div class="catalog_item" v-for="entry in languageCatalog" :key="entry.language">
+          <div class="catalog_lang">
+            <span v-if="entry.logo" class="catalog_logo" v-html="entry.logo"></span>
+            <code>{{ entry.language }}</code>
+          </div>
+          <ul class="catalog_clients">
+            <li v-for="client in entry.clients" :key="client">
+              <code>{{ client }}</code>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>UI component</h3>
+      <p>
+        Install the package, then use the default import for the styled widget with built-in syntax highlighting. Point
+        it at a container, pass clients and settings, and it handles the rest.
       </p>
 
       <HighlightStyle language="shell">
@@ -114,14 +224,6 @@
           npm install gimmehttp
         </pre>
       </HighlightStyle>
-    </div>
-
-    <div class="section">
-      <h3>UI component</h3>
-      <p>
-        The default import is the styled widget with built-in syntax highlighting. Point it at a container, pass
-        clients and settings, and it handles the rest.
-      </p>
 
       <HighlightStyle language="typescript">
         <pre>
@@ -162,9 +264,15 @@
     <div class="section">
       <h3>Engine only</h3>
       <p>
-        Use <code>gimmehttp/core</code> for text-only generation — no UI. Register the clients you need, then call
-        <code>Generate</code>.
+        Use <code>gimmehttp/core</code> for text-only generation — no UI. Install the package, register the clients you
+        need, then call <code>Generate</code>.
       </p>
+
+      <HighlightStyle language="shell">
+        <pre>
+          npm install gimmehttp
+        </pre>
+      </HighlightStyle>
 
       <HighlightStyle language="typescript">
         <pre>
