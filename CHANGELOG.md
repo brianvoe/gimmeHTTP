@@ -21,6 +21,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Settings docs page covering core `Settings` (`gimmehttp/core`) and UI `Settings` (`gimmehttp`)
 - Official React wrapper (`gimmehttp/react`) with optional peer deps, CSS export, docs page, and Frameworks nav
   dropdown (Vue / React)
+- Additional clients for existing languages: Python httpx/aiohttp, Dart dio, Swift Alamofire, Shell httpie/wget,
+  Ruby HTTParty, Java HttpClient, Node axios/got, JavaScript ky, Go resty, Kotlin OkHttp, PHP Symfony HttpClient,
+  Rust ureq, C# Flurl
 
 ### Changed
 

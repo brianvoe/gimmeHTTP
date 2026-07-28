@@ -1,6 +1,6 @@
 # HTTP Client Implementations
 
-This directory contains HTTP client code generators for 21 different programming languages and libraries.
+This directory contains HTTP client code generators for 15 programming languages (38 clients).
 
 ## Supported Languages & Clients
 
@@ -9,25 +9,41 @@ This directory contains HTTP client code generators for 21 different programming
 | C          | libcurl           | ✓       | ✅ Complete |
 | C#         | HttpClient        | ✓       | ✅ Complete |
 | C#         | RestSharp         |         | ✅ Complete |
+| C#         | Flurl             |         | ✅ Complete |
 | Dart       | http              | ✓       | ✅ Complete |
+| Dart       | dio               |         | ✅ Complete |
 | Go         | net/http          | ✓       | ✅ Complete |
+| Go         | resty             |         | ✅ Complete |
 | Java       | HttpURLConnection | ✓       | ✅ Complete |
 | Java       | OkHttp            |         | ✅ Complete |
+| Java       | HttpClient        |         | ✅ Complete |
 | JavaScript | axios             |         | ✅ Complete |
 | JavaScript | fetch             | ✓       | ✅ Complete |
 | JavaScript | jQuery            |         | ✅ Complete |
+| JavaScript | ky                |         | ✅ Complete |
 | Kotlin     | Ktor              | ✓       | ✅ Complete |
+| Kotlin     | OkHttp            |         | ✅ Complete |
 | Node.js    | fetch             |         | ✅ Complete |
 | Node.js    | http              | ✓       | ✅ Complete |
+| Node.js    | axios             |         | ✅ Complete |
+| Node.js    | got               |         | ✅ Complete |
 | PHP        | cURL              | ✓       | ✅ Complete |
 | PHP        | Guzzle            |         | ✅ Complete |
+| PHP        | Symfony           |         | ✅ Complete |
 | Python     | http.client       | ✓       | ✅ Complete |
 | Python     | requests          |         | ✅ Complete |
+| Python     | httpx             |         | ✅ Complete |
+| Python     | aiohttp           |         | ✅ Complete |
 | Ruby       | Net::HTTP         | ✓       | ✅ Complete |
 | Ruby       | Faraday           |         | ✅ Complete |
+| Ruby       | HTTParty          |         | ✅ Complete |
 | Rust       | reqwest           | ✓       | ✅ Complete |
+| Rust       | ureq              |         | ✅ Complete |
 | Shell      | cURL              | ✓       | ✅ Complete |
+| Shell      | HTTPie            |         | ✅ Complete |
+| Shell      | wget              |         | ✅ Complete |
 | Swift      | URLSession        | ✓       | ✅ Complete |
+| Swift      | Alamofire         |         | ✅ Complete |
 
 ## Feature Support
 
@@ -36,25 +52,41 @@ This directory contains HTTP client code generators for 21 different programming
 | C          | libcurl           | ✅ GET, POST, PUT, DELETE        | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
 | C#         | HttpClient        | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
 | C#         | RestSharp         | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| C#         | Flurl             | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Dart       | http              | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ❌      | ✅            | ✅        | ❌        | ✅        | ✅       | ✅               | ✅             |          |
+| Dart       | dio               | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Go         | net/http          | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Go         | resty             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Java       | HttpURLConnection | ✅ GET, POST, PUT, DELETE        | ✅      | ✅     | ✅      | ✅            | ✅        | ❌        | ✅        | ✅       | ✅               | ✅             |          |
 | Java       | OkHttp            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Java       | HttpClient        | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | JavaScript | axios             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
 | JavaScript | fetch             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
 | JavaScript | jQuery            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
+| JavaScript | ky                | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Kotlin     | Ktor              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Kotlin     | OkHttp            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Node.js    | fetch             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
 | Node.js    | http              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Node.js    | axios             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
+| Node.js    | got               | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | PHP        | cURL              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | PHP        | Guzzle            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| PHP        | Symfony           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Python     | http.client       | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Python     | requests          | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Python     | httpx             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Python     | aiohttp           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Ruby       | Net::HTTP         | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Ruby       | Faraday           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Ruby       | HTTParty          | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Rust       | reqwest           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Rust       | ureq              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Shell      | cURL              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| Shell      | HTTPie            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| Shell      | wget              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
 | Swift      | URLSession        | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
+| Swift      | Alamofire         | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 
 **Legend:**
 
