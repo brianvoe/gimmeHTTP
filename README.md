@@ -131,22 +131,12 @@ Generate(settings: Settings): Outcome
 ### Settings Object
 
 ```typescript
-interface Settigns {
-  language: string // go, javascript, python, etc.
-  target: string // native, axios, requests, etc.
+interface Settings {
+  // Selection
+  language?: string // go, javascript, python, etc. (defaults to javascript)
+  client?: string // http, axios, requests, etc. (defaults per language)
 
-  // HTTP request details
-  http: {
-    method: string // 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-    url: string // ex: 'https://example.com'
-
-    // Optional request details
-    headers?: { [key: string]: string }
-    cookies?: { [key: string]: string }
-    body?: any
-  }
-
-  // Optional - configuration for the code generation
+  // Code generation
   config?: {
     // The character(s) to use for indentation
     indent?: string // default: '  '
@@ -157,6 +147,18 @@ interface Settigns {
     // Whether or not to handle errors in the generated code
     // default: false to help keep the generated code simple by default
     handleErrors?: boolean // default: false
+  }
+
+  // Request
+  http: {
+    method: string // 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+    url: string // ex: 'https://example.com'
+
+    // Optional request details
+    headers?: { [key: string]: string | string[] }
+    cookies?: { [key: string]: string }
+    params?: { [key: string]: string | string[] }
+    body?: any
   }
 }
 ```
@@ -169,25 +171,18 @@ during code generation.
 ```typescript
 import { Generate } from 'gimmehttp/core'
 
-const { code, error, language, client } = Generate(request)
+const { code, error } = Generate(request)
 if (error) {
   console.error(error)
 }
 
 // Output generated code
 console.log(code)
-console.log(language)
-console.log(client)
 ```
 
 ```typescript
 interface Outcome {
   error?: string // An error message if an error occurred
-
-  // or //
-
-  language?: string // Language used
-  client?: string // Client used, set to default if not specified
   code?: string // Generated code
 }
 ```
@@ -308,22 +303,20 @@ import { goHttp, jsFetch, shellCurl } from 'gimmehttp/clients'
 const gh = new GimmeHTTP({
   // Required
   container: '#code', // selector or HTMLElement
-  http: {
-    method: 'POST',
-    url: 'https://example.com/api/users',
-    headers: { 'Content-Type': 'application/json' },
-    body: { first_name: 'Billy' }
-  },
-
-  // Optional
   clients: [goHttp, jsFetch, shellCurl], // registers + limits the picker
-  language: 'go', // initial language
-  client: 'http', // initial client
-  config: { indent: '  ' }, // engine config passthrough
   settings: {
+    language: 'go', // initial language
+    client: 'http', // initial client
     theme: 'dark', // 'dark' | 'light'
     copy: true, // show copy button
-    picker: true // show language/client picker
+    picker: true, // show language/client picker
+    config: { indent: '  ' }, // engine config
+    http: {
+      method: 'POST',
+      url: 'https://example.com/api/users',
+      headers: { 'Content-Type': 'application/json' },
+      body: { first_name: 'Billy' }
+    }
   },
   events: {
     afterChange: (language, client, code) => {}
@@ -331,6 +324,7 @@ const gh = new GimmeHTTP({
 })
 
 // Methods
+gh.setSettings({ language: 'python', theme: 'light' })
 gh.setHttp({ method: 'GET', url: 'https://example.com' })
 gh.setLanguage('python')
 gh.setClient('requests')
@@ -377,7 +371,9 @@ attached as statics (`GimmeHTTP.Generate`, `GimmeHTTP.Register`, ...).
 <script>
   new GimmeHTTP({
     container: '#code',
-    http: { method: 'GET', url: 'https://example.com' }
+    settings: {
+      http: { method: 'GET', url: 'https://example.com' }
+    }
   })
 </script>
 ```
@@ -418,30 +414,27 @@ app.mount('#app')
 
 ```vue
 <script setup lang="ts">
-  import { ref } from 'vue'
   import { GimmeHttp } from 'gimmehttp/vue'
-  import type { Http } from 'gimmehttp/core'
+  import type { Settings } from 'gimmehttp'
 
-  const http = ref<Http>({
-    method: 'GET',
-    url: 'https://example.com'
-  })
+  const settings: Settings = {
+    theme: 'dark',
+    http: {
+      method: 'GET',
+      url: 'https://example.com'
+    }
+  }
 </script>
 
 <template>
-  <GimmeHttp :http="http" theme="dark" />
+  <GimmeHttp :settings="settings" />
 </template>
 ```
 
 Props overview:
 
-- `http` (required): request definition
-- `language` (optional): language key; auto-selected if omitted
-- `client` (optional): client key; auto-selected if omitted
-- `theme` (optional): 'light' | 'dark' (default 'dark')
-- `config` (optional): generator `Config`
-- `copy` (optional): show the copy button (default true)
-- `picker` (optional): show the language/client picker (default true)
+- `settings` (required): `Settings` — `language`, `client`, `theme`, `copy`, `picker`, `config`, `http`
+- Emits `update:language` and `update:client` when the selection changes
 
 ---
 

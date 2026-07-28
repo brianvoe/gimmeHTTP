@@ -15,13 +15,13 @@
       // Live demo using the vanilla class directly (no Vue wrapper)
       this.instance = new GimmeHTTP({
         container: this.$refs.demo as HTMLElement,
-        http: {
-          method: 'POST',
-          url: 'https://example.com/api/users',
-          headers: { 'Content-Type': 'application/json' },
-          body: { first_name: 'Billy', email: 'billyboy@gmail.com' }
-        },
         settings: {
+          http: {
+            method: 'POST',
+            url: 'https://example.com/api/users',
+            headers: { 'Content-Type': 'application/json' },
+            body: { first_name: 'Billy', email: 'billyboy@gmail.com' }
+          },
           theme: 'dark'
         }
       })
@@ -60,22 +60,20 @@
         const gh = new GimmeHTTP({
           // Required
           container: '#code', // selector or HTMLElement
-          http: {
-            method: 'POST',
-            url: 'https://example.com/api/users',
-            headers: { 'Content-Type': 'application/json' },
-            body: { first_name: 'Billy' }
-          },
-
-          // Optional
           clients: [goHttp, jsFetch, shellCurl], // registers + limits the picker
-          language: 'go',      // initial language
-          client: 'http',      // initial client
-          config: { indent: '  ' },
           settings: {
+            language: 'go',    // initial language
+            client: 'http',    // initial client
             theme: 'dark',     // 'dark' | 'light'
             copy: true,        // show copy button
-            picker: true       // show language + client controls
+            picker: true,      // show language + client controls
+            config: { indent: '  ' },
+            http: {
+              method: 'POST',
+              url: 'https://example.com/api/users',
+              headers: { 'Content-Type': 'application/json' },
+              body: { first_name: 'Billy' }
+            }
           },
           events: {
             afterChange: (language, client, code) => {
@@ -108,6 +106,7 @@
     <h3>Methods</h3>
     <HighlightStyle language="typescript">
       <pre>
+        gh.setSettings({ language: 'python', theme: 'light' })
         gh.setHttp({ method: 'GET', url: 'https://example.com' })
         gh.setLanguage('python')
         gh.setClient('requests')

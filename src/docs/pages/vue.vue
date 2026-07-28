@@ -2,6 +2,7 @@
   import { defineComponent } from 'vue'
   import { GimmeHttp } from '@/gimmehttp/vue'
   import HighlightStyle from '@/docs/components/highlight_style.vue'
+  import type { Settings } from '@/gimmehttp'
   import type { Http } from '@/gimmehttp/core'
 
   export default defineComponent({
@@ -16,9 +17,15 @@
 
       return {
         demoHttp,
-        lang: '',
-        client: '',
         theme: 'light' as 'light' | 'dark'
+      }
+    },
+    computed: {
+      demoSettings(): Settings {
+        return {
+          theme: this.theme,
+          http: this.demoHttp
+        }
       }
     },
     methods: {
@@ -74,16 +81,18 @@
       <pre>
         &lt;script setup lang="ts"&gt;
           import { GimmeHttp } from 'gimmehttp/vue'
-          import type { Http } from 'gimmehttp/core'
+          import type { Settings } from 'gimmehttp'
 
-          const request: Http = {
-            method: 'GET',
-            url: 'https://api.example.com/users?limit=10',
-            headers: { Accept: 'application/json'}
+          const settings: Settings = {
+            language: 'go',
+            client: 'http',
+            theme: 'light',
+            http: {
+              method: 'GET',
+              url: 'https://api.example.com/users?limit=10',
+              headers: { Accept: 'application/json' }
+            }
           }
-
-          const lang = 'go'
-          const client = 'http'
         &lt;/script&gt;
 
         &lt;style&gt;
@@ -91,15 +100,7 @@
         &lt;/style&gt;
 
         &lt;template&gt;
-          &lt;GimmeHttp 
-            // Required
-            :http="request" 
-            
-            // Optional
-            v-model:language="lang" 
-            v-model:client="client" 
-            theme="light" 
-          /&gt;
+          &lt;GimmeHttp :settings="settings" /&gt;
         &lt;/template&gt;
       </pre>
     </HighlightStyle>
@@ -112,17 +113,19 @@
         &lt;/script&gt;
 
         &lt;template&gt;
-          &lt;GimmeHttp 
-            :http="{
-              method: 'GET',
-              url: 'https://example.com',
-            }" 
-            :theme="light" // 'light' | 'dark'
+          &lt;GimmeHttp
+            :settings="{
+              theme: 'light', // 'light' | 'dark'
+              http: {
+                method: 'GET',
+                url: 'https://example.com',
+              }
+            }"
           /&gt;
         &lt;/template&gt;
       </pre>
     </HighlightStyle>
     <button @click="toggleTheme()">Toggle Theme ({{ theme }})</button>
-    <GimmeHttp :http="demoHttp" :theme="theme" />
+    <GimmeHttp :settings="demoSettings" />
   </div>
 </template>

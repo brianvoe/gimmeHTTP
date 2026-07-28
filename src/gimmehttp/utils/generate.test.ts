@@ -22,13 +22,10 @@ describe('Generate', () => {
     } as Settings
 
     // Generate outcome
-    const { error, language, client, code } = Generate(settings)
+    const { error, code } = Generate(settings)
     if (error) {
       expect(error).toBeUndefined()
     }
-
-    expect(language).toEqual(settings.language)
-    expect(client).toEqual(settings.client)
 
     expect(code).toEqual(`curl "https://example.com"`)
   })
@@ -53,13 +50,10 @@ describe('Generate', () => {
     } as Settings
 
     // Generate outcome
-    const { error, language, client, code } = Generate(settings)
+    const { error, code } = Generate(settings)
     if (error) {
       expect(error).toBeUndefined()
     }
-
-    expect(language).toEqual(settings.language)
-    expect(client).toEqual(settings.client)
 
     expect(code).toEqual(
       `
@@ -93,13 +87,10 @@ curl "https://example.com" \\
     } as Settings
 
     // Generate the code
-    const { error, language, client, code } = Generate(settings)
+    const { error, code } = Generate(settings)
     if (error) {
       expect(error).toBeUndefined()
     }
-
-    expect(language).toEqual(settings.language)
-    expect(client).toEqual(settings.client)
 
     expect(code).toEqual('custom code')
   })
@@ -154,10 +145,9 @@ curl "https://example.com" \\
       }
     } as Settings
 
-    const { error, language, code } = Generate(settings)
+    const { error, code } = Generate(settings)
     expect(error).toBeUndefined()
-    expect(language).toBe('javascript')
-    expect(code).toBeDefined()
+    expect(code).toBe('fetch("https://example.com")')
   })
 
   test('should return error when client not found', () => {

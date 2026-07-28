@@ -2,9 +2,9 @@
   import { defineComponent } from 'vue'
 
   const links = [
-    { path: '/demo', label: 'Demo' },
-    { path: '/install', label: 'Install' },
+    { path: '/usage', label: 'Usage' },
     { path: '/settings', label: 'Settings' },
+    { path: '/demo', label: 'Demo' },
     { path: '/examples', label: 'Examples' },
     { path: '/style', label: 'Style' },
     { path: '/javascript', label: 'JavaScript' },

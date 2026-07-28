@@ -9,29 +9,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Framework-agnostic `GimmeHTTP` UI class (`gimmehttp`) with language/client picker, copy button, theming, and
-  built-in highlight.js syntax highlighting
+- Framework-agnostic `GimmeHTTP` UI class (`gimmehttp`) with language/client picker, copy button, theming, and built-in
+  highlight.js syntax highlighting
 - `gimmehttp/core` engine entry for text-only `Generate` / `Register` / registry helpers
 - `gimmehttp/clients` entry with named client exports plus `allClients` for opt-in, tree-shakeable registration
 - `gimmehttp/css` stylesheet export (also available as `gimmehttp/ui/css`)
 - JavaScript usage docs page and interactive home-page language icons that drive the live example
 - Dedicated Demo docs page; home page slimmed to hero, language showcase, and a live example
 - Style docs page showcasing CSS-variable theming with live examples
+- `setSettings()` on the UI class to merge partial `Settings` updates
+- Settings docs page covering core `Settings` (`gimmehttp/core`) and UI `Settings` (`gimmehttp`)
 
 ### Changed
 
-- **Breaking:** the default `gimmehttp` import is now the UI class (not the engine). Use `gimmehttp/core` for
-  `Generate` / `Register` and related engine APIs
+- **Breaking:** UI types renamed to `Settings`, `Options`, and `Events` (was `UISettings`, `GimmeHTTPOptions`,
+  `GimmeHTTPEvents`)
+- **Breaking:** UI options nest generate fields under `settings` (`language`, `client`, `theme`, `http`, `config`,
+  `copy`, `picker`). Vue takes a single `settings` prop
+- **Breaking:** `Generate` `Outcome` no longer includes `language` or `client` — only `code` and `error`
+- **Breaking:** the default `gimmehttp` import is now the UI class (not the engine). Use `gimmehttp/core` for `Generate`
+  / `Register` and related engine APIs
 - **Breaking:** clients are no longer auto-registered. Import from `gimmehttp/clients` and call `Register(...)`
-- **Breaking:** Vue `GimmeHttp` is a thin wrapper around the UI class; markup, styles, and highlighting live in the
-  UI layer. The `highlight` prop is removed (highlight.js is bundled)
+- **Breaking:** Vue `GimmeHttp` is a thin wrapper around the UI class; markup, styles, and highlighting live in the UI
+  layer. The `highlight` prop is removed (highlight.js is bundled)
 - CDN/UMD global `GimmeHTTP` is the UI class, with engine APIs as statics and all clients pre-registered; ships
   `dist/gimmehttp.css`
 - Package exports now include `.`, `./core`, `./clients`, `./css`, `./ui`, `./ui/css`, `./vue`, `./vue/css`
 - `highlight.js` is a runtime dependency of the UI (no longer an optional peer for consumers of the widget)
 - Docs site redesigned (professional dark theme with orange accent); top nav replaces the sidebar
-- UI options moved from a corner overlay into a flush top bar: language (opens modal), client dropdown, labeled
-  Copy button, and light/dark theme toggle
+- UI options moved from a corner overlay into a flush top bar: language (opens modal), client dropdown, labeled Copy
+  button, and light/dark theme toggle
 - Slimmed UI CSS variables to a small `--gh-*` set (chrome + syntax tokens); docs demos use the library default look
 - Upgraded TypeScript to 7 (with `@typescript/typescript6` for tooling that still needs the JS Compiler API)
 - Upgraded vue-router to 5
@@ -44,7 +51,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Removed unused deps/config (`vuex`, Prism stubs, orphan ESLint config)
 - Dropped deprecated TypeScript `baseUrl` from `tsconfig.json`
 - Added Google Analytics to the documentation site
-- Builder `line` / `append` / `format` now support printf-style `%s` (escaped), `%r` (raw), and `%%`; client generators use this instead of manual `EscapeDoubleQuoted` calls
+- Builder `line` / `append` / `format` now support printf-style `%s` (escaped), `%r` (raw), and `%%`; client generators
+  use this instead of manual `EscapeDoubleQuoted` calls
 
 ### Fixed
 

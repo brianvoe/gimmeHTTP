@@ -15,9 +15,13 @@ const router = createRouter({
       component: () => import('./pages/demo.vue')
     },
     {
+      path: '/usage',
+      name: 'usage',
+      component: () => import('./pages/usage.vue')
+    },
+    {
       path: '/install',
-      name: 'install',
-      component: () => import('./pages/install.vue')
+      redirect: '/usage'
     },
     {
       path: '/settings',

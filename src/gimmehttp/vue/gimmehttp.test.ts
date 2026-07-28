@@ -25,9 +25,11 @@ describe('GimmeHttp Vue Component', () => {
     it('should mount and render the UI class output', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: basicHttp,
-          language: 'javascript',
-          client: 'fetch'
+          settings: {
+            http: basicHttp,
+            language: 'javascript',
+            client: 'fetch'
+          }
         },
         attachTo: document.body
       })
@@ -39,11 +41,13 @@ describe('GimmeHttp Vue Component', () => {
       wrapper.unmount()
     })
 
-    it('should use the language prop for initial selection', () => {
+    it('should use the language setting for initial selection', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: basicHttp,
-          language: 'python'
+          settings: {
+            http: basicHttp,
+            language: 'python'
+          }
         },
         attachTo: document.body
       })
@@ -58,8 +62,10 @@ describe('GimmeHttp Vue Component', () => {
     it('should emit update:language and update:client after render', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: basicHttp,
-          language: 'go'
+          settings: {
+            http: basicHttp,
+            language: 'go'
+          }
         },
         attachTo: document.body
       })
@@ -75,28 +81,42 @@ describe('GimmeHttp Vue Component', () => {
     it('should re-render when http changes', async () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: basicHttp,
-          language: 'shell'
+          settings: {
+            http: basicHttp,
+            language: 'shell'
+          }
         },
         attachTo: document.body
       })
 
-      await wrapper.setProps({ http: { method: 'GET', url: 'https://other.com' } })
+      await wrapper.setProps({
+        settings: {
+          http: { method: 'GET', url: 'https://other.com' },
+          language: 'shell'
+        }
+      })
       expect(wrapper.element.querySelector('.gh-output')?.textContent).toContain('https://other.com')
 
       wrapper.unmount()
     })
 
-    it('should switch language when the language prop changes', async () => {
+    it('should switch language when the language setting changes', async () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: basicHttp,
-          language: 'shell'
+          settings: {
+            http: basicHttp,
+            language: 'shell'
+          }
         },
         attachTo: document.body
       })
 
-      await wrapper.setProps({ language: 'go' })
+      await wrapper.setProps({
+        settings: {
+          http: basicHttp,
+          language: 'go'
+        }
+      })
       expect(wrapper.element.querySelector('.gh-output')?.textContent).toContain('package main')
 
       wrapper.unmount()
@@ -107,8 +127,10 @@ describe('GimmeHttp Vue Component', () => {
     it('should apply the light theme class', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: basicHttp,
-          theme: 'light'
+          settings: {
+            http: basicHttp,
+            theme: 'light'
+          }
         },
         attachTo: document.body
       })
@@ -121,13 +143,20 @@ describe('GimmeHttp Vue Component', () => {
     it('should switch themes reactively', async () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: basicHttp,
-          theme: 'dark'
+          settings: {
+            http: basicHttp,
+            theme: 'dark'
+          }
         },
         attachTo: document.body
       })
 
-      await wrapper.setProps({ theme: 'light' })
+      await wrapper.setProps({
+        settings: {
+          http: basicHttp,
+          theme: 'light'
+        }
+      })
       expect(wrapper.element.querySelector('.gimmehttp')?.classList.contains('light')).toBe(true)
 
       wrapper.unmount()
@@ -138,8 +167,10 @@ describe('GimmeHttp Vue Component', () => {
     it('should clean up on unmount', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: basicHttp,
-          language: 'javascript'
+          settings: {
+            http: basicHttp,
+            language: 'javascript'
+          }
         },
         attachTo: document.body
       })

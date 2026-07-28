@@ -31,7 +31,7 @@
     mounted() {
       this.instance = new GimmeHTTP({
         container: this.$refs.example as HTMLElement,
-        http: this.homeHttp,
+        settings: { http: this.homeHttp },
         events: {
           afterChange: (language) => {
             this.selectedLanguage = language
@@ -106,11 +106,10 @@
       gap: var(--spacing-half);
 
       .langs {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(7, auto);
         justify-content: center;
         gap: var(--spacing-quarter);
-        max-width: 640px;
         margin: 0 auto;
 
         .lang {
@@ -148,6 +147,11 @@
             text-transform: capitalize;
             color: var(--color-text-muted);
           }
+        }
+
+        @media (max-width: 700px) {
+          grid-template-columns: repeat(7, minmax(0, 1fr));
+          width: 100%;
         }
       }
     }

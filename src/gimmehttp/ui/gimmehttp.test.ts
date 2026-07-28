@@ -2,16 +2,25 @@ import { beforeEach, afterEach, describe, expect, test, vi } from 'vitest'
 import { GimmeHTTP } from './gimmehttp'
 import { ClearRegistry, Register } from '../core'
 import { goHttp, jsAxios, jsFetch, shellCurl } from '../clients/index'
+import type { Options, Settings } from './gimmehttp'
+
+type CreateOptions = Omit<Partial<Options>, 'settings'> & {
+  settings?: Partial<Settings>
+}
 
 describe('GimmeHTTP UI class', () => {
   let container: HTMLElement
   const instances: GimmeHTTP[] = []
 
-  function create(options: Partial<ConstructorParameters<typeof GimmeHTTP>[0]> = {}): GimmeHTTP {
+  function create(options: CreateOptions = {}): GimmeHTTP {
+    const { settings: settingsPartial, ...rest } = options
     const gh = new GimmeHTTP({
       container,
-      http: { method: 'GET', url: 'https://example.com' },
-      ...options
+      ...rest,
+      settings: {
+        http: { method: 'GET', url: 'https://example.com' },
+        ...settingsPartial
+      }
     })
     instances.push(gh)
     return gh
@@ -33,7 +42,7 @@ describe('GimmeHTTP UI class', () => {
   })
 
   test('renders code output into the container', () => {
-    const gh = create({ language: 'shell' })
+    const gh = create({ settings: { language: 'shell' } })
 
     const root = container.querySelector('.gimmehttp')
     expect(root).not.toBeNull()
@@ -42,16 +51,23 @@ describe('GimmeHTTP UI class', () => {
   })
 
   test('accepts a selector string as container', () => {
-    const gh = create({ container: '#container', language: 'shell' })
+    const gh = create({ container: '#container', settings: { language: 'shell' } })
 
     expect(gh.getCode()).toContain('curl')
     expect(container.querySelector('.gimmehttp')).not.toBeNull()
   })
 
   test('throws when container is not found', () => {
-    expect(() => new GimmeHTTP({ container: '#nope', http: { method: 'GET', url: 'https://example.com' } })).toThrow(
-      /container not found/
-    )
+    expect(() =>
+      new GimmeHTTP({
+        container: '#nope',
+        settings: { http: { method: 'GET', url: 'https://example.com' } }
+      })
+    ).toThrow(/container not found/)
+  })
+
+  test('throws when settings.http is missing', () => {
+    expect(() => new GimmeHTTP({ container, settings: {} as any })).toThrow(/settings\.http is required/)
   })
 
   test('throws when no clients are registered', () => {
@@ -61,13 +77,37 @@ describe('GimmeHTTP UI class', () => {
 
   test('registers clients passed via options', () => {
     ClearRegistry()
-    const gh = create({ clients: [shellCurl], language: 'shell' })
+    const gh = create({ clients: [shellCurl], settings: { language: 'shell' } })
     expect(gh.getLanguage()).toEqual('shell')
     expect(gh.getCode()).toContain('curl')
   })
 
+  test('limits the language picker to clients passed via options', () => {
+    // Global registry still has every client from beforeEach
+    const gh = create({ clients: [shellCurl, goHttp], settings: { language: 'shell' } })
+
+    const trigger = container.querySelector('.gh-options .gh-lang') as HTMLElement
+    trigger.click()
+
+    const langs = [...container.querySelectorAll('.gh-modal [data-lang]')].map((el) => el.getAttribute('data-lang'))
+    expect(langs).toEqual(['shell', 'go'])
+
+    gh.setLanguage('javascript')
+    expect(gh.getLanguage()).toEqual('shell')
+  })
+
+  test('preserves language order from the clients option', () => {
+    create({ clients: [shellCurl, goHttp, jsFetch], settings: { language: 'shell' } })
+
+    const trigger = container.querySelector('.gh-options .gh-lang') as HTMLElement
+    trigger.click()
+
+    const langs = [...container.querySelectorAll('.gh-modal [data-lang]')].map((el) => el.getAttribute('data-lang'))
+    expect(langs).toEqual(['shell', 'go', 'javascript'])
+  })
+
   test('switches language and client', () => {
-    const gh = create({ language: 'shell' })
+    const gh = create({ settings: { language: 'shell' } })
 
     gh.setLanguage('go')
     expect(gh.getLanguage()).toEqual('go')
@@ -80,19 +120,32 @@ describe('GimmeHTTP UI class', () => {
   })
 
   test('ignores unknown languages', () => {
-    const gh = create({ language: 'shell' })
+    const gh = create({ settings: { language: 'shell' } })
     gh.setLanguage('brainfuck')
     expect(gh.getLanguage()).toEqual('shell')
   })
 
   test('updates output when http changes', () => {
-    const gh = create({ language: 'shell' })
+    const gh = create({ settings: { language: 'shell' } })
     gh.setHttp({ method: 'GET', url: 'https://other.com' })
     expect(gh.getCode()).toContain('https://other.com')
   })
 
+  test('setSettings merges partial updates', () => {
+    const gh = create({ settings: { language: 'shell', theme: 'dark' } })
+
+    gh.setSettings({ http: { method: 'GET', url: 'https://merged.com' }, theme: 'light' })
+    expect(gh.getCode()).toContain('https://merged.com')
+    expect(container.querySelector('.gimmehttp')!.classList.contains('light')).toBe(true)
+    expect(gh.getLanguage()).toEqual('shell')
+
+    gh.setSettings({ language: 'go' })
+    expect(gh.getLanguage()).toEqual('go')
+    expect(gh.getCode()).toContain('package main')
+  })
+
   test('persists selection to localStorage', () => {
-    const gh = create({ language: 'shell' })
+    const gh = create({ settings: { language: 'shell' } })
     gh.setLanguage('go')
 
     expect(localStorage.getItem('gimmeLang')).toEqual('go')
@@ -111,8 +164,8 @@ describe('GimmeHTTP UI class', () => {
     const second = document.createElement('div')
     document.body.appendChild(second)
 
-    const a = create({ language: 'shell' })
-    const b = create({ container: second, language: 'shell' })
+    const a = create({ settings: { language: 'shell' } })
+    const b = create({ container: second, settings: { language: 'shell' } })
 
     a.setLanguage('go')
     expect(b.getLanguage()).toEqual('go')
@@ -120,7 +173,7 @@ describe('GimmeHTTP UI class', () => {
   })
 
   test('syntax-highlights output with bundled highlight.js', () => {
-    create({ language: 'shell' })
+    create({ settings: { language: 'shell' } })
 
     const html = container.querySelector('.gh-output')!.innerHTML
     expect(html).toContain('hljs')
@@ -131,7 +184,7 @@ describe('GimmeHTTP UI class', () => {
     const writeText = vi.fn()
     Object.assign(navigator, { clipboard: { writeText } })
 
-    const gh = create({ language: 'shell' })
+    const gh = create({ settings: { language: 'shell' } })
 
     const copy = container.querySelector('.gh-copy') as HTMLElement
     expect(copy).not.toBeNull()
@@ -153,7 +206,7 @@ describe('GimmeHTTP UI class', () => {
   })
 
   test('opens the language modal and selects a language', () => {
-    const gh = create({ language: 'shell' })
+    const gh = create({ settings: { language: 'shell' } })
 
     const trigger = container.querySelector('.gh-options .gh-lang') as HTMLElement
     trigger.click()
@@ -170,7 +223,7 @@ describe('GimmeHTTP UI class', () => {
   })
 
   test('opens the client dropdown and selects a client', () => {
-    const gh = create({ language: 'javascript', client: 'fetch' })
+    const gh = create({ settings: { language: 'javascript', client: 'fetch' } })
 
     const trigger = container.querySelector('.gh-client-trigger') as HTMLElement
     trigger.click()
@@ -206,7 +259,7 @@ describe('GimmeHTTP UI class', () => {
 
   test('fires afterChange event', () => {
     const afterChange = vi.fn()
-    create({ language: 'shell', events: { afterChange } })
+    create({ settings: { language: 'shell' }, events: { afterChange } })
 
     expect(afterChange).toHaveBeenCalledWith('shell', 'curl', 'curl "https://example.com"')
   })

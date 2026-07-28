@@ -14,57 +14,131 @@
   .settings {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing);
+    gap: calc(var(--spacing) * 1.5);
+    width: 100%;
+
+    .section > h3:first-child {
+      margin-top: 0;
+    }
   }
 </style>
 
 <template>
-  <div class="section settings">
-    <h2>Settings</h2>
-    <div class="alert info"><strong>Info:</strong> The only required fields are language, http.method and http.url</div>
+  <div class="settings">
+    <div class="section">
+      <h2>Settings</h2>
+      <p>
+        One settings shape drives both the engine and the UI. <code>Generate</code> takes core
+        <code>Settings</code> from <code>gimmehttp/core</code>. The widget uses the same fields under
+        <code>settings</code>, plus optional <code>theme</code>, <code>copy</code>, and <code>picker</code>.
+      </p>
 
-    <HighlightStyle language="javascript">
-      <pre>
-        const settings = {
-          // Required
-          language: 'javascript', // Programming Language
-          client: 'axios',        // Client - default set by language
+      <div class="alert info">
+        <strong>Info:</strong> The only required fields are <code>http.method</code> and <code>http.url</code>. Language
+        defaults to <code>javascript</code> when omitted.
+      </div>
+    </div>
 
-          // Optional
-          config: {
-            indent: '  ',       // Indentation characters
-            join: '\n',         // Line join characters
-            handleErrors: false // Handle errors
-          },
+    <div class="section">
+      <h3>UI Settings (<code>GimmeHTTP</code>)</h3>
+      <p>
+        Import <code>Settings</code> from <code>gimmehttp</code> for the widget. It includes the core fields plus
+        <code>theme</code>, <code>copy</code>, and <code>picker</code>. Pass it as <code>settings</code> on the
+        constructor (or as the Vue <code>settings</code> prop).
+      </p>
+      <HighlightStyle language="typescript">
+        <pre>
+          import { GimmeHTTP } from 'gimmehttp'
+          import type { Settings } from 'gimmehttp'
 
-          http: {
-            // Required
-            method: 'GET', // GET, POST, PUT, DELETE, PATCH, etc.
-            url: 'https://example.com',
+          const settings: Settings = {
+            // Selection
+            language: 'go',           // Programming language (default: javascript)
+            client: 'http',           // Client — defaults per language
 
-            // Optional
-            headers: {
-              // string: string
-              'Content-Type': 'application/json'
+            // Appearance
+            theme: 'dark',            // 'dark' | 'light' (default: dark)
+
+            // Controls
+            copy: true,               // Show copy button (default: true)
+            picker: true,             // Show language + client controls (default: true)
+
+            // Code generation
+            config: {
+              indent: '  ',           // Indentation characters (default: '  ')
+              join: '\n',             // Line join characters (default: '\n')
+              handleErrors: false     // Error handling in generated code (default: false)
             },
-            cookies: {
-              // string: string
-              'session_id': 'abc123'
-            },
-            body: {
-              // any
-              first_name: 'Billy',
-              email: 'billybob@gmail.com',
-              address: {
-                street: '123 Main St',
-                city: 'Anytown',
-                state: 'CA',
-                zip: '12345'
+
+            // Request
+            http: {
+              method: 'POST',         // GET | POST | PUT | PATCH | DELETE
+              url: 'https://example.com/api/users',
+              params: {               // Query string params
+                limit: '10'
+              },
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              cookies: {
+                session_id: 'abc123'
+              },
+              body: {                 // string | object | any
+                first_name: 'Billy',
+                email: 'billy@example.com'
               }
             }
           }
-        }
-      </pre>
-    </HighlightStyle>
+
+          new GimmeHTTP({
+            container: '#code',
+            settings
+          })
+        </pre>
+      </HighlightStyle>
+    </div>
+
+    <div class="section">
+      <h3>Core Settings (<code>Generate</code>)</h3>
+      <HighlightStyle language="typescript">
+        <pre>
+          import { Generate } from 'gimmehttp/core'
+
+          const settings = {
+            // Selection
+            language: 'javascript',   // Programming language (default: javascript)
+            client: 'axios',          // Client — defaults per language
+
+            // Code generation
+            config: {
+              indent: '  ',           // Indentation characters (default: '  ')
+              join: '\n',             // Line join characters (default: '\n')
+              handleErrors: false     // Error handling in generated code (default: false)
+            },
+
+            // Request
+            http: {
+              method: 'GET',          // GET | POST | PUT | PATCH | DELETE
+              url: 'https://example.com',
+              params: {               // Query string params
+                limit: '10'
+              },
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              cookies: {
+                session_id: 'abc123'
+              },
+              body: {                 // string | object | any
+                first_name: 'Billy',
+                email: 'billybob@gmail.com'
+              }
+            }
+          }
+
+          const { code, error } = Generate(settings)
+        </pre>
+      </HighlightStyle>
+    </div>
   </div>
 </template>

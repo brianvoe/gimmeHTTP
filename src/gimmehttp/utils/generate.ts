@@ -3,10 +3,14 @@ import { Search } from './registry'
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export interface Settings {
+  // Selection
   language?: string
   client?: string
 
+  // Code generation
   config?: Config
+
+  // Request
   http: Http
 }
 
@@ -14,9 +18,6 @@ export interface Settings {
 // or an error message
 export interface Outcome {
   error?: string
-
-  language?: string // if set by default
-  client?: string // if set by default
   code?: string
 }
 
@@ -64,11 +65,7 @@ export function Generate(req: Settings): Outcome {
   // Generate the code
   const code = client.generate(req.config, req.http)
 
-  return {
-    language: client.language,
-    client: client.client,
-    code: code
-  } as Outcome
+  return { code }
 }
 
 function validate(req: Settings): Error | undefined {

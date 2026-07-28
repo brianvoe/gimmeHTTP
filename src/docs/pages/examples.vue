@@ -67,7 +67,7 @@
         ([container, http]) =>
           new GimmeHTTP({
             container,
-            http
+            settings: { http }
           })
       )
     },

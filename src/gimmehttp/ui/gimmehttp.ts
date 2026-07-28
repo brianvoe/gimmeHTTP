@@ -1,45 +1,50 @@
-import { Generate, Register, Clients, Search } from '../core'
+import { Generate, Register, Clients } from '../core'
 import { getLogo } from '../logos/index'
 import { highlightCode, highlightLanguage } from './highlight'
 
 import type { Client, Config, Http } from '../core'
 
-export interface UISettings {
-  // 'dark' (default) or 'light'
-  theme?: 'dark' | 'light'
-
-  // Show the copy button (default: true)
-  copy?: boolean
-
-  // Show the language/client picker (default: true)
-  picker?: boolean
-}
-
-export interface GimmeHTTPEvents {
-  afterChange?: (language: string, client: string, code: string) => void
-}
-
-export interface GimmeHTTPOptions {
-  // CSS selector or element the widget renders into
-  container: string | HTMLElement
-
-  // The request to generate code for
-  http: Http
-
-  // Clients to register for this page. Optional; anything already
-  // registered via Register() is available too.
-  clients?: Client[]
-
-  // Initial selection. Falls back to localStorage, then the first registered language.
+/** Widget settings: selection → appearance → controls → config → http. */
+export interface Settings {
+  // Selection
   language?: string
   client?: string
 
-  // Engine config passthrough (indent, join, handleErrors)
+  // Appearance
+  // 'dark' (default) or 'light'
+  theme?: 'dark' | 'light'
+
+  // Controls
+  // Show the copy button (default: true)
+  copy?: boolean
+  // Show the language/client picker (default: true)
+  picker?: boolean
+
+  // Code generation
   config?: Config
 
-  settings?: UISettings
-  events?: GimmeHTTPEvents
+  // Request
+  http: Http
 }
+
+export interface Events {
+  afterChange?: (language: string, client: string, code: string) => void
+}
+
+export interface Options {
+  // CSS selector or element the widget renders into
+  container: string | HTMLElement
+
+  // Clients to register and show in the picker. When omitted, all registered clients are available.
+  clients?: Client[]
+
+  // Selection → Appearance → Controls → config → http
+  settings: Settings
+
+  events?: Events
+}
+
+type Controls = Required<Pick<Settings, 'theme' | 'copy' | 'picker'>>
 
 const STORAGE_LANG = 'gimmeLang'
 const STORAGE_CLIENT = 'gimmeClient'
@@ -65,8 +70,11 @@ export class GimmeHTTP {
 
   private http: Http
   private config?: Config
-  private settings: Required<UISettings>
-  private events: GimmeHTTPEvents
+  private controls: Controls
+  private events: Events
+
+  // When set, the picker is limited to these clients (still registered globally for Generate)
+  private scopedClients: Client[] | null = null
 
   private language: string
   private client: string
@@ -77,12 +85,12 @@ export class GimmeHTTP {
   private copiedTimeout: number | null = null
   private onDocClick: ((event: MouseEvent) => void) | null = null
 
-  constructor(options: GimmeHTTPOptions) {
+  constructor(options: Options) {
     if (!options || !options.container) {
       throw new Error('GimmeHTTP: container is required')
     }
-    if (!options.http) {
-      throw new Error('GimmeHTTP: http is required')
+    if (!options.settings?.http) {
+      throw new Error('GimmeHTTP: settings.http is required')
     }
 
     const el =
@@ -96,34 +104,36 @@ export class GimmeHTTP {
 
     if (options.clients && options.clients.length > 0) {
       Register(options.clients)
+      this.scopedClients = options.clients
     }
-    if (Clients().length === 0) {
+    if (this.clientsPool().length === 0) {
       throw new Error(
         'GimmeHTTP: no clients registered. Import clients from gimmehttp/clients and pass them via the clients option or Register().'
       )
     }
 
-    this.http = options.http
-    this.config = options.config
+    const s = options.settings
+    this.http = s.http
+    this.config = s.config
     this.events = options.events || {}
-    this.settings = {
-      theme: options.settings?.theme || 'dark',
-      copy: options.settings?.copy !== false,
-      picker: options.settings?.picker !== false
+    this.controls = {
+      theme: s.theme || 'dark',
+      copy: s.copy !== false,
+      picker: s.picker !== false
     }
 
-    // Initial selection: explicit option > localStorage > first registered
+    // Initial selection: explicit option > localStorage > first available
     const isBrowser = typeof window !== 'undefined'
     const storedLang = isBrowser ? localStorage.getItem(STORAGE_LANG) : null
     const storedClient = isBrowser ? localStorage.getItem(STORAGE_CLIENT) : null
+    const pool = this.clientsPool()
 
-    this.language = options.language || storedLang || Clients()[0].language
-    // Make sure the language actually exists in the registry
-    if (!Search(this.language)) {
-      this.language = Clients()[0].language
+    this.language = s.language || storedLang || pool[0].language
+    if (!this.findClient(this.language)) {
+      this.language = pool[0].language
     }
 
-    const found = Search(this.language, options.client || storedClient || undefined)
+    const found = this.findClient(this.language, s.client || storedClient || undefined)
     this.client = found ? found.client : ''
 
     instances.add(this)
@@ -131,6 +141,38 @@ export class GimmeHTTP {
   }
 
   // ----- Public API -----
+
+  setSettings(partial: Partial<Settings>): void {
+    if (partial.http !== undefined) {
+      this.http = partial.http
+    }
+    if (partial.config !== undefined) {
+      this.config = partial.config
+    }
+    if (partial.theme !== undefined) {
+      this.controls.theme = partial.theme
+    }
+    if (partial.copy !== undefined) {
+      this.controls.copy = partial.copy
+    }
+    if (partial.picker !== undefined) {
+      this.controls.picker = partial.picker
+    }
+
+    if (partial.language !== undefined || partial.client !== undefined) {
+      const language = partial.language ?? this.language
+      const client = partial.client ?? this.client
+      const found = this.findClient(language, client)
+      if (found) {
+        this.language = found.language
+        this.client = found.client
+        this.persist()
+        this.syncOthers()
+      }
+    }
+
+    this.render()
+  }
 
   setHttp(http: Http): void {
     this.http = http
@@ -143,7 +185,7 @@ export class GimmeHTTP {
   }
 
   setLanguage(language: string, client?: string): void {
-    const found = Search(language, client)
+    const found = this.findClient(language, client)
     if (!found) {
       return
     }
@@ -155,7 +197,7 @@ export class GimmeHTTP {
   }
 
   setClient(client: string): void {
-    const found = Search(this.language, client)
+    const found = this.findClient(this.language, client)
     if (!found) {
       return
     }
@@ -166,7 +208,7 @@ export class GimmeHTTP {
   }
 
   setTheme(theme: 'dark' | 'light'): void {
-    this.settings.theme = theme
+    this.controls.theme = theme
     this.render()
   }
 
@@ -210,7 +252,7 @@ export class GimmeHTTP {
         continue
       }
       if (instance.language !== this.language || instance.client !== this.client) {
-        const found = Search(this.language, this.client)
+        const found = instance.findClient(this.language, this.client)
         if (!found) {
           continue
         }
@@ -221,18 +263,43 @@ export class GimmeHTTP {
     }
   }
 
+  private clientsPool(): Client[] {
+    return this.scopedClients ?? Clients()
+  }
+
+  private languages(): string[] {
+    return this.clientsPool()
+      .map((c) => c.language)
+      .filter((v, i, a) => a.indexOf(v) === i)
+  }
+
+  private findClient(language: string, client?: string): Client | null {
+    if (!language) {
+      return null
+    }
+    const matches = this.clientsPool().filter((c) => c.language.toLowerCase() === language.toLowerCase())
+    if (matches.length === 0) {
+      return null
+    }
+    const defaultClient = matches.find((c) => c.default) || matches[0]
+    if (!client) {
+      return defaultClient
+    }
+    return matches.find((c) => c.client.toLowerCase() === client.toLowerCase()) || defaultClient
+  }
+
   private clientsForLanguage(): string[] {
-    return Clients()
+    return this.clientsPool()
       .filter((c) => c.language === this.language)
       .map((c) => c.client)
   }
 
   private generate(): void {
-    const { code, language, client, error } = Generate({
+    const { code, error } = Generate({
       language: this.language,
       client: this.client,
-      config: this.config,
-      http: this.http
+      http: this.http,
+      config: this.config
     })
 
     if (error) {
@@ -241,8 +308,6 @@ export class GimmeHTTP {
       return
     }
 
-    this.language = language!
-    this.client = client!
     this.code = code!
 
     this.renderOutputHtml(this.highlightedOutput())
@@ -272,15 +337,15 @@ export class GimmeHTTP {
       this.container.appendChild(this.root)
     }
 
-    this.root.className = `gimmehttp${this.settings.theme === 'light' ? ' light' : ''}`
+    this.root.className = `gimmehttp${this.controls.theme === 'light' ? ' light' : ''}`
     this.root.innerHTML = `
       <div class="gh-options">
         <div class="gh-options-left">
-          ${this.settings.picker ? this.langControl() : ''}
-          ${this.settings.picker ? this.clientControl() : ''}
+          ${this.controls.picker ? this.langControl() : ''}
+          ${this.controls.picker ? this.clientControl() : ''}
         </div>
         <div class="gh-options-right">
-          ${this.settings.copy ? this.copyControl() : ''}
+          ${this.controls.copy ? this.copyControl() : ''}
           ${this.themeControl()}
         </div>
       </div>
@@ -336,7 +401,7 @@ export class GimmeHTTP {
   }
 
   private themeControl(): string {
-    const isLight = this.settings.theme === 'light'
+    const isLight = this.controls.theme === 'light'
     const label = isLight ? 'Switch to dark theme' : 'Switch to light theme'
     const icon = isLight ? MOON_ICON : SUN_ICON
     return `<button type="button" class="gh-theme" aria-label="${label}">${icon}</button>`
@@ -350,7 +415,7 @@ export class GimmeHTTP {
       this.toggleClientMenu()
     })
     this.root?.querySelector('.gh-theme')?.addEventListener('click', () => {
-      this.setTheme(this.settings.theme === 'light' ? 'dark' : 'light')
+      this.setTheme(this.controls.theme === 'light' ? 'dark' : 'light')
     })
 
     this.root?.querySelectorAll('.gh-client-option').forEach((option) => {
@@ -457,9 +522,7 @@ export class GimmeHTTP {
     }
     this.modalOpen = true
 
-    const languages = Clients()
-      .map((c) => c.language)
-      .filter((v, i, a) => a.indexOf(v) === i)
+    const languages = this.languages()
 
     const modal = document.createElement('div')
     modal.className = 'gh-modal'

@@ -31,10 +31,12 @@
       this.instances = mounts.map(([ref, theme]) => {
         return new GimmeHTTP({
           container: this.$refs[ref] as HTMLElement,
-          http: this.demoHttp,
-          language: 'javascript',
-          client: 'fetch',
-          settings: theme ? { theme } : undefined
+          settings: {
+            language: 'javascript',
+            client: 'fetch',
+            ...(theme ? { theme } : {}),
+            http: this.demoHttp
+          }
         })
       })
     },
