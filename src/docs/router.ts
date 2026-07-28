@@ -24,6 +24,10 @@ const router = createRouter({
       redirect: '/usage'
     },
     {
+      path: '/javascript',
+      redirect: '/usage'
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: () => import('./pages/settings.vue')
@@ -32,11 +36,6 @@ const router = createRouter({
       path: '/style',
       name: 'style',
       component: () => import('./pages/style.vue')
-    },
-    {
-      path: '/javascript',
-      name: 'javascript',
-      component: () => import('./pages/javascript.vue')
     },
     {
       path: '/vue',

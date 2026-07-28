@@ -6,7 +6,6 @@
     { path: '/settings', label: 'Settings' },
     { path: '/demo', label: 'Demo' },
     { path: '/style', label: 'Style' },
-    { path: '/javascript', label: 'JavaScript' },
     { path: '/vue', label: 'Vue' }
   ]
 
