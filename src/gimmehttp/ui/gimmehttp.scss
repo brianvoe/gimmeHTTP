@@ -225,7 +225,8 @@
     background: var(--gh-bg);
 
     &.gh-modalOpen pre.hljs {
-      min-height: 280px;
+      // Fallback while JS measures the picker; fitModalHeight sets the real size.
+      min-height: 360px;
     }
 
     pre.hljs {

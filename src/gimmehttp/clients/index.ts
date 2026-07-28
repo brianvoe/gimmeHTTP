@@ -23,6 +23,10 @@ export { default as jsFetch } from './js.fetch'
 export { default as jsAxios } from './js.axios'
 export { default as jsJquery } from './js.jquery'
 export { default as jsKy } from './js.ky'
+export { default as tsFetch } from './ts.fetch'
+export { default as tsAxios } from './ts.axios'
+export { default as tsJquery } from './ts.jquery'
+export { default as tsKy } from './ts.ky'
 export { default as kotlinKtor } from './kotlin.ktor'
 export { default as kotlinOkhttp } from './kotlin.okhttp'
 export { default as nodeHttp } from './node.http'
@@ -65,6 +69,10 @@ import jsFetchClient from './js.fetch'
 import jsAxiosClient from './js.axios'
 import jsJqueryClient from './js.jquery'
 import jsKyClient from './js.ky'
+import tsFetchClient from './ts.fetch'
+import tsAxiosClient from './ts.axios'
+import tsJqueryClient from './ts.jquery'
+import tsKyClient from './ts.ky'
 import kotlinKtorClient from './kotlin.ktor'
 import kotlinOkhttpClient from './kotlin.okhttp'
 import nodeHttpClient from './node.http'
@@ -110,6 +118,10 @@ export const allClients: Client[] = [
   jsAxiosClient,
   jsJqueryClient,
   jsKyClient,
+  tsFetchClient,
+  tsAxiosClient,
+  tsJqueryClient,
+  tsKyClient,
   kotlinKtorClient,
   kotlinOkhttpClient,
   nodeHttpClient,

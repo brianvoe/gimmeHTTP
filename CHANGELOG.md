@@ -5,7 +5,7 @@ All notable changes to GimmeHttp are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v2.0.0]
 
 ### Added
 
@@ -19,12 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Style docs page showcasing CSS-variable theming with live examples
 - `setSettings()` on the UI class to merge partial `Settings` updates
 - Settings docs page covering core `Settings` (`gimmehttp/core`) and UI `Settings` (`gimmehttp`)
-- Official React wrapper (`gimmehttp/react`) with optional peer deps, CSS export, docs page, and Frameworks nav
-  dropdown (Vue / React)
-- Additional clients for existing languages: Python httpx/aiohttp, Dart dio, Swift Alamofire, Shell httpie/wget,
-  Ruby HTTParty, Java HttpClient, Node axios/got, JavaScript ky, Go resty, Kotlin OkHttp, PHP Symfony HttpClient,
-  Rust ureq, C# Flurl
-- New languages: PowerShell (`Invoke-RestMethod`), R (`httr`), and Objective-C (`NSURLSession`)
+- Official React wrapper (`gimmehttp/react`) with optional peer deps, CSS export, docs page, and Frameworks nav dropdown
+  (Vue / React)
+- Additional clients for existing languages: Python httpx/aiohttp, Dart dio, Swift Alamofire, Shell httpie/wget, Ruby
+  HTTParty, Java HttpClient, Node axios/got, JavaScript ky, Go resty, Kotlin OkHttp, PHP Symfony HttpClient, Rust ureq,
+  C# Flurl
+- New languages: PowerShell (`Invoke-RestMethod`), R (`httr`), Objective-C (`NSURLSession`), and TypeScript (`fetch`,
+  `axios`, `jQuery`, `ky`)
 
 ### Changed
 

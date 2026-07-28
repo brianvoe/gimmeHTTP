@@ -557,12 +557,34 @@ export class GimmeHTTP {
 
     this.root.appendChild(modal)
     this.root.querySelector('.gh-output')?.classList.add('gh-modalOpen')
-    requestAnimationFrame(() => modal.classList.add('gh-open'))
+    requestAnimationFrame(() => {
+      modal.classList.add('gh-open')
+      this.fitModalHeight(modal)
+    })
+  }
+
+  /** Grow the widget when the language picker is taller than the current snippet. */
+  private fitModalHeight(modal: HTMLElement): void {
+    if (!this.root) {
+      return
+    }
+    const content = modal.querySelector('.gh-content') as HTMLElement | null
+    if (!content) {
+      return
+    }
+    const marginTop = parseFloat(getComputedStyle(content).marginTop) || 0
+    const needed = Math.ceil(marginTop + content.offsetHeight + 16)
+    if (needed > this.root.offsetHeight) {
+      this.root.style.minHeight = `${needed}px`
+    }
   }
 
   private closeModal(): void {
     this.modalOpen = false
     this.root?.querySelector('.gh-output')?.classList.remove('gh-modalOpen')
+    if (this.root) {
+      this.root.style.minHeight = ''
+    }
     const modal = this.root?.querySelector('.gh-modal')
     if (!modal) {
       return

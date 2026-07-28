@@ -48,6 +48,11 @@ const router = createRouter({
       component: () => import('./pages/react.vue')
     },
     {
+      path: '/gif',
+      name: 'gif',
+      component: () => import('./pages/gif.vue')
+    },
+    {
       path: '/privacy',
       name: 'privacy',
       component: () => import('./pages/privacy.vue')

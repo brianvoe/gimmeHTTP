@@ -1,6 +1,6 @@
 # HTTP Client Implementations
 
-This directory contains HTTP client code generators for 18 programming languages (41 clients).
+This directory contains HTTP client code generators for 19 programming languages (45 clients).
 
 ## Supported Languages & Clients
 
@@ -47,6 +47,10 @@ This directory contains HTTP client code generators for 18 programming languages
 | Shell        | wget              |         | ✅ Complete |
 | Swift        | URLSession        | ✓       | ✅ Complete |
 | Swift        | Alamofire         |         | ✅ Complete |
+| TypeScript   | axios             |         | ✅ Complete |
+| TypeScript   | fetch             | ✓       | ✅ Complete |
+| TypeScript   | jQuery            |         | ✅ Complete |
+| TypeScript   | ky                |         | ✅ Complete |
 
 ## Feature Support
 
@@ -93,6 +97,10 @@ This directory contains HTTP client code generators for 18 programming languages
 | Shell      | wget              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
 | Swift      | URLSession        | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅ Always      |          |
 | Swift      | Alamofire         | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| TypeScript | axios             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
+| TypeScript | fetch             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Dynamic       | ✅             |          |
+| TypeScript | jQuery            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
+| TypeScript | ky                | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 
 **Legend:**
 

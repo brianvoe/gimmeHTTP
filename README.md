@@ -8,7 +8,7 @@ HTTP request code snippet generator
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/brianvoe/gimmehttp/vitest.yml?logo=vitest&label=unit%20tests)
 [![gimmehttp](https://snyk.io/advisor/npm-package/gimmehttp/badge.svg)](https://snyk.io/advisor/npm-package/gimmehttp)
 
-See the [changelog](./CHANGELOG.md) for version history.
+![GimmeHttp demo](./demo.gif)
 
 GimmeHttp is a library for generating HTTP request code snippets in various languages based on a simple configuration.
 Quickly output API requests.
@@ -20,20 +20,21 @@ Using Vue 3? See the [Vue (v3) Usage](#vue-v3-usage) section. Using React? See t
 - Generate HTTP request code snippets in various languages
 - Dead simple configuration(help me keep it that way)
 - Import only the languages you need — everything else is tree-shaken out of your bundle
-- Framework-agnostic UI component with language/client options bar, copy button, theming, and built-in syntax highlighting
+- Framework-agnostic UI component with language/client options bar, copy button, theming, and built-in syntax
+  highlighting
 - Add Custom Languages and Clients
 - Engine-only entry (`gimmehttp/core`) when you just want generated text
 
 ## Supported Languages and Clients
 
-| Language                                                                                                                                 | Clients                            | Language                                                                                                                                     | Clients                    | Language                                                                                                                                | Clients                 |
-| ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/c.svg" width="50" height="50">      | libcurl                            | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/javascript.svg" width="50" height="50"> | fetch, axios, jQuery, ky   | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/ruby.svg" width="50" height="50">  | nethttp, faraday, httparty |
-| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/csharp.svg" width="50" height="50"> | http, restsharp, flurl             | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/node.svg" width="50" height="50">       | http, fetch, axios, got    | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/rust.svg" width="50" height="50">  | reqwest, ureq           |
-| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/dart.svg" width="50" height="50">   | http, dio                          | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/objectivec.svg" width="50" height="50"> | nsurlsession               | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/shell.svg" width="50" height="50"> | curl, httpie, wget      |
-| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/go.svg" width="50" height="50">     | http, resty                        | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/php.svg" width="50" height="50">        | curl, guzzle, symfony      | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/swift.svg" width="50" height="50"> | nsurlsession, alamofire |
-| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/java.svg" width="50" height="50">   | httpurlconnection, okhttp, httpclient | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/powershell.svg" width="50" height="50"> | restmethod                 | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/python.svg" width="50" height="50"> | http, requests, httpx, aiohttp |
-| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/kotlin.svg" width="50" height="50"> | ktor, okhttp                       | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/r.svg" width="50" height="50">          | httr                       |                                                                                                                                         |                         |
+| Language                                                                                                                                 | Clients                               | Language                                                                                                                                     | Clients                  | Language                                                                                                                                     | Clients                        |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/c.svg" width="50" height="50">      | libcurl                               | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/javascript.svg" width="50" height="50"> | fetch, axios, jQuery, ky | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/ruby.svg" width="50" height="50">       | nethttp, faraday, httparty     |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/csharp.svg" width="50" height="50"> | http, restsharp, flurl                | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/node.svg" width="50" height="50">       | http, fetch, axios, got  | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/rust.svg" width="50" height="50">       | reqwest, ureq                  |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/dart.svg" width="50" height="50">   | http, dio                             | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/objectivec.svg" width="50" height="50"> | nsurlsession             | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/shell.svg" width="50" height="50">      | curl, httpie, wget             |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/go.svg" width="50" height="50">     | http, resty                           | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/php.svg" width="50" height="50">        | curl, guzzle, symfony    | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/swift.svg" width="50" height="50">      | nsurlsession, alamofire        |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/java.svg" width="50" height="50">   | httpurlconnection, okhttp, httpclient | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/powershell.svg" width="50" height="50"> | restmethod               | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/python.svg" width="50" height="50">     | http, requests, httpx, aiohttp |
+| <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/kotlin.svg" width="50" height="50"> | ktor, okhttp                          | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/r.svg" width="50" height="50">          | httr                     | <img src="https://raw.githubusercontent.com/brianvoe/gimmeHTTP/refs/heads/master/src/gimmehttp/logos/typescript.svg" width="50" height="50"> | fetch, axios, jQuery, ky       |
 
 ## Installation
 
@@ -293,8 +294,8 @@ Feel free to contribute to the project, suggest improvements, or report issues o
 ## JavaScript UI Component
 
 The default `gimmehttp` import is a framework-agnostic UI component: styled code output with a flush options bar
-(language modal, client dropdown, labeled Copy button, light/dark toggle), and built-in highlight.js syntax highlighting.
-Point it at a container, give it a request, and it handles the rest.
+(language modal, client dropdown, labeled Copy button, light/dark toggle), and built-in highlight.js syntax
+highlighting. Point it at a container, give it a request, and it handles the rest.
 
 ```ts
 import { GimmeHTTP } from 'gimmehttp'
@@ -353,8 +354,8 @@ want to change:
 }
 ```
 
-Chrome: `--gh-bg`, `--gh-fg`, `--gh-muted`, `--gh-border`, `--gh-accent`, `--gh-surface`, `--gh-hover`,
-`--gh-overlay`, `--gh-radius`, `--gh-shadow`.
+Chrome: `--gh-bg`, `--gh-fg`, `--gh-muted`, `--gh-border`, `--gh-accent`, `--gh-surface`, `--gh-hover`, `--gh-overlay`,
+`--gh-radius`, `--gh-shadow`.
 
 Syntax: `--gh-kw`, `--gh-fn`, `--gh-const`, `--gh-str`, `--gh-var`, `--gh-cmt`, `--gh-tag`.
 
