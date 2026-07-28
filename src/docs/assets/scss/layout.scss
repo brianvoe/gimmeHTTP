@@ -90,6 +90,11 @@ body {
       gap: calc(var(--spacing) * 1.5);
       box-sizing: border-box;
 
+      // Style playground needs room for variables + live preview side by side
+      &:has(.style-page) {
+        max-width: 1280px;
+      }
+
       .section {
         width: 100%;
         padding: calc(var(--spacing) * 1.75);
@@ -99,6 +104,15 @@ body {
         box-shadow: var(--box-shadow);
         background-color: var(--color-surface);
         box-sizing: border-box;
+
+        // Keep section padding even — heading defaults add top margin
+        > :first-child {
+          margin-top: 0;
+        }
+
+        > header:first-child > :first-child {
+          margin-top: 0;
+        }
 
         @media screen and (max-width: 700px) {
           padding: var(--spacing);

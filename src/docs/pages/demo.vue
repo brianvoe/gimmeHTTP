@@ -15,17 +15,50 @@
         url: 'https://example.com'
       }
 
+      // GET with query params
+      const httpGetParams: Http = {
+        method: 'GET',
+        url: 'https://example.com/search?q=shoes&limit=10',
+        headers: {
+          Accept: 'application/json'
+        }
+      }
+
       // Simple Post request
       const httpPost: Http = {
         method: 'POST',
-        url: 'https://example.com',
+        url: 'https://example.com/todos',
         headers: {
           'Content-Type': 'application/json'
         },
         body: {
-          first_name: 'Billy',
-          email: 'billyboy@gmail.com',
-          user_id: 8675309
+          title: 'Write better docs',
+          completed: false
+        }
+      }
+
+      // PUT update
+      const httpPut: Http = {
+        method: 'PUT',
+        url: 'https://example.com/todos/123',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: {
+          title: 'Docs are awesome',
+          completed: true
+        }
+      }
+
+      // DELETE with auth header and cookie
+      const httpDelete: Http = {
+        method: 'DELETE',
+        url: 'https://example.com/todos/123',
+        headers: {
+          Authorization: 'Bearer <token>'
+        },
+        cookies: {
+          session_id: 'abc123'
         }
       }
 
@@ -71,7 +104,10 @@
 
         https: {
           simple_get: httpGet,
+          get_params: httpGetParams,
           simple_post: httpPost,
+          put: httpPut,
+          delete_auth: httpDelete,
           advanced_post: httpPostAdv
         } as Record<string, Http>
       }
@@ -88,6 +124,7 @@
           }
         }
       })
+      this.resizeBody()
     },
     unmounted() {
       this.instance?.destroy()
@@ -134,6 +171,7 @@
         // Expand headers/cookies only when the example has them
         this.showHeaders = !!(selectedHttp.headers && Object.keys(selectedHttp.headers).length > 0)
         this.showCookies = !!(selectedHttp.cookies && Object.keys(selectedHttp.cookies).length > 0)
+        this.resizeBody()
       },
       exampleLabel(example: string): string {
         return example
@@ -177,6 +215,20 @@
       },
       onInputChange() {
         this.useCustom = true
+      },
+      onBodyInput() {
+        this.onInputChange()
+        this.resizeBody()
+      },
+      resizeBody() {
+        this.$nextTick(() => {
+          const el = this.$refs.body as HTMLTextAreaElement | undefined
+          if (!el) {
+            return
+          }
+          el.style.height = 'auto'
+          el.style.height = `${el.scrollHeight}px`
+        })
       },
       logoSvg(name: string): string | null {
         return getLogo(name)
@@ -362,6 +414,11 @@
         flex-direction: column;
         gap: var(--spacing-quarter);
         min-width: 0;
+
+        #body {
+          overflow: hidden;
+          resize: none;
+        }
       }
 
       .form_row_inline {
@@ -571,7 +628,13 @@
 
       <div class="form_row">
         <label for="body">Body</label>
-        <textarea id="body" v-model="customBody" @input="onInputChange" placeholder='{"key": "value"}'></textarea>
+        <textarea
+          id="body"
+          ref="body"
+          v-model="customBody"
+          @input="onBodyInput"
+          placeholder='{"key": "value"}'
+        ></textarea>
       </div>
     </div>
 

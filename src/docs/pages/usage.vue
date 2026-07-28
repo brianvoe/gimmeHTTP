@@ -50,10 +50,23 @@
           http: this.demoHttp
         }
       })
+      this.resizeOutput()
     },
     unmounted() {
       this.instance?.destroy()
       this.instance = null
+    },
+    methods: {
+      resizeOutput() {
+        this.$nextTick(() => {
+          const el = this.$refs.engineOutput as HTMLTextAreaElement | undefined
+          if (!el) {
+            return
+          }
+          el.style.height = 'auto'
+          el.style.height = `${el.scrollHeight}px`
+        })
+      }
     }
   })
 </script>
@@ -64,10 +77,6 @@
     flex-direction: column;
     gap: calc(var(--spacing) * 1.5);
     width: 100%;
-
-    .section > h3:first-child {
-      margin-top: 0;
-    }
 
     .ui_demo {
       margin-top: var(--spacing);
@@ -81,9 +90,11 @@
 
       textarea {
         width: 100%;
-        min-height: 8rem;
         box-sizing: border-box;
-        resize: vertical;
+        overflow: hidden;
+        resize: none;
+        min-height: 0;
+        padding: var(--spacing);
       }
     }
   }
@@ -185,7 +196,12 @@
 
       <div class="engine_output">
         <label for="engine-output">Output</label>
-        <textarea id="engine-output" readonly :value="sampleOutput"></textarea>
+        <textarea
+          id="engine-output"
+          ref="engineOutput"
+          readonly
+          :value="sampleOutput"
+        ></textarea>
       </div>
     </div>
 

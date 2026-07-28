@@ -29,11 +29,6 @@ const router = createRouter({
       component: () => import('./pages/settings.vue')
     },
     {
-      path: '/examples',
-      name: 'examples',
-      component: () => import('./pages/examples.vue')
-    },
-    {
       path: '/style',
       name: 'style',
       component: () => import('./pages/style.vue')

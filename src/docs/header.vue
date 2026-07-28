@@ -5,7 +5,6 @@
     { path: '/usage', label: 'Usage' },
     { path: '/settings', label: 'Settings' },
     { path: '/demo', label: 'Demo' },
-    { path: '/examples', label: 'Examples' },
     { path: '/style', label: 'Style' },
     { path: '/javascript', label: 'JavaScript' },
     { path: '/vue', label: 'Vue' }

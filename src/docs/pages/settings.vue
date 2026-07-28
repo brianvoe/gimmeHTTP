@@ -16,10 +16,6 @@
     flex-direction: column;
     gap: calc(var(--spacing) * 1.5);
     width: 100%;
-
-    .section > h3:first-child {
-      margin-top: 0;
-    }
   }
 </style>
 
