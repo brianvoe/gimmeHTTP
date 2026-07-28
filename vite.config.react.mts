@@ -40,7 +40,7 @@ export default defineConfig({
       outDirs: path.resolve(__dirname, 'dist/react'),
       insertTypesEntry: true,
       include: ['src/gimmehttp/react/**/*'],
-      exclude: ['**/*.test.ts', '**/*.test.tsx', '**/env.d.ts'],
+      exclude: ['**/*.test.ts', '**/*.test.tsx'],
       strictOutput: true,
       // Keep framework types self-contained under dist/react
       pathsToAliases: false

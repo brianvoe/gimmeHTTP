@@ -4,6 +4,7 @@
  * Mount once into a host div, sync `settings` via setSettings, destroy on unmount.
  * Selection changes surface through onLanguageChange / onClientChange.
  */
+/// <reference path="./scss.d.ts" />
 import {
   forwardRef,
   useEffect,
@@ -15,6 +16,7 @@ import { GimmeHTTP } from '../ui/gimmehttp'
 import type { Settings } from '../ui/gimmehttp'
 
 import '../ui/gimmehttp.scss'
+
 
 export interface GimmeHttpProps {
   settings: Settings

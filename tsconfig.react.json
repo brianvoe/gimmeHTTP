@@ -10,7 +10,7 @@
   "include": [
     "src/gimmehttp/react/**/*.ts",
     "src/gimmehttp/react/**/*.tsx",
-    "src/gimmehttp/react/env.d.ts"
+    "src/gimmehttp/react/**/*.d.ts"
   ],
   "exclude": ["src/gimmehttp/**/*.test.ts", "src/gimmehttp/**/*.test.tsx", "dist", "node_modules"]
 }
