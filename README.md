@@ -19,8 +19,10 @@ Using Vue 3? See the [Vue (v3) Usage](#vue-v3-usage) section.
 
 - Generate HTTP request code snippets in various languages
 - Dead simple configuration(help me keep it that way)
+- Import only the languages you need — everything else is tree-shaken out of your bundle
+- Framework-agnostic UI component with language/client options bar, copy button, theming, and built-in syntax highlighting
 - Add Custom Languages and Clients
-- Zero dependencies (Vue component requires highlight.js as peer dependency)
+- Engine-only entry (`gimmehttp/core`) when you just want generated text
 
 ## Supported Languages and Clients
 
@@ -40,12 +42,37 @@ To install GimmeHttp, simply use npm:
 npm install gimmehttp
 ```
 
+## Register Clients
+
+No clients are registered by default. Import the clients you want from `gimmehttp/clients` and register them once at
+startup — bundlers tree-shake the rest, so importing two clients only bundles those two.
+
+```typescript
+import { Register } from 'gimmehttp/core'
+import { goHttp, shellCurl } from 'gimmehttp/clients'
+
+Register([goHttp, shellCurl])
+```
+
+Or register everything:
+
+```typescript
+import { Register } from 'gimmehttp/core'
+import { allClients } from 'gimmehttp/clients'
+
+Register(allClients)
+```
+
 ## Simple Example
 
-Here is a quick example of generating a simple GET request in Go:
+Here is a quick example of generating a simple GET request in Go using the engine:
 
 ```javascript
-import { Generate } from 'gimmehttp'
+import { Register, Generate } from 'gimmehttp/core'
+import { goHttp } from 'gimmehttp/clients'
+
+// Register the clients you want available
+Register([goHttp])
 
 // Create settings
 const settings = {
@@ -140,7 +167,7 @@ The `Generate` function returns an `Outcome` object. If the object contains an `
 during code generation.
 
 ```typescript
-import { Generate } from 'gimmehttp'
+import { Generate } from 'gimmehttp/core'
 
 const { code, error, language, client } = Generate(request)
 if (error) {
@@ -179,8 +206,8 @@ interface Target {
 ```
 
 ```typescript
-import { Register, Generate } from 'gimmehttp'
-import type { Config, Http } from 'gimmehttp'
+import { Register, Generate } from 'gimmehttp/core'
+import type { Config, Http } from 'gimmehttp/core'
 
 const myCustomTarget = {
   language: 'html',
@@ -267,16 +294,99 @@ Feel free to contribute to the project, suggest improvements, or report issues o
 
 ---
 
+## JavaScript UI Component
+
+The default `gimmehttp` import is a framework-agnostic UI component: styled code output with a flush options bar
+(language modal, client dropdown, labeled Copy button, light/dark toggle), and built-in highlight.js syntax highlighting.
+Point it at a container, give it a request, and it handles the rest.
+
+```ts
+import { GimmeHTTP } from 'gimmehttp'
+import 'gimmehttp/css'
+import { goHttp, jsFetch, shellCurl } from 'gimmehttp/clients'
+
+const gh = new GimmeHTTP({
+  // Required
+  container: '#code', // selector or HTMLElement
+  http: {
+    method: 'POST',
+    url: 'https://example.com/api/users',
+    headers: { 'Content-Type': 'application/json' },
+    body: { first_name: 'Billy' }
+  },
+
+  // Optional
+  clients: [goHttp, jsFetch, shellCurl], // registers + limits the picker
+  language: 'go', // initial language
+  client: 'http', // initial client
+  config: { indent: '  ' }, // engine config passthrough
+  settings: {
+    theme: 'dark', // 'dark' | 'light'
+    copy: true, // show copy button
+    picker: true // show language/client picker
+  },
+  events: {
+    afterChange: (language, client, code) => {}
+  }
+})
+
+// Methods
+gh.setHttp({ method: 'GET', url: 'https://example.com' })
+gh.setLanguage('python')
+gh.setClient('requests')
+gh.setTheme('light')
+gh.getCode()
+gh.destroy()
+```
+
+If you only need generated text (no UI), use `gimmehttp/core` and call `Generate` yourself.
+
+### Styling
+
+Theme the widget by overriding CSS variables on `.gimmehttp` (or a parent with higher specificity). Only set what you
+want to change:
+
+```css
+.my-theme .gimmehttp {
+  --gh-bg: #0b1220;
+  --gh-fg: #d7e3f4;
+  --gh-accent: #3dd6c6;
+  --gh-surface: #122033;
+  --gh-border: #243447;
+  --gh-kw: #7aa2f7;
+  --gh-str: #9ece6a;
+}
+```
+
+Chrome: `--gh-bg`, `--gh-fg`, `--gh-muted`, `--gh-border`, `--gh-accent`, `--gh-surface`, `--gh-hover`,
+`--gh-overlay`, `--gh-radius`, `--gh-shadow`.
+
+Syntax: `--gh-kw`, `--gh-fn`, `--gh-const`, `--gh-str`, `--gh-var`, `--gh-cmt`, `--gh-tag`.
+
+### CDN / script tag
+
+The CDN build pre-registers every client and exposes the UI component as the global `GimmeHTTP`, with the engine
+attached as statics (`GimmeHTTP.Generate`, `GimmeHTTP.Register`, ...).
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/gimmehttp/dist/gimmehttp.css" />
+<script src="https://unpkg.com/gimmehttp/dist/gimmehttp.js"></script>
+
+<div id="code"></div>
+
+<script>
+  new GimmeHTTP({
+    container: '#code',
+    http: { method: 'GET', url: 'https://example.com' }
+  })
+</script>
+```
+
+---
+
 ## Vue (v3) Usage
 
-Use the built-in Vue component to render an interactive generator.
-
-**Note:** The Vue component requires `highlight.js` as a peer dependency for syntax highlighting. Install it alongside
-gimmehttp:
-
-```sh
-npm install gimmehttp highlight.js
-```
+The Vue component is a thin wrapper around the JavaScript UI component.
 
 ### Install styles
 
@@ -286,7 +396,7 @@ Add the package CSS once (e.g., in `main.ts`).
 import 'gimmehttp/vue/css'
 ```
 
-### Global registration (plugin)
+### Register clients at startup
 
 ```ts
 // main.ts
@@ -294,8 +404,13 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import GimmeHttpVue from 'gimmehttp/vue'
 
+import { Register } from 'gimmehttp/core'
+import { allClients } from 'gimmehttp/clients' // or import individual clients
+
+Register(allClients)
+
 const app = createApp(App)
-app.use(GimmeHttpVue)
+app.use(GimmeHttpVue) // optional global registration
 app.mount('#app')
 ```
 
@@ -305,7 +420,7 @@ app.mount('#app')
 <script setup lang="ts">
   import { ref } from 'vue'
   import { GimmeHttp } from 'gimmehttp/vue'
-  import type { Http } from 'gimmehttp'
+  import type { Http } from 'gimmehttp/core'
 
   const http = ref<Http>({
     method: 'GET',
@@ -323,8 +438,10 @@ Props overview:
 - `http` (required): request definition
 - `language` (optional): language key; auto-selected if omitted
 - `client` (optional): client key; auto-selected if omitted
-- `theme` (optional): 'light' | 'dark' (defaults to system preference)
+- `theme` (optional): 'light' | 'dark' (default 'dark')
 - `config` (optional): generator `Config`
+- `copy` (optional): show the copy button (default true)
+- `picker` (optional): show the language/client picker (default true)
 
 ---
 

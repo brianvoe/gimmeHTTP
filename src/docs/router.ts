@@ -30,6 +30,16 @@ const router = createRouter({
       component: () => import('./pages/examples.vue')
     },
     {
+      path: '/style',
+      name: 'style',
+      component: () => import('./pages/style.vue')
+    },
+    {
+      path: '/javascript',
+      name: 'javascript',
+      component: () => import('./pages/javascript.vue')
+    },
+    {
       path: '/vue',
       name: 'vue',
       component: () => import('./pages/vue.vue')

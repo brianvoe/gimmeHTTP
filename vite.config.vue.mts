@@ -3,15 +3,6 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import path from 'path'
 
-function highlightGlobal(id: string): string {
-  if (id === 'vue') return 'Vue'
-  if (id === 'highlight.js') return 'hljs'
-  if (id.startsWith('highlight.js/')) {
-    return id.replace(/[/.]/g, '_')
-  }
-  return id
-}
-
 export default defineConfig({
   publicDir: false,
   resolve: {
@@ -29,10 +20,12 @@ export default defineConfig({
     },
     outDir: path.resolve(__dirname, 'dist/vue'),
     rollupOptions: {
-      external: ['vue', 'highlight.js', /^highlight\.js\//],
+      external: ['vue'],
       output: {
         exports: 'named',
-        globals: highlightGlobal
+        globals: {
+          vue: 'Vue'
+        }
       }
     }
   },

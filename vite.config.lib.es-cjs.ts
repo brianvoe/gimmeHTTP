@@ -14,9 +14,14 @@ export default defineConfig({
     sourcemap: true,
     emptyOutDir: false, // package.json rimraf ./dist/*
     lib: {
-      entry: path.resolve(__dirname, 'src/gimmehttp/index.ts'),
+      entry: {
+        gimmehttp: path.resolve(__dirname, 'src/gimmehttp/index.ts'),
+        'core/index': path.resolve(__dirname, 'src/gimmehttp/core/index.ts'),
+        'clients/index': path.resolve(__dirname, 'src/gimmehttp/clients/index.ts'),
+        'ui/index': path.resolve(__dirname, 'src/gimmehttp/ui/index.ts')
+      },
       formats: ['es', 'cjs'],
-      fileName: (format) => (format === 'es' ? 'gimmehttp.es.js' : 'gimmehttp.cjs.js')
+      fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'es' : 'cjs'}.js`
     },
     outDir: path.resolve(__dirname, 'dist'),
     rollupOptions: {

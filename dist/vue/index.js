@@ -1,50 +1,42 @@
-import { Fragment as e, Transition as t, createCommentVNode as n, createElementBlock as r, createElementVNode as i, createVNode as a, defineComponent as o, normalizeClass as s, openBlock as c, renderList as l, toDisplayString as u, withCtx as d } from "vue";
-import f from "highlight.js";
-import p from "highlight.js/lib/languages/c";
-import m from "highlight.js/lib/languages/csharp";
-import ee from "highlight.js/lib/languages/dart";
-import h from "highlight.js/lib/languages/go";
-import g from "highlight.js/lib/languages/java";
-import _ from "highlight.js/lib/languages/javascript";
-import v from "highlight.js/lib/languages/kotlin";
-import y from "highlight.js/lib/languages/php";
-import b from "highlight.js/lib/languages/python";
-import x from "highlight.js/lib/languages/r";
-import S from "highlight.js/lib/languages/ruby";
-import C from "highlight.js/lib/languages/rust";
-import w from "highlight.js/lib/languages/bash";
-import T from "highlight.js/lib/languages/swift";
-import E from "highlight.js/lib/languages/typescript";
-import D from "highlight.js/lib/languages/json";
-//#region src/gimmehttp/utils/registry.ts
-var O = [];
-function k() {
-	return O;
+import { createElementBlock as e, defineComponent as t, openBlock as n } from "vue";
+//#region \0rolldown/runtime.js
+var r = Object.create, i = Object.defineProperty, a = Object.getOwnPropertyDescriptor, o = Object.getOwnPropertyNames, s = Object.getPrototypeOf, c = Object.prototype.hasOwnProperty, l = (e, t) => () => (t || (e((t = { exports: {} }).exports, t), e = null), t.exports), u = (e, t, n, r) => {
+	if (t && typeof t == "object" || typeof t == "function") for (var s = o(t), l = 0, u = s.length, d; l < u; l++) d = s[l], !c.call(e, d) && d !== n && i(e, d, {
+		get: ((e) => t[e]).bind(null, d),
+		enumerable: !(r = a(t, d)) || r.enumerable
+	});
+	return e;
+}, d = (e, t, n) => (n = e == null ? {} : r(s(e)), u(t || !e || !e.__esModule ? i(n, "default", {
+	value: e,
+	enumerable: !0
+}) : n, e)), f = [];
+function p() {
+	return f;
 }
-function A(e, t) {
+function m(e, t) {
 	if (e === "" || e === void 0) return null;
-	let n = O.filter((t) => t.language.toLowerCase() === e.toLowerCase());
+	let n = f.filter((t) => t.language.toLowerCase() === e.toLowerCase());
 	if (n.length === 0) return null;
 	let r = n.find((e) => e.default) || n[0];
 	return t && n.find((e) => e.client.toLowerCase() === t.toLowerCase()) || r;
 }
-function j(e) {
+function h(e) {
 	if (!e) return /* @__PURE__ */ Error("Client is required");
-	if (Array.isArray(e)) return e.forEach((e) => j(e)), null;
-	let t = O.filter((t) => t.language.toLowerCase() === e.language.toLowerCase()), n = t.find((t) => t.client.toLowerCase() === e.client.toLowerCase());
+	if (Array.isArray(e)) return e.forEach((e) => h(e)), null;
+	let t = f.filter((t) => t.language.toLowerCase() === e.language.toLowerCase()), n = t.find((t) => t.client.toLowerCase() === e.client.toLowerCase());
 	if (e.default === void 0 && (e.default = t.length === 0), n) {
-		let t = O.indexOf(e);
-		return O[t] = e, null;
+		let t = f.indexOf(e);
+		return f[t] = e, null;
 	}
-	return O.push(e), null;
+	return f.push(e), null;
 }
 //#endregion
 //#region src/gimmehttp/utils/generate.ts
-function M(e) {
-	let t = N(e);
+function g(e) {
+	let t = _(e);
 	if (t) return { error: t.message };
-	e.config = P(e.config), e.language ||= "javascript";
-	let n = A(e.language, e.client);
+	e.config = v(e.config), e.language ||= "javascript";
+	let n = m(e.language, e.client);
 	if (!n) return { error: "Client not found" };
 	let r = n.generate(e.config, e.http);
 	return {
@@ -53,793 +45,18 @@ function M(e) {
 		code: r
 	};
 }
-function N(e) {
+function _(e) {
 	if (!e) return /* @__PURE__ */ Error("Request is required");
 	if (!e.http) return /* @__PURE__ */ Error("http is required");
 	if (!e.http.method) return /* @__PURE__ */ Error("http.method is required");
 	if (!e.http.url) return /* @__PURE__ */ Error("http.url is required");
 }
-function P(e) {
+function v(e) {
 	return e ||= {}, e.handleErrors === void 0 && (e.handleErrors = !1), e;
 }
 //#endregion
-//#region src/gimmehttp/utils/builder.ts
-var F = class {
-	code = [];
-	indentChar;
-	lineJoin;
-	currentDepth = 0;
-	jsonConfig = {
-		objOpen: "{",
-		objClose: "}",
-		arrOpen: "[",
-		arrClose: "]",
-		separator: ": ",
-		endComma: !1
-	};
-	constructor(e = {}) {
-		this.indentChar = e.indent || "  ", this.lineJoin = e.join || "\n", this.jsonConfig = e.json || this.jsonConfig;
-	}
-	getIndent() {
-		return this.indentChar;
-	}
-	getJoin() {
-		return this.lineJoin;
-	}
-	line(e = "") {
-		this.code.push({
-			depth: e === "" ? 0 : this.currentDepth,
-			line: e
-		});
-	}
-	append(e) {
-		this.code.length > 0 ? this.code[this.code.length - 1].line += e : this.line(e);
-	}
-	json(e, t = !1) {
-		if (!e) {
-			this.append("null");
-			return;
-		}
-		switch (typeof e) {
-			case "object":
-				if (Array.isArray(e)) this.append(this.jsonConfig.arrOpen), this.indent(), e.forEach((t, n) => {
-					this.json(t, typeof e == "object" || Array.isArray(e)), (n < e.length - 1 || this.jsonConfig.endComma) && this.append(",");
-				}), this.outdent(), this.line(this.jsonConfig.arrClose);
-				else {
-					this.append(this.jsonConfig.objOpen), this.indent();
-					let t = Object.keys(e);
-					t.forEach((n, r) => {
-						this.line(`"${n}"` + this.jsonConfig.separator), this.json(e[n], typeof n == "object" || Array.isArray(n)), (r < t.length - 1 || this.jsonConfig.endComma) && this.append(",");
-					}), this.outdent(), this.line(this.jsonConfig.objClose);
-				}
-				break;
-			case "string":
-				t ? this.line(`"${e}"`) : this.append(`"${e}"`);
-				break;
-			default:
-				t ? this.line(String(e)) : this.append(String(e));
-				break;
-		}
-	}
-	indent() {
-		this.currentDepth += 1;
-	}
-	outdent() {
-		this.currentDepth > 0 && --this.currentDepth;
-	}
-	output() {
-		return this.code.map(({ depth: e, line: t }) => `${this.indentChar.repeat(e)}${t}`).join(this.lineJoin).trimEnd();
-	}
-};
-//#endregion
-//#region src/gimmehttp/utils/utils.ts
-function I(e) {
-	let t, n, r, i, a;
-	try {
-		let o = new URL(e);
-		t = o.hostname, n = o.pathname, a = o.search, r = o.port ? parseInt(o.port) : o.protocol === "https:" ? 443 : 80, i = o.protocol;
-	} catch {
-		let o = e.split("/");
-		t = o[0];
-		let [s, c] = ("/" + o.slice(1).join("/")).split("?");
-		n = s, a = c ? "?" + c : "", r = 80, i = "http:";
-	}
-	return n.startsWith("/") || (n = "/" + n), {
-		hostname: t,
-		path: n,
-		port: r,
-		protocol: i,
-		params: a
-	};
-}
-function L(e) {
-	if (!e) return "";
-	for (let [t, n] of Object.entries(e)) if (t.toLowerCase() === "content-type") return Array.isArray(n) ? n[0] : n;
-	for (let [t, n] of Object.entries(e)) if (t.toLowerCase() === "accept") return Array.isArray(n) ? n[0] : n;
-	return "";
-}
-function R(e) {
-	return e ? typeof e == "string" ? e.length > 0 : typeof e == "object" && Object.keys(e).length > 0 : !1;
-}
-function z(e) {
-	return typeof e == "string";
-}
-function B(e) {
-	return typeof e == "object" && !!e;
-}
-function V(e, t) {
-	let n = e.toLowerCase();
-	switch (t) {
-		case "json": return n.includes("application/json");
-		case "xml": return n.includes("application/xml") || n.includes("text/xml");
-		case "form": return n.includes("application/x-www-form-urlencoded");
-		case "text": return n.includes("text/");
-		case "blob": return n.includes("application/octet-stream") || n.includes("image/");
-		default: return !1;
-	}
-}
-function H(e) {
-	if (!e) return "application/octet-stream";
-	if (typeof e == "string") {
-		let t = e.trim();
-		return t.startsWith("{") || t.startsWith("[") ? "application/json" : t.length > 0 ? "text/plain; charset=utf-8" : "application/octet-stream";
-	}
-	return typeof e == "object" ? "application/json" : "application/octet-stream";
-}
-function U(e, t) {
-	let n = L(e);
-	return n ? {
-		contentType: n,
-		wasInferred: !1
-	} : {
-		contentType: H(t),
-		wasInferred: !0
-	};
-}
-j({
-	default: !0,
-	language: "c",
-	client: "libcurl",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("#include <stdio.h>"), n.line("#include <curl/curl.h>"), n.line(), n.line("int main(void) {"), n.indent(), n.line("CURL *curl;"), n.line("CURLcode res;"), n.line(), n.line("curl_global_init(CURL_GLOBAL_DEFAULT);"), n.line("curl = curl_easy_init();"), n.line("if(curl) {"), n.indent(), t.params && Object.keys(t.params).length > 0) {
-			let e = new URLSearchParams();
-			for (let [n, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) e.append(n, t);
-			else e.append(n, r);
-			let r = e.toString();
-			if (r) {
-				let e = t.url.includes("?") ? "&" : "?", i = r.split("&");
-				n.line("curl_easy_setopt(curl, CURLOPT_URL,"), n.indent(), n.line(`"${t.url}"`), n.line(`"${e}${i[0]}"`);
-				for (let e = 1; e < i.length; e++) n.line(`"&${i[e]}"`);
-				n.outdent(), n.line(");");
-			} else n.line(`curl_easy_setopt(curl, CURLOPT_URL, "${t.url}");`);
-		} else n.line(`curl_easy_setopt(curl, CURLOPT_URL, "${t.url}");`);
-		if (t.method.toUpperCase() === "POST" ? n.line("curl_easy_setopt(curl, CURLOPT_POST, 1L);") : t.method.toUpperCase() !== "GET" && n.line(`curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "${t.method.toUpperCase()}");`), t.headers && Object.keys(t.headers).length > 0) {
-			n.line(), n.line("struct curl_slist *headers = NULL;");
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`headers = curl_slist_append(headers, "${e}: ${t}");`)) : n.line(`headers = curl_slist_append(headers, "${e}: ${r}");`);
-			n.line("curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);");
-		}
-		if (t.cookies && Object.keys(t.cookies).length > 0) {
-			n.line();
-			let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-			n.line(`curl_easy_setopt(curl, CURLOPT_COOKIE, "${e}");`);
-		}
-		return t.body && (n.line(), L(t.headers), z(t.body) ? n.line(`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "${t.body.replace(/"/g, "\\\"")}");`) : (n.line("curl_easy_setopt(curl, CURLOPT_POSTFIELDS, R\"("), n.json(t.body), n.append(")\");"))), n.line(), n.line("res = curl_easy_perform(curl);"), n.line("if(res != CURLE_OK)"), n.indent(), n.line("fprintf(stderr, \"failed: %s\", curl_easy_strerror(res));"), n.outdent(), t.headers && Object.keys(t.headers).length > 0 && n.line("curl_slist_free_all(headers);"), n.line("curl_easy_cleanup(curl);"), n.outdent(), n.line("}"), n.line(), n.line("curl_global_cleanup();"), n.line("return 0;"), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	default: !0,
-	language: "csharp",
-	client: "http",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("using System;"), n.line("using System.Net.Http;"), n.line("using System.Threading.Tasks;"), n.line("using System.Web;"), n.line(), n.line("namespace HttpClientExample"), n.line("{"), n.indent(), n.line("class Program"), n.line("{"), n.indent(), n.line("static async Task Main(string[] args)"), n.line("{"), n.indent(), n.line("using (HttpClient client = new HttpClient())"), n.line("{"), n.indent(), t.params && Object.keys(t.params).length > 0) {
-			n.line("var uriBuilder = new UriBuilder(\"" + t.url + "\");"), n.line("var query = HttpUtility.ParseQueryString(uriBuilder.Query);");
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`query.Add("${e}", "${t}");`);
-			else n.line(`query.Add("${e}", "${r}");`);
-			n.line("uriBuilder.Query = query.ToString();"), n.line(`HttpRequestMessage request = new HttpRequestMessage(HttpMethod.${t.method.toUpperCase()}, uriBuilder.ToString());`);
-		} else n.line(`HttpRequestMessage request = new HttpRequestMessage(HttpMethod.${t.method.toUpperCase()}, "${t.url}");`);
-		if (t.headers && Object.keys(t.headers).length > 0) {
-			n.line();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`request.Headers.Add("${e}", "${t}");`)) : n.line(`request.Headers.Add("${e}", "${r}");`);
-		}
-		if (t.cookies && Object.keys(t.cookies).length > 0) {
-			n.line();
-			let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-			n.line(`request.Headers.Add("Cookie", "${e}");`);
-		}
-		if (t.body) if (n.line(), V(L(t.headers), "form")) {
-			n.line("var formContent = new FormUrlEncodedContent(new Dictionary<string, string>"), n.line("{"), n.indent();
-			for (let [e, r] of Object.entries(t.body)) n.line(`{ "${e}", "${r}" },`);
-			n.outdent(), n.line("});"), n.line("request.Content = formContent;");
-		} else n.line("request.Content = new StringContent("), n.json(t.body), n.append(", System.Text.Encoding.UTF8, \"application/json\");");
-		return n.line(), n.line("HttpResponseMessage response = await client.SendAsync(request);"), n.line("response.EnsureSuccessStatusCode();"), n.line("string responseBody = await response.Content.ReadAsStringAsync();"), n.line("Console.WriteLine(responseBody);"), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	language: "csharp",
-	client: "restsharp",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("using RestSharp;"), e.handleErrors && n.line("using System;"), n.line(), n.line("namespace RestSharpExample"), n.line("{"), n.indent(), n.line("class Program"), n.line("{"), n.indent(), n.line("static void Main(string[] args)"), n.line("{"), n.indent(), e.handleErrors && (n.line("try"), n.line("{"), n.indent()), n.line(`var client = new RestClient("${t.url}");`), n.line(`var request = new RestRequest(Method.${t.method.toUpperCase()});`), t.params && Object.keys(t.params).length > 0) {
-			n.line();
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`request.AddParameter("${e}", "${t}", ParameterType.QueryString);`);
-			else n.line(`request.AddParameter("${e}", "${r}", ParameterType.QueryString);`);
-		}
-		if (t.headers && Object.keys(t.headers).length > 0) {
-			n.line();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`request.AddHeader("${e}", "${t}");`)) : n.line(`request.AddHeader("${e}", "${r}");`);
-		}
-		if (t.cookies && Object.keys(t.cookies).length > 0) {
-			n.line();
-			let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-			n.line(`request.AddHeader("Cookie", "${e}");`);
-		}
-		if (t.body) {
-			n.line();
-			let e = L(t.headers);
-			V(e, "form") ? (n.line("request.AddParameter(\"application/x-www-form-urlencoded\", "), n.json(t.body), n.append(", ParameterType.RequestBody);")) : z(t.body) ? n.line(`request.AddParameter("${e || "text/plain"}", "${t.body.replace(/"/g, "\\\"")}", ParameterType.RequestBody);`) : (n.line("request.AddJsonBody("), n.json(t.body), n.append(");"));
-		}
-		return n.line(), n.line("IRestResponse response = client.Execute(request);"), n.line("Console.WriteLine(response.Content);"), e.handleErrors && (n.outdent(), n.line("}"), n.line("catch (Exception ex)"), n.line("{"), n.indent(), n.line("Console.WriteLine($\"Error: {ex.Message}\");"), n.outdent(), n.line("}")), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	default: !0,
-	language: "dart",
-	client: "http",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		}), r = R(t.body), i = L(t.headers), a = r && (V(i, "json") || !i && B(t.body));
-		if (n.line("import 'package:http/http.dart' as http;"), a && n.line("import 'dart:convert';"), n.line(), n.line("void main() async {"), n.indent(), e.handleErrors && (n.line("try {"), n.indent()), t.params && Object.keys(t.params).length > 0) {
-			n.line("var url = Uri.parse('" + t.url + "').replace(queryParameters: {"), n.indent();
-			for (let [e, r] of Object.entries(t.params)) Array.isArray(r) ? n.line(`'${e}': [${r.map((e) => `'${e}'`).join(", ")}],`) : n.line(`'${e}': '${r}',`);
-			n.outdent(), n.line("});");
-		} else n.line(`var url = Uri.parse('${t.url}');`);
-		if (n.line(), t.headers && Object.keys(t.headers).length > 0) {
-			n.line("var headers = {"), n.indent();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? n.line(`'${e}': '${r.join(", ")}',`) : n.line(`'${e}': '${r}',`);
-			n.outdent(), n.line("};"), n.line();
-		}
-		let o = "null";
-		r && (V(i, "json") || !i && B(t.body) ? (n.line("var body = jsonEncode("), n.json(t.body), n.append(");"), o = "body", n.line()) : z(t.body) && (n.line(`var body = '${t.body.replace(/'/g, "\\'")}';`), o = "body", n.line()));
-		let s = t.method.toLowerCase(), c = t.headers && Object.keys(t.headers).length > 0;
-		return s === "get" ? n.line(`var response = await http.get(url${c ? ", headers: headers" : ""});`) : s === "post" ? n.line(`var response = await http.post(url${c ? ", headers: headers" : ""}${o === "null" ? "" : ", body: " + o});`) : s === "put" ? n.line(`var response = await http.put(url${c ? ", headers: headers" : ""}${o === "null" ? "" : ", body: " + o});`) : s === "delete" ? n.line(`var response = await http.delete(url${c ? ", headers: headers" : ""}${o === "null" ? "" : ", body: " + o});`) : s === "patch" && n.line(`var response = await http.patch(url${c ? ", headers: headers" : ""}${o === "null" ? "" : ", body: " + o});`), n.line(), n.line("print(response.body);"), e.handleErrors && (n.outdent(), n.line("} catch (e) {"), n.indent(), n.line("print(\"Error: $e\");"), n.outdent(), n.line("}")), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	default: !0,
-	language: "go",
-	client: "http",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n",
-			json: {
-				objOpen: "map[string]any{",
-				objClose: "}",
-				arrOpen: "[]any{",
-				arrClose: "}",
-				separator: ": ",
-				endComma: !1
-			}
-		}), r = L(t.headers), i = R(t.body), a = i && (V(r, "json") || !r && B(t.body)), o = i && V(r, "form"), s = a || o;
-		if (n.line("package main"), n.line(), n.line("import ("), n.indent(), n.line("\"fmt\""), n.line("\"net/http\""), n.line("\"io\""), s && n.line("\"bytes\""), a && n.line("\"encoding/json\""), (o || t.params && Object.keys(t.params).length > 0) && n.line("\"net/url\""), e.handleErrors && n.line("\"log\""), n.outdent(), n.line(")"), n.line(), n.line("func main() {"), n.indent(), t.params && Object.keys(t.params).length > 0) {
-			n.line(`baseURL := "${t.url}"`), n.line("u, err := url.Parse(baseURL)"), e.handleErrors && (n.line("if err != nil {"), n.indent(), n.line("log.Fatal(err)"), n.outdent(), n.line("}")), n.line("q := u.Query()");
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`q.Add("${e}", "${t}")`);
-			else n.line(`q.Set("${e}", "${r}")`);
-			n.line("u.RawQuery = q.Encode()"), n.line("url := u.String()");
-		} else n.line(`url := "${t.url}"`);
-		n.line();
-		let c = "nil";
-		if (a) n.line("jsonBodyMap := "), n.json(t.body), e.handleErrors ? (n.line("jsonBodyBytes, err := json.Marshal(jsonBodyMap)"), n.line("if err != nil {"), n.indent(), n.line("log.Fatal(err)"), n.outdent(), n.line("}")) : n.line("jsonBodyBytes, _ := json.Marshal(jsonBodyMap)"), c = "bytes.NewBuffer(jsonBodyBytes)", n.line();
-		else if (o) {
-			n.line("formData := url.Values{}");
-			for (let [e, r] of Object.entries(t.body)) n.line(`formData.Set("${e}", "${r}")`);
-			n.line("formBody := formData.Encode()"), c = "bytes.NewBufferString(formBody)", n.line();
-		} else i && typeof t.body == "string" && (c = `bytes.NewBufferString("${t.body.replace(/"/g, "\\\"")}")`);
-		if (e.handleErrors ? (n.line(`req, err := http.NewRequest("${t.method.toUpperCase()}", url, ${c})`), n.line("if err != nil {"), n.indent(), n.line("log.Fatal(err)"), n.outdent(), n.line("}"), n.line()) : (n.line(`req, _ := http.NewRequest("${t.method.toUpperCase()}", url, ${c})`), n.line()), t.headers) {
-			for (let [e, r] of Object.entries(t.headers)) if (Array.isArray(r)) for (let t of r) n.line(`req.Header.Add("${e}", "${t}")`);
-			else n.line(`req.Header.Set("${e}", "${r}")`);
-			n.line();
-		}
-		if (t.cookies) {
-			for (let [e, r] of Object.entries(t.cookies)) if (Array.isArray(r)) for (let t of r) n.line(`req.AddCookie(&http.Cookie{Name: "${e}", Value: "${t}"})`);
-			else n.line(`req.AddCookie(&http.Cookie{Name: "${e}", Value: "${r}"})`);
-			n.line();
-		}
-		return e.handleErrors ? (n.line("resp, err := http.DefaultClient.Do(req)"), n.line("if err != nil {"), n.indent(), n.line("log.Fatal(err)"), n.outdent(), n.line("}")) : n.line("resp, _ := http.DefaultClient.Do(req)"), n.line("defer resp.Body.Close()"), n.line(), e.handleErrors ? (n.line("body, err := io.ReadAll(resp.Body)"), n.line("if err != nil {"), n.indent(), n.line("log.Fatal(err)"), n.outdent(), n.line("}")) : n.line("body, _ := io.ReadAll(resp.Body)"), n.line(), n.line("fmt.Println(string(body))"), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	default: !0,
-	language: "java",
-	client: "httpurlconnection",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		}), r = R(t.body), i = L(t.headers);
-		if (n.line("import java.io.*;"), n.line("import java.net.*;"), t.params && Object.keys(t.params).length > 0 && n.line("import java.net.URLEncoder;"), r && (V(i, "json") || !i && B(t.body)) && n.line("import org.json.JSONObject;"), n.line(), n.line("public class HttpExample {"), n.indent(), n.line("public static void main(String[] args) {"), n.indent(), e.handleErrors && (n.line("try {"), n.indent()), t.params && Object.keys(t.params).length > 0) {
-			n.line(`String baseUrl = "${t.url}";`), n.line("StringBuilder urlBuilder = new StringBuilder(baseUrl);"), n.line("urlBuilder.append(baseUrl.contains(\"?\") ? \"&\" : \"?\");"), n.line(), n.line("String[] paramPairs = {"), n.indent();
-			let e = [];
-			for (let [n, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) e.push(`"${n}=" + URLEncoder.encode("${t}", "UTF-8")`);
-			else e.push(`"${n}=" + URLEncoder.encode("${r}", "UTF-8")`);
-			for (let t = 0; t < e.length; t++) t === e.length - 1 ? n.line(e[t]) : n.line(e[t] + ",");
-			n.outdent(), n.line("};"), n.line(), n.line("for (int i = 0; i < paramPairs.length; i++) {"), n.indent(), n.line("if (i > 0) urlBuilder.append(\"&\");"), n.line("urlBuilder.append(paramPairs[i]);"), n.outdent(), n.line("}"), n.line(), n.line("URL url = new URL(urlBuilder.toString());");
-		} else n.line(`URL url = new URL("${t.url}");`);
-		if (n.line("HttpURLConnection conn = (HttpURLConnection) url.openConnection();"), n.line(`conn.setRequestMethod("${t.method.toUpperCase()}");`), t.headers && Object.keys(t.headers).length > 0) {
-			n.line();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`conn.setRequestProperty("${e}", "${t}");`)) : n.line(`conn.setRequestProperty("${e}", "${r}");`);
-		}
-		if (t.cookies && Object.keys(t.cookies).length > 0) {
-			n.line();
-			let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-			n.line(`conn.setRequestProperty("Cookie", "${e}");`);
-		}
-		if (r) if (n.line(), n.line("conn.setDoOutput(true);"), n.line(), V(i, "json") || !i && B(t.body)) {
-			n.line("JSONObject jsonBody = new JSONObject();");
-			for (let [e, r] of Object.entries(t.body)) typeof r == "string" ? n.line(`jsonBody.put("${e}", "${r}");`) : typeof r == "number" || typeof r == "boolean" ? n.line(`jsonBody.put("${e}", ${r});`) : r === null ? n.line(`jsonBody.put("${e}", JSONObject.NULL);`) : n.line(`jsonBody.put("${e}", ${JSON.stringify(r)});`);
-			n.line(), n.line("try (OutputStream os = conn.getOutputStream()) {"), n.indent(), n.line("byte[] input = jsonBody.toString().getBytes(\"utf-8\");"), n.line("os.write(input, 0, input.length);"), n.outdent(), n.line("}");
-		} else z(t.body) && (n.line("try (OutputStream os = conn.getOutputStream()) {"), n.indent(), n.line(`byte[] input = "${t.body.replace(/"/g, "\\\"")}".getBytes("utf-8");`), n.line("os.write(input, 0, input.length);"), n.outdent(), n.line("}"));
-		return n.line(), n.line("int responseCode = conn.getResponseCode();"), n.line("BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));"), n.line("String inputLine;"), n.line("StringBuilder response = new StringBuilder();"), n.line(), n.line("while ((inputLine = in.readLine()) != null) {"), n.indent(), n.line("response.append(inputLine);"), n.outdent(), n.line("}"), n.line("in.close();"), n.line(), n.line("System.out.println(response.toString());"), e.handleErrors && (n.outdent(), n.line("} catch (Exception e) {"), n.indent(), n.line("e.printStackTrace();"), n.outdent(), n.line("}")), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	language: "java",
-	client: "okhttp",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		}), r = R(t.body), i = L(t.headers), a = r && (V(i, "json") || !i && B(t.body));
-		if (n.line("import okhttp3.*;"), a && n.line("import org.json.JSONObject;"), i && V(i, "form") && n.line("import java.util.*;"), n.line(), n.line("public class HttpExample {"), n.indent(), n.line("public static void main(String[] args) {"), n.indent(), e.handleErrors && (n.line("try {"), n.indent()), n.line("OkHttpClient client = new OkHttpClient();"), n.line(), r) {
-			if (V(i, "form")) {
-				n.line("FormBody.Builder formBuilder = new FormBody.Builder();");
-				for (let [e, r] of Object.entries(t.body)) n.line(`formBuilder.add("${e}", "${r}");`);
-				n.line("RequestBody body = formBuilder.build();");
-			} else if (a) {
-				n.line("JSONObject jsonBody = new JSONObject();");
-				for (let [e, r] of Object.entries(t.body)) typeof r == "string" ? n.line(`jsonBody.put("${e}", "${r}");`) : typeof r == "number" || typeof r == "boolean" ? n.line(`jsonBody.put("${e}", ${r});`) : r === null ? n.line(`jsonBody.put("${e}", JSONObject.NULL);`) : n.line(`jsonBody.put("${e}", ${JSON.stringify(r)});`);
-				n.line("RequestBody body = RequestBody.create("), n.indent(), n.line("jsonBody.toString(),"), n.line("MediaType.parse(\"application/json; charset=utf-8\")"), n.outdent(), n.line(");");
-			} else z(t.body) && (n.line("RequestBody body = RequestBody.create("), n.indent(), n.line(`"${t.body.replace(/"/g, "\\\"")}",`), n.line(`MediaType.parse("${i || "text/plain"}; charset=utf-8")`), n.outdent(), n.line(");"));
-			n.line();
-		}
-		if (t.params && Object.keys(t.params).length > 0) {
-			n.line("HttpUrl.Builder urlBuilder = HttpUrl.parse(\"" + t.url + "\").newBuilder();");
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`urlBuilder.addQueryParameter("${e}", "${t}");`);
-			else n.line(`urlBuilder.addQueryParameter("${e}", "${r}");`);
-			n.line("HttpUrl url = urlBuilder.build();"), n.line();
-		}
-		if (n.line("Request.Builder requestBuilder = new Request.Builder()"), n.indent(), t.params && Object.keys(t.params).length > 0 ? n.line(".url(url)") : n.line(`.url("${t.url}")`), r ? n.line(".method(\"" + t.method.toUpperCase() + "\", body)") : n.line(".method(\"" + t.method.toUpperCase() + "\", null)"), t.headers && Object.keys(t.headers).length > 0) for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`.addHeader("${e}", "${t}")`)) : n.line(`.addHeader("${e}", "${r}")`);
-		if (t.cookies && Object.keys(t.cookies).length > 0) {
-			let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-			n.line(`.addHeader("Cookie", "${e}")`);
-		}
-		return n.line(".build();"), n.outdent(), n.line(), n.line("Request request = requestBuilder;"), n.line("Response response = client.newCall(request).execute();"), n.line(), n.line("System.out.println(response.body().string());"), e.handleErrors && (n.outdent(), n.line("} catch (Exception e) {"), n.indent(), n.line("e.printStackTrace();"), n.outdent(), n.line("}")), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	default: !0,
-	language: "javascript",
-	client: "fetch",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (t.params && Object.keys(t.params).length > 0) {
-			n.line("const url = new URL(\"" + t.url + "\");"), n.line("const params = new URLSearchParams();");
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`params.append("${e}", "${t}");`);
-			else n.line(`params.set("${e}", "${r}");`);
-			n.line("url.search = params.toString();"), n.line(), n.line("fetch(url.toString(), {");
-		} else n.line("fetch(\"" + t.url + "\", {");
-		if (n.indent(), n.line(`method: "${t.method.toUpperCase()}",`), t.headers) {
-			n.line("headers: {"), n.indent();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? n.line(`"${e}": "${r.join(", ")}",`) : n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("},");
-		}
-		t.body && (n.line("body: "), n.json(t.body)), n.outdent(), n.line("})");
-		let { contentType: r, wasInferred: i } = U(t.headers), a = "text()";
-		return (!i || r !== "application/octet-stream") && (V(r, "json") ? a = "json()" : V(r, "xml") || V(r, "text") ? a = "text()" : V(r, "blob") && (a = "blob()")), i && a === "json()" && n.line(`// Response Content-Type inferred as: ${r}`), e.handleErrors ? (n.line(".then(response => {"), n.indent(), n.line("if (!response.ok) {"), n.indent(), n.line("throw new Error(\"Network response was not ok\");"), n.outdent(), n.line("}"), n.line(`return response.${a};`), n.outdent(), n.line("})"), n.line(".then(data => console.log(data))"), n.line(".catch(error => console.error(\"There was a problem with the fetch operation:\", error));")) : (n.line(`.then(response => response.${a})`), n.line(".then(data => console.log(data));")), n.output();
-	}
-}), j({
-	language: "javascript",
-	client: "axios",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("axios({"), n.indent(), n.line(`method: "${t.method.toLowerCase()}",`), n.line(`url: "${t.url}",`), t.params && Object.keys(t.params).length > 0) {
-			n.line("params: {"), n.indent();
-			for (let [e, r] of Object.entries(t.params)) Array.isArray(r) ? n.line(`"${e}": [${r.map((e) => `"${e}"`).join(", ")}],`) : n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("},");
-		}
-		if (t.headers) {
-			n.line("headers: {"), n.indent();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? n.line(`"${e}": "${r.join(", ")}",`) : n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("},");
-		}
-		if (t.cookies) {
-			n.line("cookies: {"), n.indent();
-			for (let [e, r] of Object.entries(t.cookies)) n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("},");
-		}
-		return t.body && (n.line("data: "), n.json(t.body)), n.outdent(), n.line("})"), e.handleErrors ? (n.line(".then(response => {"), n.indent(), n.line("console.log(response.data);"), n.outdent(), n.line("})"), n.line(".catch(error => {"), n.indent(), n.line("console.error(\"There was an error:\", error);"), n.outdent(), n.line("});")) : n.line(".then(response => console.log(response.data));"), n.output();
-	}
-}), j({
-	language: "javascript",
-	client: "jquery",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("$.ajax({"), n.indent(), n.line(`url: "${t.url}",`), n.line(`type: "${t.method.toUpperCase()}",`), t.params && Object.keys(t.params).length > 0) {
-			n.line("data: {"), n.indent();
-			for (let [e, r] of Object.entries(t.params)) Array.isArray(r) ? n.line(`"${e}": [${r.map((e) => `"${e}"`).join(", ")}],`) : n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("},");
-		}
-		if (t.headers) {
-			n.line("headers: {"), n.indent();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? n.line(`"${e}": "${r.join(", ")}",`) : n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("},");
-		}
-		return t.body && (n.line("data: "), n.json(t.body), n.append(","), n.line("contentType: \"application/json\",")), n.line("success: function(data) {"), n.indent(), n.line("console.log(data);"), n.outdent(), n.line("},"), e.handleErrors && (n.line("error: function(jqXHR, textStatus, errorThrown) {"), n.indent(), n.line("console.error(\"Request failed:\", textStatus, errorThrown);"), n.outdent(), n.line("},")), n.outdent(), n.line("});"), n.output();
-	}
-}), j({
-	default: !0,
-	language: "kotlin",
-	client: "ktor",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		}), r = R(t.body), i = L(t.headers);
-		if (n.line("import io.ktor.client.*"), n.line("import io.ktor.client.engine.cio.*"), n.line("import io.ktor.client.request.*"), n.line("import io.ktor.client.statement.*"), r && (V(i, "json") || !i && B(t.body)) && (n.line("import io.ktor.http.*"), n.line("import kotlinx.serialization.json.*")), i && V(i, "form") && n.line("import io.ktor.http.*"), n.line(), n.line("suspend fun main() {"), n.indent(), e.handleErrors && (n.line("try {"), n.indent()), n.line("val client = HttpClient(CIO)"), n.line(), n.line(`val response: HttpResponse = client.${t.method.toLowerCase()} {`), n.indent(), n.line(`url("${t.url}")`), t.params && Object.keys(t.params).length > 0) for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`parameter("${e}", "${t}")`);
-		else n.line(`parameter("${e}", "${r}")`);
-		if (t.headers && Object.keys(t.headers).length > 0) for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`header("${e}", "${t}")`)) : n.line(`header("${e}", "${r}")`);
-		if (t.cookies && Object.keys(t.cookies).length > 0) {
-			let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-			n.line(`header("Cookie", "${e}")`);
-		}
-		if (r) if (V(i, "form")) {
-			n.line("setBody("), n.indent(), n.line("FormDataContent(Parameters.build {"), n.indent();
-			for (let [e, r] of Object.entries(t.body)) n.line(`append("${e}", "${r}")`);
-			n.outdent(), n.line("})"), n.outdent(), n.line(")");
-		} else if (V(i, "json") || !i && B(t.body)) {
-			n.line("contentType(ContentType.Application.Json)"), n.line("setBody("), n.indent(), n.line("buildJsonObject {"), n.indent();
-			for (let [e, r] of Object.entries(t.body)) typeof r == "string" ? n.line(`put("${e}", "${r}")`) : typeof r == "number" || typeof r == "boolean" ? n.line(`put("${e}", ${r})`) : r === null ? n.line(`put("${e}", JsonNull)`) : n.line(`put("${e}", JsonPrimitive(${JSON.stringify(r)}))`);
-			n.outdent(), n.line("}"), n.outdent(), n.line(")");
-		} else z(t.body) && n.line(`setBody("${t.body.replace(/"/g, "\\\"")}")`);
-		return n.outdent(), n.line("}"), n.line(), n.line("println(response.bodyAsText())"), n.line("client.close()"), e.handleErrors && (n.outdent(), n.line("} catch (e: Exception) {"), n.indent(), n.line("println(\"Error: ${e.message}\")"), n.outdent(), n.line("}")), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	language: "node",
-	client: "http",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		n.line("const http = require(\"http\");"), n.line();
-		let { hostname: r, path: i, port: a, protocol: o } = I(t.url), s = i;
-		if (t.params && Object.keys(t.params).length > 0) {
-			let e = new URLSearchParams();
-			for (let [n, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) e.append(n, t);
-			else e.append(n, r);
-			let n = e.toString();
-			n && (s = `${i}${i.includes("?") ? "&" : "?"}${n}`);
-		}
-		if (n.line("const options = {"), n.indent(), n.line(`method: "${t.method.toUpperCase()}",`), n.line(`hostname: "${r}",`), n.line(`path: "${s}",`), t.headers || t.cookies) {
-			if (n.line("headers: {"), n.indent(), t.headers) for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? n.line(`"${e}": "${r.join(", ")}",`) : n.line(`"${e}": "${r}",`);
-			if (t.cookies) {
-				let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-				n.line(`"Cookie": "${e}",`);
-			}
-			n.outdent(), n.line("},");
-		}
-		return n.outdent(), n.line("};"), n.line(), n.line("const req = http.request(options, (res) => {"), n.indent(), n.line("let data = \"\";"), n.line(), n.line("res.on(\"data\", (chunk) => {"), n.indent(), n.line("data += chunk;"), n.outdent(), n.line("});"), n.line(), n.line("res.on(\"end\", () => {"), n.indent(), n.line("console.log(data);"), n.outdent(), n.line("});"), n.outdent(), n.line("});"), e.handleErrors && (n.line(), n.line("req.on(\"error\", (error) => {"), n.indent(), n.line("console.error(error);"), n.outdent(), n.line("});")), n.line(), t.body && (n.line("req.write("), n.json(t.body), n.append(");")), n.line("req.end();"), n.output();
-	}
-}), j({
-	language: "node",
-	client: "fetch",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("const fetch = require(\"node-fetch\");"), n.line(), t.params && Object.keys(t.params).length > 0) {
-			n.line("const url = new URL(\"" + t.url + "\");"), n.line("const params = new URLSearchParams();");
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`params.append("${e}", "${t}");`);
-			else n.line(`params.set("${e}", "${r}");`);
-			n.line("url.search = params.toString();"), n.line(), n.line("fetch(url.toString(), {");
-		} else n.line("fetch(\"" + t.url + "\", {");
-		if (n.indent(), n.line("method: \"" + t.method.toUpperCase() + "\","), t.headers) {
-			n.line("headers: {"), n.indent();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? n.line(`"${e}": "${r.join(", ")}",`) : n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("},");
-		}
-		t.body && (n.line("body: "), n.json(t.body)), n.outdent(), n.line("})");
-		let r = L(t.headers), i = "text()";
-		return V(r, "json") ? i = "json()" : V(r, "xml") || V(r, "text") ? i = "text()" : V(r, "blob") && (i = "blob()"), e.handleErrors ? (n.line(".then(response => {"), n.indent(), n.line("if (!response.ok) {"), n.indent(), n.line("throw new Error(\"response not ok\");"), n.outdent(), n.line("}"), n.line(`return response.${i};`), n.outdent(), n.line("})"), n.line(".then(data => console.log(data))"), n.line(".catch(error => console.error(\"error:\", error));")) : (n.line(`.then(response => response.${i})`), n.line(".then(data => console.log(data))")), n.output();
-	}
-}), j({
-	default: !0,
-	language: "php",
-	client: "curl",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("<?php"), n.line(), n.line("$ch = curl_init();"), n.line(), t.params && Object.keys(t.params).length > 0) {
-			n.line("$url = \"" + t.url + "\";"), n.line("$params = [];");
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`$params[] = "${e}=" . urlencode("${t}");`);
-			else n.line(`$params[] = "${e}=" . urlencode("${r}");`);
-			n.line("$url .= (strpos($url, \"?\") !== false ? \"&\" : \"?\") . implode(\"&\", $params);"), n.line(), n.line("curl_setopt($ch, CURLOPT_URL, $url);");
-		} else n.line(`curl_setopt($ch, CURLOPT_URL, "${t.url}");`);
-		if (n.line("curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);"), n.line(`curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "${t.method.toUpperCase()}");`), t.headers) {
-			n.line(), n.line("$headers = [];");
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`$headers[] = "${e}: ${t}";`)) : n.line(`$headers[] = "${e}: ${r}";`);
-			n.line("curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);");
-		}
-		if (t.cookies) {
-			n.line(), n.line("$cookies = [];");
-			for (let [e, r] of Object.entries(t.cookies)) n.line(`$cookies[] = "${e}=${r}";`);
-			n.line("curl_setopt($ch, CURLOPT_COOKIE, implode(\"; \", $cookies));");
-		}
-		if (t.body) {
-			n.line();
-			let e = L(t.headers);
-			if (V(e, "form")) n.line("$postData = "), n.json(t.body), n.append(";"), n.line("curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));");
-			else if (V(e, "json") || !e && B(t.body)) n.line("curl_setopt($ch, CURLOPT_POSTFIELDS,"), n.line("<<<JSON"), n.line(), n.json(t.body), n.line("JSON"), n.line(");");
-			else if (z(t.body)) {
-				let e = t.body.replace(/'/g, "\\'");
-				n.line(`curl_setopt($ch, CURLOPT_POSTFIELDS, '${e}');`);
-			}
-		}
-		return n.line(), n.line("$response = curl_exec($ch);"), e.handleErrors && (n.line("if (curl_errno($ch)) {"), n.indent(), n.line("echo \"Error: \" . curl_error($ch);"), n.outdent(), n.line("}")), n.line("curl_close($ch);"), n.line(), n.line("echo $response;"), n.output();
-	}
-}), j({
-	language: "php",
-	client: "guzzle",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n",
-			json: {
-				objOpen: "[",
-				objClose: "]",
-				arrOpen: "[",
-				arrClose: "]",
-				separator: " => ",
-				endComma: !0
-			}
-		});
-		if (n.line("<?php"), n.line(), n.line("require 'vendor/autoload.php';"), n.line(), n.line("use GuzzleHttp\\Client;"), e.handleErrors && n.line("use GuzzleHttp\\Exception\\RequestException;"), n.line(), e.handleErrors && (n.line("try {"), n.indent()), n.line("$client = new Client();"), n.line("$response = $client->request("), n.indent(), n.line("\"" + t.method.toUpperCase() + "\","), n.line("\"" + t.url + "\","), t.headers || t.cookies || t.body || t.params) {
-			if (n.line("["), t.params && Object.keys(t.params).length > 0) {
-				n.indent(), n.line("\"query\" => ["), n.indent();
-				for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`"${e}" => "${t}",`);
-				else n.line(`"${e}" => "${r}",`);
-				n.outdent(), n.line("],"), n.outdent();
-			}
-			if (t.headers) {
-				n.indent(), n.line("\"headers\" => ["), n.indent();
-				for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`"${e}" => "${t}",`)) : n.line(`"${e}" => "${r}",`);
-				n.outdent(), n.line("],"), n.outdent();
-			}
-			if (t.cookies) {
-				n.indent(), n.line("\"cookies\" => ["), n.indent();
-				for (let [e, r] of Object.entries(t.cookies)) n.line(`"${e}" => "${r}",`);
-				n.outdent(), n.line("],"), n.outdent();
-			}
-			t.body && (n.indent(), V(L(t.headers), "form") ? (n.line("\"form_params\" => "), n.json(t.body), n.append(",")) : (n.line("\"json\" => "), n.json(t.body), n.append(",")), n.outdent()), n.line("],");
-		}
-		return n.outdent(), n.line(");"), n.line(), n.line("echo $response->getBody();"), e.handleErrors && (n.outdent(), n.line("} catch (RequestException $e) {"), n.indent(), n.line("echo \"Error: \" . $e->getMessage();"), n.outdent(), n.line("}")), n.output();
-	}
-}), j({
-	default: !0,
-	language: "python",
-	client: "http",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		}), r = t.method.toUpperCase(), i = r !== "GET" && t.body, a = t.headers && Object.keys(t.headers).length > 0, o = t.cookies && Object.keys(t.cookies).length > 0, s = [];
-		n.line("import http.client"), n.line("import json"), n.line(), e.handleErrors && (n.line("try:"), n.indent());
-		let { hostname: c, path: l, port: u, protocol: d } = I(t.url), f = `"${l}"`;
-		if (t.params && Object.keys(t.params).length > 0) {
-			n.line("from urllib.parse import urlencode"), n.line("params = {"), n.indent();
-			for (let [e, r] of Object.entries(t.params)) Array.isArray(r) ? n.line(`"${e}": [${r.map((e) => `"${e}"`).join(", ")}],`) : n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("}"), n.line("query_string = urlencode(params, doseq=True)"), n.line(`final_path = f"${l}?{query_string}"`), f = "final_path";
-		}
-		if (n.line(`conn = http.client.HTTPSConnection("${c}", ${u})`), a) {
-			n.line(), s.push("headers"), n.line("headers = {"), n.indent();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? n.line(`"${e}": "${r.join(", ")}",`) : n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("}");
-		}
-		if (o) {
-			n.line(), s.push("cookies"), n.line("cookies = {"), n.indent();
-			for (let [e, r] of Object.entries(t.cookies)) n.line(`"${e}": "${r}",`);
-			n.outdent(), n.line("}");
-		}
-		if (i) {
-			n.line();
-			let e = L(t.headers);
-			V(e, "form") ? (n.line("from urllib.parse import urlencode"), n.line("payload_dict = "), n.json(t.body), n.line("payload = urlencode(payload_dict)")) : V(e, "json") || !e && B(t.body) ? (n.line("payload_dict = "), n.json(t.body), n.line("payload = json.dumps(payload_dict)")) : z(t.body) && n.line(`payload = "${t.body.replace(/"/g, "\\\"")}"`);
-		}
-		if (n.line(), i) {
-			let e = s.filter((e) => e !== "payload");
-			n.line(`conn.request("${r}", ${f}, payload` + (e.length > 0 ? `, ${e.join(", ")}` : "") + ")");
-		} else n.line(`conn.request("${r}", ${f}` + (s.length > 0 ? `, ${s.join(", ")}` : "") + ")");
-		return n.line("res = conn.getresponse()"), n.line("data = res.read()"), n.line(), n.line("print(data.decode(\"utf-8\"))"), e.handleErrors && (n.outdent(), n.line("except Exception as e:"), n.indent(), n.line("print(f\"Error: {e}\")"), n.outdent()), n.output();
-	}
-}), j({
-	language: "python",
-	client: "requests",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		}), r = t.method.toUpperCase() !== "GET" && t.body, i = t.headers && Object.keys(t.headers).length > 0, a = t.cookies && Object.keys(t.cookies).length > 0, o = [];
-		if (n.line("import requests"), n.line(), e.handleErrors && (n.line("try:"), n.indent()), n.line("url = \"" + t.url + "\""), t.params && Object.keys(t.params).length > 0) {
-			n.line(), o.push("params=url_params"), n.line("url_params = {"), n.indent();
-			for (let [e, r] of Object.entries(t.params)) Array.isArray(r) ? n.line(`"${e}": [${r.map((e) => `"${e}"`).join(", ")}]`) : n.line(`"${e}": "${r}"`), Object.keys(t.params).indexOf(e) !== Object.keys(t.params).length - 1 && n.append(",");
-			n.outdent(), n.line("}");
-		}
-		if (i) {
-			n.line(), o.push("headers=headers"), n.line("headers = {"), n.indent();
-			for (let [e, r] of Object.entries(t.headers)) n.line(`"${e}": "${r}"`), Object.keys(t.headers).indexOf(e) !== Object.keys(t.headers).length - 1 && n.append(",");
-			n.outdent(), n.line("}");
-		}
-		if (a) {
-			n.line(), o.push("cookies=cookies"), n.line("cookies = {"), n.indent();
-			for (let [e, r] of Object.entries(t.cookies)) n.line(`"${e}": "${r}"`), Object.keys(t.cookies).indexOf(e) !== Object.keys(t.cookies).length - 1 && n.append(",");
-			n.outdent(), n.line("}");
-		}
-		return r && (n.line(), V(L(t.headers), "form") ? (o.push("data=form_data"), n.line("form_data = "), n.json(t.body)) : (o.push("json=json_data"), n.line("json_data = "), n.json(t.body))), n.line(), n.line("response = requests." + t.method.toLowerCase() + "(url" + (o.length > 0 ? `, ${o.join(", ")}` : "") + ")"), n.line("print(response.text)"), e.handleErrors && (n.outdent(), n.line("except requests.exceptions.RequestException as e:"), n.indent(), n.line("print(f\"Error: {e}\")"), n.outdent()), n.output();
-	}
-}), j({
-	default: !0,
-	language: "ruby",
-	client: "nethttp",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("require \"net/http\""), n.line("require \"uri\""), n.line(), e.handleErrors && (n.line("begin"), n.indent()), t.params && Object.keys(t.params).length > 0) {
-			n.line("uri = URI.parse(\"" + t.url + "\")"), n.line("params = {"), n.indent();
-			for (let [e, r] of Object.entries(t.params)) Array.isArray(r) ? n.line(`"${e}" => [${r.map((e) => `"${e}"`).join(", ")}],`) : n.line(`"${e}" => "${r}",`);
-			n.outdent(), n.line("}"), n.line("uri.query = URI.encode_www_form(params)");
-		} else n.line("uri = URI.parse(\"" + t.url + "\")");
-		if (t.method.toUpperCase() === "GET" ? n.line("request = Net::HTTP::Get.new(uri)") : t.method.toUpperCase() === "POST" ? n.line("request = Net::HTTP::Post.new(uri)") : t.method.toUpperCase() === "PUT" ? n.line("request = Net::HTTP::Put.new(uri)") : t.method.toUpperCase() === "DELETE" ? n.line("request = Net::HTTP::Delete.new(uri)") : n.line("request = Net::HTTP::GenericRequest.new(\"" + t.method.toUpperCase() + "\", uri.path, nil, nil)"), t.headers && Object.keys(t.headers).length > 0) for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`request["${e}"] = "${t}"`)) : n.line(`request["${e}"] = "${r}"`);
-		if (t.cookies && Object.keys(t.cookies).length > 0) {
-			let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-			n.line(`request["Cookie"] = "${e}"`);
-		}
-		if (t.body) {
-			let e = L(t.headers);
-			V(e, "json") || !e && B(t.body) ? (n.line("request.body = "), n.json(t.body), n.append(".to_json")) : z(t.body) ? n.line(`request.body = "${t.body.replace(/"/g, "\\\"")}"`) : (n.line("request.body = "), n.json(t.body), n.append(".to_json"));
-		}
-		return n.line(), n.line("response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == \"https\") do |http|"), n.indent(), n.line("http.request(request)"), n.outdent(), n.line("end"), n.line(), n.line("puts response.body"), e.handleErrors && (n.outdent(), n.line("rescue StandardError => e"), n.indent(), n.line("puts \"Error: #{e.message}\""), n.outdent(), n.line("end")), n.output();
-	}
-}), j({
-	language: "ruby",
-	client: "faraday",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("require \"faraday\""), n.line(), e.handleErrors && (n.line("begin"), n.indent()), n.line("conn = Faraday.new(url: \"" + t.url + "\") do |f|"), n.indent(), n.line("f.adapter Faraday.default_adapter"), n.outdent(), n.line("end"), n.line(), n.line("response = conn." + t.method.toLowerCase() + " do |req|"), n.indent(), n.line("req.url \"" + t.url + "\""), t.params && Object.keys(t.params).length > 0) {
-			n.line();
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`req.params["${e}"] = "${t}"`);
-			else n.line(`req.params["${e}"] = "${r}"`);
-		}
-		if (t.headers) {
-			n.line();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`req.headers["${e}"] = "${t}"`)) : n.line(`req.headers["${e}"] = "${r}"`);
-		}
-		if (t.cookies) {
-			n.line();
-			let e = Object.entries(t.cookies).map(([e, t]) => `${e}=${t}`).join("; ");
-			n.line(`req.headers["Cookie"] = "${e}"`);
-		}
-		if (t.body) {
-			n.line();
-			let e = L(t.headers);
-			V(e, "json") || !e && B(t.body) ? (n.line("req.body = "), n.json(t.body), n.append(".to_json")) : z(t.body) ? n.line(`req.body = "${t.body.replace(/"/g, "\\\"")}"`) : (n.line("req.body = "), n.json(t.body), n.append(".to_json"));
-		}
-		return n.outdent(), n.line("end"), n.line(), n.line("puts response.body"), e.handleErrors && (n.outdent(), n.line("rescue Faraday::Error => e"), n.indent(), n.line("puts \"Error: #{e.message}\""), n.outdent(), n.line("end")), n.output();
-	}
-}), j({
-	language: "rust",
-	client: "reqwest",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("use reqwest::blocking::Client;"), n.line("use std::error::Error;"), n.line(), n.line("fn main() -> Result<(), Box<dyn Error>> {"), n.indent(), n.line("let client = Client::new();"), n.line(), n.line("let res = client.request(reqwest::Method::" + t.method.toUpperCase() + ", \"" + t.url + "\")"), n.indent(), t.params && Object.keys(t.params).length > 0) {
-			n.line(".query(&["), n.indent();
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`("${e}", "${t}"),`);
-			else n.line(`("${e}", "${r}"),`);
-			n.outdent(), n.line("])");
-		}
-		if (t.headers) for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`.header("${e}", "${t}")`)) : n.line(`.header("${e}", "${r}")`);
-		if (t.cookies) for (let [e, r] of Object.entries(t.cookies)) Array.isArray(r) ? r.forEach((t) => n.line(`.cookie("${e}", "${t}")`)) : n.line(`.cookie("${e}", "${r}")`);
-		if (t.body) {
-			let e = L(t.headers);
-			V(e, "form") ? (n.line(".form(&"), n.json(t.body), n.append(")")) : V(e, "json") || !e && B(t.body) ? (n.line(".json(&"), n.json(t.body), n.append(")")) : z(t.body) && n.line(`.body("${t.body.replace(/"/g, "\\\"")}")`);
-		}
-		return n.line(".send()?;"), n.outdent(), n.line(), e.handleErrors ? (n.line("if res.status().is_success() {"), n.indent(), n.line("println!(\"{}\", res.text()?);"), n.outdent(), n.line("} else {"), n.indent(), n.line("eprintln!(\"Request failed with status: {}\", res.status());"), n.outdent(), n.line("}")) : n.line("println!(\"{}\", res.text()?);"), n.line("Ok(())"), n.outdent(), n.line("}"), n.output();
-	}
-}), j({
-	default: !0,
-	language: "shell",
-	client: "curl",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || " \\\n"
-		});
-		if (n.line(`curl -X ${t.method} "${t.url}"`), n.indent(), t.params) for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`-G -d "${e}=${t.replace(/"/g, "\\\"")}"`);
-		else n.line(`-G -d "${e}=${r.replace(/"/g, "\\\"")}"`);
-		if (t.headers) for (let [e, r] of Object.entries(t.headers)) if (Array.isArray(r)) for (let t of r) n.line(`-H "${e}: ${t.replace(/"/g, "\\\"")}"`);
-		else n.line(`-H "${e}: ${r.replace(/"/g, "\\\"")}"`);
-		if (t.cookies) {
-			let e = Object.entries(t.cookies).flatMap(([e, t]) => Array.isArray(t) ? t.map((t) => `${e}=${t}`) : `${e}=${t}`).join("; ");
-			n.line(`-b "${e}"`);
-		}
-		if (R(t.body)) {
-			let e = L(t.headers);
-			if (V(e, "json") || !e && B(t.body)) n.line("-d $'"), n.json(t.body), n.append("'");
-			else if (V(e, "form")) {
-				let e = new URLSearchParams(t.body).toString().replace(/'/g, "'\\''");
-				n.line(`-d '${e}'`);
-			} else if (typeof t.body == "string") {
-				let e = t.body.replace(/'/g, "'\\''");
-				n.line(`-d '${e}'`);
-			}
-		}
-		let r = n.output();
-		return r = r.replace(/\\\s*$/, "").trim(), r;
-	}
-}), j({
-	default: !0,
-	language: "swift",
-	client: "nsurlsession",
-	generate(e, t) {
-		let n = new F({
-			indent: e.indent || "  ",
-			join: e.join || "\n"
-		});
-		if (n.line("import Foundation"), n.line(), t.params && Object.keys(t.params).length > 0) {
-			n.line("var urlComponents = URLComponents(string: \"" + t.url + "\")!"), n.line("var queryItems: [URLQueryItem] = []");
-			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) for (let t of r) n.line(`queryItems.append(URLQueryItem(name: "${e}", value: "${t}"))`);
-			else n.line(`queryItems.append(URLQueryItem(name: "${e}", value: "${r}"))`);
-			n.line("urlComponents.queryItems = queryItems"), n.line("let url = urlComponents.url!");
-		} else n.line("let url = URL(string: \"" + t.url + "\")!");
-		if (n.line("var request = URLRequest(url: url)"), n.line("request.httpMethod = \"" + t.method.toUpperCase() + "\""), t.headers && Object.keys(t.headers).length > 0) {
-			n.line();
-			for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? r.forEach((t) => n.line(`request.addValue("${t}", forHTTPHeaderField: "${e}")`)) : n.line(`request.addValue("${r}", forHTTPHeaderField: "${e}")`);
-		}
-		if (t.cookies && Object.keys(t.cookies).length > 0) {
-			n.line();
-			for (let [e, r] of Object.entries(t.cookies)) n.line(`request.addValue("${e}=${r}", forHTTPHeaderField: "Cookie")`);
-		}
-		return t.body && (n.line(), typeof t.body == "string" ? (n.line(`let bodyString = "${t.body.replace(/"/g, "\\\"")}"`), n.line("request.httpBody = bodyString.data(using: .utf8)")) : (n.line("let bodyDict: [String: Any] = "), n.json(t.body), n.line("request.httpBody = try? JSONSerialization.data(withJSONObject: bodyDict)"))), n.line(), n.line("let task = URLSession.shared.dataTask(with: request) { data, response, error in"), n.indent(), n.line("if let error = error {"), n.indent(), n.line("print(\"Error: \\(error)\")"), n.line("return"), n.outdent(), n.line("}"), n.line(), n.line("if let httpResponse = response as? HTTPURLResponse {"), n.indent(), n.line("if httpResponse.statusCode == 200, let data = data {"), n.indent(), n.line("let responseString = String(data: data, encoding: .utf8)"), n.line("print(responseString ?? \"No response data\")"), n.outdent(), n.line("} else {"), n.indent(), n.line("print(\"Request failed with status code: \\(httpResponse.statusCode)\")"), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.line(), n.line("task.resume()"), n.output();
-	}
-});
-//#endregion
 //#region src/gimmehttp/logos/index.ts
-var te = {
+var y = {
 	c: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 228 256\"><g fill=\"none\" fill-rule=\"evenodd\"><path d=\"M227.988 75.264c-.001-4.305-.923-8.108-2.786-11.372-1.83-3.211-4.573-5.9-8.25-8.029C186.6 38.38 156.218 20.948 125.875 3.445c-8.18-4.717-16.112-4.545-24.232.24-12.082 7.119-72.57 41.739-90.594 52.168C3.626 60.147.013 66.716.012 75.256 0 110.419.012 145.58 0 180.743c.002 4.21.884 7.94 2.666 11.156 1.83 3.306 4.61 6.07 8.372 8.247 18.026 10.43 78.521 45.047 90.6 52.167 8.124 4.788 16.055 4.959 24.238.24 30.344-17.503 60.729-34.933 91.086-52.418 3.762-2.175 6.542-4.941 8.373-8.245 1.779-3.216 2.663-6.946 2.665-11.157 0 0 0-70.305-.012-105.469\" fill=\"#A9B9CB\"/><path d=\"M125.668 3.675c-8.167-4.706-16.086-4.535-24.192.239-12.062 7.1-72.45 41.63-90.446 52.033C3.62 60.228.013 66.78.012 75.299 0 110.369.012 145.44 0 180.512c.002 4.2.883 7.92 2.661 11.126 1.829 3.299 4.604 6.056 8.36 8.226a8027 8027 0 0 0 17.954 10.329L195.604 43.889c-23.315-13.4-46.636-26.788-69.936-40.214\" fill=\"#7F8B99\"/><path d=\"m137.562 111.972 35.482.25c0-14.755-14.964-50.889-57.867-50.889-27.334 0-64.081 17.344-64.081 67.21 0 49.863 36.023 66.124 64.081 66.124 45.437 0 56.297-31.38 56.297-49.113l-33.85-1.932s.906 20.511-22.627 20.511c-21.723 0-25.348-26.558-25.348-35.59 0-13.731 4.893-35.773 25.348-35.773s22.565 19.202 22.565 19.202\" fill=\"#FFF\"/></g></svg>",
 	csharp: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 128 128\"><path fill=\"#9B4F96\" d=\"M115.4 30.7 67.1 2.9c-.8-.5-1.9-.7-3.1-.7s-2.3.3-3.1.7l-48 27.9c-1.7 1-2.9 3.5-2.9 5.4v55.7c0 1.1.2 2.4 1 3.5l106.8-62c-.6-1.2-1.5-2.1-2.4-2.7\"/><path fill=\"#68217A\" d=\"M10.7 95.3c.5.8 1.2 1.5 1.9 1.9l48.2 27.9c.8.5 1.9.7 3.1.7s2.3-.3 3.1-.7l48-27.9c1.7-1 2.9-3.5 2.9-5.4V36.1c0-.9-.1-1.9-.6-2.8z\"/><path fill=\"#fff\" d=\"M85.3 76.1C81.1 83.5 73.1 88.5 64 88.5c-13.5 0-24.5-11-24.5-24.5s11-24.5 24.5-24.5c9.1 0 17.1 5 21.3 12.5l13-7.5c-6.8-11.9-19.6-20-34.3-20-21.8 0-39.5 17.7-39.5 39.5s17.7 39.5 39.5 39.5c14.6 0 27.4-8 34.2-19.8zM97 66.2l.9-4.3h-4.2v-4.7h5.1L100 51h4.9l-1.2 6.1h3.8l1.2-6.1h4.8l-1.2 6.1h2.4v4.7h-3.3l-.9 4.3h4.2v4.7h-5.1l-1.2 6h-4.9l1.2-6h-3.8l-1.2 6h-4.8l1.2-6h-2.4v-4.7H97zm4.8 0h3.8l.9-4.3h-3.8z\"/></svg>",
 	dart: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"none\"><defs><linearGradient id=\"dart-a\" x1=\"3.952%\" y1=\"26.993%\" x2=\"75.897%\" y2=\"52.919%\"><stop offset=\"0%\" stop-color=\"#00D2B8\"/><stop offset=\"100%\" stop-color=\"#55DDCA\"/></linearGradient><linearGradient id=\"dart-b\" x1=\"26.174%\" y1=\"46.887%\" x2=\"79.77%\" y2=\"65.621%\"><stop offset=\"0%\" stop-color=\"#0075C9\"/><stop offset=\"38.8%\" stop-color=\"#0075C9\"/><stop offset=\"75.3%\" stop-color=\"#007BC9\"/></linearGradient><linearGradient id=\"dart-c\" x1=\"50%\" y1=\"97.21%\" x2=\"50%\" y2=\"-.277%\"><stop offset=\"0%\" stop-color=\"#FFB700\"/><stop offset=\"100%\" stop-color=\"#FFA700\"/></linearGradient></defs><polygon fill=\"url(#dart-a)\" points=\"128 0 256 0 256 128\"/><polygon fill=\"url(#dart-b)\" points=\"0 128 0 256 128 256\"/><polygon fill=\"url(#dart-c)\" points=\"0 256 128 128 256 128 128 256\"/><path fill=\"#00D2B8\" d=\"M128,128 L256,0 L128,0 L128,128 Z\" opacity=\".2\"/><path fill=\"#0075C9\" d=\"M0,128 L128,128 L0,256 L0,128 Z\" opacity=\".2\"/></svg>",
@@ -857,17 +74,4992 @@ var te = {
 	swift: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 255\"><defs><linearGradient x1=\"59.404%\" y1=\"-3.568%\" x2=\"40.49%\" y2=\"103.581%\" id=\"swift-a\"><stop stop-color=\"#FAAE42\" offset=\"0%\"/><stop stop-color=\"#EF3E31\" offset=\"100%\"/></linearGradient><linearGradient x1=\"59.84%\" y1=\"1.974%\" x2=\"43.622%\" y2=\"97.794%\" id=\"swift-b\"><stop stop-color=\"#E39F3A\" offset=\"0%\"/><stop stop-color=\"#D33929\" offset=\"100%\"/></linearGradient></defs><g fill=\"none\" fill-rule=\"evenodd\"><path d=\"M56.679 0h141.248c6.873 0 13.547 1.096 20.022 3.387 9.363 3.386 17.83 9.363 24.205 17.133 6.475 7.77 10.758 17.332 12.252 27.293.598 3.685.698 7.37.698 11.056v137.76c0 4.383-.2 8.865-1.096 13.148a56.4 56.4 0 0 1-13.448 26.596c-6.674 7.47-15.44 13.049-24.902 16.037-5.778 1.793-11.754 2.59-17.83 2.59-2.69 0-141.548 0-143.64-.1-10.16-.498-20.22-3.785-28.688-9.463-8.267-5.578-15.04-13.347-19.424-22.312-3.785-7.67-5.678-16.236-5.678-24.803V56.678C.2 48.21 1.992 39.844 5.678 32.273 9.96 23.31 16.635 15.44 24.903 9.861 33.37 4.084 43.33.697 53.49.2c.997-.2 2.093-.2 3.19-.2\" fill=\"url(#swift-a)\"/><path d=\"M215.16 208.582c-.897-1.394-1.893-2.789-2.989-4.084-2.49-2.988-5.379-5.578-8.566-7.77-3.985-2.689-8.666-4.382-13.448-4.582-3.387-.199-6.773.399-9.96 1.594-3.188 1.096-6.276 2.69-9.265 4.283-3.486 1.793-6.972 3.586-10.658 5.08a80 80 0 0 1-13.647 4.184c-5.877 1.096-11.853 1.494-17.73 1.395-10.659-.2-21.317-1.793-31.478-4.782-8.965-2.69-17.531-6.375-25.6-11.056-7.072-4.084-13.646-8.766-19.822-14.045-5.08-4.383-9.762-9.065-14.145-14.045a154 154 0 0 1-8.566-10.957 47 47 0 0 1-2.989-4.682L0 120.727V56.479C0 25.3 25.202 0 56.38 0h50.303l37.255 37.852c84.071 57.175 56.878 120.228 56.878 120.228s23.906 26.895 14.344 50.502\" fill=\"url(#swift-b)\"/><path d=\"M144.137 37.852c84.072 57.175 56.878 120.228 56.878 120.228s23.906 26.994 14.244 50.602c0 0-9.861-16.536-26.397-16.536-15.937 0-25.3 16.536-57.376 16.536-71.42 0-105.189-59.666-105.189-59.666 64.349 42.334 108.277 12.351 108.277 12.351-28.986-16.834-90.646-97.318-90.646-97.318 53.69 45.72 76.9 57.773 76.9 57.773-13.846-11.455-52.694-67.435-52.694-67.435 31.078 31.476 92.837 75.404 92.837 75.404 17.532-48.61-16.834-91.94-16.834-91.94\" fill=\"#FFF\"/></g></svg>",
 	typescript: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\"><g fill=\"none\" fill-rule=\"evenodd\"><path fill=\"#007ACC\" d=\"M0 128v128h256V0H0z\"/><path d=\"m56.612 128.849-.081 10.484h33.32v94.68h23.569v-94.68h33.32v-10.28c0-5.69-.122-10.444-.284-10.566-.122-.162-20.4-.244-44.983-.203l-44.74.122zm149.955-10.741c6.501 1.625 11.459 4.51 16.01 9.224 2.357 2.52 5.851 7.111 6.136 8.208.08.325-11.053 7.802-17.798 11.988-.244.162-1.22-.894-2.317-2.52-3.291-4.795-6.745-6.867-12.028-7.233-7.76-.528-12.759 3.535-12.718 10.321 0 1.992.284 3.17 1.097 4.795 1.707 3.536 4.876 5.649 14.832 9.956 18.326 7.883 26.168 13.084 31.045 20.48 5.445 8.249 6.664 21.415 2.966 31.208-4.063 10.646-14.14 17.879-28.323 20.276-4.388.772-14.79.65-19.504-.203-10.28-1.828-20.033-6.908-26.047-13.572-2.357-2.6-6.949-9.387-6.664-9.874.122-.163 1.178-.813 2.356-1.504 1.138-.65 5.446-3.129 9.509-5.485l7.355-4.267 1.544 2.276c2.154 3.29 6.867 7.801 9.712 9.305 8.167 4.307 19.383 3.698 24.909-1.26 2.357-2.153 3.332-4.388 3.332-7.68 0-2.966-.366-4.266-1.91-6.501-1.99-2.845-6.054-5.242-17.595-10.24-13.206-5.69-18.895-9.224-24.096-14.832-3.007-3.25-5.852-8.452-7.03-12.8-.975-3.617-1.22-12.678-.447-16.335 2.723-12.76 12.353-21.659 26.25-24.3 4.51-.853 14.994-.528 19.424.569\" fill=\"#FFF\"/></g></svg>"
 };
-function W(e) {
-	return te[e.toLowerCase()] || null;
+function b(e) {
+	return y[e.toLowerCase()] || null;
 }
-f.registerLanguage("c", p), f.registerLanguage("csharp", m), f.registerLanguage("dart", ee), f.registerLanguage("go", h), f.registerLanguage("java", g), f.registerLanguage("javascript", _), f.registerLanguage("kotlin", v), f.registerLanguage("php", y), f.registerLanguage("python", b), f.registerLanguage("r", x), f.registerLanguage("ruby", S), f.registerLanguage("rust", C), f.registerLanguage("bash", w), f.registerLanguage("shell", w), f.registerLanguage("shellscript", w), f.registerLanguage("swift", T), f.registerLanguage("typescript", E), f.registerLanguage("ts", E), f.registerLanguage("json", D), f.registerLanguage("node", _), f.registerLanguage("nodejs", _);
-var G = {
+var x = (/* @__PURE__ */ d((/* @__PURE__ */ l(((e, t) => {
+	function n(e) {
+		return e instanceof Map ? e.clear = e.delete = e.set = function() {
+			throw Error("map is read-only");
+		} : e instanceof Set && (e.add = e.clear = e.delete = function() {
+			throw Error("set is read-only");
+		}), Object.freeze(e), Object.getOwnPropertyNames(e).forEach((t) => {
+			let r = e[t], i = typeof r;
+			(i === "object" || i === "function") && !Object.isFrozen(r) && n(r);
+		}), e;
+	}
+	var r = class {
+		constructor(e) {
+			e.data === void 0 && (e.data = {}), this.data = e.data, this.isMatchIgnored = !1;
+		}
+		ignoreMatch() {
+			this.isMatchIgnored = !0;
+		}
+	};
+	function i(e) {
+		return e.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+	}
+	function a(e, ...t) {
+		let n = Object.create(null);
+		for (let t in e) n[t] = e[t];
+		return t.forEach(function(e) {
+			for (let t in e) n[t] = e[t];
+		}), n;
+	}
+	var o = "</span>", s = (e) => !!e.scope, c = (e, { prefix: t }) => {
+		if (e.startsWith("language:")) return e.replace("language:", "language-");
+		if (e.includes(".")) {
+			let n = e.split(".");
+			return [`${t}${n.shift()}`, ...n.map((e, t) => `${e}${"_".repeat(t + 1)}`)].join(" ");
+		}
+		return `${t}${e}`;
+	}, l = class {
+		constructor(e, t) {
+			this.buffer = "", this.classPrefix = t.classPrefix, e.walk(this);
+		}
+		addText(e) {
+			this.buffer += i(e);
+		}
+		openNode(e) {
+			if (!s(e)) return;
+			let t = c(e.scope, { prefix: this.classPrefix });
+			this.span(t);
+		}
+		closeNode(e) {
+			s(e) && (this.buffer += o);
+		}
+		value() {
+			return this.buffer;
+		}
+		span(e) {
+			this.buffer += `<span class="${e}">`;
+		}
+	}, u = (e = {}) => {
+		let t = { children: [] };
+		return Object.assign(t, e), t;
+	}, d = class e {
+		constructor() {
+			this.rootNode = u(), this.stack = [this.rootNode];
+		}
+		get top() {
+			return this.stack[this.stack.length - 1];
+		}
+		get root() {
+			return this.rootNode;
+		}
+		add(e) {
+			this.top.children.push(e);
+		}
+		openNode(e) {
+			let t = u({ scope: e });
+			this.add(t), this.stack.push(t);
+		}
+		closeNode() {
+			if (this.stack.length > 1) return this.stack.pop();
+		}
+		closeAllNodes() {
+			for (; this.closeNode(););
+		}
+		toJSON() {
+			return JSON.stringify(this.rootNode, null, 4);
+		}
+		walk(e) {
+			return this.constructor._walk(e, this.rootNode);
+		}
+		static _walk(e, t) {
+			return typeof t == "string" ? e.addText(t) : t.children && (e.openNode(t), t.children.forEach((t) => this._walk(e, t)), e.closeNode(t)), e;
+		}
+		static _collapse(t) {
+			typeof t != "string" && t.children && (t.children.every((e) => typeof e == "string") ? t.children = [t.children.join("")] : t.children.forEach((t) => {
+				e._collapse(t);
+			}));
+		}
+	}, f = class extends d {
+		constructor(e) {
+			super(), this.options = e;
+		}
+		addText(e) {
+			e !== "" && this.add(e);
+		}
+		startScope(e) {
+			this.openNode(e);
+		}
+		endScope() {
+			this.closeNode();
+		}
+		__addSublanguage(e, t) {
+			let n = e.root;
+			t && (n.scope = `language:${t}`), this.add(n);
+		}
+		toHTML() {
+			return new l(this, this.options).value();
+		}
+		finalize() {
+			return this.closeAllNodes(), !0;
+		}
+	};
+	function p(e) {
+		return e ? typeof e == "string" ? e : e.source : null;
+	}
+	function m(e) {
+		return _("(?=", e, ")");
+	}
+	function h(e) {
+		return _("(?:", e, ")*");
+	}
+	function g(e) {
+		return _("(?:", e, ")?");
+	}
+	function _(...e) {
+		return e.map((e) => p(e)).join("");
+	}
+	function v(e) {
+		let t = e[e.length - 1];
+		return typeof t == "object" && t.constructor === Object ? (e.splice(e.length - 1, 1), t) : {};
+	}
+	function y(...e) {
+		return "(" + (v(e).capture ? "" : "?:") + e.map((e) => p(e)).join("|") + ")";
+	}
+	function b(e) {
+		return RegExp(e.toString() + "|").exec("").length - 1;
+	}
+	function x(e, t) {
+		let n = e && e.exec(t);
+		return n && n.index === 0;
+	}
+	var S = /\[(?:[^\\\]]|\\.)*\]|\(\??|\\([1-9][0-9]*)|\\./;
+	function C(e, { joinWith: t }) {
+		let n = 0;
+		return e.map((e) => {
+			n += 1;
+			let t = n, r = p(e), i = "";
+			for (; r.length > 0;) {
+				let e = S.exec(r);
+				if (!e) {
+					i += r;
+					break;
+				}
+				i += r.substring(0, e.index), r = r.substring(e.index + e[0].length), e[0][0] === "\\" && e[1] ? i += "\\" + String(Number(e[1]) + t) : (i += e[0], e[0] === "(" && n++);
+			}
+			return i;
+		}).map((e) => `(${e})`).join(t);
+	}
+	var w = /\b\B/, T = "[a-zA-Z]\\w*", E = "[a-zA-Z_]\\w*", D = "\\b\\d+(\\.\\d+)?", O = "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)", k = "\\b(0b[01]+)", A = "!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|-|-=|/=|/|:|;|<<|<<=|<=|<|===|==|=|>>>=|>>=|>=|>>>|>>|>|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~", j = (e = {}) => {
+		let t = /^#![ ]*\//;
+		return e.binary && (e.begin = _(t, /.*\b/, e.binary, /\b.*/)), a({
+			scope: "meta",
+			begin: t,
+			end: /$/,
+			relevance: 0,
+			"on:begin": (e, t) => {
+				e.index !== 0 && t.ignoreMatch();
+			}
+		}, e);
+	}, M = {
+		begin: "\\\\[\\s\\S]",
+		relevance: 0
+	}, N = {
+		scope: "string",
+		begin: "'",
+		end: "'",
+		illegal: "\\n",
+		contains: [M]
+	}, P = {
+		scope: "string",
+		begin: "\"",
+		end: "\"",
+		illegal: "\\n",
+		contains: [M]
+	}, F = { begin: /\b(a|an|the|are|I'm|isn't|don't|doesn't|won't|but|just|should|pretty|simply|enough|gonna|going|wtf|so|such|will|you|your|they|like|more)\b/ }, I = function(e, t, n = {}) {
+		let r = a({
+			scope: "comment",
+			begin: e,
+			end: t,
+			contains: []
+		}, n);
+		r.contains.push({
+			scope: "doctag",
+			begin: "[ ]*(?=(TODO|FIXME|NOTE|BUG|OPTIMIZE|HACK|XXX):)",
+			end: /(TODO|FIXME|NOTE|BUG|OPTIMIZE|HACK|XXX):/,
+			excludeBegin: !0,
+			relevance: 0
+		});
+		let i = y("I", "a", "is", "so", "us", "to", "at", "if", "in", "it", "on", /[A-Za-z]+['](d|ve|re|ll|t|s|n)/, /[A-Za-z]+[-][a-z]+/, /[A-Za-z][a-z]{2,}/);
+		return r.contains.push({ begin: _(/[ ]+/, "(", i, /[.]?[:]?([.][ ]|[ ])/, "){3}") }), r;
+	}, L = I("//", "$"), R = I("/\\*", "\\*/"), z = I("#", "$"), B = /*#__PURE__*/ Object.freeze({
+		__proto__: null,
+		APOS_STRING_MODE: N,
+		BACKSLASH_ESCAPE: M,
+		BINARY_NUMBER_MODE: {
+			scope: "number",
+			begin: k,
+			relevance: 0
+		},
+		BINARY_NUMBER_RE: k,
+		COMMENT: I,
+		C_BLOCK_COMMENT_MODE: R,
+		C_LINE_COMMENT_MODE: L,
+		C_NUMBER_MODE: {
+			scope: "number",
+			begin: O,
+			relevance: 0
+		},
+		C_NUMBER_RE: O,
+		END_SAME_AS_BEGIN: function(e) {
+			return Object.assign(e, {
+				"on:begin": (e, t) => {
+					t.data._beginMatch = e[1];
+				},
+				"on:end": (e, t) => {
+					t.data._beginMatch !== e[1] && t.ignoreMatch();
+				}
+			});
+		},
+		HASH_COMMENT_MODE: z,
+		IDENT_RE: T,
+		MATCH_NOTHING_RE: w,
+		METHOD_GUARD: {
+			begin: "\\.\\s*[a-zA-Z_]\\w*",
+			relevance: 0
+		},
+		NUMBER_MODE: {
+			scope: "number",
+			begin: D,
+			relevance: 0
+		},
+		NUMBER_RE: D,
+		PHRASAL_WORDS_MODE: F,
+		QUOTE_STRING_MODE: P,
+		REGEXP_MODE: {
+			scope: "regexp",
+			begin: /\/(?=[^/\n]*\/)/,
+			end: /\/[gimuy]*/,
+			contains: [M, {
+				begin: /\[/,
+				end: /\]/,
+				relevance: 0,
+				contains: [M]
+			}]
+		},
+		RE_STARTERS_RE: A,
+		SHEBANG: j,
+		TITLE_MODE: {
+			scope: "title",
+			begin: T,
+			relevance: 0
+		},
+		UNDERSCORE_IDENT_RE: E,
+		UNDERSCORE_TITLE_MODE: {
+			scope: "title",
+			begin: E,
+			relevance: 0
+		}
+	});
+	function V(e, t) {
+		e.input[e.index - 1] === "." && t.ignoreMatch();
+	}
+	function H(e, t) {
+		e.className !== void 0 && (e.scope = e.className, delete e.className);
+	}
+	function U(e, t) {
+		t && e.beginKeywords && (e.begin = "\\b(" + e.beginKeywords.split(" ").join("|") + ")(?!\\.)(?=\\b|\\s)", e.__beforeBegin = V, e.keywords = e.keywords || e.beginKeywords, delete e.beginKeywords, e.relevance === void 0 && (e.relevance = 0));
+	}
+	function ee(e, t) {
+		Array.isArray(e.illegal) && (e.illegal = y(...e.illegal));
+	}
+	function te(e, t) {
+		if (e.match) {
+			if (e.begin || e.end) throw Error("begin & end are not supported with match");
+			e.begin = e.match, delete e.match;
+		}
+	}
+	function ne(e, t) {
+		e.relevance === void 0 && (e.relevance = 1);
+	}
+	var re = (e, t) => {
+		if (!e.beforeMatch) return;
+		if (e.starts) throw Error("beforeMatch cannot be used with starts");
+		let n = Object.assign({}, e);
+		Object.keys(e).forEach((t) => {
+			delete e[t];
+		}), e.keywords = n.keywords, e.begin = _(n.beforeMatch, m(n.begin)), e.starts = {
+			relevance: 0,
+			contains: [Object.assign(n, { endsParent: !0 })]
+		}, e.relevance = 0, delete n.beforeMatch;
+	}, ie = [
+		"of",
+		"and",
+		"for",
+		"in",
+		"not",
+		"or",
+		"if",
+		"then",
+		"parent",
+		"list",
+		"value"
+	], ae = "keyword";
+	function oe(e, t, n = ae) {
+		let r = Object.create(null);
+		return typeof e == "string" ? i(n, e.split(" ")) : Array.isArray(e) ? i(n, e) : Object.keys(e).forEach(function(n) {
+			Object.assign(r, oe(e[n], t, n));
+		}), r;
+		function i(e, n) {
+			t && (n = n.map((e) => e.toLowerCase())), n.forEach(function(t) {
+				let n = t.split("|");
+				r[n[0]] = [e, se(n[0], n[1])];
+			});
+		}
+	}
+	function se(e, t) {
+		return t ? Number(t) : +!ce(e);
+	}
+	function ce(e) {
+		return ie.includes(e.toLowerCase());
+	}
+	var W = {}, G = (e) => {
+		console.error(e);
+	}, le = (e, ...t) => {
+		console.log(`WARN: ${e}`, ...t);
+	}, K = (e, t) => {
+		W[`${e}/${t}`] || (console.log(`Deprecated as of ${e}. ${t}`), W[`${e}/${t}`] = !0);
+	}, q = /* @__PURE__ */ Error();
+	function ue(e, t, { key: n }) {
+		let r = 0, i = e[n], a = {}, o = {};
+		for (let e = 1; e <= t.length; e++) o[e + r] = i[e], a[e + r] = !0, r += b(t[e - 1]);
+		e[n] = o, e[n]._emit = a, e[n]._multi = !0;
+	}
+	function de(e) {
+		if (Array.isArray(e.begin)) {
+			if (e.skip || e.excludeBegin || e.returnBegin) throw G("skip, excludeBegin, returnBegin not compatible with beginScope: {}"), q;
+			if (typeof e.beginScope != "object" || e.beginScope === null) throw G("beginScope must be object"), q;
+			ue(e, e.begin, { key: "beginScope" }), e.begin = C(e.begin, { joinWith: "" });
+		}
+	}
+	function fe(e) {
+		if (Array.isArray(e.end)) {
+			if (e.skip || e.excludeEnd || e.returnEnd) throw G("skip, excludeEnd, returnEnd not compatible with endScope: {}"), q;
+			if (typeof e.endScope != "object" || e.endScope === null) throw G("endScope must be object"), q;
+			ue(e, e.end, { key: "endScope" }), e.end = C(e.end, { joinWith: "" });
+		}
+	}
+	function pe(e) {
+		e.scope && typeof e.scope == "object" && e.scope !== null && (e.beginScope = e.scope, delete e.scope);
+	}
+	function me(e) {
+		pe(e), typeof e.beginScope == "string" && (e.beginScope = { _wrap: e.beginScope }), typeof e.endScope == "string" && (e.endScope = { _wrap: e.endScope }), de(e), fe(e);
+	}
+	function he(e) {
+		function t(t, n) {
+			return new RegExp(p(t), "m" + (e.case_insensitive ? "i" : "") + (e.unicodeRegex ? "u" : "") + (n ? "g" : ""));
+		}
+		class n {
+			constructor() {
+				this.matchIndexes = {}, this.regexes = [], this.matchAt = 1, this.position = 0;
+			}
+			addRule(e, t) {
+				t.position = this.position++, this.matchIndexes[this.matchAt] = t, this.regexes.push([t, e]), this.matchAt += b(e) + 1;
+			}
+			compile() {
+				this.regexes.length === 0 && (this.exec = () => null);
+				let e = this.regexes.map((e) => e[1]);
+				this.matcherRe = t(C(e, { joinWith: "|" }), !0), this.lastIndex = 0;
+			}
+			exec(e) {
+				this.matcherRe.lastIndex = this.lastIndex;
+				let t = this.matcherRe.exec(e);
+				if (!t) return null;
+				let n = t.findIndex((e, t) => t > 0 && e !== void 0), r = this.matchIndexes[n];
+				return t.splice(0, n), Object.assign(t, r);
+			}
+		}
+		class r {
+			constructor() {
+				this.rules = [], this.multiRegexes = [], this.count = 0, this.lastIndex = 0, this.regexIndex = 0;
+			}
+			getMatcher(e) {
+				if (this.multiRegexes[e]) return this.multiRegexes[e];
+				let t = new n();
+				return this.rules.slice(e).forEach(([e, n]) => t.addRule(e, n)), t.compile(), this.multiRegexes[e] = t, t;
+			}
+			resumingScanAtSamePosition() {
+				return this.regexIndex !== 0;
+			}
+			considerAll() {
+				this.regexIndex = 0;
+			}
+			addRule(e, t) {
+				this.rules.push([e, t]), t.type === "begin" && this.count++;
+			}
+			exec(e) {
+				let t = this.getMatcher(this.regexIndex);
+				t.lastIndex = this.lastIndex;
+				let n = t.exec(e);
+				if (this.resumingScanAtSamePosition() && !(n && n.index === this.lastIndex)) {
+					let t = this.getMatcher(0);
+					t.lastIndex = this.lastIndex + 1, n = t.exec(e);
+				}
+				return n && (this.regexIndex += n.position + 1, this.regexIndex === this.count && this.considerAll()), n;
+			}
+		}
+		function i(e) {
+			let t = new r();
+			return e.contains.forEach((e) => t.addRule(e.begin, {
+				rule: e,
+				type: "begin"
+			})), e.terminatorEnd && t.addRule(e.terminatorEnd, { type: "end" }), e.illegal && t.addRule(e.illegal, { type: "illegal" }), t;
+		}
+		function o(n, r) {
+			let a = n;
+			if (n.isCompiled) return a;
+			[
+				H,
+				te,
+				me,
+				re
+			].forEach((e) => e(n, r)), e.compilerExtensions.forEach((e) => e(n, r)), n.__beforeBegin = null, [
+				U,
+				ee,
+				ne
+			].forEach((e) => e(n, r)), n.isCompiled = !0;
+			let s = null;
+			return typeof n.keywords == "object" && n.keywords.$pattern && (n.keywords = Object.assign({}, n.keywords), s = n.keywords.$pattern, delete n.keywords.$pattern), s ||= /\w+/, n.keywords &&= oe(n.keywords, e.case_insensitive), a.keywordPatternRe = t(s, !0), r && (n.begin ||= /\B|\b/, a.beginRe = t(a.begin), !n.end && !n.endsWithParent && (n.end = /\B|\b/), n.end && (a.endRe = t(a.end)), a.terminatorEnd = p(a.end) || "", n.endsWithParent && r.terminatorEnd && (a.terminatorEnd += (n.end ? "|" : "") + r.terminatorEnd)), n.illegal && (a.illegalRe = t(n.illegal)), n.contains ||= [], n.contains = [].concat(...n.contains.map(function(e) {
+				return _e(e === "self" ? n : e);
+			})), n.contains.forEach(function(e) {
+				o(e, a);
+			}), n.starts && o(n.starts, r), a.matcher = i(a), a;
+		}
+		if (e.compilerExtensions ||= [], e.contains && e.contains.includes("self")) throw Error("ERR: contains `self` is not supported at the top-level of a language.  See documentation.");
+		return e.classNameAliases = a(e.classNameAliases || {}), o(e);
+	}
+	function ge(e) {
+		return e ? e.endsWithParent || ge(e.starts) : !1;
+	}
+	function _e(e) {
+		return e.variants && !e.cachedVariants && (e.cachedVariants = e.variants.map(function(t) {
+			return a(e, { variants: null }, t);
+		})), e.cachedVariants ? e.cachedVariants : ge(e) ? a(e, { starts: e.starts ? a(e.starts) : null }) : Object.isFrozen(e) ? a(e) : e;
+	}
+	var ve = "11.11.1", ye = class extends Error {
+		constructor(e, t) {
+			super(e), this.name = "HTMLInjectionError", this.html = t;
+		}
+	}, J = i, be = a, Y = Symbol("nomatch"), X = 7, Z = function(e) {
+		let t = Object.create(null), i = Object.create(null), a = [], o = !0, s = "Could not find the language '{}', did you forget to load/include a language module?", c = {
+			disableAutodetect: !0,
+			name: "Plain text",
+			contains: []
+		}, l = {
+			ignoreUnescapedHTML: !1,
+			throwUnescapedHTML: !1,
+			noHighlightRe: /^(no-?highlight)$/i,
+			languageDetectRe: /\blang(?:uage)?-([\w-]+)\b/i,
+			classPrefix: "hljs-",
+			cssSelector: "pre code",
+			languages: null,
+			__emitter: f
+		};
+		function u(e) {
+			return l.noHighlightRe.test(e);
+		}
+		function d(e) {
+			let t = e.className + " ";
+			t += e.parentNode ? e.parentNode.className : "";
+			let n = l.languageDetectRe.exec(t);
+			if (n) {
+				let t = N(n[1]);
+				return t || (le(s.replace("{}", n[1])), le("Falling back to no-highlight mode for this block.", e)), t ? n[1] : "no-highlight";
+			}
+			return t.split(/\s+/).find((e) => u(e) || N(e));
+		}
+		function p(e, t, n) {
+			let r = "", i = "";
+			typeof t == "object" ? (r = e, n = t.ignoreIllegals, i = t.language) : (K("10.7.0", "highlight(lang, code, ...args) has been deprecated."), K("10.7.0", "Please use highlight(code, options) instead.\nhttps://github.com/highlightjs/highlight.js/issues/2277"), i = e, r = t), n === void 0 && (n = !0);
+			let a = {
+				code: r,
+				language: i
+			};
+			z("before:highlight", a);
+			let o = a.result ? a.result : v(a.language, a.code, n);
+			return o.code = a.code, z("after:highlight", o), o;
+		}
+		function v(e, n, i, a) {
+			let c = Object.create(null);
+			function u(e, t) {
+				return e.keywords[t];
+			}
+			function d() {
+				if (!A.keywords) {
+					M.addText(P);
+					return;
+				}
+				let e = 0;
+				A.keywordPatternRe.lastIndex = 0;
+				let t = A.keywordPatternRe.exec(P), n = "";
+				for (; t;) {
+					n += P.substring(e, t.index);
+					let r = D.case_insensitive ? t[0].toLowerCase() : t[0], i = u(A, r);
+					if (i) {
+						let [e, a] = i;
+						if (M.addText(n), n = "", c[r] = (c[r] || 0) + 1, c[r] <= X && (F += a), e.startsWith("_")) n += t[0];
+						else {
+							let n = D.classNameAliases[e] || e;
+							m(t[0], n);
+						}
+					} else n += t[0];
+					e = A.keywordPatternRe.lastIndex, t = A.keywordPatternRe.exec(P);
+				}
+				n += P.substring(e), M.addText(n);
+			}
+			function f() {
+				if (P === "") return;
+				let e = null;
+				if (typeof A.subLanguage == "string") {
+					if (!t[A.subLanguage]) {
+						M.addText(P);
+						return;
+					}
+					e = v(A.subLanguage, P, !0, j[A.subLanguage]), j[A.subLanguage] = e._top;
+				} else e = S(P, A.subLanguage.length ? A.subLanguage : null);
+				A.relevance > 0 && (F += e.relevance), M.__addSublanguage(e._emitter, e.language);
+			}
+			function p() {
+				A.subLanguage == null ? d() : f(), P = "";
+			}
+			function m(e, t) {
+				e !== "" && (M.startScope(t), M.addText(e), M.endScope());
+			}
+			function h(e, t) {
+				let n = 1, r = t.length - 1;
+				for (; n <= r;) {
+					if (!e._emit[n]) {
+						n++;
+						continue;
+					}
+					let r = D.classNameAliases[e[n]] || e[n], i = t[n];
+					r ? m(i, r) : (P = i, d(), P = ""), n++;
+				}
+			}
+			function g(e, t) {
+				return e.scope && typeof e.scope == "string" && M.openNode(D.classNameAliases[e.scope] || e.scope), e.beginScope && (e.beginScope._wrap ? (m(P, D.classNameAliases[e.beginScope._wrap] || e.beginScope._wrap), P = "") : e.beginScope._multi && (h(e.beginScope, t), P = "")), A = Object.create(e, { parent: { value: A } }), A;
+			}
+			function _(e, t, n) {
+				let i = x(e.endRe, n);
+				if (i) {
+					if (e["on:end"]) {
+						let n = new r(e);
+						e["on:end"](t, n), n.isMatchIgnored && (i = !1);
+					}
+					if (i) {
+						for (; e.endsParent && e.parent;) e = e.parent;
+						return e;
+					}
+				}
+				if (e.endsWithParent) return _(e.parent, t, n);
+			}
+			function y(e) {
+				return A.matcher.regexIndex === 0 ? (P += e[0], 1) : (R = !0, 0);
+			}
+			function b(e) {
+				let t = e[0], n = e.rule, i = new r(n), a = [n.__beforeBegin, n["on:begin"]];
+				for (let n of a) if (n && (n(e, i), i.isMatchIgnored)) return y(t);
+				return n.skip ? P += t : (n.excludeBegin && (P += t), p(), !n.returnBegin && !n.excludeBegin && (P = t)), g(n, e), n.returnBegin ? 0 : t.length;
+			}
+			function C(e) {
+				let t = e[0], r = n.substring(e.index), i = _(A, e, r);
+				if (!i) return Y;
+				let a = A;
+				A.endScope && A.endScope._wrap ? (p(), m(t, A.endScope._wrap)) : A.endScope && A.endScope._multi ? (p(), h(A.endScope, e)) : a.skip ? P += t : (a.returnEnd || a.excludeEnd || (P += t), p(), a.excludeEnd && (P = t));
+				do
+					A.scope && M.closeNode(), !A.skip && !A.subLanguage && (F += A.relevance), A = A.parent;
+				while (A !== i.parent);
+				return i.starts && g(i.starts, e), a.returnEnd ? 0 : t.length;
+			}
+			function w() {
+				let e = [];
+				for (let t = A; t !== D; t = t.parent) t.scope && e.unshift(t.scope);
+				e.forEach((e) => M.openNode(e));
+			}
+			let T = {};
+			function E(t, r) {
+				let a = r && r[0];
+				if (P += t, a == null) return p(), 0;
+				if (T.type === "begin" && r.type === "end" && T.index === r.index && a === "") {
+					if (P += n.slice(r.index, r.index + 1), !o) {
+						let t = /* @__PURE__ */ Error(`0 width match regex (${e})`);
+						throw t.languageName = e, t.badRule = T.rule, t;
+					}
+					return 1;
+				}
+				if (T = r, r.type === "begin") return b(r);
+				if (r.type === "illegal" && !i) {
+					let e = /* @__PURE__ */ Error("Illegal lexeme \"" + a + "\" for mode \"" + (A.scope || "<unnamed>") + "\"");
+					throw e.mode = A, e;
+				} else if (r.type === "end") {
+					let e = C(r);
+					if (e !== Y) return e;
+				}
+				if (r.type === "illegal" && a === "") return P += "\n", 1;
+				if (L > 1e5 && L > r.index * 3) throw /* @__PURE__ */ Error("potential infinite loop, way more iterations than matches");
+				return P += a, a.length;
+			}
+			let D = N(e);
+			if (!D) throw G(s.replace("{}", e)), Error("Unknown language: \"" + e + "\"");
+			let O = he(D), k = "", A = a || O, j = {}, M = new l.__emitter(l);
+			w();
+			let P = "", F = 0, I = 0, L = 0, R = !1;
+			try {
+				if (D.__emitTokens) D.__emitTokens(n, M);
+				else {
+					for (A.matcher.considerAll();;) {
+						L++, R ? R = !1 : A.matcher.considerAll(), A.matcher.lastIndex = I;
+						let e = A.matcher.exec(n);
+						if (!e) break;
+						let t = E(n.substring(I, e.index), e);
+						I = e.index + t;
+					}
+					E(n.substring(I));
+				}
+				return M.finalize(), k = M.toHTML(), {
+					language: e,
+					value: k,
+					relevance: F,
+					illegal: !1,
+					_emitter: M,
+					_top: A
+				};
+			} catch (t) {
+				if (t.message && t.message.includes("Illegal")) return {
+					language: e,
+					value: J(n),
+					illegal: !0,
+					relevance: 0,
+					_illegalBy: {
+						message: t.message,
+						index: I,
+						context: n.slice(I - 100, I + 100),
+						mode: t.mode,
+						resultSoFar: k
+					},
+					_emitter: M
+				};
+				if (o) return {
+					language: e,
+					value: J(n),
+					illegal: !1,
+					relevance: 0,
+					errorRaised: t,
+					_emitter: M,
+					_top: A
+				};
+				throw t;
+			}
+		}
+		function b(e) {
+			let t = {
+				value: J(e),
+				illegal: !1,
+				relevance: 0,
+				_top: c,
+				_emitter: new l.__emitter(l)
+			};
+			return t._emitter.addText(e), t;
+		}
+		function S(e, n) {
+			n = n || l.languages || Object.keys(t);
+			let r = b(e), i = n.filter(N).filter(F).map((t) => v(t, e, !1));
+			i.unshift(r);
+			let [a, o] = i.sort((e, t) => {
+				if (e.relevance !== t.relevance) return t.relevance - e.relevance;
+				if (e.language && t.language) {
+					if (N(e.language).supersetOf === t.language) return 1;
+					if (N(t.language).supersetOf === e.language) return -1;
+				}
+				return 0;
+			}), s = a;
+			return s.secondBest = o, s;
+		}
+		function C(e, t, n) {
+			let r = t && i[t] || n;
+			e.classList.add("hljs"), e.classList.add(`language-${r}`);
+		}
+		function w(e) {
+			let t = null, n = d(e);
+			if (u(n)) return;
+			if (z("before:highlightElement", {
+				el: e,
+				language: n
+			}), e.dataset.highlighted) {
+				console.log("Element previously highlighted. To highlight again, first unset `dataset.highlighted`.", e);
+				return;
+			}
+			if (e.children.length > 0 && (l.ignoreUnescapedHTML || (console.warn("One of your code blocks includes unescaped HTML. This is a potentially serious security risk."), console.warn("https://github.com/highlightjs/highlight.js/wiki/security"), console.warn("The element with unescaped HTML:"), console.warn(e)), l.throwUnescapedHTML)) throw new ye("One of your code blocks includes unescaped HTML.", e.innerHTML);
+			t = e;
+			let r = t.textContent, i = n ? p(r, {
+				language: n,
+				ignoreIllegals: !0
+			}) : S(r);
+			e.innerHTML = i.value, e.dataset.highlighted = "yes", C(e, n, i.language), e.result = {
+				language: i.language,
+				re: i.relevance,
+				relevance: i.relevance
+			}, i.secondBest && (e.secondBest = {
+				language: i.secondBest.language,
+				relevance: i.secondBest.relevance
+			}), z("after:highlightElement", {
+				el: e,
+				result: i,
+				text: r
+			});
+		}
+		function T(e) {
+			l = be(l, e);
+		}
+		let E = () => {
+			k(), K("10.6.0", "initHighlighting() deprecated.  Use highlightAll() now.");
+		};
+		function D() {
+			k(), K("10.6.0", "initHighlightingOnLoad() deprecated.  Use highlightAll() now.");
+		}
+		let O = !1;
+		function k() {
+			function e() {
+				k();
+			}
+			if (document.readyState === "loading") {
+				O || window.addEventListener("DOMContentLoaded", e, !1), O = !0;
+				return;
+			}
+			document.querySelectorAll(l.cssSelector).forEach(w);
+		}
+		function A(n, r) {
+			let i = null;
+			try {
+				i = r(e);
+			} catch (e) {
+				if (G("Language definition for '{}' could not be registered.".replace("{}", n)), o) G(e);
+				else throw e;
+				i = c;
+			}
+			i.name ||= n, t[n] = i, i.rawDefinition = r.bind(null, e), i.aliases && P(i.aliases, { languageName: n });
+		}
+		function j(e) {
+			delete t[e];
+			for (let t of Object.keys(i)) i[t] === e && delete i[t];
+		}
+		function M() {
+			return Object.keys(t);
+		}
+		function N(e) {
+			return e = (e || "").toLowerCase(), t[e] || t[i[e]];
+		}
+		function P(e, { languageName: t }) {
+			typeof e == "string" && (e = [e]), e.forEach((e) => {
+				i[e.toLowerCase()] = t;
+			});
+		}
+		function F(e) {
+			let t = N(e);
+			return t && !t.disableAutodetect;
+		}
+		function I(e) {
+			e["before:highlightBlock"] && !e["before:highlightElement"] && (e["before:highlightElement"] = (t) => {
+				e["before:highlightBlock"](Object.assign({ block: t.el }, t));
+			}), e["after:highlightBlock"] && !e["after:highlightElement"] && (e["after:highlightElement"] = (t) => {
+				e["after:highlightBlock"](Object.assign({ block: t.el }, t));
+			});
+		}
+		function L(e) {
+			I(e), a.push(e);
+		}
+		function R(e) {
+			let t = a.indexOf(e);
+			t !== -1 && a.splice(t, 1);
+		}
+		function z(e, t) {
+			let n = e;
+			a.forEach(function(e) {
+				e[n] && e[n](t);
+			});
+		}
+		function V(e) {
+			return K("10.7.0", "highlightBlock will be removed entirely in v12.0"), K("10.7.0", "Please use highlightElement now."), w(e);
+		}
+		Object.assign(e, {
+			highlight: p,
+			highlightAuto: S,
+			highlightAll: k,
+			highlightElement: w,
+			highlightBlock: V,
+			configure: T,
+			initHighlighting: E,
+			initHighlightingOnLoad: D,
+			registerLanguage: A,
+			unregisterLanguage: j,
+			listLanguages: M,
+			getLanguage: N,
+			registerAliases: P,
+			autoDetection: F,
+			inherit: be,
+			addPlugin: L,
+			removePlugin: R
+		}), e.debugMode = function() {
+			o = !1;
+		}, e.safeMode = function() {
+			o = !0;
+		}, e.versionString = ve, e.regex = {
+			concat: _,
+			lookahead: m,
+			either: y,
+			optional: g,
+			anyNumberOfTimes: h
+		};
+		for (let e in B) typeof B[e] == "object" && n(B[e]);
+		return Object.assign(e, B), e;
+	}, Q = Z({});
+	Q.newInstance = () => Z({}), t.exports = Q, Q.HighlightJS = Q, Q.default = Q;
+})))())).default;
+//#endregion
+//#region node_modules/highlight.js/es/languages/c.js
+function S(e) {
+	let t = e.regex, n = e.COMMENT("//", "$", { contains: [{ begin: /\\\n/ }] }), r = "[a-zA-Z_]\\w*::", i = "(decltype\\(auto\\)|" + t.optional(r) + "[a-zA-Z_]\\w*" + t.optional("<[^<>]+>") + ")", a = {
+		className: "type",
+		variants: [{ begin: "\\b[a-z\\d_]*_t\\b" }, { match: /\batomic_[a-z]{3,6}\b/ }]
+	}, o = {
+		className: "string",
+		variants: [
+			{
+				begin: "(u8?|U|L)?\"",
+				end: "\"",
+				illegal: "\\n",
+				contains: [e.BACKSLASH_ESCAPE]
+			},
+			{
+				begin: "(u8?|U|L)?'(\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4,8}|[0-7]{3}|\\S)|.)",
+				end: "'",
+				illegal: "."
+			},
+			e.END_SAME_AS_BEGIN({
+				begin: /(?:u8?|U|L)?R"([^()\\ ]{0,16})\(/,
+				end: /\)([^()\\ ]{0,16})"/
+			})
+		]
+	}, s = {
+		className: "number",
+		variants: [
+			{ match: /\b(0b[01']+)/ },
+			{ match: /(-?)\b([\d']+(\.[\d']*)?|\.[\d']+)((ll|LL|l|L)(u|U)?|(u|U)(ll|LL|l|L)?|f|F|b|B)/ },
+			{ match: /(-?)\b(0[xX][a-fA-F0-9]+(?:'[a-fA-F0-9]+)*(?:\.[a-fA-F0-9]*(?:'[a-fA-F0-9]*)*)?(?:[pP][-+]?[0-9]+)?(l|L)?(u|U)?)/ },
+			{ match: /(-?)\b\d+(?:'\d+)*(?:\.\d*(?:'\d*)*)?(?:[eE][-+]?\d+)?/ }
+		],
+		relevance: 0
+	}, c = {
+		className: "meta",
+		begin: /#\s*[a-z]+\b/,
+		end: /$/,
+		keywords: { keyword: "if else elif endif define undef warning error line pragma _Pragma ifdef ifndef elifdef elifndef include" },
+		contains: [
+			{
+				begin: /\\\n/,
+				relevance: 0
+			},
+			e.inherit(o, { className: "string" }),
+			{
+				className: "string",
+				begin: /<.*?>/
+			},
+			n,
+			e.C_BLOCK_COMMENT_MODE
+		]
+	}, l = {
+		className: "title",
+		begin: t.optional(r) + e.IDENT_RE,
+		relevance: 0
+	}, u = t.optional(r) + e.IDENT_RE + "\\s*\\(", d = {
+		keyword: /* @__PURE__ */ "asm.auto.break.case.continue.default.do.else.enum.extern.for.fortran.goto.if.inline.register.restrict.return.sizeof.typeof.typeof_unqual.struct.switch.typedef.union.volatile.while._Alignas._Alignof._Atomic._Generic._Noreturn._Static_assert._Thread_local.alignas.alignof.noreturn.static_assert.thread_local._Pragma".split("."),
+		type: /* @__PURE__ */ "float.double.signed.unsigned.int.short.long.char.void._Bool._BitInt._Complex._Imaginary._Decimal32._Decimal64._Decimal96._Decimal128._Decimal64x._Decimal128x._Float16._Float32._Float64._Float128._Float32x._Float64x._Float128x.const.static.constexpr.complex.bool.imaginary".split("."),
+		literal: "true false NULL",
+		built_in: "std string wstring cin cout cerr clog stdin stdout stderr stringstream istringstream ostringstream auto_ptr deque list queue stack vector map set pair bitset multiset multimap unordered_set unordered_map unordered_multiset unordered_multimap priority_queue make_pair array shared_ptr abort terminate abs acos asin atan2 atan calloc ceil cosh cos exit exp fabs floor fmod fprintf fputs free frexp fscanf future isalnum isalpha iscntrl isdigit isgraph islower isprint ispunct isspace isupper isxdigit tolower toupper labs ldexp log10 log malloc realloc memchr memcmp memcpy memset modf pow printf putchar puts scanf sinh sin snprintf sprintf sqrt sscanf strcat strchr strcmp strcpy strcspn strlen strncat strncmp strncpy strpbrk strrchr strspn strstr tanh tan vfprintf vprintf vsprintf endl initializer_list unique_ptr"
+	}, f = [
+		c,
+		a,
+		n,
+		e.C_BLOCK_COMMENT_MODE,
+		s,
+		o
+	], p = {
+		variants: [
+			{
+				begin: /=/,
+				end: /;/
+			},
+			{
+				begin: /\(/,
+				end: /\)/
+			},
+			{
+				beginKeywords: "new throw return else",
+				end: /;/
+			}
+		],
+		keywords: d,
+		contains: f.concat([{
+			begin: /\(/,
+			end: /\)/,
+			keywords: d,
+			contains: f.concat(["self"]),
+			relevance: 0
+		}]),
+		relevance: 0
+	}, m = {
+		begin: "(" + i + "[\\*&\\s]+)+" + u,
+		returnBegin: !0,
+		end: /[{;=]/,
+		excludeEnd: !0,
+		keywords: d,
+		illegal: /[^\w\s\*&:<>.]/,
+		contains: [
+			{
+				begin: "decltype\\(auto\\)",
+				keywords: d,
+				relevance: 0
+			},
+			{
+				begin: u,
+				returnBegin: !0,
+				contains: [e.inherit(l, { className: "title.function" })],
+				relevance: 0
+			},
+			{
+				relevance: 0,
+				match: /,/
+			},
+			{
+				className: "params",
+				begin: /\(/,
+				end: /\)/,
+				keywords: d,
+				relevance: 0,
+				contains: [
+					n,
+					e.C_BLOCK_COMMENT_MODE,
+					o,
+					s,
+					a,
+					{
+						begin: /\(/,
+						end: /\)/,
+						keywords: d,
+						relevance: 0,
+						contains: [
+							"self",
+							n,
+							e.C_BLOCK_COMMENT_MODE,
+							o,
+							s,
+							a
+						]
+					}
+				]
+			},
+			a,
+			n,
+			e.C_BLOCK_COMMENT_MODE,
+			c
+		]
+	};
+	return {
+		name: "C",
+		aliases: ["h"],
+		keywords: d,
+		disableAutodetect: !0,
+		illegal: "</",
+		contains: [].concat(p, m, f, [
+			c,
+			{
+				begin: e.IDENT_RE + "::",
+				keywords: d
+			},
+			{
+				className: "class",
+				beginKeywords: "enum class struct union",
+				end: /[{;:<>=]/,
+				contains: [{ beginKeywords: "final class struct" }, e.TITLE_MODE]
+			}
+		]),
+		exports: {
+			preprocessor: c,
+			strings: o,
+			keywords: d
+		}
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/csharp.js
+function C(e) {
+	let t = [
+		"bool",
+		"byte",
+		"char",
+		"decimal",
+		"delegate",
+		"double",
+		"dynamic",
+		"enum",
+		"float",
+		"int",
+		"long",
+		"nint",
+		"nuint",
+		"object",
+		"sbyte",
+		"short",
+		"string",
+		"ulong",
+		"uint",
+		"ushort"
+	], n = [
+		"public",
+		"private",
+		"protected",
+		"static",
+		"internal",
+		"protected",
+		"abstract",
+		"async",
+		"extern",
+		"override",
+		"unsafe",
+		"virtual",
+		"new",
+		"sealed",
+		"partial"
+	], r = {
+		keyword: (/* @__PURE__ */ "abstract.as.base.break.case.catch.class.const.continue.do.else.event.explicit.extern.finally.fixed.for.foreach.goto.if.implicit.in.interface.internal.is.lock.namespace.new.operator.out.override.params.private.protected.public.readonly.record.ref.return.scoped.sealed.sizeof.stackalloc.static.struct.switch.this.throw.try.typeof.unchecked.unsafe.using.virtual.void.volatile.while".split(".")).concat(/* @__PURE__ */ "add.alias.and.ascending.args.async.await.by.descending.dynamic.equals.file.from.get.global.group.init.into.join.let.nameof.not.notnull.on.or.orderby.partial.record.remove.required.scoped.select.set.unmanaged.value|0.var.when.where.with.yield".split(".")),
+		built_in: t,
+		literal: [
+			"default",
+			"false",
+			"null",
+			"true"
+		]
+	}, i = e.inherit(e.TITLE_MODE, { begin: "[a-zA-Z](\\.?\\w)*" }), a = {
+		className: "number",
+		variants: [
+			{ begin: "\\b(0b[01']+)" },
+			{ begin: "(-?)\\b([\\d']+(\\.[\\d']*)?|\\.[\\d']+)(u|U|l|L|ul|UL|f|F|b|B)" },
+			{ begin: "(-?)(\\b0[xX][a-fA-F0-9']+|(\\b[\\d']+(\\.[\\d']*)?|\\.[\\d']+)([eE][-+]?[\\d']+)?)" }
+		],
+		relevance: 0
+	}, o = {
+		className: "string",
+		begin: /"""("*)(?!")(.|\n)*?"""\1/,
+		relevance: 1
+	}, s = {
+		className: "string",
+		begin: "@\"",
+		end: "\"",
+		contains: [{ begin: "\"\"" }]
+	}, c = e.inherit(s, { illegal: /\n/ }), l = {
+		className: "subst",
+		begin: /\{/,
+		end: /\}/,
+		keywords: r
+	}, u = e.inherit(l, { illegal: /\n/ }), d = {
+		className: "string",
+		begin: /\$"/,
+		end: "\"",
+		illegal: /\n/,
+		contains: [
+			{ begin: /\{\{/ },
+			{ begin: /\}\}/ },
+			e.BACKSLASH_ESCAPE,
+			u
+		]
+	}, f = {
+		className: "string",
+		begin: /\$@"/,
+		end: "\"",
+		contains: [
+			{ begin: /\{\{/ },
+			{ begin: /\}\}/ },
+			{ begin: "\"\"" },
+			l
+		]
+	}, p = e.inherit(f, {
+		illegal: /\n/,
+		contains: [
+			{ begin: /\{\{/ },
+			{ begin: /\}\}/ },
+			{ begin: "\"\"" },
+			u
+		]
+	});
+	l.contains = [
+		f,
+		d,
+		s,
+		e.APOS_STRING_MODE,
+		e.QUOTE_STRING_MODE,
+		a,
+		e.C_BLOCK_COMMENT_MODE
+	], u.contains = [
+		p,
+		d,
+		c,
+		e.APOS_STRING_MODE,
+		e.QUOTE_STRING_MODE,
+		a,
+		e.inherit(e.C_BLOCK_COMMENT_MODE, { illegal: /\n/ })
+	];
+	let m = { variants: [
+		o,
+		f,
+		d,
+		s,
+		e.APOS_STRING_MODE,
+		e.QUOTE_STRING_MODE
+	] }, h = {
+		begin: "<",
+		end: ">",
+		contains: [{ beginKeywords: "in out" }, i]
+	}, g = e.IDENT_RE + "(<" + e.IDENT_RE + "(\\s*,\\s*" + e.IDENT_RE + ")*>)?(\\[\\])?", _ = {
+		begin: "@" + e.IDENT_RE,
+		relevance: 0
+	};
+	return {
+		name: "C#",
+		aliases: ["cs", "c#"],
+		keywords: r,
+		illegal: /::/,
+		contains: [
+			e.COMMENT("///", "$", {
+				returnBegin: !0,
+				contains: [{
+					className: "doctag",
+					variants: [
+						{
+							begin: "///",
+							relevance: 0
+						},
+						{ begin: "<!--|-->" },
+						{
+							begin: "</?",
+							end: ">"
+						}
+					]
+				}]
+			}),
+			e.C_LINE_COMMENT_MODE,
+			e.C_BLOCK_COMMENT_MODE,
+			{
+				className: "meta",
+				begin: "#",
+				end: "$",
+				keywords: { keyword: "if else elif endif define undef warning error line region endregion pragma checksum" }
+			},
+			m,
+			a,
+			{
+				beginKeywords: "class interface",
+				relevance: 0,
+				end: /[{;=]/,
+				illegal: /[^\s:,]/,
+				contains: [
+					{ beginKeywords: "where class" },
+					i,
+					h,
+					e.C_LINE_COMMENT_MODE,
+					e.C_BLOCK_COMMENT_MODE
+				]
+			},
+			{
+				beginKeywords: "namespace",
+				relevance: 0,
+				end: /[{;=]/,
+				illegal: /[^\s:]/,
+				contains: [
+					i,
+					e.C_LINE_COMMENT_MODE,
+					e.C_BLOCK_COMMENT_MODE
+				]
+			},
+			{
+				beginKeywords: "record",
+				relevance: 0,
+				end: /[{;=]/,
+				illegal: /[^\s:]/,
+				contains: [
+					i,
+					h,
+					e.C_LINE_COMMENT_MODE,
+					e.C_BLOCK_COMMENT_MODE
+				]
+			},
+			{
+				className: "meta",
+				begin: "^\\s*\\[(?=[\\w])",
+				excludeBegin: !0,
+				end: "\\]",
+				excludeEnd: !0,
+				contains: [{
+					className: "string",
+					begin: /"/,
+					end: /"/
+				}]
+			},
+			{
+				beginKeywords: "new return throw await else",
+				relevance: 0
+			},
+			{
+				className: "function",
+				begin: "(" + g + "\\s+)+" + e.IDENT_RE + "\\s*(<[^=]+>\\s*)?\\(",
+				returnBegin: !0,
+				end: /\s*[{;=]/,
+				excludeEnd: !0,
+				keywords: r,
+				contains: [
+					{
+						beginKeywords: n.join(" "),
+						relevance: 0
+					},
+					{
+						begin: e.IDENT_RE + "\\s*(<[^=]+>\\s*)?\\(",
+						returnBegin: !0,
+						contains: [e.TITLE_MODE, h],
+						relevance: 0
+					},
+					{ match: /\(\)/ },
+					{
+						className: "params",
+						begin: /\(/,
+						end: /\)/,
+						excludeBegin: !0,
+						excludeEnd: !0,
+						keywords: r,
+						relevance: 0,
+						contains: [
+							m,
+							a,
+							e.C_BLOCK_COMMENT_MODE
+						]
+					},
+					e.C_LINE_COMMENT_MODE,
+					e.C_BLOCK_COMMENT_MODE
+				]
+			},
+			_
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/dart.js
+function w(e) {
+	let t = {
+		className: "subst",
+		variants: [{ begin: "\\$[A-Za-z0-9_]+" }]
+	}, n = {
+		className: "subst",
+		variants: [{
+			begin: /\$\{/,
+			end: /\}/
+		}],
+		keywords: "true false null this is new super"
+	}, r = {
+		className: "number",
+		relevance: 0,
+		variants: [{ match: /\b[0-9][0-9_]*(\.[0-9][0-9_]*)?([eE][+-]?[0-9][0-9_]*)?\b/ }, { match: /\b0[xX][0-9A-Fa-f][0-9A-Fa-f_]*\b/ }]
+	}, i = {
+		className: "string",
+		variants: [
+			{
+				begin: "r'''",
+				end: "'''"
+			},
+			{
+				begin: "r\"\"\"",
+				end: "\"\"\""
+			},
+			{
+				begin: "r'",
+				end: "'",
+				illegal: "\\n"
+			},
+			{
+				begin: "r\"",
+				end: "\"",
+				illegal: "\\n"
+			},
+			{
+				begin: "'''",
+				end: "'''",
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					t,
+					n
+				]
+			},
+			{
+				begin: "\"\"\"",
+				end: "\"\"\"",
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					t,
+					n
+				]
+			},
+			{
+				begin: "'",
+				end: "'",
+				illegal: "\\n",
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					t,
+					n
+				]
+			},
+			{
+				begin: "\"",
+				end: "\"",
+				illegal: "\\n",
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					t,
+					n
+				]
+			}
+		]
+	};
+	n.contains = [r, i];
+	let a = /* @__PURE__ */ "Comparable.DateTime.Duration.Function.Iterable.Iterator.List.Map.Match.Object.Pattern.RegExp.Set.Stopwatch.String.StringBuffer.StringSink.Symbol.Type.Uri.bool.double.int.num.Element.ElementList".split("."), o = a.map((e) => `${e}?`);
+	return {
+		name: "Dart",
+		keywords: {
+			keyword: /* @__PURE__ */ "abstract.as.assert.async.await.base.break.case.catch.class.const.continue.covariant.default.deferred.do.dynamic.else.enum.export.extends.extension.external.factory.false.final.finally.for.Function.get.hide.if.implements.import.in.interface.is.late.library.mixin.new.null.on.operator.part.required.rethrow.return.sealed.set.show.static.super.switch.sync.this.throw.true.try.typedef.var.void.when.while.with.yield".split("."),
+			built_in: a.concat(o).concat([
+				"Never",
+				"Null",
+				"dynamic",
+				"print",
+				"document",
+				"querySelector",
+				"querySelectorAll",
+				"window"
+			]),
+			$pattern: /[A-Za-z][A-Za-z0-9_]*\??/
+		},
+		contains: [
+			i,
+			e.COMMENT(/\/\*\*(?!\/)/, /\*\//, {
+				subLanguage: "markdown",
+				relevance: 0
+			}),
+			e.COMMENT(/\/{3,} ?/, /$/, { contains: [{
+				subLanguage: "markdown",
+				begin: ".",
+				end: "$",
+				relevance: 0
+			}] }),
+			e.C_LINE_COMMENT_MODE,
+			e.C_BLOCK_COMMENT_MODE,
+			{
+				className: "class",
+				beginKeywords: "class interface",
+				end: /\{/,
+				excludeEnd: !0,
+				contains: [{ beginKeywords: "extends implements" }, e.UNDERSCORE_TITLE_MODE]
+			},
+			r,
+			{
+				className: "meta",
+				begin: "@[A-Za-z]+"
+			},
+			{ begin: "=>" }
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/go.js
+function T(e) {
+	let t = {
+		keyword: [
+			"break",
+			"case",
+			"chan",
+			"const",
+			"continue",
+			"default",
+			"defer",
+			"else",
+			"fallthrough",
+			"for",
+			"func",
+			"go",
+			"goto",
+			"if",
+			"import",
+			"interface",
+			"map",
+			"package",
+			"range",
+			"return",
+			"select",
+			"struct",
+			"switch",
+			"type",
+			"var"
+		],
+		type: [
+			"bool",
+			"byte",
+			"complex64",
+			"complex128",
+			"error",
+			"float32",
+			"float64",
+			"int8",
+			"int16",
+			"int32",
+			"int64",
+			"string",
+			"uint8",
+			"uint16",
+			"uint32",
+			"uint64",
+			"int",
+			"uint",
+			"uintptr",
+			"rune"
+		],
+		literal: [
+			"true",
+			"false",
+			"iota",
+			"nil"
+		],
+		built_in: [
+			"append",
+			"cap",
+			"close",
+			"complex",
+			"copy",
+			"imag",
+			"len",
+			"make",
+			"new",
+			"panic",
+			"print",
+			"println",
+			"real",
+			"recover",
+			"delete"
+		]
+	};
+	return {
+		name: "Go",
+		aliases: ["golang"],
+		keywords: t,
+		illegal: "</",
+		contains: [
+			e.C_LINE_COMMENT_MODE,
+			e.C_BLOCK_COMMENT_MODE,
+			{
+				className: "string",
+				variants: [
+					e.QUOTE_STRING_MODE,
+					e.APOS_STRING_MODE,
+					{
+						begin: "`",
+						end: "`"
+					}
+				]
+			},
+			{
+				className: "number",
+				variants: [
+					{
+						match: /-?\b0[xX]\.[a-fA-F0-9](_?[a-fA-F0-9])*[pP][+-]?\d(_?\d)*i?/,
+						relevance: 0
+					},
+					{
+						match: /-?\b0[xX](_?[a-fA-F0-9])+((\.([a-fA-F0-9](_?[a-fA-F0-9])*)?)?[pP][+-]?\d(_?\d)*)?i?/,
+						relevance: 0
+					},
+					{
+						match: /-?\b0[oO](_?[0-7])*i?/,
+						relevance: 0
+					},
+					{
+						match: /-?\.\d(_?\d)*([eE][+-]?\d(_?\d)*)?i?/,
+						relevance: 0
+					},
+					{
+						match: /-?\b\d(_?\d)*(\.(\d(_?\d)*)?)?([eE][+-]?\d(_?\d)*)?i?/,
+						relevance: 0
+					}
+				]
+			},
+			{ begin: /:=/ },
+			{
+				className: "function",
+				beginKeywords: "func",
+				end: "\\s*(\\{|$)",
+				excludeEnd: !0,
+				contains: [e.TITLE_MODE, {
+					className: "params",
+					begin: /\(/,
+					end: /\)/,
+					endsParent: !0,
+					keywords: t,
+					illegal: /["']/
+				}]
+			}
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/java.js
+var E = "[0-9](_*[0-9])*", D = `\\.(${E})`, O = "[0-9a-fA-F](_*[0-9a-fA-F])*", k = {
+	className: "number",
+	variants: [
+		{ begin: `(\\b(${E})((${D})|\\.)?|(${D}))[eE][+-]?(${E})[fFdD]?\\b` },
+		{ begin: `\\b(${E})((${D})[fFdD]?\\b|\\.([fFdD]\\b)?)` },
+		{ begin: `(${D})[fFdD]?\\b` },
+		{ begin: `\\b(${E})[fFdD]\\b` },
+		{ begin: `\\b0[xX]((${O})\\.?|(${O})?\\.(${O}))[pP][+-]?(${E})[fFdD]?\\b` },
+		{ begin: "\\b(0|[1-9](_*[0-9])*)[lL]?\\b" },
+		{ begin: `\\b0[xX](${O})[lL]?\\b` },
+		{ begin: "\\b0(_*[0-7])*[lL]?\\b" },
+		{ begin: "\\b0[bB][01](_*[01])*[lL]?\\b" }
+	],
+	relevance: 0
+};
+function A(e, t, n) {
+	return n === -1 ? "" : e.replace(t, (r) => A(e, t, n - 1));
+}
+function j(e) {
+	let t = e.regex, n = "[À-ʸa-zA-Z_$][À-ʸa-zA-Z_$0-9]*", r = n + A("(?:<[À-ʸa-zA-Z_$][À-ʸa-zA-Z_$0-9]*~~~(?:\\s*,\\s*[À-ʸa-zA-Z_$][À-ʸa-zA-Z_$0-9]*~~~)*>)?", /~~~/g, 2), i = {
+		keyword: /* @__PURE__ */ "synchronized.abstract.private.var.static.if.const .for.while.strictfp.finally.protected.import.native.final.void.enum.else.break.transient.catch.instanceof.volatile.case.assert.package.default.public.try.switch.continue.throws.protected.public.private.module.requires.exports.do.sealed.yield.permits.goto.when".split("."),
+		literal: [
+			"false",
+			"true",
+			"null"
+		],
+		type: [
+			"char",
+			"boolean",
+			"long",
+			"float",
+			"int",
+			"byte",
+			"short",
+			"double"
+		],
+		built_in: ["super", "this"]
+	}, a = {
+		className: "meta",
+		begin: "@[À-ʸa-zA-Z_$][À-ʸa-zA-Z_$0-9]*",
+		contains: [{
+			begin: /\(/,
+			end: /\)/,
+			contains: ["self"]
+		}]
+	}, o = {
+		className: "params",
+		begin: /\(/,
+		end: /\)/,
+		keywords: i,
+		relevance: 0,
+		contains: [e.C_BLOCK_COMMENT_MODE],
+		endsParent: !0
+	};
+	return {
+		name: "Java",
+		aliases: ["jsp"],
+		keywords: i,
+		illegal: /<\/|#/,
+		contains: [
+			e.COMMENT("/\\*\\*", "\\*/", {
+				relevance: 0,
+				contains: [{
+					begin: /\w+@/,
+					relevance: 0
+				}, {
+					className: "doctag",
+					begin: "@[A-Za-z]+"
+				}]
+			}),
+			{
+				begin: /import java\.[a-z]+\./,
+				keywords: "import",
+				relevance: 2
+			},
+			e.C_LINE_COMMENT_MODE,
+			e.C_BLOCK_COMMENT_MODE,
+			{
+				begin: /"""/,
+				end: /"""/,
+				className: "string",
+				contains: [e.BACKSLASH_ESCAPE]
+			},
+			e.APOS_STRING_MODE,
+			e.QUOTE_STRING_MODE,
+			{
+				match: [
+					/\b(?:class|interface|enum|extends|implements|new)/,
+					/\s+/,
+					n
+				],
+				className: {
+					1: "keyword",
+					3: "title.class"
+				}
+			},
+			{
+				match: /non-sealed/,
+				scope: "keyword"
+			},
+			{
+				begin: [
+					t.concat(/(?!else)/, n),
+					/\s+/,
+					n,
+					/\s+/,
+					/=(?!=)/
+				],
+				className: {
+					1: "type",
+					3: "variable",
+					5: "operator"
+				}
+			},
+			{
+				begin: [
+					/record/,
+					/\s+/,
+					n
+				],
+				className: {
+					1: "keyword",
+					3: "title.class"
+				},
+				contains: [
+					o,
+					e.C_LINE_COMMENT_MODE,
+					e.C_BLOCK_COMMENT_MODE
+				]
+			},
+			{
+				beginKeywords: "new throw return else",
+				relevance: 0
+			},
+			{
+				begin: [
+					"(?:" + r + "\\s+)",
+					e.UNDERSCORE_IDENT_RE,
+					/\s*(?=\()/
+				],
+				className: { 2: "title.function" },
+				keywords: i,
+				contains: [
+					{
+						className: "params",
+						begin: /\(/,
+						end: /\)/,
+						keywords: i,
+						relevance: 0,
+						contains: [
+							a,
+							e.APOS_STRING_MODE,
+							e.QUOTE_STRING_MODE,
+							k,
+							e.C_BLOCK_COMMENT_MODE
+						]
+					},
+					e.C_LINE_COMMENT_MODE,
+					e.C_BLOCK_COMMENT_MODE
+				]
+			},
+			k,
+			a
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/javascript.js
+var M = "[A-Za-z$_][0-9A-Za-z$_]*", N = /* @__PURE__ */ "as.in.of.if.for.while.finally.var.new.function.do.return.void.else.break.catch.instanceof.with.throw.case.default.try.switch.continue.typeof.delete.let.yield.const.class.debugger.async.await.static.import.from.export.extends.using".split("."), P = [
+	"true",
+	"false",
+	"null",
+	"undefined",
+	"NaN",
+	"Infinity"
+], F = /* @__PURE__ */ "Object.Function.Boolean.Symbol.Math.Date.Number.BigInt.String.RegExp.Array.Float32Array.Float64Array.Int8Array.Uint8Array.Uint8ClampedArray.Int16Array.Int32Array.Uint16Array.Uint32Array.BigInt64Array.BigUint64Array.Set.Map.WeakSet.WeakMap.ArrayBuffer.SharedArrayBuffer.Atomics.DataView.JSON.Promise.Generator.GeneratorFunction.AsyncFunction.Reflect.Proxy.Intl.WebAssembly".split("."), I = [
+	"Error",
+	"EvalError",
+	"InternalError",
+	"RangeError",
+	"ReferenceError",
+	"SyntaxError",
+	"TypeError",
+	"URIError"
+], L = [
+	"setInterval",
+	"setTimeout",
+	"clearInterval",
+	"clearTimeout",
+	"require",
+	"exports",
+	"eval",
+	"isFinite",
+	"isNaN",
+	"parseFloat",
+	"parseInt",
+	"decodeURI",
+	"decodeURIComponent",
+	"encodeURI",
+	"encodeURIComponent",
+	"escape",
+	"unescape"
+], R = [
+	"arguments",
+	"this",
+	"super",
+	"console",
+	"window",
+	"document",
+	"localStorage",
+	"sessionStorage",
+	"module",
+	"global"
+], z = [].concat(L, F, I);
+function B(e) {
+	let t = e.regex, n = (e, { after: t }) => {
+		let n = "</" + e[0].slice(1);
+		return e.input.indexOf(n, t) !== -1;
+	}, r = M, i = {
+		begin: "<>",
+		end: "</>"
+	}, a = /<[A-Za-z0-9\\._:-]+\s*\/>/, o = {
+		begin: /<[A-Za-z0-9\\._:-]+/,
+		end: /\/[A-Za-z0-9\\._:-]+>|\/>/,
+		isTrulyOpeningTag: (e, t) => {
+			let r = e[0].length + e.index, i = e.input[r];
+			if (i === "<" || i === ",") {
+				t.ignoreMatch();
+				return;
+			}
+			i === ">" && (n(e, { after: r }) || t.ignoreMatch());
+			let a, o = e.input.substring(r);
+			if (a = o.match(/^\s*=/)) {
+				t.ignoreMatch();
+				return;
+			}
+			if ((a = o.match(/^\s+extends\s+/)) && a.index === 0) {
+				t.ignoreMatch();
+				return;
+			}
+		}
+	}, s = {
+		$pattern: M,
+		keyword: N,
+		literal: P,
+		built_in: z,
+		"variable.language": R
+	}, c = "[0-9](_?[0-9])*", l = `\\.(${c})`, u = "0|[1-9](_?[0-9])*|0[0-7]*[89][0-9]*", d = {
+		className: "number",
+		variants: [
+			{ begin: `(\\b(${u})((${l})|\\.)?|(${l}))[eE][+-]?(${c})\\b` },
+			{ begin: `\\b(${u})\\b((${l})\\b|\\.)?|(${l})\\b` },
+			{ begin: "\\b(0|[1-9](_?[0-9])*)n\\b" },
+			{ begin: "\\b0[xX][0-9a-fA-F](_?[0-9a-fA-F])*n?\\b" },
+			{ begin: "\\b0[bB][0-1](_?[0-1])*n?\\b" },
+			{ begin: "\\b0[oO][0-7](_?[0-7])*n?\\b" },
+			{ begin: "\\b0[0-7]+n?\\b" }
+		],
+		relevance: 0
+	}, f = {
+		className: "subst",
+		begin: "\\$\\{",
+		end: "\\}",
+		keywords: s,
+		contains: []
+	}, p = {
+		begin: ".?html`",
+		end: "",
+		starts: {
+			end: "`",
+			returnEnd: !1,
+			contains: [e.BACKSLASH_ESCAPE, f],
+			subLanguage: "xml"
+		}
+	}, m = {
+		begin: ".?css`",
+		end: "",
+		starts: {
+			end: "`",
+			returnEnd: !1,
+			contains: [e.BACKSLASH_ESCAPE, f],
+			subLanguage: "css"
+		}
+	}, h = {
+		begin: ".?gql`",
+		end: "",
+		starts: {
+			end: "`",
+			returnEnd: !1,
+			contains: [e.BACKSLASH_ESCAPE, f],
+			subLanguage: "graphql"
+		}
+	}, g = {
+		className: "string",
+		begin: "`",
+		end: "`",
+		contains: [e.BACKSLASH_ESCAPE, f]
+	}, _ = {
+		className: "comment",
+		variants: [
+			e.COMMENT(/\/\*\*(?!\/)/, "\\*/", {
+				relevance: 0,
+				contains: [{
+					begin: "(?=@[A-Za-z]+)",
+					relevance: 0,
+					contains: [
+						{
+							className: "doctag",
+							begin: "@[A-Za-z]+"
+						},
+						{
+							className: "type",
+							begin: "\\{",
+							end: "\\}",
+							excludeEnd: !0,
+							excludeBegin: !0,
+							relevance: 0
+						},
+						{
+							className: "variable",
+							begin: "[A-Za-z$_][0-9A-Za-z$_]*(?=\\s*(-)|$)",
+							endsParent: !0,
+							relevance: 0
+						},
+						{
+							begin: /(?=[^\n])\s/,
+							relevance: 0
+						}
+					]
+				}]
+			}),
+			e.C_BLOCK_COMMENT_MODE,
+			e.C_LINE_COMMENT_MODE
+		]
+	}, v = [
+		e.APOS_STRING_MODE,
+		e.QUOTE_STRING_MODE,
+		p,
+		m,
+		h,
+		g,
+		{ match: /\$\d+/ },
+		d
+	];
+	f.contains = v.concat({
+		begin: /\{/,
+		end: /\}/,
+		keywords: s,
+		contains: ["self"].concat(v)
+	});
+	let y = [].concat(_, f.contains), b = y.concat([{
+		begin: /(\s*)\(/,
+		end: /\)/,
+		keywords: s,
+		contains: ["self"].concat(y)
+	}]), x = {
+		className: "params",
+		begin: /(\s*)\(/,
+		end: /\)/,
+		excludeBegin: !0,
+		excludeEnd: !0,
+		keywords: s,
+		contains: b
+	}, S = { variants: [{
+		match: [
+			/class/,
+			/\s+/,
+			r,
+			/\s+/,
+			/extends/,
+			/\s+/,
+			t.concat(r, "(", t.concat(/\./, r), ")*")
+		],
+		scope: {
+			1: "keyword",
+			3: "title.class",
+			5: "keyword",
+			7: "title.class.inherited"
+		}
+	}, {
+		match: [
+			/class/,
+			/\s+/,
+			r
+		],
+		scope: {
+			1: "keyword",
+			3: "title.class"
+		}
+	}] }, C = {
+		relevance: 0,
+		match: t.either(/\bJSON/, /\b[A-Z][a-z]+([A-Z][a-z]*|\d)*/, /\b[A-Z]{2,}([A-Z][a-z]+|\d)+([A-Z][a-z]*)*/, /\b[A-Z]{2,}[a-z]+([A-Z][a-z]+|\d)*([A-Z][a-z]*)*/),
+		className: "title.class",
+		keywords: { _: [...F, ...I] }
+	}, w = {
+		label: "use_strict",
+		className: "meta",
+		relevance: 10,
+		begin: /^\s*['"]use (strict|asm)['"]/
+	}, T = {
+		variants: [{ match: [
+			/function/,
+			/\s+/,
+			r,
+			/(?=\s*\()/
+		] }, { match: [/function/, /\s*(?=\()/] }],
+		className: {
+			1: "keyword",
+			3: "title.function"
+		},
+		label: "func.def",
+		contains: [x],
+		illegal: /%/
+	}, E = {
+		relevance: 0,
+		match: /\b[A-Z][A-Z_0-9]+\b/,
+		className: "variable.constant"
+	};
+	function D(e) {
+		return t.concat("(?!", e.join("|"), ")");
+	}
+	let O = {
+		match: t.concat(/\b/, D([
+			...L,
+			"super",
+			"import"
+		].map((e) => `${e}\\s*\\(`)), r, t.lookahead(/\s*\(/)),
+		className: "title.function",
+		relevance: 0
+	}, k = {
+		begin: t.concat(/\./, t.lookahead(t.concat(r, /(?![0-9A-Za-z$_(])/))),
+		end: r,
+		excludeBegin: !0,
+		keywords: "prototype",
+		className: "property",
+		relevance: 0
+	}, A = {
+		match: [
+			/get|set/,
+			/\s+/,
+			r,
+			/(?=\()/
+		],
+		className: {
+			1: "keyword",
+			3: "title.function"
+		},
+		contains: [{ begin: /\(\)/ }, x]
+	}, j = "(\\([^()]*(\\([^()]*(\\([^()]*\\)[^()]*)*\\)[^()]*)*\\)|" + e.UNDERSCORE_IDENT_RE + ")\\s*=>", B = {
+		match: [
+			/const|var|let/,
+			/\s+/,
+			r,
+			/\s*/,
+			/=\s*/,
+			/(async\s*)?/,
+			t.lookahead(j)
+		],
+		keywords: "async",
+		className: {
+			1: "keyword",
+			3: "title.function"
+		},
+		contains: [x]
+	};
+	return {
+		name: "JavaScript",
+		aliases: [
+			"js",
+			"jsx",
+			"mjs",
+			"cjs"
+		],
+		keywords: s,
+		exports: {
+			PARAMS_CONTAINS: b,
+			CLASS_REFERENCE: C
+		},
+		illegal: /#(?![$_A-z])/,
+		contains: [
+			e.SHEBANG({
+				label: "shebang",
+				binary: "node",
+				relevance: 5
+			}),
+			w,
+			e.APOS_STRING_MODE,
+			e.QUOTE_STRING_MODE,
+			p,
+			m,
+			h,
+			g,
+			_,
+			{ match: /\$\d+/ },
+			d,
+			C,
+			{
+				scope: "attr",
+				match: r + t.lookahead(":"),
+				relevance: 0
+			},
+			B,
+			{
+				begin: "(" + e.RE_STARTERS_RE + "|\\b(case|return|throw)\\b)\\s*",
+				keywords: "return throw case",
+				relevance: 0,
+				contains: [
+					_,
+					e.REGEXP_MODE,
+					{
+						className: "function",
+						begin: j,
+						returnBegin: !0,
+						end: "\\s*=>",
+						contains: [{
+							className: "params",
+							variants: [
+								{
+									begin: e.UNDERSCORE_IDENT_RE,
+									relevance: 0
+								},
+								{
+									className: null,
+									begin: /\(\s*\)/,
+									skip: !0
+								},
+								{
+									begin: /(\s*)\(/,
+									end: /\)/,
+									excludeBegin: !0,
+									excludeEnd: !0,
+									keywords: s,
+									contains: b
+								}
+							]
+						}]
+					},
+					{
+						begin: /,/,
+						relevance: 0
+					},
+					{
+						match: /\s+/,
+						relevance: 0
+					},
+					{
+						variants: [
+							{
+								begin: i.begin,
+								end: i.end
+							},
+							{ match: a },
+							{
+								begin: o.begin,
+								"on:begin": o.isTrulyOpeningTag,
+								end: o.end
+							}
+						],
+						subLanguage: "xml",
+						contains: [{
+							begin: o.begin,
+							end: o.end,
+							skip: !0,
+							contains: ["self"]
+						}]
+					}
+				]
+			},
+			T,
+			{ beginKeywords: "while if switch catch for" },
+			{
+				begin: "\\b(?!function)" + e.UNDERSCORE_IDENT_RE + "\\([^()]*(\\([^()]*(\\([^()]*\\)[^()]*)*\\)[^()]*)*\\)\\s*\\{",
+				returnBegin: !0,
+				label: "func.def",
+				contains: [x, e.inherit(e.TITLE_MODE, {
+					begin: r,
+					className: "title.function"
+				})]
+			},
+			{
+				match: /\.\.\./,
+				relevance: 0
+			},
+			k,
+			{
+				match: "\\$[A-Za-z$_][0-9A-Za-z$_]*",
+				relevance: 0
+			},
+			{
+				match: [/\bconstructor(?=\s*\()/],
+				className: { 1: "title.function" },
+				contains: [x]
+			},
+			O,
+			E,
+			S,
+			A,
+			{ match: /\$[(.]/ }
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/kotlin.js
+var V = "[0-9](_*[0-9])*", H = `\\.(${V})`, U = "[0-9a-fA-F](_*[0-9a-fA-F])*", ee = {
+	className: "number",
+	variants: [
+		{ begin: `(\\b(${V})((${H})|\\.)?|(${H}))[eE][+-]?(${V})[fFdD]?\\b` },
+		{ begin: `\\b(${V})((${H})[fFdD]?\\b|\\.([fFdD]\\b)?)` },
+		{ begin: `(${H})[fFdD]?\\b` },
+		{ begin: `\\b(${V})[fFdD]\\b` },
+		{ begin: `\\b0[xX]((${U})\\.?|(${U})?\\.(${U}))[pP][+-]?(${V})[fFdD]?\\b` },
+		{ begin: "\\b(0|[1-9](_*[0-9])*)[lL]?\\b" },
+		{ begin: `\\b0[xX](${U})[lL]?\\b` },
+		{ begin: "\\b0(_*[0-7])*[lL]?\\b" },
+		{ begin: "\\b0[bB][01](_*[01])*[lL]?\\b" }
+	],
+	relevance: 0
+};
+function te(e) {
+	let t = {
+		keyword: "abstract as val var vararg get set class object open private protected public noinline crossinline dynamic final enum if else do while for when throw try catch finally import package is in fun override companion reified inline lateinit init interface annotation data sealed internal infix operator out by constructor super tailrec where const inner suspend typealias external expect actual",
+		built_in: "Byte Short Char Int Long Boolean Float Double Void Unit Nothing",
+		literal: "true false null"
+	}, n = {
+		className: "keyword",
+		begin: /\b(break|continue|return|this)\b/,
+		starts: { contains: [{
+			className: "symbol",
+			begin: /@\w+/
+		}] }
+	}, r = {
+		className: "symbol",
+		begin: e.UNDERSCORE_IDENT_RE + "@"
+	}, i = {
+		className: "subst",
+		begin: /\$\{/,
+		end: /\}/,
+		contains: [e.C_NUMBER_MODE]
+	}, a = {
+		className: "variable",
+		begin: "\\$" + e.UNDERSCORE_IDENT_RE
+	}, o = {
+		className: "string",
+		variants: [
+			{
+				begin: "\"\"\"",
+				end: "\"\"\"(?=[^\"])",
+				contains: [a, i]
+			},
+			{
+				begin: "'",
+				end: "'",
+				illegal: /\n/,
+				contains: [e.BACKSLASH_ESCAPE]
+			},
+			{
+				begin: "\"",
+				end: "\"",
+				illegal: /\n/,
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					a,
+					i
+				]
+			}
+		]
+	};
+	i.contains.push(o);
+	let s = {
+		className: "meta",
+		begin: "@(?:file|property|field|get|set|receiver|param|setparam|delegate)\\s*:(?:\\s*" + e.UNDERSCORE_IDENT_RE + ")?"
+	}, c = {
+		className: "meta",
+		begin: "@" + e.UNDERSCORE_IDENT_RE,
+		contains: [{
+			begin: /\(/,
+			end: /\)/,
+			contains: [e.inherit(o, { className: "string" }), "self"]
+		}]
+	}, l = ee, u = e.COMMENT("/\\*", "\\*/", { contains: [e.C_BLOCK_COMMENT_MODE] }), d = { variants: [{
+		className: "type",
+		begin: e.UNDERSCORE_IDENT_RE
+	}, {
+		begin: /\(/,
+		end: /\)/,
+		contains: []
+	}] }, f = d;
+	return f.variants[1].contains = [d], d.variants[1].contains = [f], {
+		name: "Kotlin",
+		aliases: ["kt", "kts"],
+		keywords: t,
+		contains: [
+			e.COMMENT("/\\*\\*", "\\*/", {
+				relevance: 0,
+				contains: [{
+					className: "doctag",
+					begin: "@[A-Za-z]+"
+				}]
+			}),
+			e.C_LINE_COMMENT_MODE,
+			u,
+			n,
+			r,
+			s,
+			c,
+			{
+				className: "function",
+				beginKeywords: "fun",
+				end: "[(]|$",
+				returnBegin: !0,
+				excludeEnd: !0,
+				keywords: t,
+				relevance: 5,
+				contains: [
+					{
+						begin: e.UNDERSCORE_IDENT_RE + "\\s*\\(",
+						returnBegin: !0,
+						relevance: 0,
+						contains: [e.UNDERSCORE_TITLE_MODE]
+					},
+					{
+						className: "type",
+						begin: /</,
+						end: />/,
+						keywords: "reified",
+						relevance: 0
+					},
+					{
+						className: "params",
+						begin: /\(/,
+						end: /\)/,
+						endsParent: !0,
+						keywords: t,
+						relevance: 0,
+						contains: [
+							{
+								begin: /:/,
+								end: /[=,\/]/,
+								endsWithParent: !0,
+								contains: [
+									d,
+									e.C_LINE_COMMENT_MODE,
+									u
+								],
+								relevance: 0
+							},
+							e.C_LINE_COMMENT_MODE,
+							u,
+							s,
+							c,
+							o,
+							e.C_NUMBER_MODE
+						]
+					},
+					u
+				]
+			},
+			{
+				begin: [
+					/class|interface|trait/,
+					/\s+/,
+					e.UNDERSCORE_IDENT_RE
+				],
+				beginScope: { 3: "title.class" },
+				keywords: "class interface trait",
+				end: /[:\{(]|$/,
+				excludeEnd: !0,
+				illegal: "extends implements",
+				contains: [
+					{ beginKeywords: "public protected internal private constructor" },
+					e.UNDERSCORE_TITLE_MODE,
+					{
+						className: "type",
+						begin: /</,
+						end: />/,
+						excludeBegin: !0,
+						excludeEnd: !0,
+						relevance: 0
+					},
+					{
+						className: "type",
+						begin: /[,:]\s*/,
+						end: /[<\(,){\s]|$/,
+						excludeBegin: !0,
+						returnEnd: !0
+					},
+					s,
+					c
+				]
+			},
+			o,
+			{
+				className: "meta",
+				begin: "^#!/usr/bin/env",
+				end: "$",
+				illegal: "\n"
+			},
+			l
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/php.js
+function ne(e) {
+	let t = e.regex, n = /(?![A-Za-z0-9])(?![$])/, r = t.concat(/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/, n), i = t.concat(/(\\?[A-Z][a-z0-9_\x7f-\xff]+|\\?[A-Z]+(?=[A-Z][a-z0-9_\x7f-\xff])){1,}/, n), a = t.concat(/[A-Z]+/, n), o = {
+		scope: "variable",
+		match: "\\$+" + r
+	}, s = {
+		scope: "meta",
+		variants: [
+			{
+				begin: /<\?php/,
+				relevance: 10
+			},
+			{ begin: /<\?=/ },
+			{
+				begin: /<\?/,
+				relevance: .1
+			},
+			{ begin: /\?>/ }
+		]
+	}, c = {
+		scope: "subst",
+		variants: [{ begin: /\$\w+/ }, {
+			begin: /\{\$/,
+			end: /\}/
+		}]
+	}, l = e.inherit(e.APOS_STRING_MODE, { illegal: null }), u = e.inherit(e.QUOTE_STRING_MODE, {
+		illegal: null,
+		contains: e.QUOTE_STRING_MODE.contains.concat(c)
+	}), d = {
+		begin: /<<<[ \t]*(?:(\w+)|"(\w+)")\n/,
+		end: /[ \t]*(\w+)\b/,
+		contains: e.QUOTE_STRING_MODE.contains.concat(c),
+		"on:begin": (e, t) => {
+			t.data._beginMatch = e[1] || e[2];
+		},
+		"on:end": (e, t) => {
+			t.data._beginMatch !== e[1] && t.ignoreMatch();
+		}
+	}, f = e.END_SAME_AS_BEGIN({
+		begin: /<<<[ \t]*'(\w+)'\n/,
+		end: /[ \t]*(\w+)\b/
+	}), p = "[ 	\n]", m = {
+		scope: "string",
+		variants: [
+			u,
+			l,
+			d,
+			f
+		]
+	}, h = {
+		scope: "number",
+		variants: [
+			{ begin: "\\b0[bB][01]+(?:_[01]+)*\\b" },
+			{ begin: "\\b0[oO][0-7]+(?:_[0-7]+)*\\b" },
+			{ begin: "\\b0[xX][\\da-fA-F]+(?:_[\\da-fA-F]+)*\\b" },
+			{ begin: "(?:\\b\\d+(?:_\\d+)*(\\.(?:\\d+(?:_\\d+)*))?|\\B\\.\\d+)(?:[eE][+-]?\\d+)?" }
+		],
+		relevance: 0
+	}, g = [
+		"false",
+		"null",
+		"true"
+	], _ = /* @__PURE__ */ "__CLASS__.__DIR__.__FILE__.__FUNCTION__.__COMPILER_HALT_OFFSET__.__LINE__.__METHOD__.__NAMESPACE__.__TRAIT__.die.echo.exit.include.include_once.print.require.require_once.array.abstract.and.as.binary.bool.boolean.break.callable.case.catch.class.clone.const.continue.declare.default.do.double.else.elseif.empty.enddeclare.endfor.endforeach.endif.endswitch.endwhile.enum.eval.extends.final.finally.float.for.foreach.from.global.goto.if.implements.instanceof.insteadof.int.integer.interface.isset.iterable.list.match|0.mixed.new.never.object.or.private.protected.public.readonly.real.return.string.switch.throw.trait.try.unset.use.var.void.while.xor.yield".split("."), v = /* @__PURE__ */ "Error|0.AppendIterator.ArgumentCountError.ArithmeticError.ArrayIterator.ArrayObject.AssertionError.BadFunctionCallException.BadMethodCallException.CachingIterator.CallbackFilterIterator.CompileError.Countable.DirectoryIterator.DivisionByZeroError.DomainException.EmptyIterator.ErrorException.Exception.FilesystemIterator.FilterIterator.GlobIterator.InfiniteIterator.InvalidArgumentException.IteratorIterator.LengthException.LimitIterator.LogicException.MultipleIterator.NoRewindIterator.OutOfBoundsException.OutOfRangeException.OuterIterator.OverflowException.ParentIterator.ParseError.RangeException.RecursiveArrayIterator.RecursiveCachingIterator.RecursiveCallbackFilterIterator.RecursiveDirectoryIterator.RecursiveFilterIterator.RecursiveIterator.RecursiveIteratorIterator.RecursiveRegexIterator.RecursiveTreeIterator.RegexIterator.RuntimeException.SeekableIterator.SplDoublyLinkedList.SplFileInfo.SplFileObject.SplFixedArray.SplHeap.SplMaxHeap.SplMinHeap.SplObjectStorage.SplObserver.SplPriorityQueue.SplQueue.SplStack.SplSubject.SplTempFileObject.TypeError.UnderflowException.UnexpectedValueException.UnhandledMatchError.ArrayAccess.BackedEnum.Closure.Fiber.Generator.Iterator.IteratorAggregate.Serializable.Stringable.Throwable.Traversable.UnitEnum.WeakReference.WeakMap.Directory.__PHP_Incomplete_Class.parent.php_user_filter.self.static.stdClass".split("."), y = {
+		keyword: _,
+		literal: ((e) => {
+			let t = [];
+			return e.forEach((e) => {
+				t.push(e), e.toLowerCase() === e ? t.push(e.toUpperCase()) : t.push(e.toLowerCase());
+			}), t;
+		})(g),
+		built_in: v
+	}, b = (e) => e.map((e) => e.replace(/\|\d+$/, "")), x = { variants: [{
+		match: [
+			/new/,
+			t.concat(p, "+"),
+			t.concat("(?!", b(v).join("\\b|"), "\\b)"),
+			i
+		],
+		scope: {
+			1: "keyword",
+			4: "title.class"
+		}
+	}] }, S = t.concat(r, "\\b(?!\\()"), C = { variants: [
+		{
+			match: [t.concat(/::/, t.lookahead(/(?!class\b)/)), S],
+			scope: { 2: "variable.constant" }
+		},
+		{
+			match: [/::/, /class/],
+			scope: { 2: "variable.language" }
+		},
+		{
+			match: [
+				i,
+				t.concat(/::/, t.lookahead(/(?!class\b)/)),
+				S
+			],
+			scope: {
+				1: "title.class",
+				3: "variable.constant"
+			}
+		},
+		{
+			match: [i, t.concat("::", t.lookahead(/(?!class\b)/))],
+			scope: { 1: "title.class" }
+		},
+		{
+			match: [
+				i,
+				/::/,
+				/class/
+			],
+			scope: {
+				1: "title.class",
+				3: "variable.language"
+			}
+		}
+	] }, w = {
+		scope: "attr",
+		match: t.concat(r, t.lookahead(":"), t.lookahead(/(?!::)/))
+	}, T = {
+		relevance: 0,
+		begin: /\(/,
+		end: /\)/,
+		keywords: y,
+		contains: [
+			w,
+			o,
+			C,
+			e.C_BLOCK_COMMENT_MODE,
+			m,
+			h,
+			x
+		]
+	}, E = {
+		relevance: 0,
+		match: [
+			/\b/,
+			t.concat("(?!fn\\b|function\\b|", b(_).join("\\b|"), "|", b(v).join("\\b|"), "\\b)"),
+			r,
+			t.concat(p, "*"),
+			t.lookahead(/(?=\()/)
+		],
+		scope: { 3: "title.function.invoke" },
+		contains: [T]
+	};
+	T.contains.push(E);
+	let D = [
+		w,
+		C,
+		e.C_BLOCK_COMMENT_MODE,
+		m,
+		h,
+		x
+	], O = {
+		begin: t.concat(/#\[\s*\\?/, t.either(i, a)),
+		beginScope: "meta",
+		end: /]/,
+		endScope: "meta",
+		keywords: {
+			literal: g,
+			keyword: ["new", "array"]
+		},
+		contains: [
+			{
+				begin: /\[/,
+				end: /]/,
+				keywords: {
+					literal: g,
+					keyword: ["new", "array"]
+				},
+				contains: ["self", ...D]
+			},
+			...D,
+			{
+				scope: "meta",
+				variants: [{ match: i }, { match: a }]
+			}
+		]
+	};
+	return {
+		case_insensitive: !1,
+		keywords: y,
+		contains: [
+			O,
+			e.HASH_COMMENT_MODE,
+			e.COMMENT("//", "$"),
+			e.COMMENT("/\\*", "\\*/", { contains: [{
+				scope: "doctag",
+				match: "@[A-Za-z]+"
+			}] }),
+			{
+				match: /__halt_compiler\(\);/,
+				keywords: "__halt_compiler",
+				starts: {
+					scope: "comment",
+					end: e.MATCH_NOTHING_RE,
+					contains: [{
+						match: /\?>/,
+						scope: "meta",
+						endsParent: !0
+					}]
+				}
+			},
+			s,
+			{
+				scope: "variable.language",
+				match: /\$this\b/
+			},
+			o,
+			E,
+			C,
+			{
+				match: [
+					/const/,
+					/\s/,
+					r
+				],
+				scope: {
+					1: "keyword",
+					3: "variable.constant"
+				}
+			},
+			x,
+			{
+				scope: "function",
+				relevance: 0,
+				beginKeywords: "fn function",
+				end: /[;{]/,
+				excludeEnd: !0,
+				illegal: "[$%\\[]",
+				contains: [
+					{ beginKeywords: "use" },
+					e.UNDERSCORE_TITLE_MODE,
+					{
+						begin: "=>",
+						endsParent: !0
+					},
+					{
+						scope: "params",
+						begin: "\\(",
+						end: "\\)",
+						excludeBegin: !0,
+						excludeEnd: !0,
+						keywords: y,
+						contains: [
+							"self",
+							O,
+							o,
+							C,
+							e.C_BLOCK_COMMENT_MODE,
+							m,
+							h
+						]
+					}
+				]
+			},
+			{
+				scope: "class",
+				variants: [{
+					beginKeywords: "enum",
+					illegal: /[($"]/
+				}, {
+					beginKeywords: "class interface trait",
+					illegal: /[:($"]/
+				}],
+				relevance: 0,
+				end: /\{/,
+				excludeEnd: !0,
+				contains: [{ beginKeywords: "extends implements" }, e.UNDERSCORE_TITLE_MODE]
+			},
+			{
+				beginKeywords: "namespace",
+				relevance: 0,
+				end: ";",
+				illegal: /[.']/,
+				contains: [e.inherit(e.UNDERSCORE_TITLE_MODE, { scope: "title.class" })]
+			},
+			{
+				beginKeywords: "use",
+				relevance: 0,
+				end: ";",
+				contains: [{
+					match: /\b(as|const|function)\b/,
+					scope: "keyword"
+				}, e.UNDERSCORE_TITLE_MODE]
+			},
+			m,
+			h
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/python.js
+function re(e) {
+	let t = e.regex, n = /[\p{XID_Start}_]\p{XID_Continue}*/u, r = /* @__PURE__ */ "and.as.assert.async.await.break.case.class.continue.def.del.elif.else.except.finally.for.from.global.if.import.in.is.lambda.match.nonlocal|10.not.or.pass.raise.return.try.while.with.yield".split("."), i = {
+		$pattern: /[A-Za-z]\w+|__\w+__/,
+		keyword: r,
+		built_in: /* @__PURE__ */ "__import__.abs.all.any.ascii.bin.bool.breakpoint.bytearray.bytes.callable.chr.classmethod.compile.complex.delattr.dict.dir.divmod.enumerate.eval.exec.filter.float.format.frozenset.getattr.globals.hasattr.hash.help.hex.id.input.int.isinstance.issubclass.iter.len.list.locals.map.max.memoryview.min.next.object.oct.open.ord.pow.print.property.range.repr.reversed.round.set.setattr.slice.sorted.staticmethod.str.sum.super.tuple.type.vars.zip".split("."),
+		literal: [
+			"__debug__",
+			"Ellipsis",
+			"False",
+			"None",
+			"NotImplemented",
+			"True"
+		],
+		type: [
+			"Any",
+			"Callable",
+			"Coroutine",
+			"Dict",
+			"List",
+			"Literal",
+			"Generic",
+			"Optional",
+			"Sequence",
+			"Set",
+			"Tuple",
+			"Type",
+			"Union"
+		]
+	}, a = {
+		className: "meta",
+		begin: /^(>>>|\.\.\.) /
+	}, o = {
+		className: "subst",
+		begin: /\{/,
+		end: /\}/,
+		keywords: i,
+		illegal: /#/
+	}, s = {
+		begin: /\{\{/,
+		relevance: 0
+	}, c = {
+		className: "string",
+		contains: [e.BACKSLASH_ESCAPE],
+		variants: [
+			{
+				begin: /([uU]|[bB]|[rR]|[bB][rR]|[rR][bB])?'''/,
+				end: /'''/,
+				contains: [e.BACKSLASH_ESCAPE, a],
+				relevance: 10
+			},
+			{
+				begin: /([uU]|[bB]|[rR]|[bB][rR]|[rR][bB])?"""/,
+				end: /"""/,
+				contains: [e.BACKSLASH_ESCAPE, a],
+				relevance: 10
+			},
+			{
+				begin: /([fF][rR]|[rR][fF]|[fF])'''/,
+				end: /'''/,
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					a,
+					s,
+					o
+				]
+			},
+			{
+				begin: /([fF][rR]|[rR][fF]|[fF])"""/,
+				end: /"""/,
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					a,
+					s,
+					o
+				]
+			},
+			{
+				begin: /([uU]|[rR])'/,
+				end: /'/,
+				relevance: 10
+			},
+			{
+				begin: /([uU]|[rR])"/,
+				end: /"/,
+				relevance: 10
+			},
+			{
+				begin: /([bB]|[bB][rR]|[rR][bB])'/,
+				end: /'/
+			},
+			{
+				begin: /([bB]|[bB][rR]|[rR][bB])"/,
+				end: /"/
+			},
+			{
+				begin: /([fF][rR]|[rR][fF]|[fF])'/,
+				end: /'/,
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					s,
+					o
+				]
+			},
+			{
+				begin: /([fF][rR]|[rR][fF]|[fF])"/,
+				end: /"/,
+				contains: [
+					e.BACKSLASH_ESCAPE,
+					s,
+					o
+				]
+			},
+			e.APOS_STRING_MODE,
+			e.QUOTE_STRING_MODE
+		]
+	}, l = "[0-9](_?[0-9])*", u = `(\\b(${l}))?\\.(${l})|\\b(${l})\\.`, d = `\\b|${r.join("|")}`, f = {
+		className: "number",
+		relevance: 0,
+		variants: [
+			{ begin: `(\\b(${l})|(${u}))[eE][+-]?(${l})[jJ]?(?=${d})` },
+			{ begin: `(${u})[jJ]?` },
+			{ begin: `\\b([1-9](_?[0-9])*|0+(_?0)*)[lLjJ]?(?=${d})` },
+			{ begin: `\\b0[bB](_?[01])+[lL]?(?=${d})` },
+			{ begin: `\\b0[oO](_?[0-7])+[lL]?(?=${d})` },
+			{ begin: `\\b0[xX](_?[0-9a-fA-F])+[lL]?(?=${d})` },
+			{ begin: `\\b(${l})[jJ](?=${d})` }
+		]
+	}, p = {
+		className: "comment",
+		begin: t.lookahead(/# type:/),
+		end: /$/,
+		keywords: i,
+		contains: [{ begin: /# type:/ }, {
+			begin: /#/,
+			end: /\b\B/,
+			endsWithParent: !0
+		}]
+	}, m = {
+		className: "params",
+		variants: [{
+			className: "",
+			begin: /\(\s*\)/,
+			skip: !0
+		}, {
+			begin: /\(/,
+			end: /\)/,
+			excludeBegin: !0,
+			excludeEnd: !0,
+			keywords: i,
+			contains: [
+				"self",
+				a,
+				f,
+				c,
+				e.HASH_COMMENT_MODE
+			]
+		}]
+	};
+	return o.contains = [
+		c,
+		f,
+		a
+	], {
+		name: "Python",
+		aliases: [
+			"py",
+			"gyp",
+			"ipython"
+		],
+		unicodeRegex: !0,
+		keywords: i,
+		illegal: /(<\/|\?)|=>/,
+		contains: [
+			a,
+			f,
+			{
+				scope: "variable.language",
+				match: /\bself\b/
+			},
+			{
+				beginKeywords: "if",
+				relevance: 0
+			},
+			{
+				match: /\bor\b/,
+				scope: "keyword"
+			},
+			c,
+			p,
+			e.HASH_COMMENT_MODE,
+			{
+				match: [
+					/\bdef/,
+					/\s+/,
+					n
+				],
+				scope: {
+					1: "keyword",
+					3: "title.function"
+				},
+				contains: [m]
+			},
+			{
+				variants: [{ match: [
+					/\bclass/,
+					/\s+/,
+					n,
+					/\s*/,
+					/\(\s*/,
+					n,
+					/\s*\)/
+				] }, { match: [
+					/\bclass/,
+					/\s+/,
+					n
+				] }],
+				scope: {
+					1: "keyword",
+					3: "title.class",
+					6: "title.class.inherited"
+				}
+			},
+			{
+				className: "meta",
+				begin: /^[\t ]*@/,
+				end: /(?=#)|$/,
+				contains: [
+					f,
+					m,
+					c
+				]
+			}
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/r.js
+function ie(e) {
+	let t = e.regex, n = /(?:(?:[a-zA-Z]|\.[._a-zA-Z])[._a-zA-Z0-9]*)|\.(?!\d)/, r = t.either(/0[xX][0-9a-fA-F]+\.[0-9a-fA-F]*[pP][+-]?\d+i?/, /0[xX][0-9a-fA-F]+(?:[pP][+-]?\d+)?[Li]?/, /(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?[Li]?/), i = /[=!<>:]=|\|\||&&|:::?|<-|<<-|->>|->|\|>|[-+*\/?!$&|:<=>@^~]|\*\*/, a = t.either(/[()]/, /[{}]/, /\[\[/, /[[\]]/, /\\/, /,/);
+	return {
+		name: "R",
+		keywords: {
+			$pattern: n,
+			keyword: "function if in break next repeat else for while",
+			literal: "NULL NA TRUE FALSE Inf NaN NA_integer_|10 NA_real_|10 NA_character_|10 NA_complex_|10",
+			built_in: "LETTERS letters month.abb month.name pi T F abs acos acosh all any anyNA Arg as.call as.character as.complex as.double as.environment as.integer as.logical as.null.default as.numeric as.raw asin asinh atan atanh attr attributes baseenv browser c call ceiling class Conj cos cosh cospi cummax cummin cumprod cumsum digamma dim dimnames emptyenv exp expression floor forceAndCall gamma gc.time globalenv Im interactive invisible is.array is.atomic is.call is.character is.complex is.double is.environment is.expression is.finite is.function is.infinite is.integer is.language is.list is.logical is.matrix is.na is.name is.nan is.null is.numeric is.object is.pairlist is.raw is.recursive is.single is.symbol lazyLoadDBfetch length lgamma list log max min missing Mod names nargs nzchar oldClass on.exit pos.to.env proc.time prod quote range Re rep retracemem return round seq_along seq_len seq.int sign signif sin sinh sinpi sqrt standardGeneric substitute sum switch tan tanh tanpi tracemem trigamma trunc unclass untracemem UseMethod xtfrm"
+		},
+		contains: [
+			e.COMMENT(/#'/, /$/, { contains: [
+				{
+					scope: "doctag",
+					match: /@examples/,
+					starts: {
+						end: t.lookahead(t.either(/\n^#'\s*(?=@[a-zA-Z]+)/, /\n^(?!#')/)),
+						endsParent: !0
+					}
+				},
+				{
+					scope: "doctag",
+					begin: "@param",
+					end: /$/,
+					contains: [{
+						scope: "variable",
+						variants: [{ match: n }, { match: /`(?:\\.|[^`\\])+`/ }],
+						endsParent: !0
+					}]
+				},
+				{
+					scope: "doctag",
+					match: /@[a-zA-Z]+/
+				},
+				{
+					scope: "keyword",
+					match: /\\[a-zA-Z]+/
+				}
+			] }),
+			e.HASH_COMMENT_MODE,
+			{
+				scope: "string",
+				contains: [e.BACKSLASH_ESCAPE],
+				variants: [
+					e.END_SAME_AS_BEGIN({
+						begin: /[rR]"(-*)\(/,
+						end: /\)(-*)"/
+					}),
+					e.END_SAME_AS_BEGIN({
+						begin: /[rR]"(-*)\{/,
+						end: /\}(-*)"/
+					}),
+					e.END_SAME_AS_BEGIN({
+						begin: /[rR]"(-*)\[/,
+						end: /\](-*)"/
+					}),
+					e.END_SAME_AS_BEGIN({
+						begin: /[rR]'(-*)\(/,
+						end: /\)(-*)'/
+					}),
+					e.END_SAME_AS_BEGIN({
+						begin: /[rR]'(-*)\{/,
+						end: /\}(-*)'/
+					}),
+					e.END_SAME_AS_BEGIN({
+						begin: /[rR]'(-*)\[/,
+						end: /\](-*)'/
+					}),
+					{
+						begin: "\"",
+						end: "\"",
+						relevance: 0
+					},
+					{
+						begin: "'",
+						end: "'",
+						relevance: 0
+					}
+				]
+			},
+			{
+				relevance: 0,
+				variants: [
+					{
+						scope: {
+							1: "operator",
+							2: "number"
+						},
+						match: [i, r]
+					},
+					{
+						scope: {
+							1: "operator",
+							2: "number"
+						},
+						match: [/%[^%]*%/, r]
+					},
+					{
+						scope: {
+							1: "punctuation",
+							2: "number"
+						},
+						match: [a, r]
+					},
+					{
+						scope: { 2: "number" },
+						match: [/[^a-zA-Z0-9._]|^/, r]
+					}
+				]
+			},
+			{
+				scope: { 3: "operator" },
+				match: [
+					n,
+					/\s+/,
+					/<-/,
+					/\s+/
+				]
+			},
+			{
+				scope: "operator",
+				relevance: 0,
+				variants: [{ match: i }, { match: /%[^%]*%/ }]
+			},
+			{
+				scope: "punctuation",
+				relevance: 0,
+				match: a
+			},
+			{
+				begin: "`",
+				end: "`",
+				contains: [{ begin: /\\./ }]
+			}
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/ruby.js
+function ae(e) {
+	let t = e.regex, n = "([a-zA-Z_]\\w*[!?=]?|[-+~]@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?)", r = t.either(/\b([A-Z]+[a-z0-9]+)+/, /\b([A-Z]+[a-z0-9]+)+[A-Z]+/), i = t.concat(r, /(::\w+)*/), a = {
+		"variable.constant": [
+			"__FILE__",
+			"__LINE__",
+			"__ENCODING__"
+		],
+		"variable.language": ["self", "super"],
+		keyword: /* @__PURE__ */ "alias.and.begin.BEGIN.break.case.class.defined.do.else.elsif.end.END.ensure.for.if.in.module.next.not.or.redo.require.rescue.retry.return.then.undef.unless.until.when.while.yield.include.extend.prepend.public.private.protected.raise.throw".split("."),
+		built_in: [
+			"proc",
+			"lambda",
+			"attr_accessor",
+			"attr_reader",
+			"attr_writer",
+			"define_method",
+			"private_constant",
+			"module_function"
+		],
+		literal: [
+			"true",
+			"false",
+			"nil"
+		]
+	}, o = {
+		className: "doctag",
+		begin: "@[A-Za-z]+"
+	}, s = {
+		begin: "#<",
+		end: ">"
+	}, c = [
+		e.COMMENT("#", "$", { contains: [o] }),
+		e.COMMENT("^=begin", "^=end", {
+			contains: [o],
+			relevance: 10
+		}),
+		e.COMMENT("^__END__", e.MATCH_NOTHING_RE)
+	], l = {
+		className: "subst",
+		begin: /#\{/,
+		end: /\}/,
+		keywords: a
+	}, u = {
+		className: "string",
+		contains: [e.BACKSLASH_ESCAPE, l],
+		variants: [
+			{
+				begin: /'/,
+				end: /'/
+			},
+			{
+				begin: /"/,
+				end: /"/
+			},
+			{
+				begin: /`/,
+				end: /`/
+			},
+			{
+				begin: /%[qQwWx]?\(/,
+				end: /\)/
+			},
+			{
+				begin: /%[qQwWx]?\[/,
+				end: /\]/
+			},
+			{
+				begin: /%[qQwWx]?\{/,
+				end: /\}/
+			},
+			{
+				begin: /%[qQwWx]?</,
+				end: />/
+			},
+			{
+				begin: /%[qQwWx]?\//,
+				end: /\//
+			},
+			{
+				begin: /%[qQwWx]?%/,
+				end: /%/
+			},
+			{
+				begin: /%[qQwWx]?-/,
+				end: /-/
+			},
+			{
+				begin: /%[qQwWx]?\|/,
+				end: /\|/
+			},
+			{ begin: /\B\?(\\\d{1,3})/ },
+			{ begin: /\B\?(\\x[A-Fa-f0-9]{1,2})/ },
+			{ begin: /\B\?(\\u\{?[A-Fa-f0-9]{1,6}\}?)/ },
+			{ begin: /\B\?(\\M-\\C-|\\M-\\c|\\c\\M-|\\M-|\\C-\\M-)[\x20-\x7e]/ },
+			{ begin: /\B\?\\(c|C-)[\x20-\x7e]/ },
+			{ begin: /\B\?\\?\S/ },
+			{
+				begin: t.concat(/<<[-~]?'?/, t.lookahead(/(\w+)(?=\W)[^\n]*\n(?:[^\n]*\n)*?\s*\1\b/)),
+				contains: [e.END_SAME_AS_BEGIN({
+					begin: /(\w+)/,
+					end: /(\w+)/,
+					contains: [e.BACKSLASH_ESCAPE, l]
+				})]
+			}
+		]
+	}, d = "[0-9](_?[0-9])*", f = {
+		className: "number",
+		relevance: 0,
+		variants: [
+			{ begin: `\\b([1-9](_?[0-9])*|0)(\\.(${d}))?([eE][+-]?(${d})|r)?i?\\b` },
+			{ begin: "\\b0[dD][0-9](_?[0-9])*r?i?\\b" },
+			{ begin: "\\b0[bB][0-1](_?[0-1])*r?i?\\b" },
+			{ begin: "\\b0[oO][0-7](_?[0-7])*r?i?\\b" },
+			{ begin: "\\b0[xX][0-9a-fA-F](_?[0-9a-fA-F])*r?i?\\b" },
+			{ begin: "\\b0(_?[0-7])+r?i?\\b" }
+		]
+	}, p = { variants: [{ match: /\(\)/ }, {
+		className: "params",
+		begin: /\(/,
+		end: /(?=\))/,
+		excludeBegin: !0,
+		endsParent: !0,
+		keywords: a
+	}] }, m = [
+		u,
+		{
+			variants: [{ match: [
+				/class\s+/,
+				i,
+				/\s+<\s+/,
+				i
+			] }, { match: [/\b(class|module)\s+/, i] }],
+			scope: {
+				2: "title.class",
+				4: "title.class.inherited"
+			},
+			keywords: a
+		},
+		{
+			match: [/(include|extend)\s+/, i],
+			scope: { 2: "title.class" },
+			keywords: a
+		},
+		{
+			relevance: 0,
+			match: [i, /\.new[. (]/],
+			scope: { 1: "title.class" }
+		},
+		{
+			relevance: 0,
+			match: /\b[A-Z][A-Z_0-9]+\b/,
+			className: "variable.constant"
+		},
+		{
+			relevance: 0,
+			match: r,
+			scope: "title.class"
+		},
+		{
+			match: [
+				/def/,
+				/\s+/,
+				n
+			],
+			scope: {
+				1: "keyword",
+				3: "title.function"
+			},
+			contains: [p]
+		},
+		{ begin: e.IDENT_RE + "::" },
+		{
+			className: "symbol",
+			begin: e.UNDERSCORE_IDENT_RE + "(!|\\?)?:",
+			relevance: 0
+		},
+		{
+			className: "symbol",
+			begin: ":(?!\\s)",
+			contains: [u, { begin: n }],
+			relevance: 0
+		},
+		f,
+		{
+			className: "variable",
+			begin: "(\\$\\W)|((\\$|@@?)(\\w+))(?=[^@$?])(?![A-Za-z])(?![@$?'])"
+		},
+		{
+			className: "params",
+			begin: /\|(?!=)/,
+			end: /\|/,
+			excludeBegin: !0,
+			excludeEnd: !0,
+			relevance: 0,
+			keywords: a
+		},
+		{
+			begin: "(" + e.RE_STARTERS_RE + "|unless)\\s*",
+			keywords: "unless",
+			contains: [{
+				className: "regexp",
+				contains: [e.BACKSLASH_ESCAPE, l],
+				illegal: /\n/,
+				variants: [
+					{
+						begin: "/",
+						end: "/[a-z]*"
+					},
+					{
+						begin: /%r\{/,
+						end: /\}[a-z]*/
+					},
+					{
+						begin: "%r\\(",
+						end: "\\)[a-z]*"
+					},
+					{
+						begin: "%r!",
+						end: "![a-z]*"
+					},
+					{
+						begin: "%r\\[",
+						end: "\\][a-z]*"
+					}
+				]
+			}].concat(s, c),
+			relevance: 0
+		}
+	].concat(s, c);
+	l.contains = m, p.contains = m;
+	let h = [{
+		begin: /^\s*=>/,
+		starts: {
+			end: "$",
+			contains: m
+		}
+	}, {
+		className: "meta.prompt",
+		begin: "^([>?]>|[\\w#]+\\(\\w+\\):\\d+:\\d+[>*]|(\\w+-)?\\d+\\.\\d+\\.\\d+(p\\d+)?[^\\d][^>]+>)(?=[ ])",
+		starts: {
+			end: "$",
+			keywords: a,
+			contains: m
+		}
+	}];
+	return c.unshift(s), {
+		name: "Ruby",
+		aliases: [
+			"rb",
+			"gemspec",
+			"podspec",
+			"thor",
+			"irb"
+		],
+		keywords: a,
+		illegal: /\/\*/,
+		contains: [e.SHEBANG({ binary: "ruby" })].concat(h, c, m)
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/rust.js
+function oe(e) {
+	let t = e.regex, n = /(r#)?/, r = t.concat(n, e.UNDERSCORE_IDENT_RE), i = t.concat(n, e.IDENT_RE), a = {
+		className: "title.function.invoke",
+		relevance: 0,
+		begin: t.concat(/\b/, /(?!let|for|while|if|else|match\b)/, i, t.lookahead(/\s*\(/))
+	}, o = /* @__PURE__ */ "abstract.as.async.await.become.box.break.const.continue.crate.do.dyn.else.enum.extern.false.final.fn.for.if.impl.in.let.loop.macro.match.mod.move.mut.override.priv.pub.ref.return.self.Self.static.struct.super.trait.true.try.type.typeof.union.unsafe.unsized.use.virtual.where.while.yield".split("."), s = [
+		"true",
+		"false",
+		"Some",
+		"None",
+		"Ok",
+		"Err"
+	], c = /* @__PURE__ */ "drop .Copy.Send.Sized.Sync.Drop.Fn.FnMut.FnOnce.ToOwned.Clone.Debug.PartialEq.PartialOrd.Eq.Ord.AsRef.AsMut.Into.From.Default.Iterator.Extend.IntoIterator.DoubleEndedIterator.ExactSizeIterator.SliceConcatExt.ToString.assert!.assert_eq!.bitflags!.bytes!.cfg!.col!.concat!.concat_idents!.debug_assert!.debug_assert_eq!.env!.eprintln!.panic!.file!.format!.format_args!.include_bytes!.include_str!.line!.local_data_key!.module_path!.option_env!.print!.println!.select!.stringify!.try!.unimplemented!.unreachable!.vec!.write!.writeln!.macro_rules!.assert_ne!.debug_assert_ne!".split("."), l = [
+		"i8",
+		"i16",
+		"i32",
+		"i64",
+		"i128",
+		"isize",
+		"u8",
+		"u16",
+		"u32",
+		"u64",
+		"u128",
+		"usize",
+		"f32",
+		"f64",
+		"str",
+		"char",
+		"bool",
+		"Box",
+		"Option",
+		"Result",
+		"String",
+		"Vec"
+	];
+	return {
+		name: "Rust",
+		aliases: ["rs"],
+		keywords: {
+			$pattern: e.IDENT_RE + "!?",
+			type: l,
+			keyword: o,
+			literal: s,
+			built_in: c
+		},
+		illegal: "</",
+		contains: [
+			e.C_LINE_COMMENT_MODE,
+			e.COMMENT("/\\*", "\\*/", { contains: ["self"] }),
+			e.inherit(e.QUOTE_STRING_MODE, {
+				begin: /b?"/,
+				illegal: null
+			}),
+			{
+				className: "symbol",
+				begin: /'[a-zA-Z_][a-zA-Z0-9_]*(?!')/
+			},
+			{
+				scope: "string",
+				variants: [{ begin: /b?r(#*)"(.|\n)*?"\1(?!#)/ }, {
+					begin: /b?'/,
+					end: /'/,
+					contains: [{
+						scope: "char.escape",
+						match: /\\('|\w|x\w{2}|u\w{4}|U\w{8})/
+					}]
+				}]
+			},
+			{
+				className: "number",
+				variants: [
+					{ begin: "\\b0b([01_]+)([ui](8|16|32|64|128|size)|f(32|64))?" },
+					{ begin: "\\b0o([0-7_]+)([ui](8|16|32|64|128|size)|f(32|64))?" },
+					{ begin: "\\b0x([A-Fa-f0-9_]+)([ui](8|16|32|64|128|size)|f(32|64))?" },
+					{ begin: "\\b(\\d[\\d_]*(\\.[0-9_]+)?([eE][+-]?[0-9_]+)?)([ui](8|16|32|64|128|size)|f(32|64))?" }
+				],
+				relevance: 0
+			},
+			{
+				begin: [
+					/fn/,
+					/\s+/,
+					r
+				],
+				className: {
+					1: "keyword",
+					3: "title.function"
+				}
+			},
+			{
+				className: "meta",
+				begin: "#!?\\[",
+				end: "\\]",
+				contains: [{
+					className: "string",
+					begin: /"/,
+					end: /"/,
+					contains: [e.BACKSLASH_ESCAPE]
+				}]
+			},
+			{
+				begin: [
+					/let/,
+					/\s+/,
+					/(?:mut\s+)?/,
+					r
+				],
+				className: {
+					1: "keyword",
+					3: "keyword",
+					4: "variable"
+				}
+			},
+			{
+				begin: [
+					/for/,
+					/\s+/,
+					r,
+					/\s+/,
+					/in/
+				],
+				className: {
+					1: "keyword",
+					3: "variable",
+					5: "keyword"
+				}
+			},
+			{
+				begin: [
+					/type/,
+					/\s+/,
+					r
+				],
+				className: {
+					1: "keyword",
+					3: "title.class"
+				}
+			},
+			{
+				begin: [
+					/(?:trait|enum|struct|union|impl|for)/,
+					/\s+/,
+					r
+				],
+				className: {
+					1: "keyword",
+					3: "title.class"
+				}
+			},
+			{
+				begin: e.IDENT_RE + "::",
+				keywords: {
+					keyword: "Self",
+					built_in: c,
+					type: l
+				}
+			},
+			{
+				className: "punctuation",
+				begin: "->"
+			},
+			a
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/bash.js
+function se(e) {
+	let t = e.regex, n = {}, r = {
+		begin: /\$\{/,
+		end: /\}/,
+		contains: ["self", {
+			begin: /:-/,
+			contains: [n]
+		}]
+	};
+	Object.assign(n, {
+		className: "variable",
+		variants: [{ begin: t.concat(/\$[\w\d#@][\w\d_]*/, "(?![\\w\\d])(?![$])") }, r]
+	});
+	let i = {
+		className: "subst",
+		begin: /\$\(/,
+		end: /\)/,
+		contains: [e.BACKSLASH_ESCAPE]
+	}, a = e.inherit(e.COMMENT(), {
+		match: [/(^|\s)/, /#.*$/],
+		scope: { 2: "comment" }
+	}), o = {
+		begin: /<<-?\s*(?=\w+)/,
+		starts: { contains: [e.END_SAME_AS_BEGIN({
+			begin: /(\w+)/,
+			end: /(\w+)/,
+			className: "string"
+		})] }
+	}, s = {
+		className: "string",
+		begin: /"/,
+		end: /"/,
+		contains: [
+			e.BACKSLASH_ESCAPE,
+			n,
+			i
+		]
+	};
+	i.contains.push(s);
+	let c = { match: /\\"/ }, l = {
+		className: "string",
+		begin: /'/,
+		end: /'/
+	}, u = { match: /\\'/ }, d = {
+		begin: /\$?\(\(/,
+		end: /\)\)/,
+		contains: [
+			{
+				begin: /\d+#[0-9a-f]+/,
+				className: "number"
+			},
+			e.NUMBER_MODE,
+			n
+		]
+	}, f = e.SHEBANG({
+		binary: `(${[
+			"fish",
+			"bash",
+			"zsh",
+			"sh",
+			"csh",
+			"ksh",
+			"tcsh",
+			"dash",
+			"scsh"
+		].join("|")})`,
+		relevance: 10
+	}), p = {
+		className: "function",
+		begin: /\w[\w\d_]*\s*\(\s*\)\s*\{/,
+		returnBegin: !0,
+		contains: [e.inherit(e.TITLE_MODE, { begin: /\w[\w\d_]*/ })],
+		relevance: 0
+	}, m = [
+		"if",
+		"then",
+		"else",
+		"elif",
+		"fi",
+		"time",
+		"for",
+		"while",
+		"until",
+		"in",
+		"do",
+		"done",
+		"case",
+		"esac",
+		"coproc",
+		"function",
+		"select"
+	], h = ["true", "false"], g = { match: /(\/[a-z._-]+)+/ }, _ = [
+		"break",
+		"cd",
+		"continue",
+		"eval",
+		"exec",
+		"exit",
+		"export",
+		"getopts",
+		"hash",
+		"pwd",
+		"readonly",
+		"return",
+		"shift",
+		"test",
+		"times",
+		"trap",
+		"umask",
+		"unset"
+	], v = [
+		"alias",
+		"bind",
+		"builtin",
+		"caller",
+		"command",
+		"declare",
+		"echo",
+		"enable",
+		"help",
+		"let",
+		"local",
+		"logout",
+		"mapfile",
+		"printf",
+		"read",
+		"readarray",
+		"source",
+		"sudo",
+		"type",
+		"typeset",
+		"ulimit",
+		"unalias"
+	], y = /* @__PURE__ */ "autoload.bg.bindkey.bye.cap.chdir.clone.comparguments.compcall.compctl.compdescribe.compfiles.compgroups.compquote.comptags.comptry.compvalues.dirs.disable.disown.echotc.echoti.emulate.fc.fg.float.functions.getcap.getln.history.integer.jobs.kill.limit.log.noglob.popd.print.pushd.pushln.rehash.sched.setcap.setopt.stat.suspend.ttyctl.unfunction.unhash.unlimit.unsetopt.vared.wait.whence.where.which.zcompile.zformat.zftp.zle.zmodload.zparseopts.zprof.zpty.zregexparse.zsocket.zstyle.ztcp".split("."), b = /* @__PURE__ */ "chcon.chgrp.chown.chmod.cp.dd.df.dir.dircolors.ln.ls.mkdir.mkfifo.mknod.mktemp.mv.realpath.rm.rmdir.shred.sync.touch.truncate.vdir.b2sum.base32.base64.cat.cksum.comm.csplit.cut.expand.fmt.fold.head.join.md5sum.nl.numfmt.od.paste.ptx.pr.sha1sum.sha224sum.sha256sum.sha384sum.sha512sum.shuf.sort.split.sum.tac.tail.tr.tsort.unexpand.uniq.wc.arch.basename.chroot.date.dirname.du.echo.env.expr.factor.groups.hostid.id.link.logname.nice.nohup.nproc.pathchk.pinky.printenv.printf.pwd.readlink.runcon.seq.sleep.stat.stdbuf.stty.tee.test.timeout.tty.uname.unlink.uptime.users.who.whoami.yes".split(".");
+	return {
+		name: "Bash",
+		aliases: ["sh", "zsh"],
+		keywords: {
+			$pattern: /\b[a-z][a-z0-9._-]+\b/,
+			keyword: m,
+			literal: h,
+			built_in: [
+				..._,
+				...v,
+				"set",
+				"shopt",
+				...y,
+				...b
+			]
+		},
+		contains: [
+			f,
+			e.SHEBANG(),
+			p,
+			d,
+			a,
+			o,
+			g,
+			s,
+			c,
+			l,
+			u,
+			n
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/swift.js
+function ce(e) {
+	return e ? typeof e == "string" ? e : e.source : null;
+}
+function W(e) {
+	return G("(?=", e, ")");
+}
+function G(...e) {
+	return e.map((e) => ce(e)).join("");
+}
+function le(e) {
+	let t = e[e.length - 1];
+	return typeof t == "object" && t.constructor === Object ? (e.splice(e.length - 1, 1), t) : {};
+}
+function K(...e) {
+	return "(" + (le(e).capture ? "" : "?:") + e.map((e) => ce(e)).join("|") + ")";
+}
+var q = (e) => G(/\b/, e, /\w$/.test(e) ? /\b/ : /\B/), ue = ["Protocol", "Type"].map(q), de = ["init", "self"].map(q), fe = ["Any", "Self"], pe = [
+	"actor",
+	"any",
+	"associatedtype",
+	"async",
+	"await",
+	/as\?/,
+	/as!/,
+	"as",
+	"borrowing",
+	"break",
+	"case",
+	"catch",
+	"class",
+	"consume",
+	"consuming",
+	"continue",
+	"convenience",
+	"copy",
+	"default",
+	"defer",
+	"deinit",
+	"didSet",
+	"distributed",
+	"do",
+	"dynamic",
+	"each",
+	"else",
+	"enum",
+	"extension",
+	"fallthrough",
+	/fileprivate\(set\)/,
+	"fileprivate",
+	"final",
+	"for",
+	"func",
+	"get",
+	"guard",
+	"if",
+	"import",
+	"indirect",
+	"infix",
+	/init\?/,
+	/init!/,
+	"inout",
+	/internal\(set\)/,
+	"internal",
+	"in",
+	"is",
+	"isolated",
+	"nonisolated",
+	"lazy",
+	"let",
+	"macro",
+	"mutating",
+	"nonmutating",
+	/open\(set\)/,
+	"open",
+	"operator",
+	"optional",
+	"override",
+	"package",
+	"postfix",
+	"precedencegroup",
+	"prefix",
+	/private\(set\)/,
+	"private",
+	"protocol",
+	/public\(set\)/,
+	"public",
+	"repeat",
+	"required",
+	"rethrows",
+	"return",
+	"set",
+	"some",
+	"static",
+	"struct",
+	"subscript",
+	"super",
+	"switch",
+	"throws",
+	"throw",
+	/try\?/,
+	/try!/,
+	"try",
+	"typealias",
+	/unowned\(safe\)/,
+	/unowned\(unsafe\)/,
+	"unowned",
+	"var",
+	"weak",
+	"where",
+	"while",
+	"willSet"
+], me = [
+	"false",
+	"nil",
+	"true"
+], he = [
+	"assignment",
+	"associativity",
+	"higherThan",
+	"left",
+	"lowerThan",
+	"none",
+	"right"
+], ge = [
+	"#colorLiteral",
+	"#column",
+	"#dsohandle",
+	"#else",
+	"#elseif",
+	"#endif",
+	"#error",
+	"#file",
+	"#fileID",
+	"#fileLiteral",
+	"#filePath",
+	"#function",
+	"#if",
+	"#imageLiteral",
+	"#keyPath",
+	"#line",
+	"#selector",
+	"#sourceLocation",
+	"#warning"
+], _e = /* @__PURE__ */ "abs.all.any.assert.assertionFailure.debugPrint.dump.fatalError.getVaList.isKnownUniquelyReferenced.max.min.numericCast.pointwiseMax.pointwiseMin.precondition.preconditionFailure.print.readLine.repeatElement.sequence.stride.swap.swift_unboxFromSwiftValueWithType.transcode.type.unsafeBitCast.unsafeDowncast.withExtendedLifetime.withUnsafeMutablePointer.withUnsafePointer.withVaList.withoutActuallyEscaping.zip".split("."), ve = K(/[/=\-+!*%<>&|^~?]/, /[\u00A1-\u00A7]/, /[\u00A9\u00AB]/, /[\u00AC\u00AE]/, /[\u00B0\u00B1]/, /[\u00B6\u00BB\u00BF\u00D7\u00F7]/, /[\u2016-\u2017]/, /[\u2020-\u2027]/, /[\u2030-\u203E]/, /[\u2041-\u2053]/, /[\u2055-\u205E]/, /[\u2190-\u23FF]/, /[\u2500-\u2775]/, /[\u2794-\u2BFF]/, /[\u2E00-\u2E7F]/, /[\u3001-\u3003]/, /[\u3008-\u3020]/, /[\u3030]/), ye = K(ve, /[\u0300-\u036F]/, /[\u1DC0-\u1DFF]/, /[\u20D0-\u20FF]/, /[\uFE00-\uFE0F]/, /[\uFE20-\uFE2F]/), J = G(ve, ye, "*"), be = K(/[a-zA-Z_]/, /[\u00A8\u00AA\u00AD\u00AF\u00B2-\u00B5\u00B7-\u00BA]/, /[\u00BC-\u00BE\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]/, /[\u0100-\u02FF\u0370-\u167F\u1681-\u180D\u180F-\u1DBF]/, /[\u1E00-\u1FFF]/, /[\u200B-\u200D\u202A-\u202E\u203F-\u2040\u2054\u2060-\u206F]/, /[\u2070-\u20CF\u2100-\u218F\u2460-\u24FF\u2776-\u2793]/, /[\u2C00-\u2DFF\u2E80-\u2FFF]/, /[\u3004-\u3007\u3021-\u302F\u3031-\u303F\u3040-\uD7FF]/, /[\uF900-\uFD3D\uFD40-\uFDCF\uFDF0-\uFE1F\uFE30-\uFE44]/, /[\uFE47-\uFEFE\uFF00-\uFFFD]/), Y = K(be, /\d/, /[\u0300-\u036F\u1DC0-\u1DFF\u20D0-\u20FF\uFE20-\uFE2F]/), X = G(be, Y, "*"), Z = G(/[A-Z]/, Y, "*"), Q = [
+	"attached",
+	"autoclosure",
+	G(/convention\(/, K("swift", "block", "c"), /\)/),
+	"discardableResult",
+	"dynamicCallable",
+	"dynamicMemberLookup",
+	"escaping",
+	"freestanding",
+	"frozen",
+	"GKInspectable",
+	"IBAction",
+	"IBDesignable",
+	"IBInspectable",
+	"IBOutlet",
+	"IBSegueAction",
+	"inlinable",
+	"main",
+	"nonobjc",
+	"NSApplicationMain",
+	"NSCopying",
+	"NSManaged",
+	G(/objc\(/, X, /\)/),
+	"objc",
+	"objcMembers",
+	"propertyWrapper",
+	"requires_stored_property_inits",
+	"resultBuilder",
+	"Sendable",
+	"testable",
+	"UIApplicationMain",
+	"unchecked",
+	"unknown",
+	"usableFromInline",
+	"warn_unqualified_access"
+], xe = [
+	"iOS",
+	"iOSApplicationExtension",
+	"macOS",
+	"macOSApplicationExtension",
+	"macCatalyst",
+	"macCatalystApplicationExtension",
+	"watchOS",
+	"watchOSApplicationExtension",
+	"tvOS",
+	"tvOSApplicationExtension",
+	"swift"
+];
+function Se(e) {
+	let t = {
+		match: /\s+/,
+		relevance: 0
+	}, n = e.COMMENT("/\\*", "\\*/", { contains: ["self"] }), r = [e.C_LINE_COMMENT_MODE, n], i = {
+		match: [/\./, K(...ue, ...de)],
+		className: { 2: "keyword" }
+	}, a = {
+		match: G(/\./, K(...pe)),
+		relevance: 0
+	}, o = pe.filter((e) => typeof e == "string").concat(["_|0"]), s = { variants: [{
+		className: "keyword",
+		match: K(...pe.filter((e) => typeof e != "string").concat(fe).map(q), ...de)
+	}] }, c = {
+		$pattern: K(/\b\w+/, /#\w+/),
+		keyword: o.concat(ge),
+		literal: me
+	}, l = [
+		i,
+		a,
+		s
+	], u = [{
+		match: G(/\./, K(..._e)),
+		relevance: 0
+	}, {
+		className: "built_in",
+		match: G(/\b/, K(..._e), /(?=\()/)
+	}], d = {
+		match: /->/,
+		relevance: 0
+	}, f = [d, {
+		className: "operator",
+		relevance: 0,
+		variants: [{ match: J }, { match: `\\.(\\.|${ye})+` }]
+	}], p = "([0-9]_*)+", m = "([0-9a-fA-F]_*)+", h = {
+		className: "number",
+		relevance: 0,
+		variants: [
+			{ match: `\\b(${p})(\\.(${p}))?([eE][+-]?(${p}))?\\b` },
+			{ match: `\\b0x(${m})(\\.(${m}))?([pP][+-]?(${p}))?\\b` },
+			{ match: /\b0o([0-7]_*)+\b/ },
+			{ match: /\b0b([01]_*)+\b/ }
+		]
+	}, g = (e = "") => ({
+		className: "subst",
+		variants: [{ match: G(/\\/, e, /[0\\tnr"']/) }, { match: G(/\\/, e, /u\{[0-9a-fA-F]{1,8}\}/) }]
+	}), _ = (e = "") => ({
+		className: "subst",
+		match: G(/\\/, e, /[\t ]*(?:[\r\n]|\r\n)/)
+	}), v = (e = "") => ({
+		className: "subst",
+		label: "interpol",
+		begin: G(/\\/, e, /\(/),
+		end: /\)/
+	}), y = (e = "") => ({
+		begin: G(e, /"""/),
+		end: G(/"""/, e),
+		contains: [
+			g(e),
+			_(e),
+			v(e)
+		]
+	}), b = (e = "") => ({
+		begin: G(e, /"/),
+		end: G(/"/, e),
+		contains: [g(e), v(e)]
+	}), x = {
+		className: "string",
+		variants: [
+			y(),
+			y("#"),
+			y("##"),
+			y("###"),
+			b(),
+			b("#"),
+			b("##"),
+			b("###")
+		]
+	}, S = [e.BACKSLASH_ESCAPE, {
+		begin: /\[/,
+		end: /\]/,
+		relevance: 0,
+		contains: [e.BACKSLASH_ESCAPE]
+	}], C = {
+		begin: /\/[^\s](?=[^/\n]*\/)/,
+		end: /\//,
+		contains: S
+	}, w = (e) => {
+		let t = G(e, /\//), n = G(/\//, e);
+		return {
+			begin: t,
+			end: n,
+			contains: [...S, {
+				scope: "comment",
+				begin: `#(?!.*${n})`,
+				end: /$/
+			}]
+		};
+	}, T = {
+		scope: "regexp",
+		variants: [
+			w("###"),
+			w("##"),
+			w("#"),
+			C
+		]
+	}, E = { match: G(/`/, X, /`/) }, D = [
+		E,
+		{
+			className: "variable",
+			match: /\$\d+/
+		},
+		{
+			className: "variable",
+			match: `\\$${Y}+`
+		}
+	], O = [
+		{
+			match: /(@|#(un)?)available/,
+			scope: "keyword",
+			starts: { contains: [{
+				begin: /\(/,
+				end: /\)/,
+				keywords: xe,
+				contains: [
+					...f,
+					h,
+					x
+				]
+			}] }
+		},
+		{
+			scope: "keyword",
+			match: G(/@/, K(...Q), W(K(/\(/, /\s+/)))
+		},
+		{
+			scope: "meta",
+			match: G(/@/, X)
+		}
+	], k = {
+		match: W(/\b[A-Z]/),
+		relevance: 0,
+		contains: [
+			{
+				className: "type",
+				match: G(/(AV|CA|CF|CG|CI|CL|CM|CN|CT|MK|MP|MTK|MTL|NS|SCN|SK|UI|WK|XC)/, Y, "+")
+			},
+			{
+				className: "type",
+				match: Z,
+				relevance: 0
+			},
+			{
+				match: /[?!]+/,
+				relevance: 0
+			},
+			{
+				match: /\.\.\./,
+				relevance: 0
+			},
+			{
+				match: G(/\s+&\s+/, W(Z)),
+				relevance: 0
+			}
+		]
+	}, A = {
+		begin: /</,
+		end: />/,
+		keywords: c,
+		contains: [
+			...r,
+			...l,
+			...O,
+			d,
+			k
+		]
+	};
+	k.contains.push(A);
+	let j = {
+		begin: /\(/,
+		end: /\)/,
+		relevance: 0,
+		keywords: c,
+		contains: [
+			"self",
+			{
+				match: G(X, /\s*:/),
+				keywords: "_|0",
+				relevance: 0
+			},
+			...r,
+			T,
+			...l,
+			...u,
+			...f,
+			h,
+			x,
+			...D,
+			...O,
+			k
+		]
+	}, M = {
+		begin: /</,
+		end: />/,
+		keywords: "repeat each",
+		contains: [...r, k]
+	}, N = {
+		begin: /\(/,
+		end: /\)/,
+		keywords: c,
+		contains: [
+			{
+				begin: K(W(G(X, /\s*:/)), W(G(X, /\s+/, X, /\s*:/))),
+				end: /:/,
+				relevance: 0,
+				contains: [{
+					className: "keyword",
+					match: /\b_\b/
+				}, {
+					className: "params",
+					match: X
+				}]
+			},
+			...r,
+			...l,
+			...f,
+			h,
+			x,
+			...O,
+			k,
+			j
+		],
+		endsParent: !0,
+		illegal: /["']/
+	}, P = {
+		match: [
+			/(func|macro)/,
+			/\s+/,
+			K(E.match, X, J)
+		],
+		className: {
+			1: "keyword",
+			3: "title.function"
+		},
+		contains: [
+			M,
+			N,
+			t
+		],
+		illegal: [/\[/, /%/]
+	}, F = {
+		match: [/\b(?:subscript|init[?!]?)/, /\s*(?=[<(])/],
+		className: { 1: "keyword" },
+		contains: [
+			M,
+			N,
+			t
+		],
+		illegal: /\[|%/
+	}, I = {
+		match: [
+			/operator/,
+			/\s+/,
+			J
+		],
+		className: {
+			1: "keyword",
+			3: "title"
+		}
+	}, L = {
+		begin: [
+			/precedencegroup/,
+			/\s+/,
+			Z
+		],
+		className: {
+			1: "keyword",
+			3: "title"
+		},
+		contains: [k],
+		keywords: [...he, ...me],
+		end: /}/
+	}, R = {
+		match: [
+			/class\b/,
+			/\s+/,
+			/func\b/,
+			/\s+/,
+			/\b[A-Za-z_][A-Za-z0-9_]*\b/
+		],
+		scope: {
+			1: "keyword",
+			3: "keyword",
+			5: "title.function"
+		}
+	}, z = {
+		match: [
+			/class\b/,
+			/\s+/,
+			/var\b/
+		],
+		scope: {
+			1: "keyword",
+			3: "keyword"
+		}
+	}, B = {
+		begin: [
+			/(struct|protocol|class|extension|enum|actor)/,
+			/\s+/,
+			X,
+			/\s*/
+		],
+		beginScope: {
+			1: "keyword",
+			3: "title.class"
+		},
+		keywords: c,
+		contains: [
+			M,
+			...l,
+			{
+				begin: /:/,
+				end: /\{/,
+				keywords: c,
+				contains: [{
+					scope: "title.class.inherited",
+					match: Z
+				}, ...l],
+				relevance: 0
+			}
+		]
+	};
+	for (let e of x.variants) {
+		let t = e.contains.find((e) => e.label === "interpol");
+		t.keywords = c;
+		let n = [
+			...l,
+			...u,
+			...f,
+			h,
+			x,
+			...D
+		];
+		t.contains = [...n, {
+			begin: /\(/,
+			end: /\)/,
+			contains: ["self", ...n]
+		}];
+	}
+	return {
+		name: "Swift",
+		keywords: c,
+		contains: [
+			...r,
+			P,
+			F,
+			R,
+			z,
+			B,
+			I,
+			L,
+			{
+				beginKeywords: "import",
+				end: /$/,
+				contains: [...r],
+				relevance: 0
+			},
+			T,
+			...l,
+			...u,
+			...f,
+			h,
+			x,
+			...D,
+			...O,
+			k,
+			j
+		]
+	};
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/typescript.js
+var Ce = "[A-Za-z$_][0-9A-Za-z$_]*", we = /* @__PURE__ */ "as.in.of.if.for.while.finally.var.new.function.do.return.void.else.break.catch.instanceof.with.throw.case.default.try.switch.continue.typeof.delete.let.yield.const.class.debugger.async.await.static.import.from.export.extends.using".split("."), Te = [
+	"true",
+	"false",
+	"null",
+	"undefined",
+	"NaN",
+	"Infinity"
+], Ee = /* @__PURE__ */ "Object.Function.Boolean.Symbol.Math.Date.Number.BigInt.String.RegExp.Array.Float32Array.Float64Array.Int8Array.Uint8Array.Uint8ClampedArray.Int16Array.Int32Array.Uint16Array.Uint32Array.BigInt64Array.BigUint64Array.Set.Map.WeakSet.WeakMap.ArrayBuffer.SharedArrayBuffer.Atomics.DataView.JSON.Promise.Generator.GeneratorFunction.AsyncFunction.Reflect.Proxy.Intl.WebAssembly".split("."), De = [
+	"Error",
+	"EvalError",
+	"InternalError",
+	"RangeError",
+	"ReferenceError",
+	"SyntaxError",
+	"TypeError",
+	"URIError"
+], Oe = [
+	"setInterval",
+	"setTimeout",
+	"clearInterval",
+	"clearTimeout",
+	"require",
+	"exports",
+	"eval",
+	"isFinite",
+	"isNaN",
+	"parseFloat",
+	"parseInt",
+	"decodeURI",
+	"decodeURIComponent",
+	"encodeURI",
+	"encodeURIComponent",
+	"escape",
+	"unescape"
+], ke = [
+	"arguments",
+	"this",
+	"super",
+	"console",
+	"window",
+	"document",
+	"localStorage",
+	"sessionStorage",
+	"module",
+	"global"
+], Ae = [].concat(Oe, Ee, De);
+function je(e) {
+	let t = e.regex, n = (e, { after: t }) => {
+		let n = "</" + e[0].slice(1);
+		return e.input.indexOf(n, t) !== -1;
+	}, r = Ce, i = {
+		begin: "<>",
+		end: "</>"
+	}, a = /<[A-Za-z0-9\\._:-]+\s*\/>/, o = {
+		begin: /<[A-Za-z0-9\\._:-]+/,
+		end: /\/[A-Za-z0-9\\._:-]+>|\/>/,
+		isTrulyOpeningTag: (e, t) => {
+			let r = e[0].length + e.index, i = e.input[r];
+			if (i === "<" || i === ",") {
+				t.ignoreMatch();
+				return;
+			}
+			i === ">" && (n(e, { after: r }) || t.ignoreMatch());
+			let a, o = e.input.substring(r);
+			if (a = o.match(/^\s*=/)) {
+				t.ignoreMatch();
+				return;
+			}
+			if ((a = o.match(/^\s+extends\s+/)) && a.index === 0) {
+				t.ignoreMatch();
+				return;
+			}
+		}
+	}, s = {
+		$pattern: Ce,
+		keyword: we,
+		literal: Te,
+		built_in: Ae,
+		"variable.language": ke
+	}, c = "[0-9](_?[0-9])*", l = `\\.(${c})`, u = "0|[1-9](_?[0-9])*|0[0-7]*[89][0-9]*", d = {
+		className: "number",
+		variants: [
+			{ begin: `(\\b(${u})((${l})|\\.)?|(${l}))[eE][+-]?(${c})\\b` },
+			{ begin: `\\b(${u})\\b((${l})\\b|\\.)?|(${l})\\b` },
+			{ begin: "\\b(0|[1-9](_?[0-9])*)n\\b" },
+			{ begin: "\\b0[xX][0-9a-fA-F](_?[0-9a-fA-F])*n?\\b" },
+			{ begin: "\\b0[bB][0-1](_?[0-1])*n?\\b" },
+			{ begin: "\\b0[oO][0-7](_?[0-7])*n?\\b" },
+			{ begin: "\\b0[0-7]+n?\\b" }
+		],
+		relevance: 0
+	}, f = {
+		className: "subst",
+		begin: "\\$\\{",
+		end: "\\}",
+		keywords: s,
+		contains: []
+	}, p = {
+		begin: ".?html`",
+		end: "",
+		starts: {
+			end: "`",
+			returnEnd: !1,
+			contains: [e.BACKSLASH_ESCAPE, f],
+			subLanguage: "xml"
+		}
+	}, m = {
+		begin: ".?css`",
+		end: "",
+		starts: {
+			end: "`",
+			returnEnd: !1,
+			contains: [e.BACKSLASH_ESCAPE, f],
+			subLanguage: "css"
+		}
+	}, h = {
+		begin: ".?gql`",
+		end: "",
+		starts: {
+			end: "`",
+			returnEnd: !1,
+			contains: [e.BACKSLASH_ESCAPE, f],
+			subLanguage: "graphql"
+		}
+	}, g = {
+		className: "string",
+		begin: "`",
+		end: "`",
+		contains: [e.BACKSLASH_ESCAPE, f]
+	}, _ = {
+		className: "comment",
+		variants: [
+			e.COMMENT(/\/\*\*(?!\/)/, "\\*/", {
+				relevance: 0,
+				contains: [{
+					begin: "(?=@[A-Za-z]+)",
+					relevance: 0,
+					contains: [
+						{
+							className: "doctag",
+							begin: "@[A-Za-z]+"
+						},
+						{
+							className: "type",
+							begin: "\\{",
+							end: "\\}",
+							excludeEnd: !0,
+							excludeBegin: !0,
+							relevance: 0
+						},
+						{
+							className: "variable",
+							begin: "[A-Za-z$_][0-9A-Za-z$_]*(?=\\s*(-)|$)",
+							endsParent: !0,
+							relevance: 0
+						},
+						{
+							begin: /(?=[^\n])\s/,
+							relevance: 0
+						}
+					]
+				}]
+			}),
+			e.C_BLOCK_COMMENT_MODE,
+			e.C_LINE_COMMENT_MODE
+		]
+	}, v = [
+		e.APOS_STRING_MODE,
+		e.QUOTE_STRING_MODE,
+		p,
+		m,
+		h,
+		g,
+		{ match: /\$\d+/ },
+		d
+	];
+	f.contains = v.concat({
+		begin: /\{/,
+		end: /\}/,
+		keywords: s,
+		contains: ["self"].concat(v)
+	});
+	let y = [].concat(_, f.contains), b = y.concat([{
+		begin: /(\s*)\(/,
+		end: /\)/,
+		keywords: s,
+		contains: ["self"].concat(y)
+	}]), x = {
+		className: "params",
+		begin: /(\s*)\(/,
+		end: /\)/,
+		excludeBegin: !0,
+		excludeEnd: !0,
+		keywords: s,
+		contains: b
+	}, S = { variants: [{
+		match: [
+			/class/,
+			/\s+/,
+			r,
+			/\s+/,
+			/extends/,
+			/\s+/,
+			t.concat(r, "(", t.concat(/\./, r), ")*")
+		],
+		scope: {
+			1: "keyword",
+			3: "title.class",
+			5: "keyword",
+			7: "title.class.inherited"
+		}
+	}, {
+		match: [
+			/class/,
+			/\s+/,
+			r
+		],
+		scope: {
+			1: "keyword",
+			3: "title.class"
+		}
+	}] }, C = {
+		relevance: 0,
+		match: t.either(/\bJSON/, /\b[A-Z][a-z]+([A-Z][a-z]*|\d)*/, /\b[A-Z]{2,}([A-Z][a-z]+|\d)+([A-Z][a-z]*)*/, /\b[A-Z]{2,}[a-z]+([A-Z][a-z]+|\d)*([A-Z][a-z]*)*/),
+		className: "title.class",
+		keywords: { _: [...Ee, ...De] }
+	}, w = {
+		label: "use_strict",
+		className: "meta",
+		relevance: 10,
+		begin: /^\s*['"]use (strict|asm)['"]/
+	}, T = {
+		variants: [{ match: [
+			/function/,
+			/\s+/,
+			r,
+			/(?=\s*\()/
+		] }, { match: [/function/, /\s*(?=\()/] }],
+		className: {
+			1: "keyword",
+			3: "title.function"
+		},
+		label: "func.def",
+		contains: [x],
+		illegal: /%/
+	}, E = {
+		relevance: 0,
+		match: /\b[A-Z][A-Z_0-9]+\b/,
+		className: "variable.constant"
+	};
+	function D(e) {
+		return t.concat("(?!", e.join("|"), ")");
+	}
+	let O = {
+		match: t.concat(/\b/, D([
+			...Oe,
+			"super",
+			"import"
+		].map((e) => `${e}\\s*\\(`)), r, t.lookahead(/\s*\(/)),
+		className: "title.function",
+		relevance: 0
+	}, k = {
+		begin: t.concat(/\./, t.lookahead(t.concat(r, /(?![0-9A-Za-z$_(])/))),
+		end: r,
+		excludeBegin: !0,
+		keywords: "prototype",
+		className: "property",
+		relevance: 0
+	}, A = {
+		match: [
+			/get|set/,
+			/\s+/,
+			r,
+			/(?=\()/
+		],
+		className: {
+			1: "keyword",
+			3: "title.function"
+		},
+		contains: [{ begin: /\(\)/ }, x]
+	}, j = "(\\([^()]*(\\([^()]*(\\([^()]*\\)[^()]*)*\\)[^()]*)*\\)|" + e.UNDERSCORE_IDENT_RE + ")\\s*=>", M = {
+		match: [
+			/const|var|let/,
+			/\s+/,
+			r,
+			/\s*/,
+			/=\s*/,
+			/(async\s*)?/,
+			t.lookahead(j)
+		],
+		keywords: "async",
+		className: {
+			1: "keyword",
+			3: "title.function"
+		},
+		contains: [x]
+	};
+	return {
+		name: "JavaScript",
+		aliases: [
+			"js",
+			"jsx",
+			"mjs",
+			"cjs"
+		],
+		keywords: s,
+		exports: {
+			PARAMS_CONTAINS: b,
+			CLASS_REFERENCE: C
+		},
+		illegal: /#(?![$_A-z])/,
+		contains: [
+			e.SHEBANG({
+				label: "shebang",
+				binary: "node",
+				relevance: 5
+			}),
+			w,
+			e.APOS_STRING_MODE,
+			e.QUOTE_STRING_MODE,
+			p,
+			m,
+			h,
+			g,
+			_,
+			{ match: /\$\d+/ },
+			d,
+			C,
+			{
+				scope: "attr",
+				match: r + t.lookahead(":"),
+				relevance: 0
+			},
+			M,
+			{
+				begin: "(" + e.RE_STARTERS_RE + "|\\b(case|return|throw)\\b)\\s*",
+				keywords: "return throw case",
+				relevance: 0,
+				contains: [
+					_,
+					e.REGEXP_MODE,
+					{
+						className: "function",
+						begin: j,
+						returnBegin: !0,
+						end: "\\s*=>",
+						contains: [{
+							className: "params",
+							variants: [
+								{
+									begin: e.UNDERSCORE_IDENT_RE,
+									relevance: 0
+								},
+								{
+									className: null,
+									begin: /\(\s*\)/,
+									skip: !0
+								},
+								{
+									begin: /(\s*)\(/,
+									end: /\)/,
+									excludeBegin: !0,
+									excludeEnd: !0,
+									keywords: s,
+									contains: b
+								}
+							]
+						}]
+					},
+					{
+						begin: /,/,
+						relevance: 0
+					},
+					{
+						match: /\s+/,
+						relevance: 0
+					},
+					{
+						variants: [
+							{
+								begin: i.begin,
+								end: i.end
+							},
+							{ match: a },
+							{
+								begin: o.begin,
+								"on:begin": o.isTrulyOpeningTag,
+								end: o.end
+							}
+						],
+						subLanguage: "xml",
+						contains: [{
+							begin: o.begin,
+							end: o.end,
+							skip: !0,
+							contains: ["self"]
+						}]
+					}
+				]
+			},
+			T,
+			{ beginKeywords: "while if switch catch for" },
+			{
+				begin: "\\b(?!function)" + e.UNDERSCORE_IDENT_RE + "\\([^()]*(\\([^()]*(\\([^()]*\\)[^()]*)*\\)[^()]*)*\\)\\s*\\{",
+				returnBegin: !0,
+				label: "func.def",
+				contains: [x, e.inherit(e.TITLE_MODE, {
+					begin: r,
+					className: "title.function"
+				})]
+			},
+			{
+				match: /\.\.\./,
+				relevance: 0
+			},
+			k,
+			{
+				match: "\\$[A-Za-z$_][0-9A-Za-z$_]*",
+				relevance: 0
+			},
+			{
+				match: [/\bconstructor(?=\s*\()/],
+				className: { 1: "title.function" },
+				contains: [x]
+			},
+			O,
+			E,
+			S,
+			A,
+			{ match: /\$[(.]/ }
+		]
+	};
+}
+function Me(e) {
+	let t = e.regex, n = je(e), r = Ce, i = [
+		"any",
+		"void",
+		"number",
+		"boolean",
+		"string",
+		"object",
+		"never",
+		"symbol",
+		"bigint",
+		"unknown"
+	], a = {
+		begin: [
+			/namespace/,
+			/\s+/,
+			e.IDENT_RE
+		],
+		beginScope: {
+			1: "keyword",
+			3: "title.class"
+		}
+	}, o = {
+		beginKeywords: "interface",
+		end: /\{/,
+		excludeEnd: !0,
+		keywords: {
+			keyword: "interface extends",
+			built_in: i
+		},
+		contains: [n.exports.CLASS_REFERENCE]
+	}, s = {
+		className: "meta",
+		relevance: 10,
+		begin: /^\s*['"]use strict['"]/
+	}, c = {
+		$pattern: Ce,
+		keyword: we.concat([
+			"type",
+			"interface",
+			"public",
+			"private",
+			"protected",
+			"implements",
+			"declare",
+			"abstract",
+			"readonly",
+			"enum",
+			"override",
+			"satisfies"
+		]),
+		literal: Te,
+		built_in: Ae.concat(i),
+		"variable.language": ke
+	}, l = {
+		className: "meta",
+		begin: "@[A-Za-z$_][0-9A-Za-z$_]*"
+	}, u = (e, t, n) => {
+		let r = e.contains.findIndex((e) => e.label === t);
+		if (r === -1) throw Error("can not find mode to replace");
+		e.contains.splice(r, 1, n);
+	};
+	Object.assign(n.keywords, c), n.exports.PARAMS_CONTAINS.push(l);
+	let d = n.contains.find((e) => e.scope === "attr"), f = Object.assign({}, d, { match: t.concat(r, t.lookahead(/\s*\?:/)) });
+	n.exports.PARAMS_CONTAINS.push([
+		n.exports.CLASS_REFERENCE,
+		d,
+		f
+	]), n.contains = n.contains.concat([
+		l,
+		a,
+		o,
+		f
+	]), u(n, "shebang", e.SHEBANG()), u(n, "use_strict", s);
+	let p = n.contains.find((e) => e.label === "func.def");
+	return p.relevance = 0, Object.assign(n, {
+		name: "TypeScript",
+		aliases: [
+			"ts",
+			"tsx",
+			"mts",
+			"cts"
+		]
+	}), n;
+}
+//#endregion
+//#region node_modules/highlight.js/es/languages/json.js
+function Ne(e) {
+	let t = {
+		className: "attr",
+		begin: /"(\\.|[^\\"\r\n])*"(?=\s*:)/,
+		relevance: 1.01
+	}, n = {
+		match: /[{}[\],:]/,
+		className: "punctuation",
+		relevance: 0
+	}, r = [
+		"true",
+		"false",
+		"null"
+	], i = {
+		scope: "literal",
+		beginKeywords: r.join(" ")
+	};
+	return {
+		name: "JSON",
+		aliases: ["jsonc"],
+		keywords: { literal: r },
+		contains: [
+			t,
+			n,
+			e.QUOTE_STRING_MODE,
+			i,
+			e.C_NUMBER_MODE,
+			e.C_LINE_COMMENT_MODE,
+			e.C_BLOCK_COMMENT_MODE
+		],
+		illegal: "\\S"
+	};
+}
+x.registerLanguage("c", S), x.registerLanguage("csharp", C), x.registerLanguage("dart", w), x.registerLanguage("go", T), x.registerLanguage("java", j), x.registerLanguage("javascript", B), x.registerLanguage("kotlin", te), x.registerLanguage("php", ne), x.registerLanguage("python", re), x.registerLanguage("r", ie), x.registerLanguage("ruby", ae), x.registerLanguage("rust", oe), x.registerLanguage("bash", se), x.registerLanguage("shell", se), x.registerLanguage("shellscript", se), x.registerLanguage("swift", Se), x.registerLanguage("typescript", Me), x.registerLanguage("ts", Me), x.registerLanguage("json", Ne), x.registerLanguage("node", B), x.registerLanguage("nodejs", B);
+var Pe = {
 	shellscript: "bash",
 	shell: "bash",
 	ts: "typescript",
 	node: "javascript",
 	nodejs: "javascript"
-}, K = "javascript", q = o({
+};
+function Fe(e, t) {
+	let n = Pe[t] || t;
+	try {
+		return x.highlight(e, {
+			language: n,
+			ignoreIllegals: !0
+		}).value;
+	} catch {
+		return e.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	}
+}
+function Ie(e) {
+	return Pe[e] || e;
+}
+//#endregion
+//#region src/gimmehttp/ui/gimmehttp.ts
+var Le = "gimmeLang", Re = "gimmeClient", ze = /* @__PURE__ */ new Set(), Be = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><path d=\"M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z\"/><path d=\"M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z\"/></svg>", Ve = "<svg class=\"gh-arrows\" viewBox=\"0 0 640 640\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z\"/></svg>", He = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><circle cx=\"8\" cy=\"8\" r=\"2.6\"/><rect x=\"7.15\" y=\"0.75\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"7.15\" y=\"12.5\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"0.75\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><rect x=\"12.5\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><g transform=\"rotate(45 8 8)\"><rect x=\"7.15\" y=\"0.75\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"7.15\" y=\"12.5\" width=\"1.7\" height=\"2.75\" rx=\"0.85\"/><rect x=\"0.75\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/><rect x=\"12.5\" y=\"7.15\" width=\"2.75\" height=\"1.7\" rx=\"0.85\"/></g></svg>", Ue = "<svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"currentColor\"><path d=\"M9.598 1.591a.75.75 0 0 1 .785-.175 7 7 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786Zm1.616 1.945a7 7 0 0 1-7.678 7.678 5.5 5.5 0 1 0 7.678-7.678Z\"/></svg>";
+function $(e) {
+	return e.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+var We = class {
+	container;
+	root = null;
+	http;
+	config;
+	settings;
+	events;
+	language;
+	client;
+	code = "";
+	modalOpen = !1;
+	clientMenuOpen = !1;
+	copiedTimeout = null;
+	onDocClick = null;
+	constructor(e) {
+		if (!e || !e.container) throw Error("GimmeHTTP: container is required");
+		if (!e.http) throw Error("GimmeHTTP: http is required");
+		let t = typeof e.container == "string" ? document.querySelector(e.container) : e.container;
+		if (!t) throw Error(`GimmeHTTP: container not found: ${e.container}`);
+		if (this.container = t, e.clients && e.clients.length > 0 && h(e.clients), p().length === 0) throw Error("GimmeHTTP: no clients registered. Import clients from gimmehttp/clients and pass them via the clients option or Register().");
+		this.http = e.http, this.config = e.config, this.events = e.events || {}, this.settings = {
+			theme: e.settings?.theme || "dark",
+			copy: e.settings?.copy !== !1,
+			picker: e.settings?.picker !== !1
+		};
+		let n = typeof window < "u", r = n ? localStorage.getItem(Le) : null, i = n ? localStorage.getItem(Re) : null;
+		this.language = e.language || r || p()[0].language, m(this.language) || (this.language = p()[0].language);
+		let a = m(this.language, e.client || i || void 0);
+		this.client = a ? a.client : "", ze.add(this), this.render();
+	}
+	setHttp(e) {
+		this.http = e, this.render();
+	}
+	setConfig(e) {
+		this.config = e, this.render();
+	}
+	setLanguage(e, t) {
+		let n = m(e, t);
+		n && (this.language = n.language, this.client = n.client, this.persist(), this.render(), this.syncOthers());
+	}
+	setClient(e) {
+		let t = m(this.language, e);
+		t && (this.client = t.client, this.persist(), this.render(), this.syncOthers());
+	}
+	setTheme(e) {
+		this.settings.theme = e, this.render();
+	}
+	getLanguage() {
+		return this.language;
+	}
+	getClient() {
+		return this.client;
+	}
+	getCode() {
+		return this.code;
+	}
+	destroy() {
+		ze.delete(this), this.copiedTimeout && clearTimeout(this.copiedTimeout), this.unbindDocClick(), this.root && this.root.parentNode && this.root.parentNode.removeChild(this.root), this.root = null;
+	}
+	persist() {
+		typeof window > "u" || (localStorage.setItem(Le, this.language), localStorage.setItem(Re, this.client));
+	}
+	syncOthers() {
+		for (let e of ze) if (e !== this && (e.language !== this.language || e.client !== this.client)) {
+			let t = m(this.language, this.client);
+			if (!t) continue;
+			e.language = t.language, e.client = t.client, e.render();
+		}
+	}
+	clientsForLanguage() {
+		return p().filter((e) => e.language === this.language).map((e) => e.client);
+	}
+	generate() {
+		let { code: e, language: t, client: n, error: r } = g({
+			language: this.language,
+			client: this.client,
+			config: this.config,
+			http: this.http
+		});
+		if (r) {
+			this.code = "", this.renderOutputHtml(`<pre class="hljs"><code>${$(r)}</code></pre>`);
+			return;
+		}
+		this.language = t, this.client = n, this.code = e, this.renderOutputHtml(this.highlightedOutput()), this.events.afterChange?.(this.language, this.client, this.code);
+	}
+	highlightedOutput() {
+		return `<pre class="hljs"><code class="language-${Ie(this.language)}">${Fe(this.code, this.language)}</code></pre>`;
+	}
+	renderOutputHtml(e) {
+		let t = this.root?.querySelector(".gh-output");
+		t && (t.innerHTML = e);
+	}
+	render() {
+		this.unbindDocClick(), this.modalOpen = !1, this.clientMenuOpen = !1, this.root || (this.root = document.createElement("div"), this.container.appendChild(this.root)), this.root.className = `gimmehttp${this.settings.theme === "light" ? " light" : ""}`, this.root.innerHTML = `
+      <div class="gh-options">
+        <div class="gh-options-left">
+          ${this.settings.picker ? this.langControl() : ""}
+          ${this.settings.picker ? this.clientControl() : ""}
+        </div>
+        <div class="gh-options-right">
+          ${this.settings.copy ? this.copyControl() : ""}
+          ${this.themeControl()}
+        </div>
+      </div>
+      <div class="gh-output language-${this.language}"></div>
+    `, this.wireEvents(), this.generate();
+	}
+	langControl() {
+		let e = b(this.language);
+		return `
+      <button type="button" class="gh-lang" aria-label="Select language">
+        ${e ? `<span class="gh-lang-logo">${e}</span>` : `<span class="gh-lang-text">${$(this.language)}</span>`}
+        <span class="gh-lang-name">${$(this.language)}</span>
+        ${Ve}
+      </button>
+    `;
+	}
+	clientControl() {
+		let e = this.clientsForLanguage();
+		return `
+      <div class="gh-client-dd">
+        <button type="button" class="gh-client-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Select client">
+          <span class="gh-client-label">${$(this.client)}</span>
+          ${Ve}
+        </button>
+        <div class="gh-client-menu" role="listbox" hidden>
+          ${e.map((e) => `<button type="button" class="gh-client-option${e === this.client ? " gh-selected" : ""}" role="option" data-client="${$(e)}" aria-selected="${e === this.client}">${$(e)}</button>`).join("")}
+        </div>
+      </div>
+    `;
+	}
+	copyControl() {
+		return `
+      <button type="button" class="gh-copy" aria-label="Copy code">
+        ${Be}
+        <span class="gh-txt">Copy</span>
+      </button>
+    `;
+	}
+	themeControl() {
+		let e = this.settings.theme === "light";
+		return `<button type="button" class="gh-theme" aria-label="${e ? "Switch to dark theme" : "Switch to light theme"}">${e ? Ue : He}</button>`;
+	}
+	wireEvents() {
+		this.root?.querySelector(".gh-copy")?.addEventListener("click", () => this.copy()), this.root?.querySelector(".gh-lang")?.addEventListener("click", () => this.toggleModal()), this.root?.querySelector(".gh-client-trigger")?.addEventListener("click", (e) => {
+			e.stopPropagation(), this.toggleClientMenu();
+		}), this.root?.querySelector(".gh-theme")?.addEventListener("click", () => {
+			this.setTheme(this.settings.theme === "light" ? "dark" : "light");
+		}), this.root?.querySelectorAll(".gh-client-option").forEach((e) => {
+			e.addEventListener("click", (t) => {
+				t.stopPropagation();
+				let n = e.dataset.client;
+				n && (this.closeClientMenu(), this.setClient(n));
+			});
+		});
+	}
+	bindDocClick() {
+		this.onDocClick || typeof document > "u" || (this.onDocClick = (e) => {
+			let t = e.target;
+			this.root?.querySelector(".gh-client-dd")?.contains(t) || this.closeClientMenu();
+		}, document.addEventListener("click", this.onDocClick));
+	}
+	unbindDocClick() {
+		this.onDocClick && typeof document < "u" && document.removeEventListener("click", this.onDocClick), this.onDocClick = null;
+	}
+	copy() {
+		typeof navigator < "u" && navigator.clipboard && navigator.clipboard.writeText(this.code);
+		let e = this.root?.querySelector(".gh-copy");
+		e && (e.classList.add("gh-show-copied"), e.innerHTML = "<span class=\"gh-txt\">Copied!</span>", this.copiedTimeout && clearTimeout(this.copiedTimeout), this.copiedTimeout = window.setTimeout(() => {
+			e.classList.remove("gh-show-copied"), e.innerHTML = `${Be}<span class="gh-txt">Copy</span>`, this.copiedTimeout = null;
+		}, 2e3));
+	}
+	toggleClientMenu() {
+		this.clientMenuOpen ? this.closeClientMenu() : (this.closeModal(), this.openClientMenu());
+	}
+	openClientMenu() {
+		let e = this.root?.querySelector(".gh-client-menu"), t = this.root?.querySelector(".gh-client-trigger");
+		!e || !t || (this.clientMenuOpen = !0, e.hidden = !1, t.setAttribute("aria-expanded", "true"), t.classList.add("gh-open"), this.bindDocClick());
+	}
+	closeClientMenu() {
+		this.clientMenuOpen = !1;
+		let e = this.root?.querySelector(".gh-client-menu"), t = this.root?.querySelector(".gh-client-trigger");
+		e && (e.hidden = !0), t?.setAttribute("aria-expanded", "false"), t?.classList.remove("gh-open"), this.unbindDocClick();
+	}
+	toggleModal() {
+		this.modalOpen ? this.closeModal() : (this.closeClientMenu(), this.openModal());
+	}
+	openModal() {
+		if (!this.root || this.modalOpen) return;
+		this.modalOpen = !0;
+		let e = p().map((e) => e.language).filter((e, t, n) => n.indexOf(e) === t), t = document.createElement("div");
+		t.className = "gh-modal", t.innerHTML = `
+      <div class="gh-content">
+        <div class="gh-modal-title">Select language</div>
+        <div class="gh-langs">
+          ${e.map((e) => {
+			let t = b(e) || `<span class="gh-lang-text-modal">${$(e)}</span>`;
+			return `<button type="button" class="gh-lang${e === this.language ? " gh-selected" : ""}" data-lang="${$(e)}">${t}</button>`;
+		}).join("")}
+        </div>
+      </div>
+    `, t.addEventListener("click", (e) => {
+			let t = e.target;
+			if (t.classList.contains("gh-modal")) {
+				this.closeModal();
+				return;
+			}
+			let n = t.closest("[data-lang]");
+			n && (this.closeModal(), this.setLanguage(n.dataset.lang));
+		}), this.root.appendChild(t), this.root.querySelector(".gh-output")?.classList.add("gh-modalOpen"), requestAnimationFrame(() => t.classList.add("gh-open"));
+	}
+	closeModal() {
+		this.modalOpen = !1, this.root?.querySelector(".gh-output")?.classList.remove("gh-modalOpen");
+		let e = this.root?.querySelector(".gh-modal");
+		e && (e.classList.remove("gh-open"), setTimeout(() => e.remove(), 250));
+	}
+}, Ge = t({
 	name: "GimmeHttp",
 	emits: ["update:language", "update:client"],
 	props: {
@@ -893,220 +5085,74 @@ var G = {
 			type: String,
 			required: !1,
 			default: "dark"
+		},
+		copy: {
+			type: Boolean,
+			required: !1,
+			default: !0
+		},
+		picker: {
+			type: Boolean,
+			required: !1,
+			default: !0
 		}
 	},
 	data() {
-		let e = typeof window < "u", t = (this.language && this.language !== "" ? this.language : null) || (e ? localStorage.getItem("gimmeLang") : null) || K, n = this.client || (e ? localStorage.getItem("gimmeClient") : null);
-		if (!n || n === "") {
-			let e = A(t);
-			e && (n = e.client);
-		}
-		let r = e && window.matchMedia("(prefers-color-scheme: dark)").matches, i = this.theme ? this.theme : r ? "dark" : "light";
-		return {
-			clientsList: k(),
-			showCopied: !1,
-			openModal: !1,
-			openModalContent: !1,
-			codeStr: "",
-			output: "",
-			themeMode: i,
-			internalLanguage: t,
-			internalClient: n || "",
-			checkInterval: null
-		};
+		return { instance: null };
 	},
-	created() {
-		this.code(), typeof window < "u" && setTimeout(() => {
-			this.checkInterval = window.setInterval(this.checkLocalStorage, 1e3);
-		}, 1e3);
+	mounted() {
+		this.instance = new We({
+			container: this.$el,
+			http: this.http,
+			language: this.language || void 0,
+			client: this.client || void 0,
+			config: this.config,
+			settings: {
+				theme: this.theme,
+				copy: this.copy,
+				picker: this.picker
+			},
+			events: { afterChange: (e, t) => {
+				this.$emit("update:language", e), this.$emit("update:client", t);
+			} }
+		});
 	},
 	unmounted() {
-		this.checkInterval && clearInterval(this.checkInterval);
+		this.instance?.destroy(), this.instance = null;
 	},
 	watch: {
-		theme(e) {
-			let t = typeof window < "u";
-			if (e === "light" || e === "dark") this.themeMode = e;
-			else {
-				let e = t && window.matchMedia("(prefers-color-scheme: dark)").matches;
-				this.themeMode = e ? "dark" : "light";
-			}
-			this.code();
-		},
-		language(e) {
-			this.setLanguage(e), this.code();
-		},
-		client(e) {
-			this.setClient(e), this.code();
+		http: {
+			handler(e) {
+				this.instance?.setHttp(e);
+			},
+			deep: !0
 		},
 		config: {
-			handler() {
-				this.code();
+			handler(e) {
+				this.instance?.setConfig(e);
 			},
 			deep: !0
 		},
-		http: {
-			handler() {
-				this.code();
-			},
-			deep: !0
-		}
-	},
-	computed: {
-		languages() {
-			let e = this.clientsList.map((e) => e.language);
-			return e.filter((t, n) => e.indexOf(t) === n);
+		language(e) {
+			e && this.instance?.setLanguage(e, this.client || void 0);
 		},
-		clients() {
-			return this.clientsList.filter((e) => e.language === this.internalLanguage).map((e) => e.client);
-		}
-	},
-	methods: {
-		logoSvg(e) {
-			return W(e);
+		client(e) {
+			e && this.instance?.setClient(e);
 		},
-		setLanguage(e) {
-			this.internalLanguage = e || K, typeof window < "u" && localStorage.setItem("gimmeLang", this.internalLanguage), this.$emit("update:language", this.internalLanguage);
-		},
-		setClient(e) {
-			this.internalClient = e || "", typeof window < "u" && localStorage.setItem("gimmeClient", this.internalClient), this.$emit("update:client", this.internalClient);
-		},
-		code() {
-			try {
-				let { code: e, language: t, client: n, error: r } = M({
-					language: this.internalLanguage,
-					client: this.internalClient,
-					config: this.config,
-					http: this.http
-				});
-				if (r) {
-					this.output = r;
-					return;
-				}
-				this.setLanguage(t), this.setClient(n), this.codeStr = e;
-				let i = G[this.internalLanguage] || this.internalLanguage, a = f.highlight(this.codeStr, {
-					language: i,
-					ignoreIllegals: !0
-				});
-				this.output = `<pre class="hljs"><code class="language-${i}">${a.value}</code></pre>`;
-			} catch (e) {
-				console.error("Error in code highlighting:", e);
-				let t = this.codeStr.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-				this.output = `<pre class="hljs"><code>${t}</code></pre>`;
-			}
-		},
-		clickCopy() {
-			this.showCopied = !0, typeof navigator < "u" && navigator.clipboard && navigator.clipboard.writeText(this.codeStr), setTimeout(() => {
-				this.showCopied = !1;
-			}, 2e3);
-		},
-		toggleModal() {
-			this.openModal ? (this.openModalContent = !1, setTimeout(() => {
-				this.openModal = !1, typeof document < "u" && document.removeEventListener("click", this.clickModalBg);
-			}, 200)) : (this.openModal = !0, typeof document < "u" && document.addEventListener("click", this.clickModalBg), setTimeout(() => {
-				this.openModalContent = !0;
-			}, 100));
-		},
-		clickModalBg(e) {
-			e.target.classList.contains("gh-modal") && this.toggleModal();
-		},
-		clickModalLang(e) {
-			this.setLanguage(e), this.toggleModal(), this.code();
-		},
-		clickModalClient(e) {
-			this.setClient(e), this.toggleModal(), this.code();
-		},
-		checkLocalStorage() {
-			if (typeof window > "u") return;
-			let e = localStorage.getItem("gimmeLang"), t = localStorage.getItem("gimmeClient"), n = !1;
-			e && e !== this.internalLanguage && (this.setLanguage(e), n = !0), t && t !== this.internalClient && (this.setClient(t), n = !0), n && this.code();
+		theme(e) {
+			this.instance?.setTheme(e);
 		}
 	}
-}), J = (e, t) => {
+}), Ke = (e, t) => {
 	let n = e.__vccOpts || e;
 	for (let [e, r] of t) n[e] = r;
 	return n;
-}, Y = { class: "gh-options" }, X = {
-	key: 0,
-	"aria-hidden": "true",
-	viewBox: "0 0 16 16",
-	width: "16",
-	height: "16",
-	fill: "currentColor"
-}, Z = {
-	key: 1,
-	class: "gh-txt"
-}, Q = ["innerHTML"], ne = {
-	key: 1,
-	class: "gh-lang-text"
-}, re = ["innerHTML"], ie = {
-	key: 0,
-	class: "gh-content"
-}, ae = { class: "gh-langs" }, oe = ["onClick"], se = ["innerHTML"], ce = {
-	key: 1,
-	class: "gh-lang-text-modal"
-}, le = { class: "gh-clients" }, ue = ["onClick"];
-function de(o, f, p, m, ee, h) {
-	return c(), r("div", { class: s(["gimmehttp", { light: o.themeMode === "light" }]) }, [
-		i("div", Y, [
-			i("div", {
-				class: s(["gh-copy", { "gh-show-copied": o.showCopied }]),
-				onClick: f[0] ||= (e) => o.clickCopy()
-			}, [o.showCopied ? (c(), r("div", Z, "Copied!")) : (c(), r("svg", X, [...f[3] ||= [i("path", {
-				class: "gh-copy-top",
-				d: "M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
-			}, null, -1), i("path", {
-				class: "gh-copy-bottom",
-				d: "M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
-			}, null, -1)]]))], 2),
-			f[5] ||= i("div", { class: "gh-separator" }, null, -1),
-			i("div", {
-				class: "gh-lang",
-				onClick: f[1] ||= (e) => o.toggleModal()
-			}, [o.logoSvg(o.internalLanguage) ? (c(), r("span", {
-				key: 0,
-				innerHTML: o.logoSvg(o.internalLanguage),
-				class: "gh-select"
-			}, null, 8, Q)) : (c(), r("span", ne, u(o.internalLanguage), 1)), f[4] ||= i("svg", {
-				class: "gh-arrows",
-				viewBox: "0 0 640 640",
-				xmlns: "http://www.w3.org/2000/svg"
-			}, [i("path", { d: "M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z" })], -1)])
-		]),
-		i("div", {
-			class: s("gh-output language-" + o.internalLanguage + (o.openModal ? " gh-modalOpen" : "")),
-			innerHTML: o.output
-		}, null, 10, re),
-		a(t, { name: "gimme-modal-bg" }, {
-			default: d(() => [o.openModal ? (c(), r("div", {
-				key: 0,
-				class: "gh-modal",
-				onClick: f[2] ||= (...e) => o.clickModalBg && o.clickModalBg(...e)
-			}, [a(t, { name: "gimme-modal-content" }, {
-				default: d(() => [o.openModalContent ? (c(), r("div", ie, [
-					i("div", ae, [(c(!0), r(e, null, l(o.languages, (e) => (c(), r("div", {
-						class: s(["gh-lang", { "gh-selected": o.internalLanguage === e }]),
-						key: e,
-						onClick: (t) => o.clickModalLang(e)
-					}, [o.logoSvg(e) ? (c(), r("span", {
-						key: 0,
-						innerHTML: o.logoSvg(e)
-					}, null, 8, se)) : (c(), r("span", ce, u(e), 1))], 10, oe))), 128))]),
-					f[6] ||= i("div", { class: "gh-separator" }, null, -1),
-					i("div", le, [(c(!0), r(e, null, l(o.clients, (e) => (c(), r("div", {
-						class: "gh-client",
-						key: e,
-						onClick: (t) => o.clickModalClient(e)
-					}, u(e), 9, ue))), 128))])
-				])) : n("", !0)]),
-				_: 1
-			})])) : n("", !0)]),
-			_: 1
-		})
-	], 2);
+}, qe = { class: "gimmehttp-wrap" };
+function Je(t, r, i, a, o, s) {
+	return n(), e("div", qe);
 }
-var $ = /*#__PURE__*/ J(q, [["render", de]]), fe = { install(e) {
-	e.component("GimmeHttp", $);
+var Ye = /*#__PURE__*/ Ke(Ge, [["render", Je]]), Xe = { install(e) {
+	e.component("GimmeHttp", Ye);
 } };
 //#endregion
-export { $ as GimmeHttp, fe as default };
+export { Ye as GimmeHttp, Xe as default };

@@ -1,14 +1,13 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
-  import { GimmeHttp } from '@/gimmehttp/vue'
-  import { Clients, Languages, Client } from '../../gimmehttp'
+  import { GimmeHTTP } from '@/gimmehttp'
+  import { Clients, Languages, Client } from '@/gimmehttp/core'
   import { getLogo } from '@/gimmehttp/logos/index'
 
-  import type { Http } from '../../gimmehttp'
+  import type { Http } from '@/gimmehttp/core'
 
   export default defineComponent({
     name: 'Demo',
-    components: { GimmeHttp },
     data() {
       // Simple Get request
       const httpGet: Http = {
@@ -55,6 +54,7 @@
       }
 
       return {
+        instance: null as GimmeHTTP | null,
         selectedLanguage: '',
         selectedClient: '',
         selectedHttp: 'advanced_post',
@@ -74,6 +74,28 @@
         } as Record<string, Http>
       }
     },
+    mounted() {
+      this.instance = new GimmeHTTP({
+        container: this.$refs.output as HTMLElement,
+        http: this.http,
+        events: {
+          // keep the page's language/client pickers in sync with the widget
+          afterChange: (language, client) => {
+            this.selectedLanguage = language
+            this.selectedClient = client
+          }
+        }
+      })
+    },
+    unmounted() {
+      this.instance?.destroy()
+      this.instance = null
+    },
+    watch: {
+      http(newVal: Http) {
+        this.instance?.setHttp(newVal)
+      }
+    },
     computed: {
       languages(): string[] {
         return Languages()
@@ -90,10 +112,10 @@
     },
     methods: {
       setLanguage(lang: string) {
-        this.selectedLanguage = lang
+        this.instance?.setLanguage(lang)
       },
       setClient(client: string) {
-        this.selectedClient = client
+        this.instance?.setClient(client)
       },
       setExample(example: string) {
         this.selectedHttp = example
@@ -375,6 +397,6 @@
       </div>
     </div>
 
-    <GimmeHttp v-model:language="selectedLanguage" v-model:client="selectedClient" :http="http" />
+    <div ref="output"></div>
   </div>
 </template>

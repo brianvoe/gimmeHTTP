@@ -2,7 +2,7 @@
   import { defineComponent } from 'vue'
   import { GimmeHttp } from '@/gimmehttp/vue'
   import HighlightStyle from '@/docs/components/highlight_style.vue'
-  import type { Http } from '@/gimmehttp'
+  import type { Http } from '@/gimmehttp/core'
 
   export default defineComponent({
     name: 'VueUsagePage',
@@ -47,15 +47,24 @@
       </p>
     </header>
 
-    <h3>Global registration (plugin)</h3>
+    <h3>Register clients at startup</h3>
+    <p>
+      No clients are registered by default. Register the languages you want once at app startup (only what you
+      register ends up in your bundle).
+    </p>
     <HighlightStyle language="typescript">
       <pre>
         import { createApp } from 'vue'
         import App from './App.vue'
         import GimmeHttpVue from 'gimmehttp/vue'
 
+        import { Register } from 'gimmehttp/core'
+        import { allClients } from 'gimmehttp/clients' // or import individual clients
+
+        Register(allClients)
+
         createApp(App)
-          .use(GimmeHttpVue)
+          .use(GimmeHttpVue) // optional global registration
           .mount('#app')
       </pre>
     </HighlightStyle>
@@ -65,7 +74,7 @@
       <pre>
         &lt;script setup lang="ts"&gt;
           import { GimmeHttp } from 'gimmehttp/vue'
-          import type { Http } from 'gimmehttp'
+          import type { Http } from 'gimmehttp/core'
 
           const request: Http = {
             method: 'GET',

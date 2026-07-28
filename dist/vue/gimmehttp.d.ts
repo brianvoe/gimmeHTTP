@@ -1,4 +1,5 @@
 import { PropType } from 'vue';
+import { GimmeHTTP } from '../ui/gimmehttp';
 import { Config, Http } from '../utils/generate';
 declare const _default: typeof __VLS_export;
 export default _default;
@@ -26,32 +27,19 @@ declare const __VLS_export: import('vue').DefineComponent<import('vue').ExtractP
         required: false;
         default: string;
     };
+    copy: {
+        type: BooleanConstructor;
+        required: false;
+        default: boolean;
+    };
+    picker: {
+        type: BooleanConstructor;
+        required: false;
+        default: boolean;
+    };
 }>, {}, {
-    clientsList: import('../index').Client[];
-    showCopied: boolean;
-    openModal: boolean;
-    openModalContent: boolean;
-    codeStr: string;
-    output: string;
-    themeMode: "light" | "dark";
-    internalLanguage: string;
-    internalClient: string;
-    checkInterval: number | null;
-}, {
-    languages(): string[];
-    clients(): string[];
-}, {
-    logoSvg(name: string): string | null;
-    setLanguage(lang: string | null): void;
-    setClient(client: string | null): void;
-    code(): void;
-    clickCopy(): void;
-    toggleModal(): void;
-    clickModalBg(event: MouseEvent): void;
-    clickModalLang(lang: string): void;
-    clickModalClient(client: string): void;
-    checkLocalStorage(): void;
-}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, ("update:language" | "update:client")[], "update:language" | "update:client", import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<{
+    instance: GimmeHTTP | null;
+}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, ("update:language" | "update:client")[], "update:language" | "update:client", import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<{
     http: {
         type: PropType<Http>;
         required: true;
@@ -75,11 +63,23 @@ declare const __VLS_export: import('vue').DefineComponent<import('vue').ExtractP
         required: false;
         default: string;
     };
+    copy: {
+        type: BooleanConstructor;
+        required: false;
+        default: boolean;
+    };
+    picker: {
+        type: BooleanConstructor;
+        required: false;
+        default: boolean;
+    };
 }>> & Readonly<{
     "onUpdate:language"?: ((...args: any[]) => any) | undefined;
     "onUpdate:client"?: ((...args: any[]) => any) | undefined;
 }>, {
+    theme: "dark" | "light";
+    copy: boolean;
+    picker: boolean;
     language: string;
     client: string;
-    theme: "light" | "dark";
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;

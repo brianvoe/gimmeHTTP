@@ -1,0 +1,1 @@
+Object.defineProperty(exports,Symbol.toStringTag,{value:`Module`});const e=require("../gimmehttp-DMVKrBt_.js");exports.GimmeHTTP=e.t;

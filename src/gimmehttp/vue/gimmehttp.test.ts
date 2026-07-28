@@ -1,22 +1,13 @@
-import { describe, it, expect, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import GimmeHttp from './gimmehttp.vue'
+import { ClearRegistry, Register } from '../core'
+import { goHttp, jsFetch, pythonRequests, shellCurl } from '../clients/index'
 import type { Http } from '../utils/generate'
 
-// Mock Highlight.js to avoid issues in tests
-vi.mock('highlight.js', () => ({
-  default: {
-    highlight: vi.fn((code: string) => ({
-      value: code
-    })),
-    registerLanguage: vi.fn()
-  }
-}))
-
 /**
- * Note: These are basic smoke tests for the Vue component.
- * Full integration testing would require mocking Highlight.js and browser APIs.
- * The component is primarily tested through manual QA and E2E tests.
+ * The Vue component is a thin wrapper around the vanilla GimmeHTTP UI class,
+ * which has its own test suite. These tests cover prop mapping and lifecycle.
  */
 describe('GimmeHttp Vue Component', () => {
   const basicHttp: Http = {
@@ -24,261 +15,137 @@ describe('GimmeHttp Vue Component', () => {
     url: 'https://example.com'
   }
 
+  beforeEach(() => {
+    ClearRegistry()
+    Register([shellCurl, goHttp, jsFetch, pythonRequests])
+    localStorage.clear()
+  })
+
   describe('Component Mounting', () => {
-    it('should mount without errors', () => {
+    it('should mount and render the UI class output', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
           http: basicHttp,
           language: 'javascript',
           client: 'fetch'
-        }
+        },
+        attachTo: document.body
       })
 
       expect(wrapper.exists()).toBe(true)
+      expect(wrapper.element.querySelector('.gimmehttp')).not.toBeNull()
+      expect(wrapper.element.querySelector('.gh-output')?.textContent).toContain('fetch(')
+
+      wrapper.unmount()
     })
 
-    it('should accept http prop as required', () => {
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: basicHttp
-        }
-      })
-
-      expect(wrapper.vm.http).toBeDefined()
-    })
-
-    it('should accept optional language prop', () => {
+    it('should use the language prop for initial selection', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
           http: basicHttp,
           language: 'python'
-        }
-      })
-
-      expect(wrapper.vm.language).toBe('python')
-    })
-
-    it('should accept optional client prop', () => {
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: basicHttp,
-          client: 'requests'
-        }
-      })
-
-      expect(wrapper.vm.client).toBe('requests')
-    })
-
-    it('should accept optional theme prop', () => {
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: basicHttp,
-          theme: 'dark'
-        }
-      })
-
-      expect(wrapper.vm.theme).toBe('dark')
-    })
-  })
-
-  describe('Props Validation', () => {
-    it('should handle complex http objects', () => {
-      const complexHttp: Http = {
-        method: 'POST',
-        url: 'https://api.example.com/data',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer token123'
         },
-        cookies: {
-          session: 'abc123'
-        },
-        body: {
-          name: 'test',
-          nested: {
-            value: 'deep'
-          }
-        }
-      }
-
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: complexHttp,
-          language: 'python',
-          client: 'requests'
-        }
+        attachTo: document.body
       })
 
-      expect(wrapper.exists()).toBe(true)
-      expect(wrapper.vm.http).toEqual(complexHttp)
-    })
+      expect(wrapper.element.querySelector('.gh-output')?.textContent).toContain('requests')
 
-    it('should handle all HTTP methods', () => {
-      const methods: Array<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'> = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
-
-      methods.forEach((method) => {
-        const wrapper = mount(GimmeHttp, {
-          props: {
-            http: {
-              method,
-              url: 'https://example.com'
-            }
-          }
-        })
-
-        expect(wrapper.exists()).toBe(true)
-      })
-    })
-  })
-
-  describe('Data Initialization', () => {
-    it('should initialize with correct default data', () => {
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: basicHttp
-        }
-      })
-
-      // Check that data properties are initialized
-      expect(wrapper.vm.openModal).toBe(false)
-      expect(wrapper.vm.openModalContent).toBe(false)
-      expect(wrapper.vm.clientsList).toBeInstanceOf(Array)
+      wrapper.unmount()
     })
   })
 
   describe('Emits', () => {
-    it('should declare update:language emit', () => {
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: basicHttp
-        }
-      })
-
-      // Component should have the emit defined
-      expect(wrapper.vm.$options.emits).toContain('update:language')
-    })
-
-    it('should declare update:client emit', () => {
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: basicHttp
-        }
-      })
-
-      expect(wrapper.vm.$options.emits).toContain('update:client')
-    })
-  })
-
-  describe('Component Lifecycle', () => {
-    it('should not throw errors on unmount', () => {
+    it('should emit update:language and update:client after render', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
           http: basicHttp,
-          language: 'javascript'
-        }
+          language: 'go'
+        },
+        attachTo: document.body
       })
 
-      expect(() => wrapper.unmount()).not.toThrow()
+      expect(wrapper.emitted('update:language')?.[0]).toEqual(['go'])
+      expect(wrapper.emitted('update:client')?.[0]).toEqual(['http'])
+
+      wrapper.unmount()
     })
   })
 
-  describe('Edge Cases', () => {
-    it('should handle http object with only method and url', () => {
+  describe('Prop Updates', () => {
+    it('should re-render when http changes', async () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: {
-            method: 'GET',
-            url: 'https://example.com'
-          }
-        }
+          http: basicHttp,
+          language: 'shell'
+        },
+        attachTo: document.body
       })
 
-      expect(wrapper.exists()).toBe(true)
+      await wrapper.setProps({ http: { method: 'GET', url: 'https://other.com' } })
+      expect(wrapper.element.querySelector('.gh-output')?.textContent).toContain('https://other.com')
+
+      wrapper.unmount()
     })
 
-    it('should handle http object with headers only', () => {
+    it('should switch language when the language prop changes', async () => {
       const wrapper = mount(GimmeHttp, {
         props: {
-          http: {
-            method: 'POST',
-            url: 'https://example.com',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        }
+          http: basicHttp,
+          language: 'shell'
+        },
+        attachTo: document.body
       })
 
-      expect(wrapper.exists()).toBe(true)
-    })
+      await wrapper.setProps({ language: 'go' })
+      expect(wrapper.element.querySelector('.gh-output')?.textContent).toContain('package main')
 
-    it('should handle http object with body only', () => {
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: {
-            method: 'POST',
-            url: 'https://example.com',
-            body: { test: 'data' }
-          }
-        }
-      })
-
-      expect(wrapper.exists()).toBe(true)
-    })
-
-    it('should handle http object with cookies only', () => {
-      const wrapper = mount(GimmeHttp, {
-        props: {
-          http: {
-            method: 'GET',
-            url: 'https://example.com',
-            cookies: { session: 'value' }
-          }
-        }
-      })
-
-      expect(wrapper.exists()).toBe(true)
-    })
-  })
-
-  describe('Multiple Language Support', () => {
-    const languages = ['c', 'csharp', 'go', 'javascript', 'python', 'ruby', 'rust', 'php', 'shell', 'swift']
-
-    languages.forEach((language) => {
-      it(`should mount with ${language} language`, () => {
-        const wrapper = mount(GimmeHttp, {
-          props: {
-            http: basicHttp,
-            language
-          }
-        })
-
-        expect(wrapper.exists()).toBe(true)
-      })
+      wrapper.unmount()
     })
   })
 
   describe('Theme Support', () => {
-    it('should accept light theme', () => {
+    it('should apply the light theme class', () => {
       const wrapper = mount(GimmeHttp, {
         props: {
           http: basicHttp,
           theme: 'light'
-        }
+        },
+        attachTo: document.body
       })
 
-      expect(wrapper.vm.theme).toBe('light')
+      expect(wrapper.element.querySelector('.gimmehttp')?.classList.contains('light')).toBe(true)
+
+      wrapper.unmount()
     })
 
-    it('should accept dark theme', () => {
+    it('should switch themes reactively', async () => {
       const wrapper = mount(GimmeHttp, {
         props: {
           http: basicHttp,
           theme: 'dark'
-        }
+        },
+        attachTo: document.body
       })
 
-      expect(wrapper.vm.theme).toBe('dark')
+      await wrapper.setProps({ theme: 'light' })
+      expect(wrapper.element.querySelector('.gimmehttp')?.classList.contains('light')).toBe(true)
+
+      wrapper.unmount()
+    })
+  })
+
+  describe('Component Lifecycle', () => {
+    it('should clean up on unmount', () => {
+      const wrapper = mount(GimmeHttp, {
+        props: {
+          http: basicHttp,
+          language: 'javascript'
+        },
+        attachTo: document.body
+      })
+
+      expect(() => wrapper.unmount()).not.toThrow()
+      expect(document.body.querySelector('.gimmehttp')).toBeNull()
     })
   })
 })

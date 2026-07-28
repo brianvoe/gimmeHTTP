@@ -1,11 +1,31 @@
-import { Register, Generate, Settings, Config, Http, Builder, ClearRegistry } from './index'
+import { Register, Generate, Settings, Config, Http, Builder, ClearRegistry, Languages } from './core'
 import { beforeEach, describe, expect, test } from 'vitest'
-import ShellCurl from './clients/shell.curl'
+import { shellCurl, allClients } from './clients/index'
 
 describe('Index', () => {
   beforeEach(() => {
     ClearRegistry()
-    Register(ShellCurl)
+    Register(shellCurl)
+  })
+
+  test('should not have any clients registered by default', () => {
+    ClearRegistry()
+    const { error } = Generate({
+      language: 'shell',
+      http: { method: 'GET', url: 'https://example.com' }
+    } as Settings)
+
+    expect(error).toBeDefined()
+  })
+
+  test('should register all clients via allClients', () => {
+    ClearRegistry()
+    Register(allClients)
+
+    expect(allClients.length).toEqual(22)
+    expect(Languages()).toContain('go')
+    expect(Languages()).toContain('shell')
+    expect(Languages()).toContain('javascript')
   })
 
   test('should run simple example', () => {

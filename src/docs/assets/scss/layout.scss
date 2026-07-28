@@ -54,6 +54,7 @@ body {
     padding: 0 var(--spacing);
     margin: 0;
     z-index: 100;
+    overflow: visible;
     background-color: rgba(23, 19, 16, 0.96);
     border-bottom: 1px solid var(--color-border);
     backdrop-filter: blur(8px);

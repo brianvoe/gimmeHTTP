@@ -93,31 +93,3 @@ code {
   margin: var(--spacing-quarter) auto;
   opacity: 0.7;
 }
-
-// Docs-level overrides for the GimmeHttp library component so its
-// code blocks match the theme (library itself is untouched)
-#app .gimmehttp {
-  border: 1px solid var(--color-border);
-
-  --gh-border-color: var(--color-border-strong);
-  --gh-accent-color: var(--color-primary-bright);
-  --gh-modal-content-color: var(--color-surface-raised);
-}
-
-// keep the light-theme demo on the Vue page working by only theming dark mode
-#app .gimmehttp:not(.light) {
-  --gh-hljs-bg-color: #191512;
-  --gh-hljs-color: #e0d4bc;
-  --gh-hljs-keyword: #f0603f;
-  --gh-hljs-entity: #f5c14e;
-  --gh-hljs-constant: #d3869b;
-  --gh-hljs-string: #b8b344;
-  --gh-hljs-variable: #fe8019;
-  --gh-hljs-comment: #8f7f6a;
-  --gh-hljs-tag: #a9b665;
-  --gh-hljs-subst: #e0d4bc;
-  --gh-hljs-section: #f28534;
-  --gh-hljs-bullet: #f5c14e;
-  --gh-hljs-emphasis: #e0d4bc;
-  --gh-hljs-strong: #f1e5cd;
-}

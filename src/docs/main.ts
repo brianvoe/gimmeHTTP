@@ -1,9 +1,16 @@
 import './assets/scss/index.scss'
+import '../gimmehttp/ui/gimmehttp.scss'
 
 import { createApp } from 'vue'
 import router from './router'
 
 import App from './app.vue'
+
+// Register all gimmehttp clients for the docs site
+import { Register } from '../gimmehttp/core'
+import { allClients } from '../gimmehttp/clients/index'
+
+Register(allClients)
 
 const GA_MEASUREMENT_ID = 'G-5W4447QCL9'
 

@@ -23,6 +23,9 @@ export default defineConfig({
       output: {
         exports: 'default',
         assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'gimmehttp.css'
+          }
           return assetInfo.name || 'asset'
         },
         banner: '/*! GimmeHTTP - HTTP request code generator */',

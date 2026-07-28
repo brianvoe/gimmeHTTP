@@ -51,10 +51,3 @@
   --box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
   --glow-primary: 0 0 0 3px rgba(251, 122, 60, 0.25);
 }
-
-// header wraps to two rows on small screens
-@media screen and (max-width: 700px) {
-  :root {
-    --header-height: 96px;
-  }
-}

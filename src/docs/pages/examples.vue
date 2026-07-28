@@ -1,18 +1,14 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
-  import { GimmeHttp } from '@/gimmehttp/vue'
-  import type { Http } from '@/gimmehttp'
+  import { GimmeHTTP } from '@/gimmehttp'
+  import type { Http } from '@/gimmehttp/core'
 
   export default defineComponent({
     name: 'ExamplesPage',
-    components: {
-      GimmeHttp
-    },
     data() {
       return {
-        // Share language/client selections across all examples
-        selectedLanguage: '',
-        selectedClient: '',
+        // Language/client selections stay in sync across instances automatically
+        instances: [] as GimmeHTTP[],
 
         // Examples
         httpGet: {
@@ -58,6 +54,26 @@
           }
         } as Http
       }
+    },
+    mounted() {
+      const examples: Array<[HTMLElement, Http]> = [
+        [this.$refs.exampleGet as HTMLElement, this.httpGet],
+        [this.$refs.examplePostJson as HTMLElement, this.httpPostJson],
+        [this.$refs.examplePut as HTMLElement, this.httpPut],
+        [this.$refs.exampleDeleteAuth as HTMLElement, this.httpDeleteAuth]
+      ]
+
+      this.instances = examples.map(
+        ([container, http]) =>
+          new GimmeHTTP({
+            container,
+            http
+          })
+      )
+    },
+    unmounted() {
+      this.instances.forEach((instance) => instance.destroy())
+      this.instances = []
     }
   })
 </script>
@@ -88,22 +104,22 @@
 
     <div class="example">
       <h3>GET with query params</h3>
-      <GimmeHttp v-model:language="selectedLanguage" v-model:client="selectedClient" :http="httpGet" />
+      <div ref="exampleGet"></div>
     </div>
 
     <div class="example">
       <h3>POST JSON</h3>
-      <GimmeHttp v-model:language="selectedLanguage" v-model:client="selectedClient" :http="httpPostJson" />
+      <div ref="examplePostJson"></div>
     </div>
 
     <div class="example">
       <h3>PUT update</h3>
-      <GimmeHttp v-model:language="selectedLanguage" v-model:client="selectedClient" :http="httpPut" />
+      <div ref="examplePut"></div>
     </div>
 
     <div class="example">
       <h3>DELETE with auth + cookie</h3>
-      <GimmeHttp v-model:language="selectedLanguage" v-model:client="selectedClient" :http="httpDeleteAuth" />
+      <div ref="exampleDeleteAuth"></div>
     </div>
   </div>
 </template>

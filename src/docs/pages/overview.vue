@@ -1,14 +1,13 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
-  import { GimmeHttp } from '@/gimmehttp/vue'
-  import { Languages } from '../../gimmehttp'
+  import { GimmeHTTP } from '@/gimmehttp'
+  import { Languages } from '@/gimmehttp/core'
   import { getLogo } from '@/gimmehttp/logos/index'
 
-  import type { Http } from '../../gimmehttp'
+  import type { Http } from '@/gimmehttp/core'
 
   export default defineComponent({
     name: 'Overview',
-    components: { GimmeHttp },
     data() {
       // Simple example request shown on the home page
       const homeHttp: Http = {
@@ -24,8 +23,25 @@
       }
 
       return {
-        homeHttp
+        homeHttp,
+        selectedLanguage: '',
+        instance: null as GimmeHTTP | null
       }
+    },
+    mounted() {
+      this.instance = new GimmeHTTP({
+        container: this.$refs.example as HTMLElement,
+        http: this.homeHttp,
+        events: {
+          afterChange: (language) => {
+            this.selectedLanguage = language
+          }
+        }
+      })
+    },
+    unmounted() {
+      this.instance?.destroy()
+      this.instance = null
     },
     computed: {
       languages(): string[] {
@@ -35,6 +51,9 @@
     methods: {
       logoSvg(name: string): string | null {
         return getLogo(name)
+      },
+      setLanguage(lang: string) {
+        this.instance?.setLanguage(lang)
       }
     }
   })
@@ -79,7 +98,7 @@
       }
     }
 
-    // compact, non-interactive language showcase
+    // compact language showcase — click to change the example below
     .languages_showcase {
       display: flex;
       flex-direction: column;
@@ -102,6 +121,16 @@
           border: solid 1px var(--color-border);
           border-radius: var(--border-radius);
           background-color: rgba(0, 0, 0, 0.2);
+          cursor: pointer;
+          transition:
+            background-color var(--animation-timing),
+            border-color var(--animation-timing);
+
+          &.selected,
+          &:hover {
+            background-color: var(--color-surface-raised);
+            border-color: var(--color-primary);
+          }
 
           svg {
             width: 22px;
@@ -129,7 +158,7 @@
       align-items: center;
       gap: var(--spacing-half);
 
-      .gimmehttp {
+      .example {
         width: 100%;
         max-width: 800px;
         margin: 0 auto;
@@ -156,7 +185,13 @@
     <div class="languages_showcase">
       <div class="eyebrow">Available languages</div>
       <div class="langs">
-        <div class="lang" v-for="lang in languages" :key="lang">
+        <div
+          class="lang"
+          :class="{ selected: lang === selectedLanguage }"
+          v-for="lang in languages"
+          :key="lang"
+          @click="setLanguage(lang)"
+        >
           <span v-if="logoSvg(lang)" v-html="logoSvg(lang)"></span>
           <span v-else class="lang-name">{{ lang }}</span>
         </div>
@@ -165,7 +200,7 @@
 
     <div class="home_example">
       <div class="eyebrow">See it in action</div>
-      <GimmeHttp :http="homeHttp" />
+      <div ref="example" class="example"></div>
     </div>
 
     <div class="cta_row">
