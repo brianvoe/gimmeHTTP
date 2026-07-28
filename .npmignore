@@ -1,8 +1,27 @@
+# Prefer package.json "files" as the publish whitelist.
+# Root .npmignore is ignored when "files" is set; keep this for clarity
+# and as a fallback if "files" is ever removed.
+
+src/
+docs/
+public/
+coverage/
+scripts/
 node_modules/
 .vscode/
 .github/
 
-coverage/
-public/
+index.html
+release.js
+*.tgz
+.nvmrc
+.prettierignore
+.prettierrc
+.DS_Store
+tsconfig*.json
+vite.config.*
+vitest.config.ts
+vitest.setup.ts
 
-/*.tgz
+# Source maps (also excluded via package.json files negation)
+**/*.map

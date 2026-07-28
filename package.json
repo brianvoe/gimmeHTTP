@@ -49,6 +49,13 @@
   "module": "dist/gimmehttp.es.js",
   "unpkg": "dist/gimmehttp.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "!dist/**/*.map",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
