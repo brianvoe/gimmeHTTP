@@ -7,7 +7,7 @@
   import type { Http } from '@/gimmehttp/core'
 
   export default defineComponent({
-    name: 'Overview',
+    name: 'Home',
     data() {
       // Simple example request shown on the home page
       const homeHttp: Http = {
@@ -60,7 +60,7 @@
 </script>
 
 <style lang="scss">
-  .overview {
+  .home {
     display: flex;
     flex-direction: column;
     gap: calc(var(--spacing) * 1.5);
@@ -74,6 +74,8 @@
       gap: var(--spacing);
 
       .hero_title {
+        position: relative;
+        display: inline-block;
         font-size: clamp(52px, 9vw, 88px);
         font-weight: 300;
         line-height: 1;
@@ -87,6 +89,21 @@
           background-clip: text;
           -webkit-text-fill-color: transparent;
           color: transparent;
+        }
+
+        .version {
+          position: absolute;
+          top: 0.14em;
+          left: 100%;
+          margin-left: 0.1em;
+          font-size: 0.26em;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          line-height: 1;
+          text-transform: uppercase;
+          color: var(--color-text-muted);
+          white-space: nowrap;
+          pointer-events: none;
         }
       }
 
@@ -180,9 +197,12 @@
 </style>
 
 <template>
-  <div class="overview">
+  <div class="home">
     <section class="hero">
-      <div class="hero_title">gimme<span class="accent">HTTP</span></div>
+      <div class="hero_title">
+        gimme<span class="accent">HTTP</span>
+        <span class="version" aria-hidden="true">v2</span>
+      </div>
       <p class="hero_tagline">HTTP request code, in every language.</p>
     </section>
 
