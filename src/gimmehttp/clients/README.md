@@ -1,49 +1,52 @@
 # HTTP Client Implementations
 
-This directory contains HTTP client code generators for 15 programming languages (38 clients).
+This directory contains HTTP client code generators for 18 programming languages (41 clients).
 
 ## Supported Languages & Clients
 
-| Language   | Client            | Default | Status      |
-| ---------- | ----------------- | ------- | ----------- |
-| C          | libcurl           | ✓       | ✅ Complete |
-| C#         | HttpClient        | ✓       | ✅ Complete |
-| C#         | RestSharp         |         | ✅ Complete |
-| C#         | Flurl             |         | ✅ Complete |
-| Dart       | http              | ✓       | ✅ Complete |
-| Dart       | dio               |         | ✅ Complete |
-| Go         | net/http          | ✓       | ✅ Complete |
-| Go         | resty             |         | ✅ Complete |
-| Java       | HttpURLConnection | ✓       | ✅ Complete |
-| Java       | OkHttp            |         | ✅ Complete |
-| Java       | HttpClient        |         | ✅ Complete |
-| JavaScript | axios             |         | ✅ Complete |
-| JavaScript | fetch             | ✓       | ✅ Complete |
-| JavaScript | jQuery            |         | ✅ Complete |
-| JavaScript | ky                |         | ✅ Complete |
-| Kotlin     | Ktor              | ✓       | ✅ Complete |
-| Kotlin     | OkHttp            |         | ✅ Complete |
-| Node.js    | fetch             |         | ✅ Complete |
-| Node.js    | http              | ✓       | ✅ Complete |
-| Node.js    | axios             |         | ✅ Complete |
-| Node.js    | got               |         | ✅ Complete |
-| PHP        | cURL              | ✓       | ✅ Complete |
-| PHP        | Guzzle            |         | ✅ Complete |
-| PHP        | Symfony           |         | ✅ Complete |
-| Python     | http.client       | ✓       | ✅ Complete |
-| Python     | requests          |         | ✅ Complete |
-| Python     | httpx             |         | ✅ Complete |
-| Python     | aiohttp           |         | ✅ Complete |
-| Ruby       | Net::HTTP         | ✓       | ✅ Complete |
-| Ruby       | Faraday           |         | ✅ Complete |
-| Ruby       | HTTParty          |         | ✅ Complete |
-| Rust       | reqwest           | ✓       | ✅ Complete |
-| Rust       | ureq              |         | ✅ Complete |
-| Shell      | cURL              | ✓       | ✅ Complete |
-| Shell      | HTTPie            |         | ✅ Complete |
-| Shell      | wget              |         | ✅ Complete |
-| Swift      | URLSession        | ✓       | ✅ Complete |
-| Swift      | Alamofire         |         | ✅ Complete |
+| Language     | Client            | Default | Status      |
+| ------------ | ----------------- | ------- | ----------- |
+| C            | libcurl           | ✓       | ✅ Complete |
+| C#           | HttpClient        | ✓       | ✅ Complete |
+| C#           | RestSharp         |         | ✅ Complete |
+| C#           | Flurl             |         | ✅ Complete |
+| Dart         | http              | ✓       | ✅ Complete |
+| Dart         | dio               |         | ✅ Complete |
+| Go           | net/http          | ✓       | ✅ Complete |
+| Go           | resty             |         | ✅ Complete |
+| Java         | HttpURLConnection | ✓       | ✅ Complete |
+| Java         | OkHttp            |         | ✅ Complete |
+| Java         | HttpClient        |         | ✅ Complete |
+| JavaScript   | axios             |         | ✅ Complete |
+| JavaScript   | fetch             | ✓       | ✅ Complete |
+| JavaScript   | jQuery            |         | ✅ Complete |
+| JavaScript   | ky                |         | ✅ Complete |
+| Kotlin       | Ktor              | ✓       | ✅ Complete |
+| Kotlin       | OkHttp            |         | ✅ Complete |
+| Node.js      | fetch             |         | ✅ Complete |
+| Node.js      | http              | ✓       | ✅ Complete |
+| Node.js      | axios             |         | ✅ Complete |
+| Node.js      | got               |         | ✅ Complete |
+| Objective-C  | NSURLSession      | ✓       | ✅ Complete |
+| PHP          | cURL              | ✓       | ✅ Complete |
+| PHP          | Guzzle            |         | ✅ Complete |
+| PHP          | Symfony           |         | ✅ Complete |
+| PowerShell   | RestMethod        | ✓       | ✅ Complete |
+| Python       | http.client       | ✓       | ✅ Complete |
+| Python       | requests          |         | ✅ Complete |
+| Python       | httpx             |         | ✅ Complete |
+| Python       | aiohttp           |         | ✅ Complete |
+| R            | httr              | ✓       | ✅ Complete |
+| Ruby         | Net::HTTP         | ✓       | ✅ Complete |
+| Ruby         | Faraday           |         | ✅ Complete |
+| Ruby         | HTTParty          |         | ✅ Complete |
+| Rust         | reqwest           | ✓       | ✅ Complete |
+| Rust         | ureq              |         | ✅ Complete |
+| Shell        | cURL              | ✓       | ✅ Complete |
+| Shell        | HTTPie            |         | ✅ Complete |
+| Shell        | wget              |         | ✅ Complete |
+| Swift        | URLSession        | ✓       | ✅ Complete |
+| Swift        | Alamofire         |         | ✅ Complete |
 
 ## Feature Support
 
@@ -70,13 +73,16 @@ This directory contains HTTP client code generators for 15 programming languages
 | Node.js    | http              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Node.js    | axios             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅ Auto          | ✅             |          |
 | Node.js    | got               | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| Objective-C| NSURLSession      | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | PHP        | cURL              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | PHP        | Guzzle            | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | PHP        | Symfony           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| PowerShell | RestMethod        | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Python     | http.client       | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Python     | requests          | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Python     | httpx             | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Python     | aiohttp           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
+| R          | httr              | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Ruby       | Net::HTTP         | ✅ GET, POST, PUT, DELETE, PATCH | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Ruby       | Faraday           | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |
 | Ruby       | HTTParty          | ✅ All methods                   | ✅      | ✅     | ✅      | ✅            | ✅        | ✅        | ✅        | ✅       | ✅               | ✅             |          |

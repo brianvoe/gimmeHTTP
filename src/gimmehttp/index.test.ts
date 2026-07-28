@@ -22,7 +22,7 @@ describe('Index', () => {
     ClearRegistry()
     Register(allClients)
 
-    expect(allClients.length).toEqual(38)
+    expect(allClients.length).toEqual(41)
     expect(Languages()).toContain('go')
     expect(Languages()).toContain('shell')
     expect(Languages()).toContain('javascript')

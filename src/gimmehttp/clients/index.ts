@@ -29,13 +29,16 @@ export { default as nodeHttp } from './node.http'
 export { default as nodeFetch } from './node.fetch'
 export { default as nodeAxios } from './node.axios'
 export { default as nodeGot } from './node.got'
+export { default as objectivecNsurlsession } from './objectivec.nsurlsession'
 export { default as phpCurl } from './php.curl'
 export { default as phpGuzzle } from './php.guzzle'
 export { default as phpSymfony } from './php.symfony'
+export { default as powershellRestmethod } from './powershell.restmethod'
 export { default as pythonHttp } from './python.http'
 export { default as pythonRequests } from './python.requests'
 export { default as pythonHttpx } from './python.httpx'
 export { default as pythonAiohttp } from './python.aiohttp'
+export { default as rHttr } from './r.httr'
 export { default as rubyNethttp } from './ruby.nethttp'
 export { default as rubyFaraday } from './ruby.faraday'
 export { default as rubyHttparty } from './ruby.httparty'
@@ -68,13 +71,16 @@ import nodeHttpClient from './node.http'
 import nodeFetchClient from './node.fetch'
 import nodeAxiosClient from './node.axios'
 import nodeGotClient from './node.got'
+import objectivecNsurlsessionClient from './objectivec.nsurlsession'
 import phpCurlClient from './php.curl'
 import phpGuzzleClient from './php.guzzle'
 import phpSymfonyClient from './php.symfony'
+import powershellRestmethodClient from './powershell.restmethod'
 import pythonHttpClient from './python.http'
 import pythonRequestsClient from './python.requests'
 import pythonHttpxClient from './python.httpx'
 import pythonAiohttpClient from './python.aiohttp'
+import rHttrClient from './r.httr'
 import rubyNethttpClient from './ruby.nethttp'
 import rubyFaradayClient from './ruby.faraday'
 import rubyHttpartyClient from './ruby.httparty'
@@ -110,13 +116,16 @@ export const allClients: Client[] = [
   nodeFetchClient,
   nodeAxiosClient,
   nodeGotClient,
+  objectivecNsurlsessionClient,
   phpCurlClient,
   phpGuzzleClient,
   phpSymfonyClient,
+  powershellRestmethodClient,
   pythonHttpClient,
   pythonRequestsClient,
   pythonHttpxClient,
   pythonAiohttpClient,
+  rHttrClient,
   rubyNethttpClient,
   rubyFaradayClient,
   rubyHttpartyClient,

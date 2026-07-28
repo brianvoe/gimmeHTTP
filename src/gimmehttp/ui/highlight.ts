@@ -10,7 +10,9 @@ import go from 'highlight.js/lib/languages/go'
 import java from 'highlight.js/lib/languages/java'
 import javascript from 'highlight.js/lib/languages/javascript'
 import kotlin from 'highlight.js/lib/languages/kotlin'
+import objectivec from 'highlight.js/lib/languages/objectivec'
 import php from 'highlight.js/lib/languages/php'
+import powershell from 'highlight.js/lib/languages/powershell'
 import python from 'highlight.js/lib/languages/python'
 import r from 'highlight.js/lib/languages/r'
 import ruby from 'highlight.js/lib/languages/ruby'
@@ -27,7 +29,10 @@ hljs.registerLanguage('go', go)
 hljs.registerLanguage('java', java)
 hljs.registerLanguage('javascript', javascript)
 hljs.registerLanguage('kotlin', kotlin)
+hljs.registerLanguage('objectivec', objectivec)
+hljs.registerLanguage('objc', objectivec)
 hljs.registerLanguage('php', php)
+hljs.registerLanguage('powershell', powershell)
 hljs.registerLanguage('python', python)
 hljs.registerLanguage('r', r)
 hljs.registerLanguage('ruby', ruby)
@@ -48,7 +53,8 @@ export const languageMap: Record<string, string> = {
   shell: 'bash',
   ts: 'typescript',
   node: 'javascript',
-  nodejs: 'javascript'
+  nodejs: 'javascript',
+  objc: 'objectivec'
 }
 
 export function highlightCode(code: string, language: string): string {

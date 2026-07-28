@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Additional clients for existing languages: Python httpx/aiohttp, Dart dio, Swift Alamofire, Shell httpie/wget,
   Ruby HTTParty, Java HttpClient, Node axios/got, JavaScript ky, Go resty, Kotlin OkHttp, PHP Symfony HttpClient,
   Rust ureq, C# Flurl
+- New languages: PowerShell (`Invoke-RestMethod`), R (`httr`), and Objective-C (`NSURLSession`)
 
 ### Changed
 
