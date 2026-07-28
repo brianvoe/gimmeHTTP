@@ -123,10 +123,11 @@
       gap: var(--spacing-half);
 
       .langs {
-        display: grid;
-        grid-template-columns: repeat(7, auto);
+        display: flex;
+        flex-wrap: wrap;
         justify-content: center;
         gap: var(--spacing-quarter);
+        max-width: 420px;
         margin: 0 auto;
 
         .lang {
@@ -164,11 +165,6 @@
             text-transform: capitalize;
             color: var(--color-text-muted);
           }
-        }
-
-        @media (max-width: 700px) {
-          grid-template-columns: repeat(7, minmax(0, 1fr));
-          width: 100%;
         }
       }
     }
