@@ -67,5 +67,7 @@ export declare class GimmeHTTP {
     private closeClientMenu;
     private toggleModal;
     private openModal;
+    /** Grow the widget when the language picker is taller than the current snippet. */
+    private fitModalHeight;
     private closeModal;
 }

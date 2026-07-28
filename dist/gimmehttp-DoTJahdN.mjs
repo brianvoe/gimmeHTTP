@@ -5333,10 +5333,19 @@ var ze = class {
 			}
 			let n = t.closest("[data-lang]");
 			n && (this.closeModal(), this.setLanguage(n.dataset.lang));
-		}), this.root.appendChild(t), this.root.querySelector(".gh-output")?.classList.add("gh-modalOpen"), requestAnimationFrame(() => t.classList.add("gh-open"));
+		}), this.root.appendChild(t), this.root.querySelector(".gh-output")?.classList.add("gh-modalOpen"), requestAnimationFrame(() => {
+			t.classList.add("gh-open"), this.fitModalHeight(t);
+		});
+	}
+	fitModalHeight(e) {
+		if (!this.root) return;
+		let t = e.querySelector(".gh-content");
+		if (!t) return;
+		let n = parseFloat(getComputedStyle(t).marginTop) || 0, r = Math.ceil(n + t.offsetHeight + 16);
+		r > this.root.offsetHeight && (this.root.style.minHeight = `${r}px`);
 	}
 	closeModal() {
-		this.modalOpen = !1, this.root?.querySelector(".gh-output")?.classList.remove("gh-modalOpen");
+		this.modalOpen = !1, this.root?.querySelector(".gh-output")?.classList.remove("gh-modalOpen"), this.root && (this.root.style.minHeight = "");
 		let e = this.root?.querySelector(".gh-modal");
 		e && (e.classList.remove("gh-open"), setTimeout(() => e.remove(), 250));
 	}
@@ -5344,4 +5353,4 @@ var ze = class {
 //#endregion
 export { ze as t };
 
-//# sourceMappingURL=gimmehttp-1zXl3tjj.mjs.map
+//# sourceMappingURL=gimmehttp-DoTJahdN.mjs.map

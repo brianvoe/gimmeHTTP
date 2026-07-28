@@ -1,1 +1,1 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:`Module`});const e=require("../gimmehttp-_7JOQfky.js");exports.GimmeHTTP=e.t;
+Object.defineProperty(exports,Symbol.toStringTag,{value:`Module`});const e=require("../gimmehttp-EQORHHMF.js");exports.GimmeHTTP=e.t;

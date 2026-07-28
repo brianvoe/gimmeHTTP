@@ -156,7 +156,7 @@ var g = {
 		let m = n.method.toLowerCase(), h = n.headers && Object.keys(n.headers).length > 0 || u && !f, g = `${h ? ", headers: headers" : ""}${p === "null" ? "" : ", body: " + p}`;
 		return m === "get" ? r.line("var response = await http.get(url%r);", h ? ", headers: headers" : "") : m === "post" ? r.line("var response = await http.post(url%r);", g) : m === "put" ? r.line("var response = await http.put(url%r);", g) : m === "delete" ? r.line("var response = await http.delete(url%r);", g) : m === "patch" ? r.line("var response = await http.patch(url%r);", g) : (r.line("var request = http.Request(\"%s\", url);", n.method.toUpperCase()), h && r.line("request.headers.addAll(headers);"), p !== "null" && r.line("request.body = body;"), r.line("var streamedResponse = await request.send();"), r.line("var response = await http.Response.fromStream(streamedResponse);")), r.line(), t.handleErrors && (r.line("if (response.statusCode < 200 || response.statusCode >= 300) {"), r.indent(), r.line("throw http.ClientException(\"HTTP ${response.statusCode}\", url);"), r.outdent(), r.line("}"), r.line()), r.line("print(response.body);"), t.handleErrors && (r.outdent(), r.line("} catch (e) {"), r.indent(), r.line("print(\"Error: $e\");"), r.outdent(), r.line("}")), r.outdent(), r.line("}"), r.output();
 	}
-}, ee = (e) => e.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\$/g, "\\$"), x = {
+}, ee = (e) => e.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\$/g, "\\$"), te = {
 	language: "dart",
 	client: "dio",
 	generate(e, t) {
@@ -188,7 +188,7 @@ var g = {
 			"head"
 		].includes(h) ? n.line("final response = await dio.%r(\"%s\"%r);", h, u(t.url), g) : n.line("final response = await dio.request(\"%s\", options: Options(method: \"%s\"%r)%r%r);", u(t.url), t.method.toUpperCase(), Object.keys(o).length > 0 ? ", headers: headers" : "", f ? ", queryParameters: queryParameters" : "", m), n.line("print(response.data);"), e.handleErrors && (n.outdent(), n.line("} on DioException catch (e) {"), n.indent(), n.line("print(\"Error: ${e.message}\");"), n.outdent(), n.line("}")), n.outdent(), n.line("}"), n.output();
 	}
-}, te = {
+}, ne = {
 	default: !0,
 	language: "go",
 	client: "http",
@@ -231,7 +231,7 @@ var g = {
 		}
 		return t.handleErrors ? (r.line("resp, err := http.DefaultClient.Do(req)"), r.line("if err != nil {"), r.indent(), r.line("log.Fatal(err)"), r.outdent(), r.line("}")) : r.line("resp, _ := http.DefaultClient.Do(req)"), r.line("defer resp.Body.Close()"), r.line(), t.handleErrors ? (r.line("body, err := io.ReadAll(resp.Body)"), r.line("if err != nil {"), r.indent(), r.line("log.Fatal(err)"), r.outdent(), r.line("}")) : r.line("body, _ := io.ReadAll(resp.Body)"), r.line(), r.line("fmt.Println(string(body))"), r.outdent(), r.line("}"), r.output();
 	}
-}, ne = {
+}, re = {
 	language: "go",
 	client: "resty",
 	generate(t, n) {
@@ -261,7 +261,7 @@ var g = {
 		} else o.line(".SetQueryParam(\"%s\", \"%s\")", e, t);
 		return l(n.body) && (o.line(".SetBody("), o.indent(), u ? o.json(n.body) : o.jsonStringLiteral(typeof n.body == "string" ? n.body : JSON.stringify(n.body)), o.outdent(), o.append(")")), f ? o.line(".%r(\"%s\")", f, n.url) : o.line(".Execute(\"%s\", \"%s\")", d, n.url), o.outdent(), o.line(), t.handleErrors && (o.line("if err != nil {"), o.indent(), o.line("log.Fatal(err)"), o.outdent(), o.line("}")), o.line("fmt.Println(resp.String())"), o.outdent(), o.line("}"), o.output();
 	}
-}, S = {
+}, ie = {
 	default: !0,
 	language: "java",
 	client: "httpurlconnection",
@@ -284,7 +284,7 @@ var g = {
 		}
 		return n.cookies && Object.keys(n.cookies).length > 0 && (o.line(), o.line("conn.setRequestProperty(\"Cookie\", \"%s\");", r(n.cookies))), c && (o.line(), o.line("conn.setDoOutput(true);"), o.line(), a(u, "json") || !u && i(n.body) ? (o.line("try (OutputStream os = conn.getOutputStream()) {"), o.indent(), o.line("byte[] input = "), o.jsonStringLiteral(n.body), o.append(".getBytes(\"utf-8\");"), o.line("os.write(input, 0, input.length);"), o.outdent(), o.line("}")) : d(n.body) && (o.line("try (OutputStream os = conn.getOutputStream()) {"), o.indent(), o.line("byte[] input = \"%s\".getBytes(\"utf-8\");", n.body), o.line("os.write(input, 0, input.length);"), o.outdent(), o.line("}"))), o.line(), o.line("int responseCode = conn.getResponseCode();"), o.line("InputStream responseStream = responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream();"), o.line("BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));"), o.line("String inputLine;"), o.line("StringBuilder response = new StringBuilder();"), o.line(), o.line("while ((inputLine = in.readLine()) != null) {"), o.indent(), o.line("response.append(inputLine);"), o.outdent(), o.line("}"), o.line("in.close();"), o.line(), o.line("System.out.println(response.toString());"), t.handleErrors && (o.outdent(), o.line("} catch (Exception e) {"), o.indent(), o.line("e.printStackTrace();"), o.outdent(), o.line("}")), o.outdent(), o.line("}"), o.outdent(), o.line("}"), o.output();
 	}
-}, C = {
+}, x = {
 	language: "java",
 	client: "okhttp",
 	generate(t, n) {
@@ -309,7 +309,7 @@ var g = {
 		if (o.line("Request request = new Request.Builder()"), o.indent(), n.params && Object.keys(n.params).length > 0 ? o.line(".url(url)") : o.line(".url(\"%s\")", n.url), c ? o.line(".method(\"%s\", body)", n.method.toUpperCase()) : o.line(".method(\"%s\", null)", n.method.toUpperCase()), n.headers && Object.keys(n.headers).length > 0) for (let [e, t] of Object.entries(n.headers)) Array.isArray(t) ? t.forEach((t) => o.line(".addHeader(\"%s\", \"%s\")", e, t)) : o.line(".addHeader(\"%s\", \"%s\")", e, t);
 		return n.cookies && Object.keys(n.cookies).length > 0 && o.line(".addHeader(\"Cookie\", \"%s\")", r(n.cookies)), o.line(".build();"), o.outdent(), o.line(), o.line("try (Response response = client.newCall(request).execute()) {"), o.indent(), o.line("System.out.println(response.body().string());"), o.outdent(), o.line("}"), t.handleErrors && (o.outdent(), o.line("} catch (Exception e) {"), o.indent(), o.line("e.printStackTrace();"), o.outdent(), o.line("}")), o.outdent(), o.line("}"), o.outdent(), o.line("}"), o.output();
 	}
-}, w = {
+}, S = {
 	language: "java",
 	client: "httpclient",
 	generate(t, n) {
@@ -329,7 +329,7 @@ var g = {
 		for (let [e, t] of Object.entries(n.headers || {})) for (let n of Array.isArray(t) ? t : [t]) o.line("requestBuilder.header(\"%s\", \"%s\");", e, n);
 		return n.cookies && Object.keys(n.cookies).length > 0 && o.line("requestBuilder.header(\"Cookie\", \"%s\");", r(n.cookies)), o.line("HttpRequest request = requestBuilder.build();"), o.line("HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());"), o.line("System.out.println(response.body());"), t.handleErrors && (o.outdent(), o.line("} catch (Exception e) {"), o.indent(), o.line("e.printStackTrace();"), o.outdent(), o.line("}")), o.outdent(), o.line("}"), o.outdent(), o.line("}"), o.output();
 	}
-}, T = {
+}, C = {
 	default: !0,
 	language: "javascript",
 	client: "fetch",
@@ -357,7 +357,7 @@ var g = {
 		let { contentType: c, wasInferred: l } = o(n.headers), u = "text()";
 		return (!l || c !== "application/octet-stream") && (a(c, "json") ? u = "json()" : a(c, "xml") || a(c, "text") ? u = "text()" : a(c, "blob") && (u = "blob()")), l && u === "json()" && r.line("// Response Content-Type inferred as: %r", c), t.handleErrors ? (r.line(".then(response => {"), r.indent(), r.line("if (!response.ok) {"), r.indent(), r.line("throw new Error(\"Network response was not ok\");"), r.outdent(), r.line("}"), r.line("return response.%r;", u), r.outdent(), r.line("})"), r.line(".then(data => console.log(data))"), r.line(".catch(error => console.error(\"There was a problem with the fetch operation:\", error));")) : (r.line(".then(response => response.%r)", u), r.line(".then(data => console.log(data));")), r.output();
 	}
-}, E = {
+}, w = {
 	language: "javascript",
 	client: "axios",
 	generate(e, t) {
@@ -379,7 +379,7 @@ var g = {
 		}
 		return t.body && (n.line("data: "), n.json(t.body)), n.outdent(), n.line("})"), e.handleErrors ? (n.line(".then(response => {"), n.indent(), n.line("console.log(response.data);"), n.outdent(), n.line("})"), n.line(".catch(error => {"), n.indent(), n.line("console.error(\"There was an error:\", error);"), n.outdent(), n.line("});")) : n.line(".then(response => console.log(response.data));"), n.output();
 	}
-}, D = {
+}, T = {
 	language: "javascript",
 	client: "jquery",
 	generate(t, n) {
@@ -398,7 +398,7 @@ var g = {
 		}
 		return n.cookies && Object.keys(n.cookies).length > 0 && r.line("// Same-origin cookies are sent automatically by the browser."), r.line("success: function(data) {"), r.indent(), r.line("console.log(data);"), r.outdent(), r.line("},"), t.handleErrors && (r.line("error: function(jqXHR, textStatus, errorThrown) {"), r.indent(), r.line("console.error(\"Request failed:\", textStatus, errorThrown);"), r.outdent(), r.line("},")), r.outdent(), r.line("});"), r.output();
 	}
-}, O = {
+}, E = {
 	language: "javascript",
 	client: "ky",
 	generate(t, n) {
@@ -412,7 +412,90 @@ var g = {
 		}
 		return n.body !== void 0 && n.body !== null && (i(n.body) && a(e(n.headers), "form") ? (o.line("body: new URLSearchParams("), o.json(n.body), o.append("),")) : i(n.body) ? (o.line("json: "), o.json(n.body), o.append(",")) : d(n.body) ? o.line("body: \"%s\",", n.body) : (o.line("body: "), o.json(n.body), o.append(","))), o.outdent(), o.line("}).%r;", c), o.line("console.log(data);"), t.handleErrors && (o.outdent(), o.line("} catch (error) {"), o.indent(), o.line("console.error(\"There was an error:\", error);"), o.outdent(), o.line("}")), o.output();
 	}
+}, D = {
+	default: !0,
+	language: "typescript",
+	client: "fetch",
+	generate(t, n) {
+		let r = new s({
+			indent: t.indent || "  ",
+			join: t.join || "\n"
+		});
+		if (n.params && Object.keys(n.params).length > 0) {
+			r.line("const url = new URL(\"%s\");", n.url);
+			for (let [e, t] of Object.entries(n.params)) if (Array.isArray(t)) for (let n of t) r.line("url.searchParams.append(\"%s\", \"%s\");", e, n);
+			else r.line("url.searchParams.append(\"%s\", \"%s\");", e, t);
+			r.line(), r.line("fetch(url.toString(), {");
+		} else r.line("fetch(\"%s\", {", n.url);
+		if (r.indent(), r.line("method: \"%s\",", n.method.toUpperCase()), n.headers) {
+			r.line("headers: {"), r.indent();
+			for (let [e, t] of Object.entries(n.headers)) Array.isArray(t) ? r.line("\"%s\": \"%s\",", e, t.join(", ")) : r.line("\"%s\": \"%s\",", e, t);
+			r.outdent(), r.line("},");
+		}
+		if (n.cookies && Object.keys(n.cookies).length > 0 && r.line("// Same-origin cookies are sent automatically by the browser."), n.body !== void 0 && n.body !== null) {
+			let t = e(n.headers);
+			i(n.body) && a(t, "form") ? (r.line("body: new URLSearchParams("), r.json(n.body), r.append("),")) : i(n.body) ? (r.line("body: JSON.stringify("), r.json(n.body), r.append("),")) : d(n.body) ? r.line("body: \"%s\",", n.body) : (r.line("body: "), r.json(n.body), r.append(","));
+		}
+		r.outdent(), r.line("})");
+		let { contentType: c, wasInferred: l } = o(n.headers), u = "text()";
+		return (!l || c !== "application/octet-stream") && (a(c, "json") ? u = "json()" : a(c, "xml") || a(c, "text") ? u = "text()" : a(c, "blob") && (u = "blob()")), l && u === "json()" && r.line("// Response Content-Type inferred as: %r", c), t.handleErrors ? (r.line(".then((response: Response) => {"), r.indent(), r.line("if (!response.ok) {"), r.indent(), r.line("throw new Error(\"Network response was not ok\");"), r.outdent(), r.line("}"), r.line("return response.%r;", u), r.outdent(), r.line("})"), r.line(".then((data) => console.log(data))"), r.line(".catch((error: unknown) => console.error(\"There was a problem with the fetch operation:\", error));")) : (r.line(".then((response: Response) => response.%r)", u), r.line(".then((data) => console.log(data));")), r.output();
+	}
+}, O = {
+	language: "typescript",
+	client: "axios",
+	generate(e, t) {
+		let n = new s({
+			indent: e.indent || "  ",
+			join: e.join || "\n"
+		});
+		if (n.line("import axios from \"axios\";"), n.line(), n.line("axios({"), n.indent(), n.line("method: \"%s\",", t.method.toLowerCase()), n.line("url: \"%s\",", t.url), t.params && Object.keys(t.params).length > 0) {
+			n.line("params: {"), n.indent();
+			for (let [e, r] of Object.entries(t.params)) if (Array.isArray(r)) {
+				let t = r.map((e) => n.format("\"%s\"", e)).join(", ");
+				n.line("\"%s\": [%r],", e, t);
+			} else n.line("\"%s\": \"%s\",", e, r);
+			n.outdent(), n.line("},");
+		}
+		if (t.headers || t.cookies && Object.keys(t.cookies).length > 0) {
+			if (n.line("headers: {"), n.indent(), t.headers) for (let [e, r] of Object.entries(t.headers)) Array.isArray(r) ? n.line("\"%s\": \"%s\",", e, r.join(", ")) : n.line("\"%s\": \"%s\",", e, r);
+			t.cookies && Object.keys(t.cookies).length > 0 && n.line("\"Cookie\": \"%s\",", r(t.cookies)), n.outdent(), n.line("},");
+		}
+		return t.body && (n.line("data: "), n.json(t.body)), n.outdent(), n.line("})"), e.handleErrors ? (n.line(".then((response) => {"), n.indent(), n.line("console.log(response.data);"), n.outdent(), n.line("})"), n.line(".catch((error: unknown) => {"), n.indent(), n.line("console.error(\"There was an error:\", error);"), n.outdent(), n.line("});")) : n.line(".then((response) => console.log(response.data));"), n.output();
+	}
 }, k = {
+	language: "typescript",
+	client: "jquery",
+	generate(t, n) {
+		let r = new s({
+			indent: t.indent || "  ",
+			join: t.join || "\n"
+		});
+		if (r.line("$.ajax({"), r.indent(), r.line("url: \"%s\",", u(n.url, n.params)), r.line("type: \"%s\",", n.method.toUpperCase()), n.headers) {
+			r.line("headers: {"), r.indent();
+			for (let [e, t] of Object.entries(n.headers)) Array.isArray(t) ? r.line("\"%s\": \"%s\",", e, t.join(", ")) : r.line("\"%s\": \"%s\",", e, t);
+			r.outdent(), r.line("},");
+		}
+		if (n.body !== void 0 && n.body !== null) {
+			let t = e(n.headers);
+			i(n.body) && a(t, "json") ? (r.line("data: JSON.stringify("), r.json(n.body), r.append("),"), r.line("contentType: \"application/json\","), r.line("processData: false,")) : d(n.body) ? (r.line("data: \"%s\",", n.body), t && r.line("contentType: \"%s\",", t)) : (r.line("data: "), r.json(n.body), r.append(","));
+		}
+		return n.cookies && Object.keys(n.cookies).length > 0 && r.line("// Same-origin cookies are sent automatically by the browser."), r.line("success: function(data) {"), r.indent(), r.line("console.log(data);"), r.outdent(), r.line("},"), t.handleErrors && (r.line("error: function(jqXHR, textStatus, errorThrown) {"), r.indent(), r.line("console.error(\"Request failed:\", textStatus, errorThrown);"), r.outdent(), r.line("},")), r.outdent(), r.line("});"), r.output();
+	}
+}, A = {
+	language: "typescript",
+	client: "ky",
+	generate(t, n) {
+		let o = new s({
+			indent: t.indent || "  ",
+			join: t.join || "\n"
+		}), c = a(e(n.headers), "json") ? "json()" : "text()";
+		if (o.line("import ky from \"ky\";"), o.line(), t.handleErrors && (o.line("try {"), o.indent()), o.line("const data = await ky(\"%s\", {", n.url), o.indent(), o.line("method: \"%s\",", n.method.toLowerCase()), n.params && Object.keys(n.params).length > 0 && (o.line("searchParams: "), o.json(n.params), o.append(",")), n.headers || n.cookies && Object.keys(n.cookies).length > 0) {
+			if (o.line("headers: {"), o.indent(), n.headers) for (let [e, t] of Object.entries(n.headers)) o.line("\"%s\": \"%s\",", e, Array.isArray(t) ? t.join(", ") : t);
+			n.cookies && Object.keys(n.cookies).length > 0 && o.line("\"Cookie\": \"%s\",", r(n.cookies)), o.outdent(), o.line("},");
+		}
+		return n.body !== void 0 && n.body !== null && (i(n.body) && a(e(n.headers), "form") ? (o.line("body: new URLSearchParams("), o.json(n.body), o.append("),")) : i(n.body) ? (o.line("json: "), o.json(n.body), o.append(",")) : d(n.body) ? o.line("body: \"%s\",", n.body) : (o.line("body: "), o.json(n.body), o.append(","))), o.outdent(), o.line("}).%r;", c), o.line("console.log(data);"), t.handleErrors && (o.outdent(), o.line("} catch (error: unknown) {"), o.indent(), o.line("console.error(\"There was an error:\", error);"), o.outdent(), o.line("}")), o.output();
+	}
+}, j = {
 	default: !0,
 	language: "kotlin",
 	client: "ktor",
@@ -435,7 +518,7 @@ var g = {
 		} else d(n.body) && o.line("setBody(\"%s\")", n.body);
 		return o.outdent(), o.line("}"), o.line(), o.line("println(response.bodyAsText())"), o.outdent(), o.line("}"), t.handleErrors && (o.outdent(), o.line("} catch (e: Exception) {"), o.indent(), o.line("println(\"Error: ${e.message}\")"), o.outdent(), o.line("}")), o.outdent(), o.line("}"), o.output();
 	}
-}, A = {
+}, M = {
 	language: "kotlin",
 	client: "okhttp",
 	generate(t, n) {
@@ -454,7 +537,7 @@ var g = {
 		for (let [e, t] of Object.entries(n.headers || {})) for (let n of Array.isArray(t) ? t : [t]) o.line(".addHeader(\"%s\", \"%s\")", e, n);
 		return n.cookies && Object.keys(n.cookies).length > 0 && o.line(".addHeader(\"Cookie\", \"%s\")", r(n.cookies)), o.line(".build()"), o.outdent(), o.line(), o.line("client.newCall(request).execute().use { response ->"), o.indent(), o.line("println(response.body?.string())"), o.outdent(), o.line("}"), t.handleErrors && (o.outdent(), o.line("} catch (e: Exception) {"), o.indent(), o.line("println(\"Error: ${e.message}\")"), o.outdent(), o.line("}")), o.outdent(), o.line("}"), o.output();
 	}
-}, j = {
+}, N = {
 	language: "node",
 	client: "http",
 	generate(n, o) {
@@ -481,7 +564,7 @@ var g = {
 		}
 		return c.outdent(), c.line("};"), c.line(), c.line("const req = transport.request(options, (res) => {"), c.indent(), c.line("let data = \"\";"), c.line(), c.line("res.on(\"data\", (chunk) => {"), c.indent(), c.line("data += chunk;"), c.outdent(), c.line("});"), c.line(), c.line("res.on(\"end\", () => {"), c.indent(), c.line("console.log(data);"), c.outdent(), c.line("});"), c.outdent(), c.line("});"), n.handleErrors && (c.line(), c.line("req.on(\"error\", (error) => {"), c.indent(), c.line("console.error(error);"), c.outdent(), c.line("});")), c.line(), _ && c.line("req.write(payload);"), c.line("req.end();"), c.output();
 	}
-}, M = {
+}, P = {
 	language: "node",
 	client: "fetch",
 	generate(t, n) {
@@ -507,7 +590,7 @@ var g = {
 		let c = e(n.headers), l = "text()";
 		return a(c, "json") ? l = "json()" : a(c, "xml") || a(c, "text") ? l = "text()" : a(c, "blob") && (l = "blob()"), t.handleErrors ? (o.line(".then(response => {"), o.indent(), o.line("if (!response.ok) {"), o.indent(), o.line("throw new Error(\"response not ok\");"), o.outdent(), o.line("}"), o.line("return response.%r;", l), o.outdent(), o.line("})"), o.line(".then(data => console.log(data))"), o.line(".catch(error => console.error(\"error:\", error));")) : (o.line(".then(response => response.%r)", l), o.line(".then(data => console.log(data))")), o.output();
 	}
-}, N = {
+}, F = {
 	language: "node",
 	client: "axios",
 	generate(e, t) {
@@ -529,7 +612,7 @@ var g = {
 		}
 		return t.body !== void 0 && t.body !== null && (n.line("data: "), n.json(t.body)), n.outdent(), n.line("})"), e.handleErrors ? (n.line(".then(response => {"), n.indent(), n.line("console.log(response.data);"), n.outdent(), n.line("})"), n.line(".catch(error => {"), n.indent(), n.line("console.error(\"There was an error:\", error);"), n.outdent(), n.line("});")) : n.line(".then(response => console.log(response.data));"), n.output();
 	}
-}, P = {
+}, I = {
 	language: "node",
 	client: "got",
 	generate(t, n) {
@@ -543,7 +626,7 @@ var g = {
 		}
 		return n.body !== void 0 && n.body !== null && (i(n.body) && a(e(n.headers), "form") ? o.line("form: ") : i(n.body) ? o.line("json: ") : d(n.body) ? o.line("body: \"%s\",", n.body) : o.line("body: "), d(n.body) || (o.json(n.body), o.append(","))), o.outdent(), o.line("});"), o.line("console.log(response.body);"), t.handleErrors && (o.outdent(), o.line("} catch (error) {"), o.indent(), o.line("console.error(\"There was an error:\", error);"), o.outdent(), o.line("}")), o.output();
 	}
-}, F = {
+}, ae = {
 	default: !0,
 	language: "objectivec",
 	client: "nsurlsession",
@@ -572,7 +655,7 @@ var g = {
 		} else i(n.body) && (o.line("NSString *bodyString = @"), o.jsonStringLiteral(n.body), o.append(";"), o.line("request.HTTPBody = [bodyString dataUsingEncoding:NSUTF8StringEncoding];"), c || o.line("[request setValue:@\"application/json\" forHTTPHeaderField:@\"Content-Type\"];"));
 		return o.line(), o.line("dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);"), o.line("NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request"), o.indent(), o.line("completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {"), o.indent(), t.handleErrors ? (o.line("if (error) {"), o.indent(), o.line("NSLog(@\"Error: %@\", error);"), o.line("dispatch_semaphore_signal(semaphore);"), o.line("return;"), o.outdent(), o.line("}"), o.line("NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;"), o.line("if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300) {"), o.indent(), o.line("NSLog(@\"Request failed with status code: %ld\", (long)httpResponse.statusCode);"), o.line("dispatch_semaphore_signal(semaphore);"), o.line("return;"), o.outdent(), o.line("}")) : (o.line("if (error) {"), o.indent(), o.line("NSLog(@\"Error: %@\", error);"), o.line("dispatch_semaphore_signal(semaphore);"), o.line("return;"), o.outdent(), o.line("}")), o.line("NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];"), o.line("NSLog(@\"%@\", responseString);"), o.line("dispatch_semaphore_signal(semaphore);"), o.outdent(), o.line("}];"), o.outdent(), o.line("[task resume];"), o.line("dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);"), o.outdent(), o.line("}"), o.line("return 0;"), o.outdent(), o.line("}"), o.output();
 	}
-}, re = (e) => e.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\$/g, "\\$"), I = {
+}, oe = (e) => e.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\$/g, "\\$"), L = {
 	default: !0,
 	language: "php",
 	client: "curl",
@@ -588,7 +671,7 @@ var g = {
 				separator: " => ",
 				endComma: !0,
 				nullLiteral: "null",
-				escapeString: re
+				escapeString: oe
 			}
 		}), o = e(n.headers), c = l(n.body) && i(n.body) && !o;
 		if (r.line("<?php"), r.line(), r.line("$ch = curl_init();"), r.line(), n.params && Object.keys(n.params).length > 0) {
@@ -609,7 +692,7 @@ var g = {
 		}
 		return l(n.body) && (r.line(), a(o, "form") ? (r.line("$postData = "), r.json(n.body), r.append(";"), r.line("curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));")) : a(o, "json") || !o && i(n.body) ? (r.line("$body = \"%s\";", JSON.stringify(n.body)), r.line("curl_setopt($ch, CURLOPT_POSTFIELDS, $body);")) : d(n.body) && r.line("curl_setopt($ch, CURLOPT_POSTFIELDS, \"%s\");", n.body)), r.line(), r.line("$response = curl_exec($ch);"), t.handleErrors && (r.line("if (curl_errno($ch)) {"), r.indent(), r.line("echo \"Error: \" . curl_error($ch);"), r.outdent(), r.line("}")), r.line("curl_close($ch);"), r.line(), r.line("echo $response;"), r.output();
 	}
-}, ie = (e) => e.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\$/g, "\\$"), L = {
+}, se = (e) => e.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\$/g, "\\$"), R = {
 	language: "php",
 	client: "guzzle",
 	generate(t, n) {
@@ -624,7 +707,7 @@ var g = {
 				separator: " => ",
 				endComma: !0,
 				nullLiteral: "null",
-				escapeString: ie
+				escapeString: se
 			}
 		});
 		if (r.line("<?php"), r.line(), r.line("require 'vendor/autoload.php';"), r.line(), r.line("use GuzzleHttp\\Client;"), t.handleErrors && r.line("use GuzzleHttp\\Exception\\GuzzleException;"), r.line(), t.handleErrors && (r.line("try {"), r.indent()), r.line("$client = new Client();"), r.line("$response = $client->request("), r.indent(), r.line("\"%s\",", n.method.toUpperCase()), r.line("\"%s\",", n.url), n.headers || n.cookies || l(n.body) || n.params) {
@@ -651,7 +734,7 @@ var g = {
 		}
 		return r.outdent(), r.line(");"), r.line(), r.line("echo $response->getBody();"), t.handleErrors && (r.outdent(), r.line("} catch (GuzzleException $e) {"), r.indent(), r.line("echo \"Error: \" . $e->getMessage();"), r.outdent(), r.line("}")), r.output();
 	}
-}, ae = (e) => e.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\$/g, "\\$"), R = {
+}, ce = (e) => e.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\$/g, "\\$"), z = {
 	language: "php",
 	client: "symfony",
 	generate(t, n) {
@@ -666,7 +749,7 @@ var g = {
 				separator: " => ",
 				endComma: !0,
 				nullLiteral: "null",
-				escapeString: ae
+				escapeString: ce
 			}
 		}), c = e(n.headers), u = l(n.body), d = u && (a(c, "json") || !c && i(n.body)), f = u && a(c, "form");
 		if (o.line("<?php"), o.line(), o.line("require 'vendor/autoload.php';"), o.line(), o.line("use Symfony\\Component\\HttpClient\\HttpClient;"), t.handleErrors && o.line("use Symfony\\Contracts\\HttpClient\\Exception\\TransportExceptionInterface;"), o.line(), t.handleErrors && (o.line("try {"), o.indent()), o.line("$client = HttpClient::create();"), o.line("$response = $client->request("), o.indent(), o.line("\"%s\",", n.method.toUpperCase()), o.line("\"%s\",", n.url), n.headers || n.cookies || n.params || u) {
@@ -679,7 +762,7 @@ var g = {
 		}
 		return o.outdent(), o.line(");"), o.line(), o.line("echo $response->getContent();"), t.handleErrors && (o.outdent(), o.line("} catch (TransportExceptionInterface $e) {"), o.indent(), o.line("echo \"Error: \" . $e->getMessage();"), o.outdent(), o.line("}")), o.output();
 	}
-}, oe = {
+}, B = {
 	default: !0,
 	language: "powershell",
 	client: "restmethod",
@@ -704,7 +787,7 @@ var g = {
 		let _ = ["-Uri $uri", `-Method ${n.method.toUpperCase()}`];
 		return (p || m) && _.push("-Headers $headers"), l(n.body) && (_.push("-Body $body"), g && !c ? _.push("-ContentType \"application/json\"") : h ? _.push("-ContentType \"application/x-www-form-urlencoded\"") : c && d(n.body) && _.push(`-ContentType "${c}"`)), o.line("$response = Invoke-RestMethod %r", _.join(" ")), o.line("Write-Output $response"), t.handleErrors && (o.outdent(), o.line("} catch {"), o.indent(), o.line("Write-Error $_.Exception.Message"), o.outdent(), o.line("}")), o.output();
 	}
-}, z = {
+}, V = {
 	default: !0,
 	language: "python",
 	client: "http",
@@ -732,7 +815,7 @@ var g = {
 		}
 		return c.line(), u ? c.line("conn.request(\"%s\", %r, body=payload%r)", l, b, m.includes("headers") ? ", headers=headers" : "") : c.line("conn.request(\"%s\", %r%r)", l, b, m.includes("headers") ? ", headers=headers" : ""), c.line("res = conn.getresponse()"), c.line("data = res.read()"), c.line(), c.line("print(data.decode(\"utf-8\"))"), n.handleErrors && (c.outdent(), c.line("except Exception as e:"), c.indent(), c.line("print(f\"Error: {e}\")"), c.outdent()), c.output();
 	}
-}, B = {
+}, H = {
 	language: "python",
 	client: "requests",
 	generate(t, n) {
@@ -762,7 +845,7 @@ var g = {
 		}
 		return r.line(), r.line("response = requests.%r(url%r)", n.method.toLowerCase(), u.length > 0 ? `, ${u.join(", ")}` : ""), t.handleErrors && r.line("response.raise_for_status()"), r.line("print(response.text)"), t.handleErrors && (r.outdent(), r.line("except requests.exceptions.RequestException as e:"), r.indent(), r.line("print(f\"Error: {e}\")"), r.outdent()), r.output();
 	}
-}, V = {
+}, U = {
 	language: "python",
 	client: "httpx",
 	generate(t, n) {
@@ -773,7 +856,7 @@ var g = {
 		}), o = [], c = e(n.headers);
 		return r.line("import httpx"), r.line(), t.handleErrors && (r.line("try:"), r.indent()), r.line("url = \"%s\"", n.url), n.params && Object.keys(n.params).length > 0 && (r.line(), o.push("params=url_params"), r.line("url_params = "), r.json(n.params)), n.headers && Object.keys(n.headers).length > 0 && (r.line(), o.push("headers=headers"), r.line("headers = "), r.json(n.headers)), n.cookies && Object.keys(n.cookies).length > 0 && (r.line(), o.push("cookies=cookies"), r.line("cookies = "), r.json(n.cookies)), l(n.body) && (r.line(), d(n.body) ? o.push(r.format("data=\"%s\"", n.body)) : a(c, "form") ? (o.push("data=form_data"), r.line("form_data = "), r.json(n.body)) : i(n.body) && (a(c, "json") || !c) ? (o.push("json=json_data"), r.line("json_data = "), r.json(n.body)) : (o.push("data=payload"), r.line("payload = "), r.json(n.body))), r.line(), r.line("with httpx.Client() as client:"), r.indent(), r.line("response = client.%r(url%r)", n.method.toLowerCase(), o.length > 0 ? `, ${o.join(", ")}` : ""), t.handleErrors && r.line("response.raise_for_status()"), r.line("print(response.text)"), r.outdent(), t.handleErrors && (r.outdent(), r.line("except httpx.HTTPError as e:"), r.indent(), r.line("print(f\"Error: {e}\")"), r.outdent()), r.output();
 	}
-}, H = {
+}, W = {
 	language: "python",
 	client: "aiohttp",
 	generate(t, n) {
@@ -784,7 +867,7 @@ var g = {
 		}), o = [], c = e(n.headers);
 		return r.line("import aiohttp"), r.line("import asyncio"), r.line(), r.line("async def main():"), r.indent(), t.handleErrors && (r.line("try:"), r.indent()), r.line("url = \"%s\"", n.url), n.params && Object.keys(n.params).length > 0 && (r.line(), o.push("params=url_params"), r.line("url_params = "), r.json(n.params)), n.headers && Object.keys(n.headers).length > 0 && (r.line(), o.push("headers=headers"), r.line("headers = "), r.json(n.headers)), n.cookies && Object.keys(n.cookies).length > 0 && (r.line(), o.push("cookies=cookies"), r.line("cookies = "), r.json(n.cookies)), l(n.body) && (r.line(), d(n.body) ? o.push(r.format("data=\"%s\"", n.body)) : a(c, "form") ? (o.push("data=form_data"), r.line("form_data = "), r.json(n.body)) : i(n.body) && (a(c, "json") || !c) ? (o.push("json=json_data"), r.line("json_data = "), r.json(n.body)) : (o.push("data=payload"), r.line("payload = "), r.json(n.body))), r.line(), r.line("async with aiohttp.ClientSession() as session:"), r.indent(), r.line("async with session.%r(url%r) as response:", n.method.toLowerCase(), o.length > 0 ? `, ${o.join(", ")}` : ""), r.indent(), t.handleErrors && r.line("response.raise_for_status()"), r.line("print(await response.text())"), r.outdent(), r.outdent(), t.handleErrors && (r.outdent(), r.line("except aiohttp.ClientError as e:"), r.indent(), r.line("print(f\"Error: {e}\")"), r.outdent()), r.outdent(), r.line(), r.line("asyncio.run(main())"), r.output();
 	}
-}, se = {
+}, le = {
 	GET: "GET",
 	POST: "POST",
 	PUT: "PUT",
@@ -792,7 +875,7 @@ var g = {
 	PATCH: "PATCH",
 	HEAD: "HEAD",
 	OPTIONS: "VERB"
-}, U = {
+}, G = {
 	default: !0,
 	language: "r",
 	client: "httr",
@@ -811,7 +894,7 @@ var g = {
 				quoteKeys: !1,
 				separator: " = "
 			}
-		}), o = n.method.toUpperCase(), c = se[o] || "VERB", u = e(n.headers), f = a(u, "form") && i(n.body), p = l(n.body) && !f && (a(u, "json") || !u && i(n.body)), m = n.headers && Object.keys(n.headers).length > 0, h = n.cookies && Object.keys(n.cookies).length > 0, g = n.params && Object.keys(n.params).length > 0;
+		}), o = n.method.toUpperCase(), c = le[o] || "VERB", u = e(n.headers), f = a(u, "form") && i(n.body), p = l(n.body) && !f && (a(u, "json") || !u && i(n.body)), m = n.headers && Object.keys(n.headers).length > 0, h = n.cookies && Object.keys(n.cookies).length > 0, g = n.params && Object.keys(n.params).length > 0;
 		r.line("library(httr)"), r.line(), t.handleErrors && (r.line("tryCatch({"), r.indent());
 		let _ = ["url"];
 		if (c === "VERB" && _.unshift(`"${o}"`), r.line("url <- \"%s\"", n.url), g) {
@@ -852,7 +935,7 @@ var g = {
 			r.line("%r%r", e, t < _.length - 1 ? "," : "");
 		}), r.outdent(), r.line(")"), t.handleErrors && r.line("stop_for_status(response)"), r.line("cat(content(response, \"text\"))"), t.handleErrors && (r.outdent(), r.line("}, error = function(e) {"), r.indent(), r.line("cat(\"Error:\", conditionMessage(e), \"\\n\")"), r.outdent(), r.line("})")), r.output();
 	}
-}, W = {
+}, K = {
 	default: !0,
 	language: "ruby",
 	client: "nethttp",
@@ -874,7 +957,7 @@ var g = {
 		}
 		return l(n.body) && (c ? (r.line("request.body = "), r.json(n.body), r.append(".to_json")) : a(o, "form") ? (r.line("request.body = URI.encode_www_form("), r.json(n.body), r.append(")")) : d(n.body) ? r.line("request.body = \"%s\"", n.body) : r.line("request.body = \"%s\"", JSON.stringify(n.body))), r.line(), r.line("response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == \"https\") do |http|"), r.indent(), r.line("http.request(request)"), r.outdent(), r.line("end"), r.line(), r.line("puts response.body"), t.handleErrors && (r.outdent(), r.line("rescue StandardError => e"), r.indent(), r.line("puts \"Error: #{e.message}\""), r.outdent(), r.line("end")), r.output();
 	}
-}, G = {
+}, q = {
 	language: "ruby",
 	client: "faraday",
 	generate(t, n) {
@@ -898,7 +981,7 @@ var g = {
 		}
 		return l(n.body) && (r.line(), c ? (r.line("req.body = "), r.json(n.body), r.append(".to_json")) : a(o, "form") ? (r.line("req.body = URI.encode_www_form("), r.json(n.body), r.append(")")) : d(n.body) ? r.line("req.body = \"%s\"", n.body) : r.line("req.body = \"%s\"", JSON.stringify(n.body))), r.outdent(), r.line("end"), r.line(), r.line("puts response.body"), t.handleErrors && (r.outdent(), r.line("rescue Faraday::Error => e"), r.indent(), r.line("puts \"Error: #{e.message}\""), r.outdent(), r.line("end")), r.output();
 	}
-}, K = {
+}, J = {
 	language: "ruby",
 	client: "httparty",
 	generate(t, n) {
@@ -909,7 +992,7 @@ var g = {
 		}), o = [], c = e(n.headers), u = l(n.body) && (a(c, "json") || !c && i(n.body));
 		return r.line("require \"httparty\""), u && r.line("require \"json\""), r.line(), t.handleErrors && (r.line("begin"), r.indent()), n.headers && Object.keys(n.headers).length > 0 && (r.line("headers = "), r.json(n.headers), o.push("headers: headers")), n.params && Object.keys(n.params).length > 0 && (o.length > 0 && r.line(), r.line("query = "), r.json(n.params), o.push("query: query")), n.cookies && Object.keys(n.cookies).length > 0 && (o.length > 0 && r.line(), r.line("cookies = "), r.json(n.cookies), o.push("cookies: cookies")), l(n.body) && (o.length > 0 && r.line(), u ? (r.line("body = "), r.json(n.body), r.append(".to_json")) : a(c, "form") && i(n.body) ? (r.line("body = "), r.json(n.body)) : d(n.body) ? r.line("body = \"%s\"", n.body) : r.line("body = \"%s\"", JSON.stringify(n.body)), o.push("body: body")), o.length > 0 && r.line(), r.line("response = HTTParty.%r(\"%s\"%r)", n.method.toLowerCase(), n.url, o.length > 0 ? `, ${o.join(", ")}` : ""), r.line("puts response.body"), t.handleErrors && (r.outdent(), r.line("rescue HTTParty::Error => e"), r.indent(), r.line("puts \"Error: #{e.message}\""), r.outdent(), r.line("end")), r.output();
 	}
-}, q = {
+}, Y = {
 	language: "rust",
 	client: "reqwest",
 	generate(t, n) {
@@ -935,7 +1018,7 @@ var g = {
 		}
 		return o.line(t.handleErrors ? ".send()?.error_for_status()?;" : ".send()?;"), o.outdent(), o.line(), o.line("println!(\"{}\", res.text()?);"), o.line("Ok(())"), o.outdent(), o.line("}"), o.output();
 	}
-}, J = {
+}, X = {
 	language: "rust",
 	client: "ureq",
 	generate(t, n) {
@@ -957,10 +1040,10 @@ var g = {
 };
 //#endregion
 //#region src/gimmehttp/clients/shell.curl.ts
-function Y(e) {
+function Z(e) {
 	return e.replace(/'/g, "'\\''");
 }
-var X = {
+var ue = {
 	default: !0,
 	language: "shell",
 	client: "curl",
@@ -975,12 +1058,12 @@ var X = {
 			let t = e(n.headers);
 			if (a(t, "json") || !t && i(n.body)) {
 				let e = JSON.stringify(n.body, null, o);
-				c.line("-d '%r'", Y(e));
+				c.line("-d '%r'", Z(e));
 			} else if (a(t, "form") && i(n.body)) for (let [e, t] of Object.entries(n.body)) {
 				let n = `${encodeURIComponent(e)}=${encodeURIComponent(String(t))}`;
-				c.line("-d '%r'", Y(n));
+				c.line("-d '%r'", Z(n));
 			}
-			else typeof n.body == "string" && c.line("-d '%r'", Y(n.body));
+			else typeof n.body == "string" && c.line("-d '%r'", Z(n.body));
 		}
 		let m = c.output();
 		return m = m.replace(/\\\s*$/, "").trim(), m;
@@ -988,10 +1071,10 @@ var X = {
 };
 //#endregion
 //#region src/gimmehttp/clients/shell.httpie.ts
-function Z(e) {
+function Q(e) {
 	return e.replace(/'/g, "'\\''");
 }
-var Q = {
+var de = {
 	language: "shell",
 	client: "httpie",
 	generate(t, n) {
@@ -999,9 +1082,9 @@ var Q = {
 			indent: o,
 			join: t.join || " \\\n"
 		}), f = e(n.headers), p = u(n.url, n.params);
-		if (c.line("http %r \"%s\"", n.method.toUpperCase(), p), c.indent(), n.headers) for (let [e, t] of Object.entries(n.headers)) (Array.isArray(t) ? t : [t]).forEach((t) => c.line("'%r'", Z(`${e}:${t}`)));
-		if (n.cookies && Object.keys(n.cookies).length > 0 && c.line("'%r'", Z(`Cookie:${r(n.cookies)}`)), l(n.body)) if (a(f, "form") && i(n.body)) for (let [e, t] of Object.entries(n.body)) c.line("'%r'", Z(`${e}=${t}`));
-		else a(f, "json") || !f && i(n.body) ? c.line("<<< '%r'", Z(JSON.stringify(n.body, null, o))) : d(n.body) && c.line("<<< '%r'", Z(n.body));
+		if (c.line("http %r \"%s\"", n.method.toUpperCase(), p), c.indent(), n.headers) for (let [e, t] of Object.entries(n.headers)) (Array.isArray(t) ? t : [t]).forEach((t) => c.line("'%r'", Q(`${e}:${t}`)));
+		if (n.cookies && Object.keys(n.cookies).length > 0 && c.line("'%r'", Q(`Cookie:${r(n.cookies)}`)), l(n.body)) if (a(f, "form") && i(n.body)) for (let [e, t] of Object.entries(n.body)) c.line("'%r'", Q(`${e}=${t}`));
+		else a(f, "json") || !f && i(n.body) ? c.line("<<< '%r'", Q(JSON.stringify(n.body, null, o))) : d(n.body) && c.line("<<< '%r'", Q(n.body));
 		return c.output().replace(/\\\s*$/, "").trim();
 	}
 };
@@ -1010,7 +1093,7 @@ var Q = {
 function $(e) {
 	return e.replace(/'/g, "'\\''");
 }
-var ce = {
+var fe = {
 	language: "shell",
 	client: "wget",
 	generate(t, n) {
@@ -1026,7 +1109,7 @@ var ce = {
 		} else a(p, "json") || !p && i(n.body) ? c.line("--body-data='%r'", $(JSON.stringify(n.body, null, o))) : d(n.body) && c.line("--body-data='%r'", $(n.body));
 		return c.line("-O -"), c.line("'%r'", $(m)), c.output().replace(/\\\s*$/, "").trim();
 	}
-}, le = {
+}, pe = {
 	default: !0,
 	language: "swift",
 	client: "nsurlsession",
@@ -1047,7 +1130,7 @@ var ce = {
 		}
 		return t.cookies && Object.keys(t.cookies).length > 0 && (n.line(), n.line("request.addValue(\"%s\", forHTTPHeaderField: \"Cookie\")", r(t.cookies))), t.body && (n.line(), typeof t.body == "string" ? (n.line("let bodyString = \"%s\"", t.body), n.line("request.httpBody = bodyString.data(using: .utf8)")) : i(t.body) && (n.line("let json = "), n.jsonStringLiteral(t.body), n.line("request.httpBody = json.data(using: .utf8)"))), n.line(), n.line("do {"), n.indent(), n.line("let (data, response) = try await URLSession.shared.data(for: request)"), n.line("guard let httpResponse = response as? HTTPURLResponse else {"), n.indent(), n.line("print(\"Invalid response\")"), n.line("return"), n.outdent(), n.line("}"), n.line(), n.line("guard (200..<300).contains(httpResponse.statusCode) else {"), n.indent(), n.line("print(\"Request failed with status code: \\(httpResponse.statusCode)\")"), n.line("return"), n.outdent(), n.line("}"), n.line("let responseString = String(data: data, encoding: .utf8)"), n.line("print(responseString ?? \"No response data\")"), n.outdent(), n.line("} catch {"), n.line(), n.indent(), n.line("print(\"Error: \\(error)\")"), n.outdent(), n.line("}"), n.output();
 	}
-}, ue = {
+}, me = {
 	language: "swift",
 	client: "alamofire",
 	generate(e, t) {
@@ -1063,15 +1146,17 @@ var ce = {
 		let c = u(t.url, t.params), f = Object.keys(o).length > 0 ? ", headers: headers" : "", p = `.${t.method.toLowerCase()}`;
 		return a && i(t.body) ? (n.line("let parameters: Parameters = "), n.json(t.body), n.append(""), n.line(), n.line("AF.request(\"%s\", method: %r, parameters: parameters, encoding: JSONEncoding.default%r)", c, p, f)) : a && d(t.body) ? (n.line("var urlRequest = URLRequest(url: URL(string: \"%s\")!)", c), n.line("urlRequest.method = %r", p), Object.keys(o).length > 0 && n.line("urlRequest.headers = headers"), n.line("urlRequest.httpBody = \"%s\".data(using: .utf8)", t.body), n.line("AF.request(urlRequest)")) : n.line("AF.request(\"%s\", method: %r%r)", c, p, f), n.indent(), n.line(".validate()"), n.line(".responseString { response in"), n.indent(), n.line("switch response.result {"), n.line("case .success(let value):"), n.indent(), n.line("print(value)"), n.outdent(), n.line("case .failure(let error):"), n.indent(), n.line("print(error)"), n.outdent(), n.line("}"), n.outdent(), n.line("}"), n.outdent(), n.output();
 	}
-}, de = [
+}, he = [
 	p,
 	g,
 	_,
 	v,
 	b,
-	x,
 	te,
 	ne,
+	re,
+	ie,
+	x,
 	S,
 	C,
 	w,
@@ -1087,9 +1172,9 @@ var ce = {
 	P,
 	F,
 	I,
+	ae,
 	L,
 	R,
-	oe,
 	z,
 	B,
 	V,
@@ -1100,13 +1185,15 @@ var ce = {
 	K,
 	q,
 	J,
+	Y,
 	X,
-	Q,
-	ce,
-	le,
-	ue
+	ue,
+	de,
+	fe,
+	pe,
+	me
 ];
 //#endregion
-export { de as allClients, p as cLibcurl, v as csharpFlurl, g as csharpHttp, _ as csharpRestsharp, x as dartDio, b as dartHttp, te as goHttp, ne as goResty, w as javaHttpclient, S as javaHttpurlconnection, C as javaOkhttp, E as jsAxios, T as jsFetch, D as jsJquery, O as jsKy, k as kotlinKtor, A as kotlinOkhttp, N as nodeAxios, M as nodeFetch, P as nodeGot, j as nodeHttp, F as objectivecNsurlsession, I as phpCurl, L as phpGuzzle, R as phpSymfony, oe as powershellRestmethod, H as pythonAiohttp, z as pythonHttp, V as pythonHttpx, B as pythonRequests, U as rHttr, G as rubyFaraday, K as rubyHttparty, W as rubyNethttp, q as rustReqwest, J as rustUreq, X as shellCurl, Q as shellHttpie, ce as shellWget, ue as swiftAlamofire, le as swiftNsurlsession };
+export { he as allClients, p as cLibcurl, v as csharpFlurl, g as csharpHttp, _ as csharpRestsharp, te as dartDio, b as dartHttp, ne as goHttp, re as goResty, S as javaHttpclient, ie as javaHttpurlconnection, x as javaOkhttp, w as jsAxios, C as jsFetch, T as jsJquery, E as jsKy, j as kotlinKtor, M as kotlinOkhttp, F as nodeAxios, P as nodeFetch, I as nodeGot, N as nodeHttp, ae as objectivecNsurlsession, L as phpCurl, R as phpGuzzle, z as phpSymfony, B as powershellRestmethod, W as pythonAiohttp, V as pythonHttp, U as pythonHttpx, H as pythonRequests, G as rHttr, q as rubyFaraday, J as rubyHttparty, K as rubyNethttp, Y as rustReqwest, X as rustUreq, ue as shellCurl, de as shellHttpie, fe as shellWget, me as swiftAlamofire, pe as swiftNsurlsession, O as tsAxios, D as tsFetch, k as tsJquery, A as tsKy };
 
 //# sourceMappingURL=index.es.js.map
