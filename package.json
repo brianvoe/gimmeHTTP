@@ -4,6 +4,10 @@
   "version": "1.5.1",
   "description": "HTTP request code generator",
   "license": "MIT",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/brianvoe"
+  },
   "bugs": {
     "url": "https://github.com/brianvoe/gimmeHTTP/issues"
   },
