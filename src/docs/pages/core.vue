@@ -2,7 +2,7 @@
   import { defineComponent } from 'vue'
   import HighlightStyle from '@/docs/components/highlight_style.vue'
   import { Generate } from '@/gimmehttp/core'
-  import type { Config, Http, Method } from '@/gimmehttp/core'
+  import type { Http, Method } from '@/gimmehttp/core'
 
   type NavLeaf = { id: string; label: string }
   type NavGroup = { label: string; children: NavLeaf[] }
@@ -13,23 +13,58 @@
     typeLabel: string
     defaultLabel: string
     description: string
-    sample: string
     demo: string
   }
 
-  const baseHttp: Http = {
-    method: 'POST',
-    url: 'https://example.com/api/users',
-    params: { limit: '10' },
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer token'
-    },
-    cookies: { session_id: 'abc123' },
-    body: {
-      first_name: 'Billy',
-      email: 'billy@example.com'
+  /** Pretty-print a value as a TypeScript object literal for docs samples. */
+  function toTsLiteral(value: unknown, depth = 0): string {
+    const pad = '  '.repeat(depth)
+    const padIn = '  '.repeat(depth + 1)
+    if (value === null) {
+      return 'null'
     }
+    if (typeof value === 'string') {
+      return `'${value
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t')}'`
+    }
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      return String(value)
+    }
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        return '[]'
+      }
+      return `[\n${value.map((v) => `${padIn}${toTsLiteral(v, depth + 1)}`).join(',\n')}\n${pad}]`
+    }
+    if (typeof value === 'object') {
+      const entries = Object.entries(value as Record<string, unknown>)
+      if (entries.length === 0) {
+        return '{}'
+      }
+      const lines = entries.map(([k, v]) => {
+        const key = /^[a-zA-Z_$][\w$]*$/.test(k) ? k : `'${k}'`
+        return `${padIn}${key}: ${toTsLiteral(v, depth + 1)}`
+      })
+      return `{\n${lines.join(',\n')}\n${pad}}`
+    }
+    return String(value)
+  }
+
+  /** Format `key: value` at depth; when disabled, comment every line so layout stays stable. */
+  function formatOptionalProp(key: string, value: unknown, enabled: boolean, depth: number): string {
+    const pad = '  '.repeat(depth)
+    const prop = `${pad}${key}: ${toTsLiteral(value, depth)}`
+    if (enabled) {
+      return prop
+    }
+    return prop
+      .split('\n')
+      .map((line) => line.replace(/^(\s*)/, '$1// '))
+      .join('\n')
   }
 
   const navItems: (NavLeaf | NavGroup)[] = [
@@ -63,7 +98,6 @@
       typeLabel: 'string',
       defaultLabel: `'javascript'`,
       description: 'Language passed to Generate(). Defaults to javascript when omitted.',
-      sample: `const { code } = Generate({\n  language: 'python',\n  http: { method: 'GET', url: 'https://example.com' }\n})`,
       demo: 'language'
     },
     {
@@ -72,7 +106,6 @@
       typeLabel: 'string',
       defaultLabel: 'language default',
       description: 'Client library for Generate(). Uses the language default when omitted.',
-      sample: `const { code } = Generate({\n  language: 'javascript',\n  client: 'axios',\n  http: { method: 'GET', url: 'https://example.com' }\n})`,
       demo: 'client'
     },
     {
@@ -81,7 +114,6 @@
       typeLabel: 'string',
       defaultLabel: `'  '`,
       description: 'Indentation characters in engine-generated code.',
-      sample: `Generate({\n  config: { indent: '    ' },\n  http: { method: 'GET', url: 'https://example.com' }\n})`,
       demo: 'indent'
     },
     {
@@ -90,7 +122,6 @@
       typeLabel: 'string',
       defaultLabel: `'\\n'`,
       description: 'Line join string for engine output.',
-      sample: `Generate({\n  config: { join: '\\n' },\n  http: { method: 'GET', url: 'https://example.com' }\n})`,
       demo: 'join'
     },
     {
@@ -99,7 +130,6 @@
       typeLabel: 'boolean',
       defaultLabel: 'false',
       description: 'Include error-handling patterns in Generate() output when supported.',
-      sample: `Generate({\n  config: { handleErrors: true },\n  http: { method: 'GET', url: 'https://example.com' }\n})`,
       demo: 'handleErrors'
     },
     {
@@ -108,7 +138,6 @@
       typeLabel: `'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'`,
       defaultLabel: 'required',
       description: 'HTTP method for Generate(). Required with url.',
-      sample: `Generate({\n  http: { method: 'DELETE', url: 'https://example.com/api/users/1' }\n})`,
       demo: 'method'
     },
     {
@@ -117,7 +146,6 @@
       typeLabel: 'string',
       defaultLabel: 'required',
       description: 'Request URL for Generate().',
-      sample: `Generate({\n  http: { method: 'GET', url: 'https://api.example.com/v1/users' }\n})`,
       demo: 'url'
     },
     {
@@ -126,7 +154,6 @@
       typeLabel: 'Record<string, string | string[]>',
       defaultLabel: 'undefined',
       description: 'Query parameters included in Generate() output.',
-      sample: `Generate({\n  http: {\n    method: 'GET',\n    url: 'https://example.com',\n    params: { limit: '10' }\n  }\n})`,
       demo: 'params'
     },
     {
@@ -135,7 +162,6 @@
       typeLabel: 'Record<string, string | string[]>',
       defaultLabel: 'undefined',
       description: 'Headers included in Generate() output.',
-      sample: `Generate({\n  http: {\n    method: 'GET',\n    url: 'https://example.com',\n    headers: { Accept: 'application/json' }\n  }\n})`,
       demo: 'headers'
     },
     {
@@ -144,7 +170,6 @@
       typeLabel: 'Record<string, string>',
       defaultLabel: 'undefined',
       description: 'Cookies included in Generate() output.',
-      sample: `Generate({\n  http: {\n    method: 'GET',\n    url: 'https://example.com',\n    cookies: { session_id: 'abc123' }\n  }\n})`,
       demo: 'cookies'
     },
     {
@@ -153,7 +178,6 @@
       typeLabel: 'string | object | any',
       defaultLabel: 'undefined',
       description: 'Body included in Generate() output.',
-      sample: `Generate({\n  http: {\n    method: 'POST',\n    url: 'https://example.com',\n    headers: { 'Content-Type': 'application/json' },\n    body: { name: 'Ada' }\n  }\n})`,
       demo: 'body'
     }
   ]
@@ -192,13 +216,6 @@
       },
       joinValue(): string {
         return this.demo.joinNewline ? '\n' : ' '
-      },
-      demoConfig(): Config {
-        return {
-          indent: this.indentValue,
-          join: this.joinValue,
-          handleErrors: this.demo.handleErrors
-        }
       }
     },
     mounted() {
@@ -258,71 +275,228 @@
         }
       },
 
-      buildHttpFromBase(overrides: Partial<Http> = {}): Http {
-        const http: Http = {
-          method: overrides.method ?? baseHttp.method,
-          url: overrides.url ?? baseHttp.url
+      /** Scenario-specific request used by both Generate() and the sample. */
+      httpForDemo(demo: string): Http {
+        const simpleGet: Http = {
+          method: 'GET',
+          url: 'https://example.com/api/users'
         }
-        const params = 'params' in overrides ? overrides.params : baseHttp.params
-        if (params) {
-          http.params = params
+
+        switch (demo) {
+          case 'language':
+          case 'client':
+          case 'handleErrors':
+            return simpleGet
+          case 'indent':
+          case 'join':
+            return {
+              method: 'POST',
+              url: 'https://example.com/api/users',
+              headers: { 'Content-Type': 'application/json' },
+              body: { name: 'Billy' }
+            }
+          case 'method':
+            return {
+              method: this.demo.method,
+              url: 'https://example.com/api/users'
+            }
+          case 'url':
+            return {
+              method: 'GET',
+              url: this.demo.url
+            }
+          case 'params': {
+            const http: Http = { ...simpleGet }
+            if (this.demo.withParams) {
+              http.params = { limit: '10' }
+            }
+            return http
+          }
+          case 'headers': {
+            const http: Http = { ...simpleGet }
+            if (this.demo.withHeaders) {
+              http.headers = { Authorization: 'Bearer token' }
+            }
+            return http
+          }
+          case 'cookies': {
+            const http: Http = { ...simpleGet }
+            if (this.demo.withCookies) {
+              http.cookies = { session_id: 'abc123' }
+            }
+            return http
+          }
+          case 'body': {
+            const http: Http = {
+              method: 'POST',
+              url: 'https://example.com/api/users'
+            }
+            if (this.demo.withBody) {
+              http.headers = { 'Content-Type': 'application/json' }
+              http.body = { name: 'Billy' }
+            }
+            return http
+          }
+          default:
+            return simpleGet
         }
-        const headers = 'headers' in overrides ? overrides.headers : baseHttp.headers
-        if (headers) {
-          http.headers = headers
+      },
+
+      languageForDemo(demo: string): string {
+        if (demo === 'language') {
+          return this.demo.language
         }
-        const cookies = 'cookies' in overrides ? overrides.cookies : baseHttp.cookies
-        if (cookies) {
-          http.cookies = cookies
+        if (demo === 'client') {
+          return 'javascript'
         }
-        const body = 'body' in overrides ? overrides.body : baseHttp.body
-        if (body !== undefined) {
-          http.body = body
+        return 'go'
+      },
+
+      clientForDemo(demo: string): string {
+        if (demo === 'client') {
+          return this.demo.jsClient
         }
-        return http
+        if (demo === 'language') {
+          if (this.demo.language === 'go') {
+            return 'http'
+          }
+          if (this.demo.language === 'python') {
+            return 'requests'
+          }
+          return 'curl'
+        }
+        return 'http'
+      },
+
+      configForDemo(demo: string) {
+        switch (demo) {
+          case 'indent':
+            return { indent: this.indentValue, join: '\n', handleErrors: false }
+          case 'join':
+            return { indent: '  ', join: this.joinValue, handleErrors: false }
+          case 'handleErrors':
+            return { indent: '  ', join: '\n', handleErrors: this.demo.handleErrors }
+          default:
+            return { indent: '  ', join: '\n', handleErrors: false }
+        }
+      },
+
+      /** Focused Generate() args shown in the code sample (matches the live demo). */
+      sampleArgsFor(demo: string): Record<string, unknown> {
+        const http = this.httpForDemo(demo)
+        switch (demo) {
+          case 'language':
+            return {
+              language: this.demo.language,
+              http
+            }
+          case 'client':
+            return {
+              language: 'javascript',
+              client: this.demo.jsClient,
+              http
+            }
+          case 'indent':
+            return {
+              config: { indent: this.indentValue },
+              http
+            }
+          case 'join':
+            return {
+              config: { join: this.joinValue },
+              http
+            }
+          case 'handleErrors':
+            return {
+              config: { handleErrors: this.demo.handleErrors },
+              http
+            }
+          case 'method':
+          case 'url':
+          case 'params':
+          case 'headers':
+          case 'cookies':
+          case 'body':
+            return { http }
+          default:
+            return { http }
+        }
+      },
+
+      sampleFor(doc: SettingDoc): string {
+        const demo = doc.demo
+
+        if (demo === 'params' || demo === 'headers' || demo === 'cookies' || demo === 'body') {
+          return this.sampleGenerateWithOptional(demo)
+        }
+
+        return `const { code } = Generate(${toTsLiteral(this.sampleArgsFor(demo))})`
+      },
+
+      sampleGenerateWithOptional(demo: 'params' | 'headers' | 'cookies' | 'body'): string {
+        const optionals: { key: string; value: unknown; enabled: boolean }[] =
+          demo === 'params'
+            ? [{ key: 'params', value: { limit: '10' }, enabled: this.demo.withParams }]
+            : demo === 'headers'
+              ? [
+                  {
+                    key: 'headers',
+                    value: { Authorization: 'Bearer token' },
+                    enabled: this.demo.withHeaders
+                  }
+                ]
+              : demo === 'cookies'
+                ? [
+                    {
+                      key: 'cookies',
+                      value: { session_id: 'abc123' },
+                      enabled: this.demo.withCookies
+                    }
+                  ]
+                : [
+                    {
+                      key: 'headers',
+                      value: { 'Content-Type': 'application/json' },
+                      enabled: this.demo.withBody
+                    },
+                    {
+                      key: 'body',
+                      value: { name: 'Billy' },
+                      enabled: this.demo.withBody
+                    }
+                  ]
+
+        const method = demo === 'body' ? 'POST' : 'GET'
+        const url = 'https://example.com/api/users'
+        const optionalBlock = optionals
+          .map((opt, i) => {
+            let block = formatOptionalProp(opt.key, opt.value, opt.enabled, 2)
+            if (i < optionals.length - 1) {
+              const lines = block.split('\n')
+              lines[lines.length - 1] += ','
+              block = lines.join('\n')
+            }
+            return block
+          })
+          .join('\n')
+
+        return [
+          'const { code } = Generate({',
+          '  http: {',
+          `    method: '${method}',`,
+          `    url: '${url}',`,
+          optionalBlock,
+          '  }',
+          '})'
+        ].join('\n')
       },
 
       coreSettings(demo: string) {
-        const language = demo === 'language' ? this.demo.language : demo === 'client' ? 'javascript' : 'go'
-        const client =
-          demo === 'client'
-            ? this.demo.jsClient
-            : demo === 'language'
-              ? this.demo.language === 'go'
-                ? 'http'
-                : this.demo.language === 'python'
-                  ? 'requests'
-                  : 'curl'
-              : 'http'
-
-        let http = this.buildHttpFromBase()
-        if (demo === 'method') {
-          http = this.buildHttpFromBase({ method: this.demo.method })
-        } else if (demo === 'url') {
-          http = this.buildHttpFromBase({ url: this.demo.url })
-        } else if (demo === 'params') {
-          http = this.buildHttpFromBase({
-            params: this.demo.withParams ? baseHttp.params : undefined
-          })
-        } else if (demo === 'headers') {
-          http = this.buildHttpFromBase({
-            headers: this.demo.withHeaders ? baseHttp.headers : undefined
-          })
-        } else if (demo === 'cookies') {
-          http = this.buildHttpFromBase({
-            cookies: this.demo.withCookies ? baseHttp.cookies : undefined
-          })
-        } else if (demo === 'body') {
-          http = this.buildHttpFromBase({
-            body: this.demo.withBody ? baseHttp.body : undefined
-          })
-        }
-
         return {
-          language,
-          client,
-          config: { ...this.demoConfig },
-          http
+          language: this.languageForDemo(demo),
+          client: this.clientForDemo(demo),
+          config: this.configForDemo(demo),
+          http: this.httpForDemo(demo)
         }
       },
 
@@ -373,132 +547,128 @@
       <div id="core-overview" class="section panel">
         <h2>Core</h2>
         <p class="desc">
-          Engine settings for <code>Generate()</code> from <code>gimmehttp/core</code>. These fields also appear under
-          the widget’s <code>settings</code> object — see
-          <router-link to="/settings">Settings</router-link> for UI-only controls like theme and copy.
+          Use <code>Generate()</code> from <code>gimmehttp/core</code> when you want HTTP snippets as plain strings —
+          in scripts, backends, or docs pipelines — with no widget to mount. This page covers the options that shape
+          that output. Prefer the visual picker and chrome? See
+          <router-link to="/settings">Settings</router-link>.
         </p>
-        <div class="alert info">
-          <strong>Info:</strong> The only required fields are <code>http.method</code> and <code>http.url</code>.
-          Language defaults to <code>javascript</code> when omitted. Register clients before calling
-          <code>Generate</code>.
-        </div>
       </div>
 
-        <div v-for="doc in settingDocs" :id="doc.id" :key="doc.id" class="section panel">
-          <h3>
-            <code>{{ doc.title }}</code>
-          </h3>
-          <p class="meta">
-            <span>Type: <code>{{ doc.typeLabel }}</code></span>
-            <span>Default: <code>{{ doc.defaultLabel }}</code></span>
-          </p>
-          <p class="desc">{{ doc.description }}</p>
+      <div v-for="doc in settingDocs" :id="doc.id" :key="doc.id" class="section panel">
+        <h3>
+          <code>{{ doc.title }}</code>
+        </h3>
+        <p class="meta">
+          <span>Type: <code>{{ doc.typeLabel }}</code></span>
+          <span>Default: <code>{{ doc.defaultLabel }}</code></span>
+        </p>
+        <p class="desc">{{ doc.description }}</p>
 
-          <HighlightStyle language="typescript">
-            <pre>{{ doc.sample }}</pre>
-          </HighlightStyle>
+        <HighlightStyle language="typescript">
+          <pre>{{ sampleFor(doc) }}</pre>
+        </HighlightStyle>
 
-          <div class="demo">
-            <p class="demo_label">Live demo (Generate)</p>
+        <div class="demo">
+          <p class="demo_label">Live demo (Generate)</p>
 
-            <div v-if="doc.demo === 'language'" class="demo_controls">
-              <label>
-                language
-                <select v-model="demo.language">
-                  <option value="go">go</option>
-                  <option value="python">python</option>
-                  <option value="shell">shell</option>
-                </select>
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'client'" class="demo_controls">
-              <label>
-                client
-                <select v-model="demo.jsClient">
-                  <option value="fetch">fetch</option>
-                  <option value="axios">axios</option>
-                  <option value="jquery">jquery</option>
-                  <option value="ky">ky</option>
-                </select>
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'indent'" class="demo_controls">
-              <label>
-                indent
-                <select v-model="demo.indent">
-                  <option value="2">2 spaces</option>
-                  <option value="4">4 spaces</option>
-                </select>
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'join'" class="demo_controls">
-              <label class="inline">
-                <input v-model="demo.joinNewline" type="checkbox" />
-                Join with newlines (off = spaces)
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'handleErrors'" class="demo_controls">
-              <label class="inline">
-                <input v-model="demo.handleErrors" type="checkbox" />
-                handleErrors
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'method'" class="demo_controls">
-              <label>
-                method
-                <select v-model="demo.method">
-                  <option>GET</option>
-                  <option>POST</option>
-                  <option>PUT</option>
-                  <option>PATCH</option>
-                  <option>DELETE</option>
-                </select>
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'url'" class="demo_controls">
-              <label>
-                url
-                <input v-model="demo.url" type="text" />
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'params'" class="demo_controls">
-              <label class="inline">
-                <input v-model="demo.withParams" type="checkbox" />
-                Include params
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'headers'" class="demo_controls">
-              <label class="inline">
-                <input v-model="demo.withHeaders" type="checkbox" />
-                Include headers
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'cookies'" class="demo_controls">
-              <label class="inline">
-                <input v-model="demo.withCookies" type="checkbox" />
-                Include cookies
-              </label>
-            </div>
-
-            <div v-else-if="doc.demo === 'body'" class="demo_controls">
-              <label class="inline">
-                <input v-model="demo.withBody" type="checkbox" />
-                Include body
-              </label>
-            </div>
-
-            <pre class="demo_output">{{ coreOutput(doc.demo) }}</pre>
+          <div v-if="doc.demo === 'language'" class="demo_controls">
+            <label>
+              language
+              <select v-model="demo.language">
+                <option value="go">go</option>
+                <option value="python">python</option>
+                <option value="shell">shell</option>
+              </select>
+            </label>
           </div>
+
+          <div v-else-if="doc.demo === 'client'" class="demo_controls">
+            <label>
+              client
+              <select v-model="demo.jsClient">
+                <option value="fetch">fetch</option>
+                <option value="axios">axios</option>
+                <option value="jquery">jquery</option>
+                <option value="ky">ky</option>
+              </select>
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'indent'" class="demo_controls">
+            <label>
+              indent
+              <select v-model="demo.indent">
+                <option value="2">2 spaces</option>
+                <option value="4">4 spaces</option>
+              </select>
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'join'" class="demo_controls">
+            <label class="inline">
+              <input v-model="demo.joinNewline" type="checkbox" />
+              Join with newlines (off = spaces)
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'handleErrors'" class="demo_controls">
+            <label class="inline">
+              <input v-model="demo.handleErrors" type="checkbox" />
+              handleErrors
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'method'" class="demo_controls">
+            <label>
+              method
+              <select v-model="demo.method">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>PATCH</option>
+                <option>DELETE</option>
+              </select>
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'url'" class="demo_controls">
+            <label>
+              url
+              <input v-model="demo.url" type="text" />
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'params'" class="demo_controls">
+            <label class="inline">
+              <input v-model="demo.withParams" type="checkbox" />
+              Include params
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'headers'" class="demo_controls">
+            <label class="inline">
+              <input v-model="demo.withHeaders" type="checkbox" />
+              Include headers
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'cookies'" class="demo_controls">
+            <label class="inline">
+              <input v-model="demo.withCookies" type="checkbox" />
+              Include cookies
+            </label>
+          </div>
+
+          <div v-else-if="doc.demo === 'body'" class="demo_controls">
+            <label class="inline">
+              <input v-model="demo.withBody" type="checkbox" />
+              Include body
+            </label>
+          </div>
+
+          <pre class="demo_output">{{ coreOutput(doc.demo) }}</pre>
         </div>
       </div>
     </div>
+  </div>
 </template>
