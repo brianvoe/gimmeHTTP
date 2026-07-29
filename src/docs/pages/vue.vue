@@ -130,8 +130,8 @@
     <div class="section">
       <h3>Setup</h3>
       <p>
-        Import the styles once, register the clients you need (tree-shaken), then optionally install the plugin for
-        global <code>&lt;GimmeHttp&gt;</code> registration.
+        Import the shared styles once (<code>gimmehttp/css</code>), register the clients you need (tree-shaken), then
+        optionally install the plugin for global <code>&lt;GimmeHttp&gt;</code> registration.
       </p>
 
       <HighlightStyle language="typescript">
@@ -139,7 +139,7 @@
           // main.ts
           import { createApp } from 'vue'
           import App from './App.vue'
-          import 'gimmehttp/vue/css'
+          import 'gimmehttp/css'
 
           import GimmeHttpVue from 'gimmehttp/vue'
           import { Register } from 'gimmehttp/core'

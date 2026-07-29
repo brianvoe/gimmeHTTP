@@ -46,10 +46,6 @@
   })
 </script>
 
-<style lang="scss">
-  @use '../ui/gimmehttp';
-</style>
-
 <template>
   <div class="gimmehttp-wrap"></div>
 </template>

@@ -43,6 +43,22 @@ To install GimmeHttp, simply use npm:
 npm install gimmehttp
 ```
 
+## Bundle sizes
+
+Approximate minified + gzip sizes from the published build (what a bundler/CDN typically ships):
+
+| Entry | gzip |
+| ----- | ---- |
+| `gimmehttp` UI (ESM) | ~51 kB |
+| CDN / `<script>` build (`dist/gimmehttp.js`) | ~63 kB |
+| `gimmehttp/css` | ~2 kB |
+| `gimmehttp/core` (engine) | ~3 kB |
+| `gimmehttp/clients` (all clients) | ~16 kB |
+| `gimmehttp/vue` | ~1 kB |
+| `gimmehttp/react` | ~1 kB |
+
+Import only the clients you need — unused ones are tree-shaken. A typical single client is well under 1 kB gzip.
+
 ## Register Clients
 
 No clients are registered by default. Import the clients you want from `gimmehttp/clients` and register them once at
@@ -389,10 +405,10 @@ The Vue component is a thin wrapper around the JavaScript UI component.
 
 ### Install styles
 
-Add the package CSS once (e.g., in `main.ts`).
+Add the shared package CSS once (e.g. in `main.ts`). Same import for vanilla, Vue, and React.
 
 ```ts
-import 'gimmehttp/vue/css'
+import 'gimmehttp/css'
 ```
 
 ### Register clients at startup
@@ -456,8 +472,10 @@ The React component is a thin wrapper around the JavaScript UI component.
 
 ### Install styles
 
+Add the shared package CSS once. Same import for vanilla, Vue, and React.
+
 ```ts
-import 'gimmehttp/react/css'
+import 'gimmehttp/css'
 ```
 
 ### Register clients at startup

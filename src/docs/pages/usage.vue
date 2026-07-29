@@ -158,6 +158,36 @@
       }
     }
 
+    .size_table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      th {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-primary);
+      }
+
+      td:last-child {
+        font-family: var(--font-mono);
+        white-space: nowrap;
+      }
+
+      code {
+        font-size: 13px;
+      }
+    }
+
     .ui_demo {
       margin-top: var(--spacing);
     }
@@ -210,6 +240,53 @@
           </ul>
         </div>
       </div>
+    </div>
+
+    <div class="section">
+      <h3>Bundle sizes</h3>
+      <p>
+        Approximate minified + gzip sizes from the published build. Import only the clients you need — unused ones are
+        tree-shaken (a typical single client is well under 1&nbsp;kB gzip).
+      </p>
+
+      <table class="size_table">
+        <thead>
+          <tr>
+            <th>Entry</th>
+            <th>gzip</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>gimmehttp</code> UI (ESM)</td>
+            <td>~51 kB</td>
+          </tr>
+          <tr>
+            <td>CDN / <code>&lt;script&gt;</code> build</td>
+            <td>~63 kB</td>
+          </tr>
+          <tr>
+            <td><code>gimmehttp/css</code></td>
+            <td>~2 kB</td>
+          </tr>
+          <tr>
+            <td><code>gimmehttp/core</code> (engine)</td>
+            <td>~3 kB</td>
+          </tr>
+          <tr>
+            <td><code>gimmehttp/clients</code> (all)</td>
+            <td>~16 kB</td>
+          </tr>
+          <tr>
+            <td><code>gimmehttp/vue</code></td>
+            <td>~1 kB</td>
+          </tr>
+          <tr>
+            <td><code>gimmehttp/react</code></td>
+            <td>~1 kB</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="section">

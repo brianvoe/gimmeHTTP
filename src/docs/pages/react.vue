@@ -79,8 +79,8 @@
     <div class="section">
       <h3>Setup</h3>
       <p>
-        Import the styles once and register the clients you need (tree-shaken). React and ReactDOM are peer
-        dependencies.
+        Import the shared styles once (<code>gimmehttp/css</code>) and register the clients you need (tree-shaken).
+        React and ReactDOM are peer dependencies.
       </p>
 
       <HighlightStyle language="typescript">
@@ -88,7 +88,7 @@
           // main.tsx
           import { createRoot } from 'react-dom/client'
           import App from './App'
-          import 'gimmehttp/react/css'
+          import 'gimmehttp/css'
 
           import { Register } from 'gimmehttp/core'
           import { goHttp, jsFetch, shellCurl } from 'gimmehttp/clients'

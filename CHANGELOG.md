@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Renamed UI settings `picker` → `pickerShow` and `copy` → `copyShow` (both default `true`) to match `themeShow`.
+- Stylesheet is only exported as `gimmehttp/css` (removed duplicate `ui/css`, `vue/css`, and `react/css` paths).
 
 ## [v2.0.2]
 

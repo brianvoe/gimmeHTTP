@@ -5126,8 +5126,10 @@ var ze = class {
 		let r = t.settings;
 		this.http = r.http, this.config = r.config, this.events = t.events || {}, this.controls = {
 			theme: r.theme || "dark",
-			copy: r.copy !== !1,
-			picker: r.picker !== !1
+			toolbarShow: r.toolbarShow !== !1,
+			pickerShow: r.pickerShow !== !1,
+			copyShow: r.copyShow !== !1,
+			themeShow: r.themeShow !== !1
 		};
 		let i = typeof window < "u", a = i ? localStorage.getItem(Me) : null, o = i ? localStorage.getItem(Ne) : null, s = this.clientsPool();
 		this.language = r.language || a || s[0].language, this.findClient(this.language) || (this.language = s[0].language);
@@ -5135,7 +5137,7 @@ var ze = class {
 		this.client = c ? c.client : "", Pe.add(this), this.render();
 	}
 	setSettings(e) {
-		if (e.http !== void 0 && (this.http = e.http), e.config !== void 0 && (this.config = e.config), e.theme !== void 0 && (this.controls.theme = e.theme), e.copy !== void 0 && (this.controls.copy = e.copy), e.picker !== void 0 && (this.controls.picker = e.picker), e.language !== void 0 || e.client !== void 0) {
+		if (e.http !== void 0 && (this.http = e.http), e.config !== void 0 && (this.config = e.config), e.theme !== void 0 && (this.controls.theme = e.theme), e.toolbarShow !== void 0 && (this.controls.toolbarShow = e.toolbarShow), e.pickerShow !== void 0 && (this.controls.pickerShow = e.pickerShow), e.copyShow !== void 0 && (this.controls.copyShow = e.copyShow), e.themeShow !== void 0 && (this.controls.themeShow = e.themeShow), e.language !== void 0 || e.client !== void 0) {
 			let t = e.language ?? this.language, n = e.client ?? this.client, r = this.findClient(t, n);
 			r && (this.language = r.language, this.client = r.client, this.persist(), this.syncOthers());
 		}
@@ -5218,16 +5220,16 @@ var ze = class {
 	}
 	render() {
 		this.unbindDocClick(), this.modalOpen = !1, this.clientMenuOpen = !1, this.root || (this.root = document.createElement("div"), this.container.appendChild(this.root)), this.root.className = `gimmehttp${this.controls.theme === "light" ? " light" : ""}`, this.root.innerHTML = `
-      <div class="gh-options">
+      ${this.controls.toolbarShow ? `<div class="gh-options">
         <div class="gh-options-left">
-          ${this.controls.picker ? this.langControl() : ""}
-          ${this.controls.picker ? this.clientControl() : ""}
+          ${this.controls.pickerShow ? this.langControl() : ""}
+          ${this.controls.pickerShow ? this.clientControl() : ""}
         </div>
         <div class="gh-options-right">
-          ${this.controls.copy ? this.copyControl() : ""}
-          ${this.themeControl()}
+          ${this.controls.copyShow ? this.copyControl() : ""}
+          ${this.controls.themeShow ? this.themeControl() : ""}
         </div>
-      </div>
+      </div>` : ""}
       <div class="gh-output language-${this.language}"></div>
     `, this.wireEvents(), this.generate();
 	}
@@ -5353,4 +5355,4 @@ var ze = class {
 //#endregion
 export { ze as t };
 
-//# sourceMappingURL=gimmehttp-DoTJahdN.mjs.map
+//# sourceMappingURL=gimmehttp-fyQ3Jst-.mjs.map

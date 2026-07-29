@@ -4,8 +4,10 @@ export interface Settings {
     language?: string;
     client?: string;
     theme?: 'dark' | 'light';
-    copy?: boolean;
-    picker?: boolean;
+    toolbarShow?: boolean;
+    pickerShow?: boolean;
+    copyShow?: boolean;
+    themeShow?: boolean;
     config?: Config;
     http: Http;
 }

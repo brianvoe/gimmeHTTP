@@ -27,13 +27,12 @@ export default defineConfig({
       external: ['react', 'react-dom', 'react/jsx-runtime', ...sharedGimmehttp],
       output: {
         exports: 'named',
-        globals: {
+          globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
           'react/jsx-runtime': 'jsxRuntime',
           'gimmehttp/ui': 'GimmeHTTP'
-        },
-        assetFileNames: 'gimmehttp.css'
+        }
       }
     }
   },
