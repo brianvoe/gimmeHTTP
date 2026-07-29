@@ -196,12 +196,26 @@ describe('GimmeHTTP UI class', () => {
     expect(copy.textContent).toContain('Copied!')
   })
 
-  test('hides copy button and picker when disabled', () => {
-    create({ settings: { copy: false, picker: false } })
+  test('hides the options toolbar when toolbarShow is false', () => {
+    create({ settings: { toolbarShow: false } })
 
+    expect(container.querySelector('.gh-options')).toBeNull()
+    expect(container.querySelector('.gh-output')).not.toBeNull()
+  })
+
+  test('hides picker, copy button, and theme button when disabled', () => {
+    create({ settings: { pickerShow: false, copyShow: false, themeShow: false } })
+
+    expect(container.querySelector('.gh-options')).not.toBeNull()
     expect(container.querySelector('.gh-copy')).toBeNull()
     expect(container.querySelector('.gh-options .gh-lang')).toBeNull()
     expect(container.querySelector('.gh-client-dd')).toBeNull()
+    expect(container.querySelector('.gh-theme')).toBeNull()
+  })
+
+  test('keeps theme button visible by default when only picker and copy are disabled', () => {
+    create({ settings: { pickerShow: false, copyShow: false } })
+
     expect(container.querySelector('.gh-theme')).not.toBeNull()
   })
 

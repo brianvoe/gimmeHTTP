@@ -1,0 +1,97 @@
+// Sticky left docs nav (used inside .content.with-sidebar).
+
+.sidebar {
+  position: sticky;
+  // .layout is the scrollport and already sits below the fixed header
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  padding: var(--spacing);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-large);
+  background-color: var(--color-surface);
+  box-shadow: var(--box-shadow);
+  box-sizing: border-box;
+  max-height: calc(100vh - var(--header-height));
+  overflow: auto;
+  z-index: 2;
+
+  @media (max-width: 900px) {
+    position: static;
+    max-height: none;
+  }
+
+  .group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .group_title {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    @media (max-width: 900px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+  }
+
+  .subgroup {
+    margin: 6px 0 2px;
+    padding-left: 8px;
+    border-left: 1px solid var(--color-border);
+
+    @media (max-width: 900px) {
+      width: 100%;
+      padding-left: 0;
+      border-left: none;
+    }
+  }
+
+  .subgroup_label {
+    display: block;
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  a {
+    display: block;
+    padding: 5px 8px;
+    border-radius: 6px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.3;
+
+    &:hover {
+      color: var(--color-text);
+      background: rgba(255, 145, 34, 0.08);
+    }
+
+    &.active {
+      color: var(--color-primary-bright);
+      background: rgba(255, 145, 34, 0.14);
+    }
+  }
+}

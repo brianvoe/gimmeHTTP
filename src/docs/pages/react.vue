@@ -154,7 +154,7 @@
       <ul>
         <li>
           <code>settings</code> (required) — same UI <code>Settings</code> shape as vanilla:
-          <code>language</code>, <code>client</code>, <code>theme</code>, <code>copy</code>, <code>picker</code>,
+          <code>language</code>, <code>client</code>, <code>theme</code>, <code>toolbarShow</code>, <code>pickerShow</code>, <code>copyShow</code>, <code>themeShow</code>,
           <code>config</code>, <code>http</code>
         </li>
         <li><code>onLanguageChange</code> — called when the language changes</li>

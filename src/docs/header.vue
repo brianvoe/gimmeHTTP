@@ -4,6 +4,7 @@
   const links = [
     { path: '/usage', label: 'Usage' },
     { path: '/settings', label: 'Settings' },
+    { path: '/core', label: 'Core' },
     { path: '/demo', label: 'Demo' },
     { path: '/style', label: 'Style' }
   ]
@@ -65,16 +66,16 @@
     /* positioning css is in layout.scss */
 
     .center {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      margin: 0 auto;
       width: 100%;
-      max-width: var(--content-width);
+      max-width: none;
       gap: var(--spacing);
       box-sizing: border-box;
 
       .brand {
+        justify-self: start;
         margin: 0;
         font-size: 24px;
         font-weight: 300;
@@ -90,6 +91,7 @@
       }
 
       nav {
+        justify-self: center;
         display: flex;
         align-items: center;
         gap: var(--spacing-quarter);
@@ -182,9 +184,10 @@
 
       .header_actions {
         display: flex;
+        justify-self: end;
         align-items: center;
         gap: var(--spacing);
-        margin-left: auto;
+        margin-left: 0;
       }
 
       .socials {
@@ -244,6 +247,8 @@
 
       // Mobile: single-row header + slide-down nav panel
       @media screen and (max-width: 860px) {
+        grid-template-columns: 1fr auto;
+
         .menu_toggle {
           display: flex;
         }
@@ -254,6 +259,7 @@
           top: 100%;
           left: 0;
           right: 0;
+          justify-self: stretch;
           flex-direction: column;
           align-items: stretch;
           gap: var(--spacing-quarter);

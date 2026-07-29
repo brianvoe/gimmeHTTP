@@ -30,12 +30,20 @@ const router = createRouter({
     {
       path: '/settings',
       name: 'settings',
-      component: () => import('./pages/settings.vue')
+      component: () => import('./pages/settings.vue'),
+      meta: { sidebar: true }
+    },
+    {
+      path: '/core',
+      name: 'core',
+      component: () => import('./pages/core.vue'),
+      meta: { sidebar: true }
     },
     {
       path: '/style',
       name: 'style',
-      component: () => import('./pages/style.vue')
+      component: () => import('./pages/style.vue'),
+      meta: { wide: true }
     },
     {
       path: '/vue',
@@ -62,10 +70,16 @@ const router = createRouter({
 
 export default router
 
-// Ensure scroll-to-top in our scrollable container on navigation
+// Scroll the app layout container after navigation (window scroll is unused)
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  router.afterEach(() => {
+  router.afterEach((to) => {
     const scroller = document.querySelector('#app .layout') as HTMLElement | null
+
+    // In-page hashes (e.g. /settings#ui-pickerShow) are handled by the page after it mounts
+    if (to.hash) {
+      return
+    }
+
     if (scroller) {
       scroller.scrollTo({ left: 0, top: 0, behavior: 'smooth' })
     } else {
@@ -73,3 +87,4 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     }
   })
 }
+

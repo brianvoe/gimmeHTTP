@@ -172,8 +172,9 @@
           client: 'fetch',
           theme: 'dark',
           // Theme is controlled by the playground toggle
-          copy: true,
-          picker: true,
+          toolbarShow: true,
+          pickerShow: true,
+          copyShow: true,
           http: this.demoHttp
         }
       })

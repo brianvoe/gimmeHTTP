@@ -5,6 +5,18 @@ All notable changes to GimmeHttp are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.1.0]
+
+### Added
+
+- UI setting `toolbarShow` to show/hide the entire options toolbar (default: `true`).
+- UI setting `themeShow` to show/hide the light/dark theme button (default: `true`). Set `theme` from the host site
+  and `themeShow: false` when the page already owns theming (e.g. VitePress).
+
+### Changed
+
+- Renamed UI settings `picker` → `pickerShow` and `copy` → `copyShow` (both default `true`) to match `themeShow`.
+
 ## [v2.0.2]
 
 ### Fixed

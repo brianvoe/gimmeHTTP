@@ -14,11 +14,15 @@ export interface Settings {
   // 'dark' (default) or 'light'
   theme?: 'dark' | 'light'
 
-  // Controls
-  // Show the copy button (default: true)
-  copy?: boolean
+  // Controls (toolbar → left → right)
+  // Show the whole options toolbar (default: true)
+  toolbarShow?: boolean
   // Show the language/client picker (default: true)
-  picker?: boolean
+  pickerShow?: boolean
+  // Show the copy button (default: true)
+  copyShow?: boolean
+  // Show the light/dark theme button (default: true)
+  themeShow?: boolean
 
   // Code generation
   config?: Config
@@ -44,7 +48,7 @@ export interface Options {
   events?: Events
 }
 
-type Controls = Required<Pick<Settings, 'theme' | 'copy' | 'picker'>>
+type Controls = Required<Pick<Settings, 'theme' | 'toolbarShow' | 'pickerShow' | 'copyShow' | 'themeShow'>>
 
 const STORAGE_LANG = 'gimmeLang'
 const STORAGE_CLIENT = 'gimmeClient'
@@ -118,8 +122,10 @@ export class GimmeHTTP {
     this.events = options.events || {}
     this.controls = {
       theme: s.theme || 'dark',
-      copy: s.copy !== false,
-      picker: s.picker !== false
+      toolbarShow: s.toolbarShow !== false,
+      pickerShow: s.pickerShow !== false,
+      copyShow: s.copyShow !== false,
+      themeShow: s.themeShow !== false
     }
 
     // Initial selection: explicit option > localStorage > first available
@@ -152,11 +158,17 @@ export class GimmeHTTP {
     if (partial.theme !== undefined) {
       this.controls.theme = partial.theme
     }
-    if (partial.copy !== undefined) {
-      this.controls.copy = partial.copy
+    if (partial.toolbarShow !== undefined) {
+      this.controls.toolbarShow = partial.toolbarShow
     }
-    if (partial.picker !== undefined) {
-      this.controls.picker = partial.picker
+    if (partial.pickerShow !== undefined) {
+      this.controls.pickerShow = partial.pickerShow
+    }
+    if (partial.copyShow !== undefined) {
+      this.controls.copyShow = partial.copyShow
+    }
+    if (partial.themeShow !== undefined) {
+      this.controls.themeShow = partial.themeShow
     }
 
     if (partial.language !== undefined || partial.client !== undefined) {
@@ -339,16 +351,20 @@ export class GimmeHTTP {
 
     this.root.className = `gimmehttp${this.controls.theme === 'light' ? ' light' : ''}`
     this.root.innerHTML = `
-      <div class="gh-options">
+      ${
+        this.controls.toolbarShow
+          ? `<div class="gh-options">
         <div class="gh-options-left">
-          ${this.controls.picker ? this.langControl() : ''}
-          ${this.controls.picker ? this.clientControl() : ''}
+          ${this.controls.pickerShow ? this.langControl() : ''}
+          ${this.controls.pickerShow ? this.clientControl() : ''}
         </div>
         <div class="gh-options-right">
-          ${this.controls.copy ? this.copyControl() : ''}
-          ${this.themeControl()}
+          ${this.controls.copyShow ? this.copyControl() : ''}
+          ${this.controls.themeShow ? this.themeControl() : ''}
         </div>
-      </div>
+      </div>`
+          : ''
+      }
       <div class="gh-output language-${this.language}"></div>
     `
 

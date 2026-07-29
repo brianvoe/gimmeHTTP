@@ -309,8 +309,10 @@ const gh = new GimmeHTTP({
     language: 'go', // initial language
     client: 'http', // initial client
     theme: 'dark', // 'dark' | 'light'
-    copy: true, // show copy button
-    picker: true, // show language/client picker
+    toolbarShow: true, // show the options toolbar
+    pickerShow: true, // show language/client picker
+    copyShow: true, // show copy button
+    themeShow: true, // show light/dark theme button
     config: { indent: '  ' }, // engine config
     http: {
       method: 'POST',
@@ -442,7 +444,8 @@ app.mount('#app')
 
 Props overview:
 
-- `settings` (required): `Settings` — `language`, `client`, `theme`, `copy`, `picker`, `config`, `http`
+- `settings` (required): `Settings` — `language`, `client`, `theme`, `toolbarShow`, `pickerShow`, `copyShow`, `themeShow`, `config`,
+  `http`
 - Emits `update:language` and `update:client` when the selection changes
 
 ---
@@ -494,7 +497,8 @@ export function Example() {
 
 Props overview:
 
-- `settings` (required): `Settings` — `language`, `client`, `theme`, `copy`, `picker`, `config`, `http`
+- `settings` (required): `Settings` — `language`, `client`, `theme`, `toolbarShow`, `pickerShow`, `copyShow`, `themeShow`, `config`,
+  `http`
 - `onLanguageChange` / `onClientChange` — selection callbacks
 - `ref` — `GimmeHttpRef` with `gimmeHttp` for the underlying instance
 

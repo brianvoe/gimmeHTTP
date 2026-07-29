@@ -1,7 +1,6 @@
 // Form inputs styling
 
-input,
-select,
+input:not([type='checkbox']):not([type='radio']):not([type='color']):not([type='range']):not([type='file']),
 textarea {
   padding: 10px var(--spacing-half);
   border: 1px solid var(--color-border-strong);
@@ -26,10 +25,6 @@ textarea {
   }
 }
 
-select {
-  font-family: var(--font-primary);
-}
-
 textarea {
   min-height: 100px;
   resize: vertical;
@@ -41,4 +36,151 @@ label {
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--color-primary);
+}
+
+// Inline control labels (checkboxes, etc.)
+label.inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover input[type='checkbox']:not(:disabled) {
+    border-color: var(--color-primary);
+  }
+}
+
+// Custom checkbox — matches site chrome / primary accent
+input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 5px;
+  background-color: var(--color-bg-0);
+  box-shadow: none;
+  cursor: pointer;
+  vertical-align: middle;
+  transition:
+    background-color var(--animation-timing),
+    border-color var(--animation-timing),
+    box-shadow var(--animation-timing);
+
+  &::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #1c1610;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E");
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 14px 14px;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: 14px 14px;
+    opacity: 0;
+    transform: scale(0.7);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  &:hover {
+    border-color: var(--color-primary);
+  }
+
+  &:checked {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+
+    &::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-primary);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+// Custom select — raised surface + chevron, matches buttons / checkboxes
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0 36px 0 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--border-radius);
+  background-color: var(--color-surface-raised);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23a89e93' d='M4.22 5.97a.75.75 0 0 1 1.06 0L8 8.69l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.03a.75.75 0 0 1 0-1.06z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px 14px;
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 40px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    background-color var(--animation-timing),
+    border-color var(--animation-timing),
+    box-shadow var(--animation-timing),
+    color var(--animation-timing);
+
+  &:hover {
+    color: var(--color-heading);
+    border-color: var(--color-primary);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23fb7a3c' d='M4.22 5.97a.75.75 0 0 1 1.06 0L8 8.69l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.03a.75.75 0 0 1 0-1.06z'/%3E%3C/svg%3E");
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    color: var(--color-heading);
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-primary);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23fb7a3c' d='M4.22 5.97a.75.75 0 0 1 1.06 0L8 8.69l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.03a.75.75 0 0 1 0-1.06z'/%3E%3C/svg%3E");
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  option {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+  }
 }

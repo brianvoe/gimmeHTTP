@@ -9,8 +9,14 @@
       Header,
       Footer
     },
-    data() {
-      return {}
+    computed: {
+      contentClass(): Record<string, boolean> {
+        const meta = this.$route.meta
+        return {
+          'with-sidebar': Boolean(meta.sidebar),
+          wide: Boolean(meta.wide)
+        }
+      }
     }
   })
 </script>
@@ -21,7 +27,7 @@
   <Header />
 
   <div class="layout">
-    <main class="content">
+    <main class="content" :class="contentClass">
       <!-- router view -->
       <router-view />
       <!-- Smart AdSense with content gating -->
