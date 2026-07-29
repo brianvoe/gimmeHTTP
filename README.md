@@ -6,7 +6,6 @@ HTTP request code snippet generator
 
 [![NPM Downloads](https://img.shields.io/npm/dt/gimmehttp.svg)](https://www.npmjs.com/package/gimmehttp)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/brianvoe/gimmehttp/vitest.yml?logo=vitest&label=unit%20tests)
-[![gimmehttp](https://snyk.io/advisor/npm-package/gimmehttp/badge.svg)](https://snyk.io/advisor/npm-package/gimmehttp)
 
 ![GimmeHttp demo](./demo.gif)
 
