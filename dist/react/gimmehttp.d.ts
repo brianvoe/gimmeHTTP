@@ -1,4 +1,4 @@
-import { GimmeHTTP, Settings } from '../ui/gimmehttp';
+import { GimmeHTTP, Settings } from 'gimmehttp/ui';
 export interface GimmeHttpProps {
     settings: Settings;
     onLanguageChange?: (language: string) => void;
