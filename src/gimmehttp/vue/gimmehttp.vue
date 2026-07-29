@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { PropType } from 'vue'
   import { defineComponent } from 'vue'
-  import { GimmeHTTP } from '../ui/gimmehttp'
-  import type { Settings } from '../ui/gimmehttp'
+  // Use the package entry so Vue shares the same registry as gimmehttp/core.
+  import { GimmeHTTP } from 'gimmehttp/ui'
+  import type { Settings } from 'gimmehttp/ui'
 
   export default defineComponent({
     name: 'GimmeHttp',

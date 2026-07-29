@@ -3,6 +3,9 @@ import dts from 'vite-plugin-dts'
 import path from 'path'
 import react from '@vitejs/plugin-react'
 
+/** Shared engine/UI must stay external so Register() from gimmehttp/core applies. */
+const sharedGimmehttp = [/^gimmehttp(\/|$)/]
+
 export default defineConfig({
   publicDir: false,
   resolve: {
@@ -20,13 +23,15 @@ export default defineConfig({
     },
     outDir: path.resolve(__dirname, 'dist/react'),
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      // Do not alias gimmehttp/* to source here — that would bundle a second registry.
+      external: ['react', 'react-dom', 'react/jsx-runtime', ...sharedGimmehttp],
       output: {
         exports: 'named',
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
-          'react/jsx-runtime': 'jsxRuntime'
+          'react/jsx-runtime': 'jsxRuntime',
+          'gimmehttp/ui': 'GimmeHTTP'
         },
         assetFileNames: 'gimmehttp.css'
       }
@@ -42,8 +47,9 @@ export default defineConfig({
       include: ['src/gimmehttp/react/**/*'],
       exclude: ['**/*.test.ts', '**/*.test.tsx'],
       strictOutput: true,
-      // Keep framework types self-contained under dist/react
-      pathsToAliases: false
+      // Keep `gimmehttp/ui` as a package import in .d.ts (do not rewrite via tsconfig paths).
+      pathsToAliases: false,
+      aliasesExclude: [/^gimmehttp(\/|$)/]
     })
   ]
 })

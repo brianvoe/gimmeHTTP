@@ -12,8 +12,9 @@ import {
   useRef,
   useState
 } from 'react'
-import { GimmeHTTP } from '../ui/gimmehttp'
-import type { Settings } from '../ui/gimmehttp'
+// Use the package entry so React shares the same registry as gimmehttp/core.
+import { GimmeHTTP } from 'gimmehttp/ui'
+import type { Settings } from 'gimmehttp/ui'
 
 import '../ui/gimmehttp.scss'
 

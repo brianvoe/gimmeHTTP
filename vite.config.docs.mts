@@ -7,7 +7,10 @@ import path from 'path'
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
+      '@': path.resolve(__dirname, 'src'),
+      // Source aliases so Vue/React wrappers share one registry with core in docs.
+      'gimmehttp/ui': path.resolve(__dirname, 'src/gimmehttp/ui/index.ts'),
+      'gimmehttp/core': path.resolve(__dirname, 'src/gimmehttp/core/index.ts')
     }
   },
   server: {

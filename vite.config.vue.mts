@@ -3,6 +3,9 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import path from 'path'
 
+/** Shared engine/UI must stay external so Register() from gimmehttp/core applies. */
+const sharedGimmehttp = [/^gimmehttp(\/|$)/]
+
 export default defineConfig({
   publicDir: false,
   resolve: {
@@ -20,11 +23,13 @@ export default defineConfig({
     },
     outDir: path.resolve(__dirname, 'dist/vue'),
     rollupOptions: {
-      external: ['vue'],
+      // Do not alias gimmehttp/* to source here — that would bundle a second registry.
+      external: ['vue', ...sharedGimmehttp],
       output: {
         exports: 'named',
         globals: {
-          vue: 'Vue'
+          vue: 'Vue',
+          'gimmehttp/ui': 'GimmeHTTP'
         }
       }
     }
@@ -40,7 +45,10 @@ export default defineConfig({
       insertTypesEntry: true,
       include: ['src/gimmehttp/vue/**/*'],
       exclude: ['**/*.test.ts'],
-      strictOutput: true
+      strictOutput: true,
+      // Keep `gimmehttp/ui` as a package import in .d.ts (do not rewrite via tsconfig paths).
+      pathsToAliases: false,
+      aliasesExclude: [/^gimmehttp(\/|$)/]
     })
   ]
 })

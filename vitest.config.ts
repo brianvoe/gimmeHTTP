@@ -17,7 +17,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src')
+      '@': resolve(__dirname, './src'),
+      // Source aliases so Vue/React wrappers share one registry with core in tests.
+      'gimmehttp/ui': resolve(__dirname, './src/gimmehttp/ui/index.ts'),
+      'gimmehttp/core': resolve(__dirname, './src/gimmehttp/core/index.ts')
     }
   }
 })

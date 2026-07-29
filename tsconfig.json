@@ -18,7 +18,9 @@
     "lib": ["esnext", "dom"],
     "types": ["node"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "gimmehttp/ui": ["./src/gimmehttp/ui/index.ts"],
+      "gimmehttp/core": ["./src/gimmehttp/core/index.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
