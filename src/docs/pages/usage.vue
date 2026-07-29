@@ -29,6 +29,36 @@
     }
   }
 
+  const cdnHtml = `<link rel="stylesheet" href="https://unpkg.com/gimmehttp/dist/gimmehttp.css" />
+<script src="https://unpkg.com/gimmehttp/dist/gimmehttp.js"><\/script>
+
+<div id="code"></div>
+
+<script>
+  new GimmeHTTP({
+    container: '#code',
+    settings: {
+      http: { method: 'GET', url: 'https://example.com' }
+    }
+  })
+<\/script>`
+
+  const cdnCss = `body {
+  margin: 0;
+  padding: 1rem;
+  background: #171310;
+}`
+
+  const cdnPrefill = JSON.stringify({
+    title: 'gimmeHTTP CDN',
+    description: 'Drop-in CDN usage with the UMD build from unpkg.',
+    tags: ['gimmehttp', 'cdn', 'http']
+  })
+
+  type CodePenWindow = Window & {
+    __CPEmbed?: (selector?: string) => void
+  }
+
   export default defineComponent({
     components: {
       HighlightStyle
@@ -38,7 +68,11 @@
       return {
         sampleOutput,
         demoHttp,
-        instance: null as GimmeHTTP | null
+        instance: null as GimmeHTTP | null,
+        cdnHtml,
+        cdnCss,
+        cdnPrefill,
+        cdnEmbedReady: false
       }
     },
     computed: {
@@ -64,12 +98,22 @@
         }
       })
       this.resizeOutput()
+      this.scrollToHash()
     },
     unmounted() {
       this.instance?.destroy()
       this.instance = null
     },
     methods: {
+      scrollToHash() {
+        const id = (this.$route.hash || window.location.hash).replace(/^#/, '')
+        if (!id) {
+          return
+        }
+        this.$nextTick(() => {
+          document.getElementById(id)?.scrollIntoView({ behavior: 'auto', block: 'start' })
+        })
+      },
       resizeOutput() {
         this.$nextTick(() => {
           const el = this.$refs.engineOutput as HTMLTextAreaElement | undefined
@@ -78,6 +122,45 @@
           }
           el.style.height = 'auto'
           el.style.height = `${el.scrollHeight}px`
+        })
+      },
+      async runCdnEmbed() {
+        if (this.cdnEmbedReady) {
+          return
+        }
+        this.cdnEmbedReady = true
+        await this.$nextTick()
+        await this.ensureCodePenEmbed()
+        ;(window as CodePenWindow).__CPEmbed?.('.cdn_codepen')
+      },
+      ensureCodePenEmbed(): Promise<void> {
+        const win = window as CodePenWindow
+        if (typeof win.__CPEmbed === 'function') {
+          return Promise.resolve()
+        }
+
+        const existing = document.querySelector<HTMLScriptElement>('script[data-codepen-embed]')
+        if (existing) {
+          return new Promise((resolve, reject) => {
+            if (typeof win.__CPEmbed === 'function') {
+              resolve()
+              return
+            }
+            existing.addEventListener('load', () => resolve(), { once: true })
+            existing.addEventListener('error', () => reject(new Error('CodePen embed failed to load')), {
+              once: true
+            })
+          })
+        }
+
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = 'https://public.codepenassets.com/embed/index.js'
+          script.async = true
+          script.dataset.codepenEmbed = 'true'
+          script.addEventListener('load', () => resolve(), { once: true })
+          script.addEventListener('error', () => reject(new Error('CodePen embed failed to load')), { once: true })
+          document.body.appendChild(script)
         })
       }
     }
@@ -190,6 +273,36 @@
 
     .ui_demo {
       margin-top: var(--spacing);
+    }
+
+    .cdn_embed {
+      margin-top: var(--spacing);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-half);
+
+      .cdn_run {
+        align-self: flex-start;
+        appearance: none;
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius);
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--color-text);
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8px 14px;
+        cursor: pointer;
+
+        &:hover {
+          border-color: var(--color-primary);
+          color: var(--color-primary);
+        }
+      }
+
+      .cdn_codepen {
+        min-height: 480px;
+      }
     }
 
     .engine_output {
@@ -390,7 +503,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div id="cdn" class="section">
       <h3>CDN / script tag</h3>
       <p>
         The CDN build comes with every client pre-registered and the global <code>GimmeHTTP</code> is the styled UI
@@ -420,6 +533,26 @@
           &lt;/script&gt;
         </pre>
       </HighlightStyle>
+
+      <div class="cdn_embed">
+        <button v-if="!cdnEmbedReady" type="button" class="cdn_run" @click="runCdnEmbed">
+          Run live example on CodePen
+        </button>
+        <div
+          v-if="cdnEmbedReady"
+          class="cdn_codepen"
+          :data-prefill="cdnPrefill"
+          data-height="480"
+          data-theme-id="-2"
+          data-default-tab="html,result"
+          data-editable="true"
+          data-version="2"
+          style="height: 480px; overflow: auto"
+        >
+          <pre data-lang="html" v-text="cdnHtml"></pre>
+          <pre data-lang="css" v-text="cdnCss"></pre>
+        </div>
+      </div>
     </div>
   </div>
 </template>

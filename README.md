@@ -381,6 +381,8 @@ Syntax: `--gh-kw`, `--gh-fn`, `--gh-const`, `--gh-str`, `--gh-var`, `--gh-cmt`, 
 The CDN build pre-registers every client and exposes the UI component as the global `GimmeHTTP`, with the engine
 attached as statics (`GimmeHTTP.Generate`, `GimmeHTTP.Register`, ...).
 
+Live editable demo: [gimmehttp.com/usage#cdn](https://gimmehttp.com/usage#cdn)
+
 ```html
 <link rel="stylesheet" href="https://unpkg.com/gimmehttp/dist/gimmehttp.css" />
 <script src="https://unpkg.com/gimmehttp/dist/gimmehttp.js"></script>

@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - UI setting `toolbarShow` to show/hide the entire options toolbar (default: `true`).
 - UI setting `themeShow` to show/hide the light/dark theme button (default: `true`). Set `theme` from the host site
   and `themeShow: false` when the page already owns theming (e.g. VitePress).
+- Live CodePen CDN example on the Usage docs page (`/usage#cdn`).
 
 ### Changed
 
